@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState } from 'react';
-import { Github, Cpu, Zap, FastForward, Network, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Github, Cpu, Zap, FastForward, Network, Database, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -10,12 +10,14 @@ const LLMInference = lazy(() => import('./components/LLMInference.jsx'));
 const FlashAttention = lazy(() => import('./components/FlashAttention.jsx'));
 const FlashDecode = lazy(() => import('./components/FlashDecode.jsx'));
 const ParallelStrategies = lazy(() => import('./components/ParallelStrategies.jsx'));
+const Engram = lazy(() => import('./components/Engram.jsx'));
 
 const TABS = [
   { id: 'llm', label: 'LLM Inference', icon: Cpu, component: LLMInference },
   { id: 'parallel', label: 'Parallel Strategy', icon: Network, component: ParallelStrategies },
   { id: 'flash', label: 'Flash Attention', icon: Zap, component: FlashAttention },
   { id: 'flashdecode', label: 'Flash Decode', icon: FastForward, component: FlashDecode },
+  { id: 'engram', label: 'Engram', icon: Database, component: Engram },
 ];
 
 function LoadingFallback() {
