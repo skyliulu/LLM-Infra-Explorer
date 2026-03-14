@@ -325,7 +325,7 @@ const App = () => {
           </div>
 
           {/* 2. Engram微观张量流图 (自上而下翻转) */}
-          <div className="xl:col-span-6 bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative overflow-x-auto overflow-y-hidden">
+          <div className="xl:col-span-7 bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative overflow-x-auto overflow-y-hidden">
            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 min-w-[700px]">
              <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
                <BrainCircuit className="text-purple-600" size={20}/>
@@ -650,7 +650,7 @@ const App = () => {
           </div>
 
           {/* 3. Engram 伪代码深度展开 */}
-          <div className="xl:col-span-4 bg-[#1E1E1E] rounded-2xl border border-slate-700 shadow-xl flex flex-col overflow-hidden h-full min-h-[700px]">
+          <div className="xl:col-span-3 bg-[#1E1E1E] rounded-2xl border border-slate-700 shadow-xl flex flex-col overflow-hidden h-full min-h-[700px]">
            <div className="bg-[#2D2D2D] px-4 py-3 flex items-center justify-between border-b border-slate-700">
              <div className="flex items-center gap-3">
                <div className="flex gap-1.5">
@@ -663,7 +663,7 @@ const App = () => {
              <span className="text-[9px] text-slate-500 font-mono">Python Tracer</span>
            </div>
            
-           <div className="py-3 overflow-y-auto flex-1 custom-scrollbar">
+           <div className="py-3 overflow-y-auto overflow-x-auto flex-1 custom-scrollbar">
               <CodeLine num="1" active={false} indent={0}>
                 <span className="text-purple-400">def</span> <span className="text-blue-400">forward</span>(self, hidden_states, input_ids):
               </CodeLine>
