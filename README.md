@@ -1,27 +1,29 @@
 # AI-Infra-Viz 🚀
 
-> **Lift the hood on large model inference and intuitively understand the low-level art of AI infrastructure.**
+[English](./README.md) | [简体中文](./README.zh-CN.md)
 
-`AI-Infra-Viz` is an interactive, panoramic visualization project designed to bridge the cognitive gap between "abstract algorithms" and "low-level operators".
-It shows not only how LLMs think, but also how the hardware Memory Wall is shattered by techniques like Flash Attention.
+> **An interactive explorer for large-model infrastructure — not just visualization, but hands-on understanding.**
+
+`AI-Infra-Viz` is an **interactive infrastructure learning playground** for the LLM era.
+It bridges the cognitive gap between high-level concepts and low-level systems behavior through explorable modules, guided flows, and visual interaction.
 
 ### 🌟 Highlights
-- **LLM End-to-End Inference**: Watch MoE routing, RoPE positional encoding, and the autoregressive loop in real time.
-- **Parallel Strategies**: Interactive visualization of DP, TP, PP, CP, EP, and ETP parallelism — explore how large models are distributed across GPUs.
-- **Flash Attention Deep Dive**: Physics-level simulation of data movement and tiling strategies between SRAM and HBM.
-- **Flash Decode**: Visualize the optimized decoding process with efficient attention computation.
-- **DeepSeek Engram**: Understand N-Gram retrieval, memory slot lookup, and tensor-level data flow in the Engram block.
-- **Zero-Dependency Components**: All visualization logic is encapsulated in standalone React components, ready to reuse.
+- **Interactive Infrastructure Learning**: Learn by interacting with model-serving pipelines, memory movement, and system-level trade-offs.
+- **LLM End-to-End Inference**: Explore prefill/decode, KV cache evolution, and token generation loops.
+- **Parallel Strategies**: Compare DP / TP / PP / CP / EP / ETP via interactive topology and workload decomposition.
+- **Flash Attention Deep Dive**: Understand tiling and SRAM/HBM movement with step-by-step interaction.
+- **Flash Decode**: Inspect low-latency decode optimization paths for real-time generation.
+- **DeepSeek Engram**: Analyze memory-centric retrieval paths and tensor-level dataflow.
 
 ### 🗂️ Modules
 
 | Module | Description |
 |---|---|
-| LLM Inference | End-to-end LLM inference with MoE routing, RoPE, and autoregressive generation |
+| LLM Inference | End-to-end LLM inference with prefill/decode and KV-cache flow |
 | Parallel Strategies | Interactive GPU parallelism explorer: DP / TP / PP / CP / EP / ETP |
 | Flash Attention | Tiled SRAM/HBM data-movement simulation for Flash Attention |
-| Flash Decode | Efficient attention decoding visualization |
-| Engram | DeepSeek Engram memory retrieval and tensor pipeline visualization |
+| Flash Decode | Efficient attention decoding optimization walkthrough |
+| Engram | DeepSeek Engram memory retrieval and tensor pipeline interaction |
 
 ### 🔗 Live Demo
 Visit the [GitHub Pages](https://skyliulu.github.io/AI-Infra-Viz/) live demo.

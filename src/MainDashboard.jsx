@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 
 const cn = (...inputs) => twMerge(clsx(inputs));
 
+const HomeLanding = lazy(() => import('./components/HomeLanding.jsx'));
 const LLMInference = lazy(() => import('./components/LLMInference.jsx'));
 const FlashAttention = lazy(() => import('./components/FlashAttention.jsx'));
 const FlashDecode = lazy(() => import('./components/FlashDecode.jsx'));
@@ -29,15 +30,24 @@ function LoadingFallback() {
 }
 
 export default function MainDashboard() {
-  const [activeTab, setActiveTab] = useState(TABS[0].id);
+  const [activeTab, setActiveTab] = useState('home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  if (activeTab === 'home') {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100">
+        <Suspense fallback={<LoadingFallback />}>
+          <HomeLanding onExplore={setActiveTab} />
+        </Suspense>
+      </div>
+    );
+  }
 
   const ActiveComponent = TABS.find((t) => t.id === activeTab)?.component;
 
   return (
     <div className="min-h-screen flex bg-slate-950 text-slate-100">
-      {/* ── Mobile overlay ── */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/60 md:hidden"
@@ -45,7 +55,6 @@ export default function MainDashboard() {
         />
       )}
 
-      {/* ── Left Sidebar ── */}
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-30 flex flex-col bg-slate-900 border-r border-slate-800 transition-all duration-300',
@@ -54,7 +63,6 @@ export default function MainDashboard() {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        {/* Logo */}
         <div className="flex items-center justify-between h-14 px-3 border-b border-slate-800 shrink-0">
           {!sidebarCollapsed && (
             <span className="text-base font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent whitespace-nowrap select-none">
@@ -90,7 +98,6 @@ export default function MainDashboard() {
           </div>
         </div>
 
-        {/* Nav items */}
         <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
           {TABS.map((tab) => {
             const Icon = tab.icon;
@@ -118,7 +125,6 @@ export default function MainDashboard() {
           })}
         </nav>
 
-        {/* GitHub icon shown in collapsed state */}
         {sidebarCollapsed && (
           <div className="px-2 py-3 border-t border-slate-800 shrink-0 flex justify-center">
             <a
@@ -134,9 +140,7 @@ export default function MainDashboard() {
         )}
       </aside>
 
-      {/* ── Right side: header + content ── */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile top bar */}
         <header className="md:hidden flex items-center h-14 px-4 bg-slate-900 border-b border-slate-800 shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -148,7 +152,6 @@ export default function MainDashboard() {
           <span className="ml-3 text-base font-extrabold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">AI-Infra-Viz</span>
         </header>
 
-        {/* Main content — no outer padding to avoid dark border around components */}
         <main className="flex-1 overflow-auto">
           <AnimatePresence mode="wait">
             <motion.div
@@ -166,9 +169,8 @@ export default function MainDashboard() {
           </AnimatePresence>
         </main>
 
-        {/* Footer */}
         <footer className="shrink-0 border-t border-slate-800 py-3 px-6 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} AI-Infra-Viz — Visualizing AI Infrastructure
+          © {new Date().getFullYear()} AI-Infra-Viz — Interactive AI Infrastructure Explorer
         </footer>
       </div>
     </div>
