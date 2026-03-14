@@ -229,12 +229,12 @@ const App = () => {
         {/* 第一行：并排三模块（拓扑 : 张量流 : 伪代码） */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
           
-          {/* 1. 骨干网络拓扑 (自上而下翻转) */}
+          {/* 1. 网络拓扑结构 (自上而下翻转) */}
           <div className="xl:col-span-2 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col">
             <div className="flex items-center mb-4 pb-3 border-b border-slate-100">
                <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
                  <Network className="text-indigo-500" size={20}/> 
-                 骨干网络拓扑
+                 网络拓扑结构
                </h2>
             </div>
             
@@ -324,12 +324,12 @@ const App = () => {
             </div>
           </div>
 
-          {/* 2. Engram 模块微观张量流图 (自上而下翻转) */}
+          {/* 2. Engram微观张量流图 (自上而下翻转) */}
           <div className="xl:col-span-6 bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative overflow-x-auto overflow-y-hidden">
            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 min-w-[700px]">
              <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
                <BrainCircuit className="text-purple-600" size={20}/>
-               模块微观张量流图
+               Engram微观张量流图
              </h2>
              <span className="text-xs px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full font-bold border border-purple-200 shadow-sm transition-all duration-300">
                {getStepDesc()}
@@ -370,6 +370,16 @@ const App = () => {
                      const is3Gram = i > slideIdx - 3 && i <= slideIdx;
                      return (
                         <div key={i} className="flex-1 flex flex-col items-center relative">
+                           {/* 3-Gram Context Flowing ABOVE */}
+                           <div className="h-6 w-full relative mb-1.5">
+                              {is3Gram && (
+                                <div className={`absolute bottom-0 w-full h-1.5 bg-indigo-200 ${i === slideIdx - 2 ? 'rounded-l-md' : ''} ${i === slideIdx ? 'rounded-r-md' : ''}`}></div>
+                              )}
+                              {i === slideIdx - 1 && is3Gram && (
+                                <span className="absolute bottom-2 w-[200%] left-1/2 -translate-x-1/2 text-center text-[9px] font-bold text-indigo-600">3-Gram Context</span>
+                              )}
+                           </div>
+
                            <div className={`px-2 py-2 w-[95%] text-center rounded-lg border transition-all duration-300 font-mono text-[11px] md:text-xs z-10
                               ${isTarget ? 'bg-rose-100 border-rose-400 text-rose-800 font-bold shadow-[0_0_10px_rgba(251,113,133,0.4)] scale-110' :
                                 (is2Gram || is3Gram) ? 'bg-blue-50 border-indigo-300 text-slate-800 shadow-sm' :
@@ -378,21 +388,13 @@ const App = () => {
                               {isTarget && <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-rose-500 text-white text-[8px] px-1.5 py-[1px] rounded shadow-sm">t</div>}
                            </div>
                            
-                           {/* Context Brackets Flowing DOWN */}
+                           {/* 2-Gram Context Flowing BELOW */}
                            <div className="h-6 w-full relative mt-1.5">
                               {is2Gram && (
                                 <div className={`absolute top-0 w-full h-1.5 bg-purple-200 ${i === slideIdx - 1 ? 'rounded-l-md' : ''} ${i === slideIdx ? 'rounded-r-md' : ''}`}></div>
                               )}
                               {i === slideIdx && is2Gram && (
                                 <span className="absolute top-2 w-[200%] right-1/2 translate-x-1/2 text-center text-[9px] font-bold text-purple-600">2-Gram</span>
-                              )}
-                           </div>
-                           <div className="h-6 w-full relative mt-1">
-                              {is3Gram && (
-                                <div className={`absolute top-0 w-full h-1.5 bg-indigo-200 ${i === slideIdx - 2 ? 'rounded-l-md' : ''} ${i === slideIdx ? 'rounded-r-md' : ''}`}></div>
-                              )}
-                              {i === slideIdx - 1 && is3Gram && (
-                                <span className="absolute top-2 w-[200%] left-1/2 -translate-x-1/2 text-center text-[9px] font-bold text-indigo-600">3-Gram Context</span>
                               )}
                            </div>
                         </div>
@@ -541,93 +543,93 @@ const App = () => {
                   Context-aware Gating
                 </div>
 
-                <div className="relative w-full h-[600px] mt-4">
+                <div className="relative w-full h-[560px] mt-2">
                     {/* ====== 严格正交路由连线层 (自上而下) ====== */}
                     
-                    {/* Trunk: H_in (y=80) down to Add (y=480) */}
-                    <VLine left="10%" top="80px" height="400px" active={step>=6} color="blue" />
-                    <Arrow left="10%" top="280px" dir="down" active={step>=6} color="blue" />
+                    {/* Trunk: H_in (y=40) down to Add (y=440) */}
+                    <VLine left="10%" top="40px" height="400px" active={step>=6} color="blue" />
+                    <Arrow left="10%" top="240px" dir="down" active={step>=6} color="blue" />
                     
-                    {/* H_in Bypass (y=320) to Norm1 */}
-                    <HLine left="10%" width="7%" top="320px" active={step>=7} color="blue" />
-                    <Arrow left="14%" top="320px" dir="right" active={step>=7} color="blue" />
-                    <HLine left="17%" width="8%" top="320px" active={step>=7} color="blue" />
-                    <Arrow left="21%" top="320px" dir="right" active={step>=7} color="blue" />
+                    {/* H_in Bypass (y=280) to Norm1 */}
+                    <HLine left="10%" width="7%" top="280px" active={step>=7} color="blue" />
+                    <Arrow left="14%" top="280px" dir="right" active={step>=7} color="blue" />
+                    <HLine left="17%" width="8%" top="280px" active={step>=7} color="blue" />
+                    <Arrow left="21%" top="280px" dir="right" active={step>=7} color="blue" />
 
-                    {/* E_t (y=80) down to MatMul_V (y=180) */}
-                    <VLine left="75%" top="80px" height="100px" active={step>=6} color="emerald" />
-                    <Arrow left="75%" top="130px" dir="down" active={step>=6} color="emerald" />
+                    {/* E_t (y=40) down to MatMul_V (y=140) */}
+                    <VLine left="75%" top="40px" height="100px" active={step>=6} color="emerald" />
+                    <Arrow left="75%" top="90px" dir="down" active={step>=6} color="emerald" />
 
                     {/* E_t bypass left to MatMul_K */}
-                    <HLine left="45%" width="30%" top="80px" active={step>=6} color="amber" />
-                    <Arrow left="60%" top="80px" dir="left" active={step>=6} color="amber" />
-                    <VLine left="45%" top="80px" height="100px" active={step>=6} color="amber" />
-                    <Arrow left="45%" top="130px" dir="down" active={step>=6} color="amber" />
+                    <HLine left="45%" width="30%" top="40px" active={step>=6} color="amber" />
+                    <Arrow left="60%" top="40px" dir="left" active={step>=6} color="amber" />
+                    <VLine left="45%" top="40px" height="100px" active={step>=6} color="amber" />
+                    <Arrow left="45%" top="90px" dir="down" active={step>=6} color="amber" />
 
-                    <HLine left="33%" width="12%" top="180px" active={step>=6} color="amber" />
-                    <Arrow left="39%" top="180px" dir="right" active={step>=6} color="amber" />
+                    <HLine left="33%" width="12%" top="140px" active={step>=6} color="amber" />
+                    <Arrow left="39%" top="140px" dir="right" active={step>=6} color="amber" />
 
-                    <VLine left="45%" top="180px" height="80px" active={step>=6} color="amber" />
-                    <Arrow left="45%" top="220px" dir="down" active={step>=6} color="amber" />
+                    <VLine left="45%" top="140px" height="80px" active={step>=6} color="amber" />
+                    <Arrow left="45%" top="180px" dir="down" active={step>=6} color="amber" />
 
-                    <HLine left="75%" width="12%" top="180px" active={step>=6} color="emerald" />
-                    <Arrow left="81%" top="180px" dir="left" active={step>=6} color="emerald" />
+                    <HLine left="75%" width="12%" top="140px" active={step>=6} color="emerald" />
+                    <Arrow left="81%" top="140px" dir="left" active={step>=6} color="emerald" />
 
-                    <VLine left="75%" top="180px" height="80px" active={step>=6} color="emerald" />
-                    <Arrow left="75%" top="220px" dir="down" active={step>=6} color="emerald" />
+                    <VLine left="75%" top="140px" height="80px" active={step>=6} color="emerald" />
+                    <Arrow left="75%" top="180px" dir="down" active={step>=6} color="emerald" />
 
-                    <VLine left="45%" top="260px" height="60px" active={step>=7} color="amber" />
-                    <HLine left="35%" width="10%" top="320px" active={step>=7} color="amber" />
-                    <Arrow left="45%" top="290px" dir="down" active={step>=7} color="amber" />
-                    <Arrow left="40%" top="320px" dir="left" active={step>=7} color="amber" />
+                    <VLine left="45%" top="220px" height="60px" active={step>=7} color="amber" />
+                    <HLine left="35%" width="10%" top="280px" active={step>=7} color="amber" />
+                    <Arrow left="45%" top="250px" dir="down" active={step>=7} color="amber" />
+                    <Arrow left="40%" top="280px" dir="left" active={step>=7} color="amber" />
 
-                    <HLine left="25%" width="10%" top="320px" active={step>=7} color="amber" />
-                    <Arrow left="30%" top="320px" dir="left" active={step>=7} color="amber" />
+                    <HLine left="25%" width="10%" top="280px" active={step>=7} color="amber" />
+                    <Arrow left="30%" top="280px" dir="left" active={step>=7} color="amber" />
 
-                    <VLine left="25%" top="320px" height="70px" active={step>=7} color="rose" />
-                    <Arrow left="25%" top="355px" dir="down" active={step>=7} color="rose" />
+                    <VLine left="25%" top="280px" height="70px" active={step>=7} color="rose" />
+                    <Arrow left="25%" top="315px" dir="down" active={step>=7} color="rose" />
 
-                    <HLine left="25%" width="50%" top="390px" active={step>=7} color="rose" />
-                    <Arrow left="50%" top="390px" dir="right" active={step>=7} color="rose" />
+                    <HLine left="25%" width="50%" top="350px" active={step>=7} color="rose" />
+                    <Arrow left="50%" top="350px" dir="right" active={step>=7} color="rose" />
 
-                    <VLine left="75%" top="260px" height="130px" active={step>=7} color="emerald" />
-                    <Arrow left="75%" top="325px" dir="down" active={step>=7} color="emerald" />
+                    <VLine left="75%" top="220px" height="130px" active={step>=7} color="emerald" />
+                    <Arrow left="75%" top="285px" dir="down" active={step>=7} color="emerald" />
 
-                    <VLine left="75%" top="390px" height="90px" active={step>=7} color="emerald" />
-                    <Arrow left="75%" top="435px" dir="down" active={step>=7} color="emerald" />
+                    <VLine left="75%" top="350px" height="90px" active={step>=7} color="emerald" />
+                    <Arrow left="75%" top="395px" dir="down" active={step>=7} color="emerald" />
 
-                    <HLine left="45%" width="30%" top="480px" active={step>=8} color="emerald" />
-                    <Arrow left="60%" top="480px" dir="left" active={step>=8} color="emerald" />
+                    <HLine left="45%" width="30%" top="440px" active={step>=8} color="emerald" />
+                    <Arrow left="60%" top="440px" dir="left" active={step>=8} color="emerald" />
 
-                    <HLine left="10%" width="35%" top="480px" active={step>=8} color="indigo" />
-                    <Arrow left="27%" top="480px" dir="left" active={step>=8} color="indigo" />
+                    <HLine left="10%" width="35%" top="440px" active={step>=8} color="indigo" />
+                    <Arrow left="27%" top="440px" dir="left" active={step>=8} color="indigo" />
 
-                    <VLine left="10%" top="480px" height="80px" active={step>=8} color="blue" />
-                    <Arrow left="10%" top="520px" dir="down" active={step>=8} color="blue" />
+                    <VLine left="10%" top="440px" height="80px" active={step>=8} color="blue" />
+                    <Arrow left="10%" top="480px" dir="down" active={step>=8} color="blue" />
 
-                    {/* ====== 张量实体与算子层 (Y坐标全翻转) ====== */}
-                    <LayeredTensor label={<span>H<sub>in</sub></span>} dim="[B, L, HC, D]" color="blue" active={step>=6} left="10%" top="80px" wClass="w-12" hClass="h-16" badgePos="-top-6 left-1/2 -translate-x-1/2" />
-                    <SplicedFlatTensor label={<span>E<sub>t</sub></span>} dim="[B, L, E_D]" active={step>=5} left="75%" top="80px" wClass="w-24" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
+                    {/* ====== 张量实体与算子层 (Y坐标全翻转并减40) ====== */}
+                    <LayeredTensor label={<span>H<sub>in</sub></span>} dim="[B, L, HC, D]" color="blue" active={step>=6} left="10%" top="40px" wClass="w-12" hClass="h-16" badgePos="-top-6 left-1/2 -translate-x-1/2" />
+                    <SplicedFlatTensor label={<span>E<sub>t</sub></span>} dim="[B, L, E_D]" active={step>=5} left="75%" top="40px" wClass="w-24" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
 
-                    <LayeredTensor label={<span>W<sub>K</sub></span>} dim="[HC, E_D, D]" color="amber" active={step>=6} left="33%" top="180px" wClass="w-12" hClass="h-24" badgePos="-left-[85px] top-1/2 -translate-y-1/2" />
-                    <OpNode label="⊗" subLabel="MatMul" subLabelPos="right" isCircle active={step>=6} color="amber" left="45%" top="180px" textClass="text-xl" />
+                    <LayeredTensor label={<span>W<sub>K</sub></span>} dim="[HC, E_D, D]" color="amber" active={step>=6} left="33%" top="140px" wClass="w-12" hClass="h-24" badgePos="-left-[85px] top-1/2 -translate-y-1/2" />
+                    <OpNode label="⊗" subLabel="MatMul" subLabelPos="right" isCircle active={step>=6} color="amber" left="45%" top="140px" textClass="text-xl" />
                     
-                    <OpNode label="⊗" subLabel="MatMul" subLabelPos="left" isCircle active={step>=6} color="emerald" left="75%" top="180px" textClass="text-xl" />
-                    <FlatTensor label={<span>W<sub>V</sub></span>} dim="[E_D, D]" color="emerald" active={step>=6} left="87%" top="180px" wClass="w-12" hClass="h-24" badgePos="-right-[65px] top-1/2 -translate-y-1/2" />
+                    <OpNode label="⊗" subLabel="MatMul" subLabelPos="left" isCircle active={step>=6} color="emerald" left="75%" top="140px" textClass="text-xl" />
+                    <FlatTensor label={<span>W<sub>V</sub></span>} dim="[E_D, D]" color="emerald" active={step>=6} left="87%" top="140px" wClass="w-12" hClass="h-24" badgePos="-right-[65px] top-1/2 -translate-y-1/2" />
 
-                    <LayeredTensor label={<span>K<sub>t</sub></span>} dim="[B, L, HC, D]" color="amber" active={step>=6} left="45%" top="260px" wClass="w-12" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
-                    <FlatTensor label={<span>V<sub>t</sub></span>} dim="[B, L, D]" color="emerald" active={step>=6} left="75%" top="260px" wClass="w-12" hClass="h-16" badgePos="-right-[65px] top-1/2 -translate-y-1/2" />
+                    <LayeredTensor label={<span>K<sub>t</sub></span>} dim="[B, L, HC, D]" color="amber" active={step>=6} left="45%" top="220px" wClass="w-12" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
+                    <FlatTensor label={<span>V<sub>t</sub></span>} dim="[B, L, D]" color="emerald" active={step>=6} left="75%" top="220px" wClass="w-12" hClass="h-16" badgePos="-right-[65px] top-1/2 -translate-y-1/2" />
 
-                    <OpNode label="RMSNorm" active={step>=7} color="blue" left="17%" top="320px" textClass="text-[9px]" />
-                    <OpNode label="∑" subLabel="Dot ➔ sgn√ ➔ σ" subLabelPos="top" isCircle active={step>=7} color="rose" left="25%" top="320px" textClass="text-xl" />
-                    <OpNode label="RMSNorm" active={step>=7} color="amber" left="35%" top="320px" textClass="text-[9px]" />
+                    <OpNode label="RMSNorm" active={step>=7} color="blue" left="17%" top="280px" textClass="text-[9px]" />
+                    <OpNode label="∑" subLabel="Dot ➔ sgn√ ➔ σ" subLabelPos="top" isCircle active={step>=7} color="rose" left="25%" top="280px" textClass="text-xl" />
+                    <OpNode label="RMSNorm" active={step>=7} color="amber" left="35%" top="280px" textClass="text-[9px]" />
 
-                    <LayeredTensor label={<span>α<sub>t</sub></span>} dim="[B, L, HC, 1]" color="rose" active={step>=7} left="25%" top="390px" wClass="w-6" hClass="h-16" badgePos="-left-[80px] top-1/2 -translate-y-1/2" />
-                    <OpNode label="×" subLabel="Broadcast" subLabelPos="right" isCircle active={step>=7} color="emerald" left="75%" top="390px" textClass="text-xl" />
+                    <LayeredTensor label={<span>α<sub>t</sub></span>} dim="[B, L, HC, 1]" color="rose" active={step>=7} left="25%" top="350px" wClass="w-6" hClass="h-16" badgePos="-left-[80px] top-1/2 -translate-y-1/2" />
+                    <OpNode label="×" subLabel="Broadcast" subLabelPos="right" isCircle active={step>=7} color="emerald" left="75%" top="350px" textClass="text-xl" />
 
-                    <LayeredTensor label={<span>Ṽ<sub>t</sub></span>} dim="[B, L, HC, D]" color="emerald" active={step>=7} left="75%" top="480px" wClass="w-12" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
+                    <LayeredTensor label={<span>Ṽ<sub>t</sub></span>} dim="[B, L, HC, D]" color="emerald" active={step>=7} left="75%" top="440px" wClass="w-12" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
 
-                    <div className={`absolute flex flex-col items-center justify-center transition-all duration-500 z-20 ${step >= 8 ? 'scale-110' : 'scale-90 opacity-60'}`} style={{ left: '45%', top: '480px', transform: 'translate(-50%, -50%)' }}>
+                    <div className={`absolute flex flex-col items-center justify-center transition-all duration-500 z-20 ${step >= 8 ? 'scale-110' : 'scale-90 opacity-60'}`} style={{ left: '45%', top: '440px', transform: 'translate(-50%, -50%)' }}>
                        <div className={`w-36 h-12 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.5)] border-2 flex flex-col items-center justify-center transition-colors duration-500 ${step >= 8 ? 'bg-indigo-600 border-indigo-400 text-white' : 'bg-slate-50 border-slate-300 text-slate-400 shadow-none'}`}>
                           <div className="flex gap-1 mb-1">
                              <span className={`text-[8px] px-1 py-0.5 rounded ${step >= 8 ? 'bg-indigo-400' : 'bg-slate-200 text-slate-500'}`}>RMSNorm</span>
@@ -638,9 +640,9 @@ const App = () => {
                        <DimBadge text="[B, L, HC, D]" active={step >= 8} posClasses="-bottom-6 left-1/2 -translate-x-1/2" />
                     </div>
 
-                    <OpNode label="+" subLabel="Residual" subLabelPos="left" isCircle active={step>=8} color="blue" left="10%" top="480px" textClass="text-xl" />
+                    <OpNode label="+" subLabel="Residual" subLabelPos="left" isCircle active={step>=8} color="blue" left="10%" top="440px" textClass="text-xl" />
                     
-                    <LayeredTensor label={<span>H<sub>out</sub></span>} dim="[B, L, HC, D]" color="blue" active={step>=8} left="10%" top="560px" wClass="w-12" hClass="h-16" badgePos="-bottom-6 left-1/2 -translate-x-1/2" />
+                    <LayeredTensor label={<span>H<sub>out</sub></span>} dim="[B, L, HC, D]" color="blue" active={step>=8} left="10%" top="520px" wClass="w-12" hClass="h-16" badgePos="-bottom-6 left-1/2 -translate-x-1/2" />
                 </div>
              </div>
 
