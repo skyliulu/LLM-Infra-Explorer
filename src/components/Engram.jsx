@@ -3,11 +3,172 @@ import {
   Database, Cpu, Combine, Hash, ArrowRight, ArrowDown, ArrowUp, ArrowLeft,
   Layers, BrainCircuit, Play, Pause, SkipForward, RotateCcw, 
   Activity, SlidersHorizontal, BookOpen, Server, Network, 
-  Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2
+  Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2, Globe
 } from 'lucide-react';
 
 const MAX_GPUS = 16;
 const Big = ({ children }) => <span className="text-lg align-middle">{children}</span>;
+
+// --- 国际化双语字典 ---
+const i18n = {
+  zh: {
+    title: "DeepSeek Engram 架构可视化",
+    subtitle: "条件记忆检索、微观张量流与硬件系统级预取过程演示",
+    reset: "重置",
+    play: "播放",
+    pause: "暂停",
+    next: "下一步",
+    langToggle: "EN",
+    topoTitle: "网络拓扑结构",
+    flowTitle: "Engram微观张量流图",
+    codeTitle: "Python Tracer",
+    timelineTitle: "硬件系统级异步预取时间轴",
+    mathTitle: "Engram 数学原理与维度推导",
+    // Steps
+    step0: "等待输入",
+    step1: "步骤 1: 滑动窗口提取 N-Gram",
+    step2: "步骤 2: 位异或与哈希取模",
+    step3: "步骤 3: 确定槽位并行查表",
+    step4: "步骤 4: 提取多通道记忆向量",
+    step5: "步骤 5: 维度展平为 E_t",
+    step6: "步骤 6: 张量投影 K_t / V_t",
+    step7: "步骤 7: 依赖建模与动态门控",
+    step8: "步骤 8: 规范化卷积残差融合",
+    step9: "步骤 9: 传递至后续 Block",
+    // Glossary
+    batchSize: "Batch Size",
+    seqLen: "Seq Len",
+    hiddenDim: "Hidden Dim",
+    hyperConn: "Hyper-Conn",
+    engramDim: "Engram Dim",
+    headDim: "Head Dim",
+    hashSize: "Hash Size",
+    // Labels
+    tokenizerCompression: "Tokenizer Compression & N-Gram Sliding Window",
+    gramContext: "Context",
+    gram: "Gram",
+    multiHeadHash: "Multi-Head Hash Retrieval",
+    channel: "Channel",
+    flatten: "Flatten (⨁)",
+    gating: "Context-aware Gating",
+    matmul: "MatMul",
+    dotSign: "Dot ➔ sgn√ ➔ σ",
+    broadcast: "Broadcast",
+    residual: "Residual",
+    // Timeline
+    t0: "T₀ 序列输入",
+    t1: "T₁ 异步并行预取",
+    t2: "T₂ 通信与同步",
+    t3: "T₃ 特征融合",
+    dataPrep: "数据准备",
+    calcHash: "计算 Hash 与并行查表 (T1)",
+    pcieTx: "PCIe 异步传输",
+    precedingBlock: "前置 Transformer Block 计算 (完全掩盖 CPU 传输延迟)",
+    gatedFusion: "Engram 门控融合",
+    subsequentComp: "后续计算",
+    // Code Comments
+    c1: "# 1. 滑动窗口提取多尺度 N-Gram 上下文",
+    c2: "# 2. 深度展开: 多头异或哈希计算",
+    c3: "# 逐位异或混合 Token 与随机乘子",
+    c4: "# 多头并行素数取模",
+    c5: "# 3~4. 并行查表提取头向量",
+    c6: "# 5. 维度展平汇聚",
+    c7: "# 6~7. 依赖建模与动态门控",
+    c8: "# 8. 跨时间步平滑与残差相加",
+    c9: "# 9. 融合输出传递",
+    // Math
+    p1Title: "Phase 1 记忆路由与特征检索",
+    p1Desc: "获取后缀 N-Gram，并通过多头乘法异或定位内存槽位，直接展平无需线性层。",
+    p2Title: "Phase 2 依赖建模与动态门控",
+    p2Desc: "按 Hyper-Connection(HC) 切分。引入双侧 RMSNorm 与 sgn(x)√|x| 平方根缩放解决内积数值爆炸。",
+    p2Where: "其中",
+    p3Title: "Phase 3 时序平滑与状态融合",
+    p3Desc: "门控后的特征序列再经过组内 RMSNorm 后，送入短上下文 1D 卷积进行平滑与残差相加。",
+  },
+  en: {
+    title: "DeepSeek Engram Architecture Vis",
+    subtitle: "Conditional Memory Retrieval, Micro Tensor Flow & Async Prefetching",
+    reset: "Reset",
+    play: "Play",
+    pause: "Pause",
+    next: "Next",
+    langToggle: "中文",
+    topoTitle: "Network Topology",
+    flowTitle: "Engram Micro Tensor Flow",
+    codeTitle: "Python Tracer",
+    timelineTitle: "Hardware Async Prefetch Timeline",
+    mathTitle: "Engram Math Principles & Dimensions",
+    // Steps
+    step0: "Waiting for Input",
+    step1: "Step 1: Sliding Window N-Gram Extraction",
+    step2: "Step 2: Bitwise XOR & Hash Modulo",
+    step3: "Step 3: Parallel Table Lookup",
+    step4: "Step 4: Extract Multi-channel Memory",
+    step5: "Step 5: Flatten Dimensions to E_t",
+    step6: "Step 6: Tensor Projection K_t / V_t",
+    step7: "Step 7: Dependency Modeling & Gating",
+    step8: "Step 8: Norm Conv & Residual Fusion",
+    step9: "Step 9: Pass to Subsequent Block",
+    // Glossary
+    batchSize: "Batch Size",
+    seqLen: "Seq Len",
+    hiddenDim: "Hidden Dim",
+    hyperConn: "Hyper-Conn",
+    engramDim: "Engram Dim",
+    headDim: "Head Dim",
+    hashSize: "Hash Size",
+    // Labels
+    tokenizerCompression: "Tokenizer Compression & N-Gram Sliding Window",
+    gramContext: "Context",
+    gram: "Gram",
+    multiHeadHash: "Multi-Head Hash Retrieval",
+    channel: "Channel",
+    flatten: "Flatten (⨁)",
+    gating: "Context-aware Gating",
+    matmul: "MatMul",
+    dotSign: "Dot ➔ sgn√ ➔ σ",
+    broadcast: "Broadcast",
+    residual: "Residual",
+    // Timeline
+    t0: "T₀ Sequence Input",
+    t1: "T₁ Async Parallel Prefetch",
+    t2: "T₂ Comm & Sync",
+    t3: "T₃ Feature Fusion",
+    dataPrep: "Data Prep",
+    calcHash: "Hash Calc & Lookup (T1)",
+    pcieTx: "PCIe Async Transfer",
+    precedingBlock: "Preceding Transformer Block Comp (Fully hides PCIe latency)",
+    gatedFusion: "Engram Gated Fusion",
+    subsequentComp: "Subsequent Comp",
+    // Code Comments
+    c1: "# 1. Extract multi-scale N-Gram context via sliding window",
+    c2: "# 2. Deep Expansion: Multi-head XOR hash calculation",
+    c3: "# Bitwise XOR mixing of tokens and random multipliers",
+    c4: "# Parallel prime modulo across heads",
+    c5: "# 3~4. Parallel table lookup to extract head vectors",
+    c6: "# 5. Dimensional flattening & concatenation",
+    c7: "# 6~7. Dependency modeling & dynamic gating",
+    c8: "# 8. Cross-timestep smoothing & residual addition",
+    c9: "# 9. Forward fused output",
+    // Math
+    p1Title: "Phase 1 Memory Routing & Feature Retrieval",
+    p1Desc: "Obtain suffix N-Grams, locate memory slots via multi-head multiplicative XOR, and flatten directly without linear layers.",
+    p2Title: "Phase 2 Dependency Modeling & Dynamic Gating",
+    p2Desc: "Sliced by Hyper-Connection (HC). Bilateral RMSNorm and sgn(x)√|x| scaling are introduced to solve dot product explosion.",
+    p2Where: "Where",
+    p3Title: "Phase 3 Temporal Smoothing & State Fusion",
+    p3Desc: "The gated sequence passes through intra-group RMSNorm, then into a short-context 1D conv for smoothing and residual addition.",
+  }
+};
+
+// 获取系统默认语言
+const getInitialLang = () => {
+  if (typeof navigator !== 'undefined') {
+    const browserLang = navigator.language || navigator.userLanguage;
+    return browserLang.toLowerCase().includes('zh') ? 'zh' : 'en';
+  }
+  return 'en';
+};
 
 // --- 样式映射助手 ---
 const getTensorColors = (color, active) => {
@@ -131,6 +292,10 @@ const App = () => {
   const [step, setStep] = useState(0); 
   const [isPlaying, setIsPlaying] = useState(false);
   const [slideIdx, setSlideIdx] = useState(2);
+  const [lang, setLang] = useState(getInitialLang());
+  
+  const t = (key) => i18n[lang][key] || key;
+
   const tokens = ['[BOS]', 'Only', 'Alexander', 'the', 'Great', 'could', 'tame'];
 
   useEffect(() => {
@@ -141,21 +306,36 @@ const App = () => {
         timer = setTimeout(() => setStep(s => s + 1), delays[step + 1] || 2000); 
       } else if (step === 9) {
         timer = setTimeout(() => {
-          setSlideIdx(prev => prev >= tokens.length - 1 ? 2 : prev + 1);
-          setStep(1);
+          if (slideIdx >= tokens.length - 1) {
+            // 已经是最后一个 token，停止播放
+            setIsPlaying(false);
+          } else {
+            // 处理下一个 token
+            setSlideIdx(prev => prev + 1);
+            setStep(1);
+          }
         }, 2500); 
       }
     }
     return () => clearTimeout(timer);
-  }, [isPlaying, step, tokens.length]);
+  }, [isPlaying, step, slideIdx, tokens.length]);
 
   const togglePlay = () => {
-    if (!isPlaying && step >= 9) {
-      setSlideIdx(prev => prev >= tokens.length - 1 ? 2 : prev + 1);
-      setStep(1);
-      setIsPlaying(true);
+    if (!isPlaying) {
+      if (step === 9 && slideIdx >= tokens.length - 1) {
+        // 如果在结束状态点击播放，重置并重新开始
+        setSlideIdx(2);
+        setStep(1);
+        setIsPlaying(true);
+      } else if (step === 9) {
+        setSlideIdx(prev => prev + 1);
+        setStep(1);
+        setIsPlaying(true);
+      } else {
+        setIsPlaying(true);
+      }
     } else {
-      setIsPlaying(!isPlaying);
+      setIsPlaying(false);
     }
   };
 
@@ -164,25 +344,23 @@ const App = () => {
     if(step < 9) {
       setStep(step + 1);
     } else {
-      setSlideIdx(prev => prev >= tokens.length - 1 ? 2 : prev + 1);
-      setStep(1);
+      if (slideIdx >= tokens.length - 1) {
+        // 如果在结束状态点击下一步，重置到初始界面
+        setSlideIdx(2);
+        setStep(0);
+      } else {
+        setSlideIdx(prev => prev + 1);
+        setStep(1);
+      }
     }
   };
 
   const getStepDesc = () => {
-    switch(step) {
-      case 0: return "等待输入";
-      case 1: return "步骤 1: 滑动窗口提取 N-Gram";
-      case 2: return "步骤 2: 位异或与哈希取模";
-      case 3: return "步骤 3: 确定槽位并行查表";
-      case 4: return "步骤 4: 提取多通道记忆向量";
-      case 5: return "步骤 5: 维度展平为 E_t";
-      case 6: return "步骤 6: 张量投影 K_t / V_t";
-      case 7: return "步骤 7: 依赖建模与动态门控";
-      case 8: return "步骤 8: 规范化卷积残差融合";
-      case 9: return "步骤 9: 传递至后续 Block";
-      default: return "";
-    }
+    return t(`step${step}`);
+  };
+
+  const toggleLang = () => {
+    setLang(lang === 'zh' ? 'en' : 'zh');
   };
 
   // --- 权重模块联动高亮状态逻辑 ---
@@ -207,21 +385,24 @@ const App = () => {
           <div>
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-slate-900">
               <Database className="text-purple-600" />
-              DeepSeek Engram 架构可视化
+              {t('title')}
             </h1>
             <p className="text-slate-500 text-sm mt-1">
-              条件记忆检索、微观张量流与硬件系统级预取过程演示
+              {t('subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-3">
-             <button onClick={() => { setIsPlaying(false); setStep(0); setSlideIdx(2); }} className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition tooltip" title="重置">
+             <button onClick={toggleLang} className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition font-bold text-sm mr-2 shadow-sm">
+                <Globe size={16} /> {t('langToggle')}
+             </button>
+             <button onClick={() => { setIsPlaying(false); setStep(0); setSlideIdx(2); }} className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition tooltip" title={t('reset')}>
                 <RotateCcw size={18} />
              </button>
              <button onClick={togglePlay} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-white transition shadow-sm ${isPlaying ? 'bg-rose-500 hover:bg-rose-600' : 'bg-purple-600 hover:bg-purple-700'}`}>
-                {isPlaying ? <><Pause size={18} /> 暂停</> : <><Play size={18} /> 播放</>}
+                {isPlaying ? <><Pause size={18} /> {t('pause')}</> : <><Play size={18} /> {t('play')}</>}
              </button>
              <button onClick={handleNextStep} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-purple-50 hover:text-purple-700 transition shadow-sm font-semibold whitespace-nowrap">
-                <SkipForward size={18} /> 下一步
+                <SkipForward size={18} /> {t('next')}
              </button>
           </div>
         </div>
@@ -230,11 +411,11 @@ const App = () => {
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
           
           {/* 1. 网络拓扑结构 (自上而下翻转) */}
-          <div className="xl:col-span-2 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col">
+          <div className="xl:col-span-2 bg-white rounded-2xl p-4 md:p-5 border border-slate-200 shadow-sm flex flex-col">
             <div className="flex items-center mb-4 pb-3 border-b border-slate-100">
-               <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
-                 <Network className="text-indigo-500" size={20}/> 
-                 网络拓扑结构
+               <h2 className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800 whitespace-nowrap">
+                 <Network className="text-indigo-500 shrink-0" size={20}/> 
+                 {t('topoTitle')}
                </h2>
             </div>
             
@@ -242,12 +423,12 @@ const App = () => {
               
               {/* Input Tokens */}
               <div className="flex gap-1 justify-center w-full flex-wrap px-1">
-                {tokens.map((t, i) => {
+                {tokens.map((t_str, i) => {
                   const isCurrentToken = step > 0 && i === slideIdx;
                   return (
                     <span key={i} className={`text-[9px] px-1.5 py-0.5 rounded transition-all duration-300 border
                       ${isCurrentToken ? 'bg-rose-500 border-rose-600 text-white shadow-md scale-110 font-bold z-10' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
-                      {t === '[BOS]' ? 'BOS' : t}
+                      {t_str === '[BOS]' ? 'BOS' : t_str}
                     </span>
                   )
                 })}
@@ -277,7 +458,7 @@ const App = () => {
               {/* Block 1 (w/ Engram) */}
               <div className={`border-2 rounded-xl p-2.5 w-full relative transition-all duration-500
                  ${isBlock1Active ? 'border-purple-400 bg-purple-50 shadow-[0_0_15px_rgba(168,85,247,0.4)] scale-[1.02] opacity-100' : 'border-slate-200 bg-slate-50 opacity-60'}`}>
-                <div className={`text-[11px] font-bold mb-2 text-center flex items-center justify-center gap-1 transition-colors
+                <div className={`text-[11px] font-bold mb-2 text-center flex items-center justify-center gap-1 transition-colors whitespace-nowrap
                    ${isBlock1Active ? 'text-purple-800' : 'text-slate-500'}`}>
                    <Server size={12}/> Block 1 (w/ Engram)
                 </div>
@@ -289,16 +470,16 @@ const App = () => {
                 
                 <div className={`border rounded-lg p-2 shadow-inner transition-all duration-500 relative
                    ${isBlock1Active ? 'border-purple-300 bg-white' : 'border-slate-200 bg-slate-100/50'}`}>
-                   <div className={`text-[10px] font-bold text-center mb-1.5 border-b pb-1 flex items-center justify-center gap-1 transition-colors
+                   <div className={`text-[10px] font-bold text-center mb-1.5 border-b pb-1 flex items-center justify-center gap-1 transition-colors whitespace-nowrap
                       ${isBlock1Active ? 'text-purple-700 border-purple-100' : 'text-slate-400 border-slate-200'}`}>
                      <BrainCircuit size={10}/> Engram Modules
                    </div>
-                   <div className="grid grid-cols-2 gap-1.5 text-[8.5px] font-mono font-bold">
-                      <div className={`transition-all duration-300 p-1 rounded text-center flex items-center justify-center ${isEmbActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-[0_0_10px_rgba(79,70,229,0.5)] scale-105 z-10' : 'bg-indigo-50 border border-indigo-200 text-indigo-700'}`} title="MultiHeadEmbedding">Emb Table</div>
-                      <div className={`transition-all duration-300 p-1 rounded text-center flex items-center justify-center ${isProjActive ? 'bg-emerald-600 text-white border-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.5)] scale-105 z-10' : 'bg-emerald-50 border border-emerald-200 text-emerald-700'}`} title="value_proj">W_V Proj</div>
-                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center leading-tight ${isProjActive ? 'bg-amber-600 text-white border-amber-600 shadow-[0_0_10px_rgba(217,119,6,0.5)] scale-105 z-10' : 'bg-amber-50 border border-amber-200 text-amber-700'}`} title="key_projs (ModuleList)">W_K Projs (x HC)</div>
-                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center leading-tight ${isConvActive ? 'bg-blue-600 text-white border-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.5)] scale-105 z-10' : 'bg-blue-50 border border-blue-200 text-blue-700'}`} title="short_conv">Conv1D Weights</div>
-                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center ${isNormActive ? 'bg-slate-700 text-white border-slate-700 shadow-[0_0_10px_rgba(51,65,85,0.5)] scale-105 z-10' : 'bg-slate-50 border border-slate-200 text-slate-600'}`} title="norm1 & norm2">RMSNorm Params</div>
+                   <div className="grid grid-cols-2 gap-1.5 text-[8px] xl:text-[8.5px] font-mono font-bold">
+                      <div className={`transition-all duration-300 p-1 rounded text-center flex items-center justify-center whitespace-nowrap ${isEmbActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-[0_0_10px_rgba(79,70,229,0.5)] scale-105 z-10' : 'bg-indigo-50 border border-indigo-200 text-indigo-700'}`} title="MultiHeadEmbedding">Emb Table</div>
+                      <div className={`transition-all duration-300 p-1 rounded text-center flex items-center justify-center whitespace-nowrap ${isProjActive ? 'bg-emerald-600 text-white border-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.5)] scale-105 z-10' : 'bg-emerald-50 border border-emerald-200 text-emerald-700'}`} title="value_proj">W_V Proj</div>
+                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center leading-tight whitespace-nowrap ${isProjActive ? 'bg-amber-600 text-white border-amber-600 shadow-[0_0_10px_rgba(217,119,6,0.5)] scale-105 z-10' : 'bg-amber-50 border border-amber-200 text-amber-700'}`} title="key_projs (ModuleList)">W_K Projs (x HC)</div>
+                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center leading-tight whitespace-nowrap ${isConvActive ? 'bg-blue-600 text-white border-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.5)] scale-105 z-10' : 'bg-blue-50 border border-blue-200 text-blue-700'}`} title="short_conv">Conv1D Weights</div>
+                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center whitespace-nowrap ${isNormActive ? 'bg-slate-700 text-white border-slate-700 shadow-[0_0_10px_rgba(51,65,85,0.5)] scale-105 z-10' : 'bg-slate-50 border border-slate-200 text-slate-600'}`} title="norm1 & norm2">RMSNorm Params</div>
                    </div>
                 </div>
               </div>
@@ -329,7 +510,7 @@ const App = () => {
            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 min-w-[700px]">
              <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
                <BrainCircuit className="text-purple-600" size={20}/>
-               Engram微观张量流图
+               {t('flowTitle')}
              </h2>
              <span className="text-xs px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full font-bold border border-purple-200 shadow-sm transition-all duration-300">
                {getStepDesc()}
@@ -337,14 +518,14 @@ const App = () => {
            </div>
 
            {/* 全局维度图例 */}
-           <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center bg-slate-100 p-2 rounded-xl border border-slate-200 text-[10px] font-mono text-slate-600 mb-6 w-full max-w-4xl mx-auto shadow-inner min-w-[700px]">
-             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">B</span> Batch Size</div>
-             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">L</span> Seq Len</div>
-             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">D</span> Hidden Dim</div>
-             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">HC</span> Hyper-Conn</div>
-             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">E_D</span> Engram Dim</div>
-             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">D_h</span> Head Dim</div>
-             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">Vocab</span> Hash Size</div>
+           <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center bg-slate-100 p-2 rounded-xl border border-slate-200 text-[10px] font-mono text-slate-600 mb-6 w-full max-w-4xl mx-auto shadow-inner min-w-[700px]">
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">B</span> {t('batchSize')}</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">L</span> {t('seqLen')}</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">D</span> {t('hiddenDim')}</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">HC</span> {t('hyperConn')}</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">E_D</span> {t('engramDim')}</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">D_h</span> {t('headDim')}</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">Vocab</span> {t('hashSize')}</div>
            </div>
 
            <div className="flex-1 flex flex-col items-center relative w-full min-w-[700px]">
@@ -356,7 +537,7 @@ const App = () => {
                 ${step >= 1 ? 'border-blue-200' : 'border-slate-200'}`}>
                 
                 <div className="absolute -top-3 left-6 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm z-40">
-                  Tokenizer Compression & N-Gram Sliding Window
+                  {t('tokenizerCompression')}
                 </div>
 
                 <div className="flex items-center justify-end mb-3">
@@ -376,7 +557,7 @@ const App = () => {
                                 <div className={`absolute bottom-0 w-full h-1.5 bg-indigo-200 ${i === slideIdx - 2 ? 'rounded-l-md' : ''} ${i === slideIdx ? 'rounded-r-md' : ''}`}></div>
                               )}
                               {i === slideIdx - 1 && is3Gram && (
-                                <span className="absolute bottom-2 w-[200%] left-1/2 -translate-x-1/2 text-center text-[9px] font-bold text-indigo-600">3-Gram Context</span>
+                                <span className="absolute bottom-2 w-[200%] left-1/2 -translate-x-1/2 text-center text-[9px] font-bold text-indigo-600 whitespace-nowrap">3-{t('gramContext')}</span>
                               )}
                            </div>
 
@@ -394,7 +575,7 @@ const App = () => {
                                 <div className={`absolute top-0 w-full h-1.5 bg-purple-200 ${i === slideIdx - 1 ? 'rounded-l-md' : ''} ${i === slideIdx ? 'rounded-r-md' : ''}`}></div>
                               )}
                               {i === slideIdx && is2Gram && (
-                                <span className="absolute top-2 w-[200%] right-1/2 translate-x-1/2 text-center text-[9px] font-bold text-purple-600">2-Gram</span>
+                                <span className="absolute top-2 w-[200%] right-1/2 translate-x-1/2 text-center text-[9px] font-bold text-purple-600">2-{t('gram')}</span>
                               )}
                            </div>
                         </div>
@@ -420,13 +601,13 @@ const App = () => {
              <div className={`w-full max-w-4xl border rounded-2xl px-2 py-5 transition-all duration-700 relative z-20
                 ${step >= 2 ? 'bg-slate-50 border-indigo-200 shadow-md' : 'bg-slate-50/50 border-slate-200 opacity-50'}`}>
                 <div className="absolute -top-3 left-6 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm z-30">
-                  Multi-Head Hash Retrieval
+                  {t('multiHeadHash')}
                 </div>
 
                 <div className="flex w-full mt-3">
                   {[
-                    { title: "2-Gram", n: 2, color: "indigo" },
-                    { title: "3-Gram", n: 3, color: "purple" },
+                    { title: `2-${t('gram')} ${t('channel')}`, n: 2, color: "indigo" },
+                    { title: `3-${t('gram')} ${t('channel')}`, n: 3, color: "purple" },
                   ].map((item, idx) => {
                     const isHashActive = step >= 2;
                     const isTableActive = step >= 3;
@@ -438,7 +619,7 @@ const App = () => {
                     return (
                       <div key={idx} className={`w-1/2 rounded-xl p-3 mx-3 shadow-sm flex flex-col items-center transition-all duration-500
                         ${isHashActive ? `bg-${item.color}-50 border border-${item.color}-300` : 'bg-white border border-slate-200 opacity-60'}`}>
-                         <div className={`text-xs font-bold mb-3 transition-colors ${isHashActive ? lColor.text : 'text-slate-500'}`}>{item.title} Channel</div>
+                         <div className={`text-xs font-bold mb-3 transition-colors ${isHashActive ? lColor.text : 'text-slate-500'}`}>{item.title}</div>
                          
                          {/* ====== 顶部：倒置重构的哈希管道层 ====== */}
                          <div className="w-full flex flex-col relative mt-1 mb-2">
@@ -498,7 +679,7 @@ const App = () => {
                          <div className="w-full flex flex-col items-center relative">
                            <div className={`relative w-[90%] flex items-center justify-center gap-1.5 bg-white border rounded py-1 shadow-sm z-10 transition-all duration-500 mb-0.5
                              ${isConcatActive ? `border-${item.color}-300 scale-105 shadow-[0_0_10px_currentColor] ${lColor.text}` : 'border-slate-300 text-slate-400'}`}>
-                             <span className="text-[10px] font-bold"><FunctionSquare size={10} className="inline mr-1 -mt-0.5"/>Flatten (⨁)</span>
+                             <span className="text-[10px] font-bold"><FunctionSquare size={10} className="inline mr-1 -mt-0.5"/>{t('flatten')}</span>
                              <DimBadge text="[B, L, E_D]" active={isConcatActive} posClasses="-right-16 top-1/2 -translate-y-1/2" />
                            </div>
 
@@ -540,7 +721,7 @@ const App = () => {
                 ${step >= 6 ? 'bg-slate-50 border-blue-200 shadow-md' : 'bg-slate-50/50 border-slate-200 opacity-40'}`}>
                 
                 <div className="absolute -top-3 left-6 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm z-40">
-                  Context-aware Gating
+                  {t('gating')}
                 </div>
 
                 <div className="relative w-full h-[560px] mt-2">
@@ -612,20 +793,20 @@ const App = () => {
                     <SplicedFlatTensor label={<span>E<sub>t</sub></span>} dim="[B, L, E_D]" active={step>=5} left="75%" top="40px" wClass="w-24" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
 
                     <LayeredTensor label={<span>W<sub>K</sub></span>} dim="[HC, E_D, D]" color="amber" active={step>=6} left="33%" top="140px" wClass="w-12" hClass="h-24" badgePos="-left-[85px] top-1/2 -translate-y-1/2" />
-                    <OpNode label="⊗" subLabel="MatMul" subLabelPos="right" isCircle active={step>=6} color="amber" left="45%" top="140px" textClass="text-xl" />
+                    <OpNode label="⊗" subLabel={t('matmul')} subLabelPos="right" isCircle active={step>=6} color="amber" left="45%" top="140px" textClass="text-xl" />
                     
-                    <OpNode label="⊗" subLabel="MatMul" subLabelPos="left" isCircle active={step>=6} color="emerald" left="75%" top="140px" textClass="text-xl" />
+                    <OpNode label="⊗" subLabel={t('matmul')} subLabelPos="left" isCircle active={step>=6} color="emerald" left="75%" top="140px" textClass="text-xl" />
                     <FlatTensor label={<span>W<sub>V</sub></span>} dim="[E_D, D]" color="emerald" active={step>=6} left="87%" top="140px" wClass="w-12" hClass="h-24" badgePos="-right-[65px] top-1/2 -translate-y-1/2" />
 
                     <LayeredTensor label={<span>K<sub>t</sub></span>} dim="[B, L, HC, D]" color="amber" active={step>=6} left="45%" top="220px" wClass="w-12" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
                     <FlatTensor label={<span>V<sub>t</sub></span>} dim="[B, L, D]" color="emerald" active={step>=6} left="75%" top="220px" wClass="w-12" hClass="h-16" badgePos="-right-[65px] top-1/2 -translate-y-1/2" />
 
                     <OpNode label="RMSNorm" active={step>=7} color="blue" left="17%" top="280px" textClass="text-[9px]" />
-                    <OpNode label="∑" subLabel="Dot ➔ sgn√ ➔ σ" subLabelPos="top" isCircle active={step>=7} color="rose" left="25%" top="280px" textClass="text-xl" />
+                    <OpNode label="∑" subLabel={t('dotSign')} subLabelPos="top" isCircle active={step>=7} color="rose" left="25%" top="280px" textClass="text-xl" />
                     <OpNode label="RMSNorm" active={step>=7} color="amber" left="35%" top="280px" textClass="text-[9px]" />
 
                     <LayeredTensor label={<span>α<sub>t</sub></span>} dim="[B, L, HC, 1]" color="rose" active={step>=7} left="25%" top="350px" wClass="w-6" hClass="h-16" badgePos="-left-[80px] top-1/2 -translate-y-1/2" />
-                    <OpNode label="×" subLabel="Broadcast" subLabelPos="right" isCircle active={step>=7} color="emerald" left="75%" top="350px" textClass="text-xl" />
+                    <OpNode label="×" subLabel={t('broadcast')} subLabelPos="right" isCircle active={step>=7} color="emerald" left="75%" top="350px" textClass="text-xl" />
 
                     <LayeredTensor label={<span>Ṽ<sub>t</sub></span>} dim="[B, L, HC, D]" color="emerald" active={step>=7} left="75%" top="440px" wClass="w-12" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
 
@@ -635,12 +816,12 @@ const App = () => {
                              <span className={`text-[8px] px-1 py-0.5 rounded ${step >= 8 ? 'bg-indigo-400' : 'bg-slate-200 text-slate-500'}`}>RMSNorm</span>
                              <span className={`text-[8px] px-1 py-0.5 rounded ${step >= 8 ? 'bg-indigo-400' : 'bg-slate-200 text-slate-500'}`}>SiLU</span>
                           </div>
-                          <span className="text-[11px] font-bold"><Activity size={10} className="inline mr-1 -mt-0.5"/>Conv1D</span>
+                          <span className="text-[11px] font-bold"><Activity size={10} className="inline mr-1 -mt-0.5"/>{t('Conv1D')}</span>
                        </div>
                        <DimBadge text="[B, L, HC, D]" active={step >= 8} posClasses="-bottom-6 left-1/2 -translate-x-1/2" />
                     </div>
 
-                    <OpNode label="+" subLabel="Residual" subLabelPos="left" isCircle active={step>=8} color="blue" left="10%" top="440px" textClass="text-xl" />
+                    <OpNode label="+" subLabel={t('residual')} subLabelPos="left" isCircle active={step>=8} color="blue" left="10%" top="440px" textClass="text-xl" />
                     
                     <LayeredTensor label={<span>H<sub>out</sub></span>} dim="[B, L, HC, D]" color="blue" active={step>=8} left="10%" top="520px" wClass="w-12" hClass="h-16" badgePos="-bottom-6 left-1/2 -translate-x-1/2" />
                 </div>
@@ -660,7 +841,7 @@ const App = () => {
                </div>
                <span className="text-slate-300 text-xs font-mono flex items-center gap-1.5"><FileCode2 size={14} className="text-blue-400"/> engram_forward.py</span>
              </div>
-             <span className="text-[9px] text-slate-500 font-mono">Python Tracer</span>
+             <span className="text-[9px] text-slate-500 font-mono">{t('codeTitle')}</span>
            </div>
            
            <div className="py-3 overflow-y-auto overflow-x-auto flex-1 custom-scrollbar">
@@ -668,7 +849,7 @@ const App = () => {
                 <span className="text-purple-400">def</span> <span className="text-blue-400">forward</span>(self, hidden_states, input_ids):
               </CodeLine>
               <CodeLine num="2" active={step === 1} indent={1}>
-                <span className="text-slate-500 italic"># 1. 滑动窗口提取多尺度 N-Gram 上下文</span>
+                <span className="text-slate-500 italic">{t('c1')}</span>
               </CodeLine>
               <CodeLine num="3" active={step === 1} indent={1}>
                 g_t = <span className="text-blue-200">dict</span>()
@@ -682,7 +863,7 @@ const App = () => {
               <CodeLine num="6" active={false} indent={0}></CodeLine>
               
               <CodeLine num="7" active={step === 2} indent={1}>
-                <span className="text-slate-500 italic"># 2. 深度展开: 多头异或哈希计算</span>
+                <span className="text-slate-500 italic">{t('c2')}</span>
               </CodeLine>
               <CodeLine num="8" active={step === 2} indent={1}>
                 hash_idx = torch.<span className="text-amber-200">zeros</span>(B, L, max_n, num_heads)
@@ -691,7 +872,7 @@ const App = () => {
                 <span className="text-purple-400">for</span> n <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(2, max_n + 1):
               </CodeLine>
               <CodeLine num="10" active={step === 2} indent={2}>
-                <span className="text-slate-500 italic"># 逐位异或混合 Token 与随机乘子</span>
+                <span className="text-slate-500 italic">{t('c3')}</span>
               </CodeLine>
               <CodeLine num="11" active={step === 2} indent={2}>
                 mix = g_t[n][0] * M[n][0]
@@ -703,7 +884,7 @@ const App = () => {
                 mix = torch.<span className="text-amber-200">bitwise_xor</span>(mix, g_t[n][i] * M[n][i])
               </CodeLine>
               <CodeLine num="14" active={step === 2} indent={2}>
-                <span className="text-slate-500 italic"># 多头并行素数取模</span>
+                <span className="text-slate-500 italic">{t('c4')}</span>
               </CodeLine>
               <CodeLine num="15" active={step === 2} indent={2}>
                 <span className="text-purple-400">for</span> k <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(num_heads):
@@ -714,7 +895,7 @@ const App = () => {
               <CodeLine num="17" active={false} indent={0}></CodeLine>
 
               <CodeLine num="18" active={step >= 3 && step <= 4} indent={1}>
-                <span className="text-slate-500 italic"># 3~4. 并行查表提取头向量</span>
+                <span className="text-slate-500 italic">{t('c5')}</span>
               </CodeLine>
               <CodeLine num="19" active={step >= 3 && step <= 4} indent={1}>
                 embeddings = []
@@ -734,7 +915,7 @@ const App = () => {
               <CodeLine num="24" active={false} indent={0}></CodeLine>
 
               <CodeLine num="25" active={step === 5} indent={1}>
-                <span className="text-slate-500 italic"># 5. 维度展平汇聚</span>
+                <span className="text-slate-500 italic">{t('c6')}</span>
               </CodeLine>
               <CodeLine num="26" active={step === 5} indent={1}>
                 E_t = torch.<span className="text-amber-200">cat</span>(embeddings, dim=-1)
@@ -742,7 +923,7 @@ const App = () => {
               <CodeLine num="27" active={false} indent={0}></CodeLine>
 
               <CodeLine num="28" active={step === 6 || step === 7} indent={1}>
-                <span className="text-slate-500 italic"># 6~7. 依赖建模与动态门控</span>
+                <span className="text-slate-500 italic">{t('c7')}</span>
               </CodeLine>
               <CodeLine num="29" active={step === 6 || step === 7} indent={1}>
                 <span className="text-purple-400">for</span> hc <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(self.hc_mult):
@@ -776,7 +957,7 @@ const App = () => {
               <CodeLine num="39" active={false} indent={0}></CodeLine>
 
               <CodeLine num="40" active={step === 8} indent={1}>
-                <span className="text-slate-500 italic"># 8. 跨时间步平滑与残差相加</span>
+                <span className="text-slate-500 italic">{t('c8')}</span>
               </CodeLine>
               <CodeLine num="41" active={step === 8} indent={1}>
                 Y = V_tilde + self.short_conv(V_tilde)
@@ -784,7 +965,7 @@ const App = () => {
               <CodeLine num="42" active={false} indent={0}></CodeLine>
 
               <CodeLine num="43" active={step === 9} indent={1}>
-                <span className="text-slate-500 italic"># 9. 融合输出传递</span>
+                <span className="text-slate-500 italic">{t('c9')}</span>
               </CodeLine>
               <CodeLine num="44" active={step === 9} indent={1}>
                 <span className="text-purple-400">return</span> Y
@@ -797,21 +978,21 @@ const App = () => {
         {/* ======================================================= */}
         {/* 第二行：时间轴 满宽 */}
         {/* ======================================================= */}
-        <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative mt-6">
-            <div className="flex items-center mb-6 pb-3 border-b border-slate-100">
+        <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative mt-6 overflow-x-auto">
+            <div className="flex items-center mb-6 pb-3 border-b border-slate-100 min-w-[700px]">
                <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
                  <Clock className="text-blue-500" size={20}/> 
-                 硬件系统级异步预取时间轴
+                 {t('timelineTitle')}
                </h2>
             </div>
             
-            <div className="flex flex-col gap-5 w-full justify-center flex-1">
+            <div className="flex flex-col gap-5 w-full justify-center flex-1 min-w-[700px]">
                {/* Timeline markers */}
                <div className="flex justify-between text-[11px] font-bold text-slate-400 pl-[90px] pr-2">
-                  <span className={`transition-colors duration-500 ${step >= 1 ? 'text-slate-700' : ''}`}>T₀ 序列输入</span>
-                  <span className={`transition-colors duration-500 ${step >= 2 ? 'text-slate-700' : ''}`}>T₁ 异步并行预取</span>
-                  <span className={`transition-colors duration-500 ${step >= 6 ? 'text-slate-700' : ''}`}>T₂ 通信与同步</span>
-                  <span className={`transition-colors duration-500 ${step >= 8 ? 'text-slate-700' : ''}`}>T₃ 特征融合</span>
+                  <span className={`transition-colors duration-500 ${step >= 1 ? 'text-slate-700' : ''}`}>{t('t0')}</span>
+                  <span className={`transition-colors duration-500 ${step >= 2 ? 'text-slate-700' : ''}`}>{t('t1')}</span>
+                  <span className={`transition-colors duration-500 ${step >= 6 ? 'text-slate-700' : ''}`}>{t('t2')}</span>
+                  <span className={`transition-colors duration-500 ${step >= 8 ? 'text-slate-700' : ''}`}>{t('t3')}</span>
                </div>
                
                {/* CPU Row */}
@@ -823,15 +1004,15 @@ const App = () => {
                   <div className="flex-1 flex gap-1 h-14 bg-slate-100/50 p-1.5 rounded-xl border border-slate-200">
                      <div className={`flex-[0.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
                         ${step === 1 ? 'bg-slate-300 text-slate-600 shadow-sm scale-[1.02]' : step > 1 ? 'bg-slate-200 text-slate-400' : 'bg-transparent text-transparent'}`}>
-                        数据准备
+                        {t('dataPrep')}
                      </div>
-                     <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                     <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] text-center px-1 font-bold transition-all duration-500 
                         ${step >= 2 && step <= 5 ? 'bg-purple-500 text-white shadow-[0_0_10px_rgba(168,85,247,0.5)] scale-[1.02] z-10' : step > 5 ? 'bg-purple-100 border border-purple-200 text-purple-400' : 'bg-transparent text-transparent'}`}>
-                        计算 Hash 与并行查表 (T1)
+                        {t('calcHash')}
                      </div>
-                     <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                     <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] text-center px-1 font-bold transition-all duration-500 
                         ${step >= 4 && step <= 5 ? 'bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.5)] animate-pulse scale-[1.02] z-10' : step > 5 ? 'bg-indigo-100 border border-indigo-200 text-indigo-400' : 'bg-transparent text-transparent'}`}>
-                        PCIe 异步传输
+                        {t('pcieTx')}
                      </div>
                      <div className="flex-[2] rounded bg-transparent border border-dashed border-slate-200"></div>
                   </div>
@@ -848,17 +1029,17 @@ const App = () => {
                         ${step === 1 ? 'bg-rose-500 text-white shadow-[0_0_10px_rgba(244,63,94,0.5)] scale-[1.02] z-10' : step > 1 ? 'bg-rose-100 border border-rose-200 text-rose-400' : 'bg-transparent text-transparent'}`}>
                         Vocab / Block 0
                      </div>
-                     <div className={`flex-[3.0] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                     <div className={`flex-[3.0] rounded flex items-center justify-center text-[10px] text-center px-1 font-bold transition-all duration-500 
                         ${step >= 2 && step <= 5 ? 'bg-amber-500 text-white shadow-[0_0_10px_rgba(245,158,11,0.5)] scale-[1.02] z-10' : step > 5 ? 'bg-amber-100 border border-amber-200 text-amber-400' : 'bg-transparent text-transparent'}`}>
-                        前置 Transformer Block 计算 (完全掩盖 CPU 传输延迟)
+                        {t('precedingBlock')}
                      </div>
-                     <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                     <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] text-center px-1 font-bold transition-all duration-500 
                         ${step >= 6 && step <= 8 ? 'bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)] scale-[1.02] z-10' : step > 8 ? 'bg-blue-100 border border-blue-200 text-blue-400' : 'bg-transparent text-transparent'}`}>
-                        Engram 门控融合
+                        {t('gatedFusion')}
                      </div>
-                     <div className={`flex-[0.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                     <div className={`flex-[0.5] rounded flex items-center justify-center text-[10px] text-center px-1 font-bold transition-all duration-500 
                         ${step === 9 ? 'bg-slate-700 text-white shadow-[0_0_10px_rgba(51,65,85,0.5)] scale-[1.02] z-10' : 'bg-transparent text-transparent border border-dashed border-slate-200'}`}>
-                        后续计算
+                        {t('subsequentComp')}
                      </div>
                   </div>
                </div>
@@ -872,21 +1053,21 @@ const App = () => {
            <div className="flex items-center mb-6 pb-3 border-b border-slate-100">
              <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
                <Calculator className="text-emerald-600" size={20}/>
-               Engram 数学原理与维度推导
+               {t('mathTitle')}
              </h2>
            </div>
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
               {/* 阶段 1 */}
               <div className="flex flex-col gap-2">
-                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 1</span> 记忆路由与特征检索</h4>
+                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] whitespace-nowrap">Phase 1</span> {t('p1Title').replace('Phase 1 ', '')}</h4>
                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                   获取后缀 N-Gram，并通过多头乘法异或定位内存槽位，直接展平无需线性层。
+                   {t('p1Desc')}
                  </p>
-                 <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-xs text-slate-700 space-y-2 shadow-sm mt-auto">
-                    <div>1. <span className="text-slate-500 ml-1">g<sub>t,n</sub> = (x'<sub>t-n+1</sub>, ..., x'<sub>t</sub>)</span></div>
-                    <div>2. <span className="text-slate-500 ml-1">H<sub>k</sub> = ⨁(g<sub>i</sub> × M<sub>i</sub>) % P<sub>k</sub></span></div>
-                    <div className="pt-2 border-t border-slate-200 text-purple-700 font-bold">
+                 <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-xs text-slate-700 space-y-2 shadow-sm mt-auto overflow-x-auto">
+                    <div className="whitespace-nowrap">1. <span className="text-slate-500 ml-1">g<sub>t,n</sub> = (x'<sub>t-n+1</sub>, ..., x'<sub>t</sub>)</span></div>
+                    <div className="whitespace-nowrap">2. <span className="text-slate-500 ml-1">H<sub>k</sub> = ⨁(g<sub>i</sub> × M<sub>i</sub>) % P<sub>k</sub></span></div>
+                    <div className="pt-2 border-t border-slate-200 text-purple-700 font-bold whitespace-nowrap">
                        E<sub>t</sub> = Flatten(E<sub>n,k</sub>[H<sub>k</sub>]) &isin; <span className="text-[10px] font-mono text-purple-500">&reals;<sup>B&times;L&times;E_D</sup></span>
                     </div>
                  </div>
@@ -894,15 +1075,15 @@ const App = () => {
 
               {/* 阶段 2 */}
               <div className="flex flex-col gap-2">
-                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 2</span> 依赖建模与动态门控</h4>
+                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] whitespace-nowrap">Phase 2</span> {t('p2Title').replace('Phase 2 ', '')}</h4>
                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                   按 Hyper-Connection(HC) 切分。引入双侧 RMSNorm 与 <span className="font-mono bg-slate-200 px-1 rounded">sgn(x)√|x|</span> 平方根缩放解决内积数值爆炸。
+                   {t('p2Desc')}
                  </p>
-                 <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-[11px] text-slate-700 space-y-2 shadow-sm mt-auto">
-                    <div>1. <span className="text-slate-500 ml-1">K<sub>t</sub><sup>(c)</sup> = W<sub>K</sub><sup>(c)</sup> E<sub>t</sub>, V<sub>t</sub> = W<sub>V</sub> E<sub>t</sub></span></div>
-                    <div className="pt-1">2. <span className="text-rose-600 font-bold ml-1">&alpha;<sub>t</sub><sup>(c)</sup> = &sigma; <Big>(</Big> sgn(x)&radic;<span className="border-l border-r border-rose-400 mx-px px-[1px]">x</span> <Big>)</Big></span></div>
-                    <div className="pl-4 text-[10px] text-slate-400">其中 <span className="text-slate-500">x = &lang;Norm(H<sub>in</sub><sup>(c)</sup>), Norm(K<sub>t</sub><sup>(c)</sup>)&rang; / &radic;D</span></div>
-                    <div className="pt-2 border-t border-slate-200 text-emerald-700 font-bold text-xs">
+                 <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-[11px] text-slate-700 space-y-2 shadow-sm mt-auto overflow-x-auto">
+                    <div className="whitespace-nowrap">1. <span className="text-slate-500 ml-1">K<sub>t</sub><sup>(c)</sup> = W<sub>K</sub><sup>(c)</sup> E<sub>t</sub>, V<sub>t</sub> = W<sub>V</sub> E<sub>t</sub></span></div>
+                    <div className="pt-1 whitespace-nowrap">2. <span className="text-rose-600 font-bold ml-1">&alpha;<sub>t</sub><sup>(c)</sup> = &sigma; <Big>(</Big> sgn(x)&radic;<span className="border-l border-r border-rose-400 mx-px px-[1px]">x</span> <Big>)</Big></span></div>
+                    <div className="pl-4 text-[10px] text-slate-400 whitespace-nowrap">{t('p2Where')} <span className="text-slate-500">x = &lang;Norm(H<sub>in</sub><sup>(c)</sup>), Norm(K<sub>t</sub><sup>(c)</sup>)&rang; / &radic;D</span></div>
+                    <div className="pt-2 border-t border-slate-200 text-emerald-700 font-bold text-xs whitespace-nowrap">
                        V&#772;<sub>t</sub> = &alpha;<sub>t</sub> &middot; V<sub>t</sub> &isin; <span className="text-[10px] font-mono text-emerald-500">&reals;<sup>B&times;L&times;HC&times;D</sup></span>
                     </div>
                  </div>
@@ -910,14 +1091,14 @@ const App = () => {
 
               {/* 阶段 3 */}
               <div className="flex flex-col gap-2">
-                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 3</span> 时序平滑与状态融合</h4>
+                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] whitespace-nowrap">Phase 3</span> {t('p3Title').replace('Phase 3 ', '')}</h4>
                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                   门控后的特征序列再经过组内 RMSNorm 后，送入短上下文 1D 卷积进行平滑与残差相加。
+                   {t('p3Desc')}
                  </p>
-                 <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-[12px] text-slate-700 space-y-2 shadow-sm mt-auto">
-                    <div>1. <span className="text-slate-500 ml-1">V&#771; = [V&#772;<sub>1</sub>, ..., V&#772;<sub>T</sub>]</span></div>
-                    <div className="pt-1">2. <span className="text-emerald-700 font-bold ml-1">Y = SiLU(Conv1D(<span className="text-indigo-600">Norm(V&#771;)</span>)) + V&#771;</span></div>
-                    <div className="pt-2 border-t border-slate-200 text-blue-700 font-bold">
+                 <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-[12px] text-slate-700 space-y-2 shadow-sm mt-auto overflow-x-auto">
+                    <div className="whitespace-nowrap">1. <span className="text-slate-500 ml-1">V&#771; = [V&#772;<sub>1</sub>, ..., V&#772;<sub>T</sub>]</span></div>
+                    <div className="pt-1 whitespace-nowrap">2. <span className="text-emerald-700 font-bold ml-1">Y = SiLU(Conv1D(<span className="text-indigo-600">Norm(V&#771;)</span>)) + V&#771;</span></div>
+                    <div className="pt-2 border-t border-slate-200 text-blue-700 font-bold whitespace-nowrap">
                        H<sub>out</sub> = H<sub>in</sub> + Y &isin; <span className="text-[10px] font-mono text-blue-500">&reals;<sup>B&times;L&times;HC&times;D</sup></span>
                     </div>
                  </div>
