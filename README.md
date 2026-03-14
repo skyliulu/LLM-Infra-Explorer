@@ -10,6 +10,7 @@ It shows not only how LLMs think, but also how the hardware Memory Wall is shatt
 - **Parallel Strategies**: Interactive visualization of DP, TP, PP, CP, EP, and ETP parallelism — explore how large models are distributed across GPUs.
 - **Flash Attention Deep Dive**: Physics-level simulation of data movement and tiling strategies between SRAM and HBM.
 - **Flash Decode**: Visualize the optimized decoding process with efficient attention computation.
+- **DeepSeek Engram**: Understand N-Gram retrieval, memory slot lookup, and tensor-level data flow in the Engram block.
 - **Zero-Dependency Components**: All visualization logic is encapsulated in standalone React components, ready to reuse.
 
 ### 🗂️ Modules
@@ -20,6 +21,7 @@ It shows not only how LLMs think, but also how the hardware Memory Wall is shatt
 | Parallel Strategies | Interactive GPU parallelism explorer: DP / TP / PP / CP / EP / ETP |
 | Flash Attention | Tiled SRAM/HBM data-movement simulation for Flash Attention |
 | Flash Decode | Efficient attention decoding visualization |
+| Engram | DeepSeek Engram memory retrieval and tensor pipeline visualization |
 
 ### 🔗 Live Demo
 Visit the [GitHub Pages](https://skyliulu.github.io/AI-Infra-Viz/) live demo.
