@@ -65,9 +65,16 @@ export default function MainDashboard() {
       >
         <div className="flex items-center justify-between h-14 px-3 border-b border-slate-800 shrink-0">
           {!sidebarCollapsed && (
-            <span className="text-base font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent whitespace-nowrap select-none">
+            <button
+              onClick={() => {
+                setActiveTab('home');
+                setSidebarOpen(false);
+              }}
+              className="text-base font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent whitespace-nowrap select-none hover:opacity-90 transition-opacity"
+              aria-label="Back to homeland"
+            >
               AI-Infra-Viz
-            </span>
+            </button>
           )}
           <div className={cn('flex items-center gap-1', sidebarCollapsed && 'w-full justify-center')}>
             {!sidebarCollapsed && (
@@ -149,7 +156,13 @@ export default function MainDashboard() {
           >
             <Menu size={22} />
           </button>
-          <span className="ml-3 text-base font-extrabold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">AI-Infra-Viz</span>
+          <button
+            onClick={() => setActiveTab('home')}
+            className="ml-3 text-base font-extrabold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent hover:opacity-90 transition-opacity"
+            aria-label="Back to homeland"
+          >
+            AI-Infra-Viz
+          </button>
         </header>
 
         <main className="flex-1 overflow-auto">

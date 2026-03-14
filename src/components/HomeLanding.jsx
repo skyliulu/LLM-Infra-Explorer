@@ -74,8 +74,8 @@ const featureCards = [
     id: 'engram',
     title: { en: 'Engram', zh: 'Engram' },
     description: {
-      en: 'Inspect memory-centric inference architecture and data movement patterns.',
-      zh: '观察以存储为中心的推理架构与数据流动模式。',
+      en: 'Explore how Engram augments Transformer layers with n-gram memory modules for efficient long-context modeling.',
+      zh: '了解 Engram 如何通过 n-gram 记忆模块增强 Transformer 层，以更高效地建模长上下文。',
     },
     icon: Database,
     iconClass: 'text-rose-300',
