@@ -89,9 +89,9 @@ const i18n = {
     title: "DeepSeek Engram Architecture Vis",
     subtitle: "Conditional Memory Retrieval, Micro Tensor Flow & Async Prefetching",
     reset: "Reset",
-    play: "Play",
+    play: "播放",
     pause: "Pause",
-    next: "Next",
+    next: "下一步",
     langToggle: "中文",
     topoTitle: "Network Topology",
     flowTitle: "Engram Micro Tensor Flow",
@@ -398,8 +398,8 @@ const App = () => {
              <button onClick={() => { setIsPlaying(false); setStep(0); setSlideIdx(2); }} className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition tooltip" title={t('reset')}>
                 <RotateCcw size={18} />
              </button>
-             <button onClick={togglePlay} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-white transition shadow-sm ${isPlaying ? 'bg-rose-500 hover:bg-rose-600' : 'bg-purple-600 hover:bg-purple-700'}`}>
-                {isPlaying ? <><Pause size={18} /> {t('pause')}</> : <><Play size={18} /> {t('play')}</>}
+             <button onClick={togglePlay} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-white transition shadow-sm bg-blue-600 hover:bg-blue-700`}>
+                <>{isPlaying ? <Pause size={18} /> : <Play size={18} />} {t('play')}</>
              </button>
              <button onClick={handleNextStep} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-purple-50 hover:text-purple-700 transition shadow-sm font-semibold whitespace-nowrap">
                 <SkipForward size={18} /> {t('next')}

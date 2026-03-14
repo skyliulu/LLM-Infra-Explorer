@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, ArrowDown, ArrowUp, SplitSquareHorizontal, Combine, Braces, Calculator, HardDrive, MemoryStick, Info } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, ArrowDown, ArrowUp, SplitSquareHorizontal, Combine, Braces, Calculator, HardDrive, MemoryStick, Info, Globe } from 'lucide-react';
+
+const i18n = {
+  zh: {title:'Flash Decoding 原理可视化', subtitle:'打破长序列 Decoding 的显存墙：切分 KV Cache，多流并行计算，两步归约', reset:'重置', play:'播放', pause:'暂停', next:'下一步', langToggle:'EN', challenge:'核心挑战：打破 Memory Wall (显存墙)'},
+  en: {title:'Flash Decoding Visualization', subtitle:'Break the decoding memory wall: tile KV cache, parallel streams, two-stage reduction', reset:'Reset', play:'播放', pause:'Pause', next:'下一步', langToggle:'中文', challenge:'Core Challenge: Break the Memory Wall'}
+};
+
+const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 const NUM_KV_BLOCKS = 6; // 6个KV分块
 const NUM_SMS = 4;       // 4个物理SM计算单元
@@ -23,6 +30,8 @@ const App = () => {
    6: Done (写回 HBM)
   */
   const [isPlaying, setIsPlaying] = useState(false);
+  const [lang, setLang] = useState(getInitialLang());
+  const t = (k) => i18n[lang][k] ?? k;
 
   // 自动播放逻辑
   useEffect(() => {
@@ -169,9 +178,9 @@ const App = () => {
           <div>
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900">
               <Zap className="text-amber-500" />
-              Flash Decoding 核心原理解析
+              {t('title')}
             </h1>
-            <p className="text-slate-500 text-sm mt-1">打破长序列 Decoding 的显存墙：切分 KV Cache，多流并行计算，两步归约</p>
+            <p className="text-slate-500 text-sm mt-1">{t('subtitle')}</p>
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -184,12 +193,13 @@ const App = () => {
               </button>
             </div>
 
-            <button onClick={reset} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="重置"><RotateCcw size={20} /></button>
-            <button onClick={togglePlay} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white transition shadow-sm ${isPlaying ? 'bg-rose-500 hover:bg-rose-600' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
-              {isPlaying ? <><Pause size={18} /> 暂停</> : <><Play size={18} /> 播放</>}
+            <button onClick={() => setLang((prev) => (prev === 'zh' ? 'en' : 'zh'))} className="px-2 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition flex items-center gap-1" title="Language"><Globe size={16} /> {t('langToggle')}</button>
+            <button onClick={reset} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title={t('reset')}><RotateCcw size={20} /></button>
+            <button onClick={togglePlay} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white transition shadow-sm bg-blue-600 hover:bg-blue-700`}>
+              <>{isPlaying ? <Pause size={18} /> : <Play size={18} />} {t('play')}</>
             </button>
             <button onClick={() => { setIsPlaying(false); if(step<6) setStep(step+1); }} disabled={isPlaying || step === 6} className="flex items-center gap-2 px-4 py-2 w-48 justify-center rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 disabled:opacity-50 transition shadow-sm font-semibold">
-              <SkipForward size={18} /> <span className="text-sm">{getStepLabel()}</span>
+              <SkipForward size={18} /> <span className="text-sm">{t('next')}</span>
             </button>
           </div>
         </div>
@@ -199,7 +209,7 @@ const App = () => {
             <Database size={120} />
           </div>
           <h2 className="text-base md:text-lg font-bold mb-2 flex items-center gap-2 text-indigo-900">
-            <HardDrive size={18} className="text-indigo-500"/> 核心挑战：打破 Memory Wall (显存墙)
+            <HardDrive size={18} className="text-indigo-500"/> {t('challenge')}
           </h2>
           <ul className="list-disc pl-5 text-sm leading-relaxed max-w-5xl space-y-1 relative z-10 text-slate-600">
             <li><strong>痛点</strong>：Decode 阶段 Query 长度仅为 1，却需搬运历史成千上万 Token 的 KV Cache，严重受限于主存带宽。</li>

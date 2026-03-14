@@ -1,11 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, Code, ArrowRight, Activity, Layers, RefreshCw, EyeOff, Wrench, Info, CheckCircle2 } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, Code, ArrowRight, Activity, Layers, RefreshCw, EyeOff, Wrench, Info, CheckCircle2, Globe } from 'lucide-react';
+
+const i18n = {
+  zh: {
+    title: 'Flash Attention 原理全景可视化',
+    subtitle: '在线 Softmax × 分块 IO × 因果掩码跳过机制',
+    langToggle: 'EN',
+    standard: '标准 Attention',
+    flash: 'Flash Attention',
+    reset: '重置',
+    pause: '暂停',
+    replay: '重播',
+    play: '播放',
+    next: '下一步',
+    ioIdle: 'IO 闲置',
+    ioAlloc: '分配显存地址',
+    ioQKS: '读 Q,K / 写 S',
+    ioSP: '读 S / 写 P',
+    ioPVO: '读 P,V / 写 O',
+    ioProbe: '参数探测与切分',
+    ioReadQ: '读取 Q 块 (Br×d)',
+    ioLoadKV: '加载 K,V 块 (d×Bc)',
+    ioSkipK: '拦截未来块 K',
+    ioWriteO: '写回 O 归一化块',
+    done: '完成',
+    physical: '物理层数据交换视图',
+    ioTraffic: '显存 IO 累计流量 (HBM)'
+  },
+  en: {
+    title: 'Flash Attention Principle Visualization',
+    subtitle: 'Online Softmax × tiled IO × causal mask skip',
+    langToggle: '中文',
+    standard: 'Standard Attention',
+    flash: 'Flash Attention',
+    reset: 'Reset',
+    pause: 'Pause',
+    replay: 'Replay',
+    play: '播放',
+    next: '下一步',
+    ioIdle: 'IO Idle',
+    ioAlloc: 'Allocate memory address',
+    ioQKS: 'Read Q,K / Write S',
+    ioSP: 'Read S / Write P',
+    ioPVO: 'Read P,V / Write O',
+    ioProbe: 'Probe parameters & tiles',
+    ioReadQ: 'Read Q tile (Br×d)',
+    ioLoadKV: 'Load K,V tile (d×Bc)',
+    ioSkipK: 'Skip future K tile',
+    ioWriteO: 'Write back normalized O tile',
+    done: 'Done',
+    physical: 'Physical Data Exchange View',
+    ioTraffic: 'Accumulated HBM IO Traffic'
+  }
+};
+
+const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 const App = () => {
   const [modelType, setModelType] = useState('flash'); 
   const [phase, setPhase] = useState('idle'); 
   const [activeModule, setActiveModule] = useState(0); 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [lang, setLang] = useState(getInitialLang());
+  const t = (k) => i18n[lang][k] ?? k;
 
   // --- 全局硬核维度 ---
   const N = 192; // 总序列长度
@@ -64,20 +121,20 @@ const App = () => {
   const MAX_TRAFFIC = 850; 
 
   const getIoText = () => {
-    if (phase === 'idle') return "IO 闲置";
+    if (phase === 'idle') return t('ioIdle');
     if (modelType === 'standard') {
-      if (activeModule === 1) return "分配显存地址";
-      if (activeModule === 2) return "读 Q,K / 写 S";
-      if (activeModule === 3) return "读 S / 写 P";
-      if (activeModule >= 4) return "读 P,V / 写 O";
+      if (activeModule === 1) return t('ioAlloc');
+      if (activeModule === 2) return t('ioQKS');
+      if (activeModule === 3) return t('ioSP');
+      if (activeModule >= 4) return t('ioPVO');
     } else {
-      if (activeModule === 1) return "参数探测与切分";
-      if (fs.state === 'load_q') return `读取 Q 块 (Br×d)`;
-      if (fs.state === 'compute') return `加载 K,V 块 (d×Bc)`;
-      if (fs.state === 'skip') return `拦截未来块 K`;
-      if (fs.state === 'write_o') return `写回 O 归一化块`;
+      if (activeModule === 1) return t('ioProbe');
+      if (fs.state === 'load_q') return t('ioReadQ');
+      if (fs.state === 'compute') return t('ioLoadKV');
+      if (fs.state === 'skip') return t('ioSkipK');
+      if (fs.state === 'write_o') return t('ioWriteO');
     }
-    return "完成";
+    return t('done');
   };
 
   useEffect(() => {
@@ -169,28 +226,29 @@ const App = () => {
           <div className="flex flex-col text-center xl:text-left">
             <h1 className="text-xl md:text-2xl font-bold flex items-center justify-center xl:justify-start gap-2 text-indigo-900">
               <Zap className="text-amber-500" />
-              Flash Attention 原理全景可视化
+              {t('title')}
             </h1>
             <p className="text-slate-500 text-[12px] md:text-sm mt-1">
-              绝对物理对齐：SRAM 切块大小严格匹配 HBM 局部映射，感受真实的内存 Tiling
+              {t('subtitle')}
             </p>
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-3">
             <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
               <button onClick={() => handleModelTypeChange('standard')} className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] md:text-sm font-semibold rounded-md transition-all ${modelType === 'standard' ? 'bg-white shadow-sm text-rose-700' : 'text-slate-500 hover:text-slate-700'}`}>
-                标准 Attention
+                {t('standard')}
               </button>
               <button onClick={() => handleModelTypeChange('flash')} className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] md:text-sm font-semibold rounded-md transition-all ${modelType === 'flash' ? 'bg-white shadow-sm text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}>
-                <Zap size={14} /> Flash Attention
+                <Zap size={14} /> {t('flash')}
               </button>
             </div>
-            <button onClick={reset} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="重置"><RotateCcw size={18} /></button>
-            <button onClick={togglePlay} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white transition shadow-sm ${isPlaying ? 'bg-rose-500 hover:bg-rose-600' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
-              {isPlaying ? <><Pause size={16} /> 暂停</> : <><Play size={16} /> {phase === 'done' ? '重播' : '自动播放'}</>}
+            <button onClick={() => setLang((prev) => (prev === 'zh' ? 'en' : 'zh'))} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Language"><Globe size={18} /> {t('langToggle')}</button>
+            <button onClick={reset} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title={t('reset')}><RotateCcw size={18} /></button>
+            <button onClick={togglePlay} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white transition shadow-sm bg-blue-600 hover:bg-blue-700`}>
+              <>{isPlaying ? <Pause size={16} /> : <Play size={16} />} {t('play')}</>
             </button>
             <button onClick={() => { setIsPlaying(false); handleNextStep(); }} disabled={isPlaying || phase === 'done'} className="flex items-center gap-2 px-4 py-2 w-32 md:w-48 justify-center rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 text-sm font-bold disabled:opacity-50 transition shadow-sm">
-              <SkipForward size={16} /> <span className="truncate">下一阶段</span>
+              <SkipForward size={16} /> <span className="truncate">{t('next')}</span>
             </button>
           </div>
         </div>
@@ -203,7 +261,7 @@ const App = () => {
             {/* 标题与参数看板 */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2 font-semibold text-base md:text-lg text-slate-700">
-                <Database className="text-indigo-500" size={20} /> 物理层数据交换视图
+                <Database className="text-indigo-500" size={20} /> {t('physical')}
               </div>
               <div className="flex items-center divide-x divide-indigo-200 bg-indigo-50 rounded-lg border border-indigo-100 shadow-inner px-2 py-1 text-[11px] md:text-xs text-indigo-800 font-mono">
                 <div className="px-3">N = <strong className="text-indigo-900 font-black">192</strong></div>
@@ -214,7 +272,7 @@ const App = () => {
             {/* IO 流量槽 */}
             <div className="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-100 max-w-4xl mx-auto w-full">
               <div className="flex justify-between items-end mb-2">
-                <span className="text-xs md:text-sm font-bold text-slate-600 flex items-center gap-1"><Activity size={16}/> 显存 IO 累计流量 (HBM)</span>
+                <span className="text-xs md:text-sm font-bold text-slate-600 flex items-center gap-1"><Activity size={16}/> {t('ioTraffic')}</span>
                 <div className="text-right">
                   <span className={`text-xl md:text-2xl font-black font-mono ${modelType === 'standard' ? 'text-rose-600' : 'text-emerald-600'}`}>{currentTraffic}</span>
                   <span className="text-slate-500 text-xs ml-1">MB</span>

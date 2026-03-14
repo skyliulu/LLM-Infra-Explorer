@@ -1,16 +1,40 @@
 import React, { useState, useMemo } from 'react';
-import { Layers, Grid, Boxes, SplitSquareHorizontal, BrainCircuit, Cpu, Network, RotateCcw, Info, ArrowDown, Pin } from 'lucide-react';
+import { Layers, Grid, Boxes, SplitSquareHorizontal, BrainCircuit, Cpu, Network, RotateCcw, Info, ArrowDown, Pin, Globe } from 'lucide-react';
 
 const MAX_GPUS = 16;
 
 const STRATEGIES = [
-  { id: 'dp', name: '数据并行(DP)', icon: Boxes, color: 'blue', desc: '复制模型，切分批次。最基础的并行方式，解决数据吞吐问题。' },
-  { id: 'tp', name: '张量并行(TP)', icon: Grid, color: 'amber', desc: '切分基础权重矩阵。通信密集，通常限于单机 NVLink 内部。' },
-  { id: 'pp', name: '流水线并行(PP)', icon: Layers, color: 'purple', desc: '按层切分模型。GPU接力计算，首层Embedding，末层LM Head。' },
-  { id: 'cp', name: '上下文并行(CP)', icon: SplitSquareHorizontal, color: 'emerald', desc: '切分超长序列 (SeqLen)。解决单卡长序列显存爆炸(包含SP)。' },
-  { id: 'ep', name: '专家并行(EP)', icon: BrainCircuit, color: 'pink', desc: 'MoE 特有。不同卡负责不同专家，与 TP 复用通信组。' },
-  { id: 'etp', name: '专家张量并行(ETP)', icon: Grid, color: 'indigo', desc: 'MoE 专属。切分专家内部权重，常与 EP 组合切分。' }
+  { id: 'dp', icon: Boxes, color: 'blue' },
+  { id: 'tp', icon: Grid, color: 'amber' },
+  { id: 'pp', icon: Layers, color: 'purple' },
+  { id: 'cp', icon: SplitSquareHorizontal, color: 'emerald' },
+  { id: 'ep', icon: BrainCircuit, color: 'pink' },
+  { id: 'etp', icon: Grid, color: 'indigo' }
 ];
+
+const i18n = {
+  zh: {
+    title: 'LLM 6D 并行策略交互式解析', subtitle: '拖动六大并行维度，实时观察切片结构与 GPU 资源映射', reset: '重置状态', langToggle: 'EN', empty: '可用槽位', expand: '调整上方并行策略以扩展集群使用量 (当前',
+    dpName:'数据并行(DP)', dpDesc:'复制模型，切分批次。最基础的并行方式，解决数据吞吐问题。',
+    tpName:'张量并行(TP)', tpDesc:'切分基础权重矩阵。通信密集，通常限于单机 NVLink 内部。',
+    ppName:'流水线并行(PP)', ppDesc:'按层切分模型。GPU接力计算，首层Embedding，末层LM Head。',
+    cpName:'上下文并行(CP)', cpDesc:'切分超长序列 (SeqLen)。解决单卡长序列显存爆炸(包含SP)。',
+    epName:'专家并行(EP)', epDesc:'MoE 特有。不同卡负责不同专家，与 TP 复用通信组。',
+    etpName:'专家张量并行(ETP)', etpDesc:'MoE 专属。切分专家内部权重，常与 EP 组合切分。'
+  },
+  en: {
+    title: 'Interactive LLM 6D Parallel Strategies', subtitle: 'Tune six parallel dimensions and observe tensor sharding + GPU mapping', reset: 'Reset', langToggle: '中文', empty: 'Available Slot', expand: 'Adjust strategies above to scale cluster usage (current',
+    dpName:'Data Parallel (DP)', dpDesc:'Replicate model and shard batches to scale throughput.',
+    tpName:'Tensor Parallel (TP)', tpDesc:'Shard core weight matrices; communication heavy, usually intra-node NVLink.',
+    ppName:'Pipeline Parallel (PP)', ppDesc:'Partition by layers; GPUs execute in relay style.',
+    cpName:'Context Parallel (CP)', cpDesc:'Shard long sequence dimension to avoid single-GPU memory blowup.',
+    epName:'Expert Parallel (EP)', epDesc:'MoE specific: different GPUs host different experts.',
+    etpName:'Expert Tensor Parallel (ETP)', etpDesc:'MoE specific: shard expert internal weights, often combined with EP.'
+  }
+};
+
+const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
+
 
 // 重构为白昼模式 (Light Mode) 的颜色映射表
 const getColorClass = (color, type) => {
@@ -31,6 +55,8 @@ const App = () => {
   const [degrees, setDegrees] = useState({ dp: 1, tp: 1, pp: 1, cp: 1, ep: 1, etp: 1 });
   const [hoveredGpu, setHoveredGpu] = useState(null);
   const [pinnedGpu, setPinnedGpu] = useState(null);
+  const [lang, setLang] = useState(getInitialLang());
+  const t = (k) => i18n[lang][k] ?? k;
 
   // 核心状态：计算当前应该展示哪张卡的切片状态 (优先展示悬浮，其次是锁定)
   const activeGpu = hoveredGpu !== null ? hoveredGpu : pinnedGpu;
@@ -497,7 +523,7 @@ const App = () => {
           <div>
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-slate-900">
               <Network className="text-cyan-500" />
-              LLM 6D 并行策略交互式解析
+              {t('title')}
             </h1>
             <p className="text-slate-500 text-sm mt-1">调整参数并悬浮在物理卡上，直观观测模型张量在分布式集群中的严格数学映射。</p>
           </div>
@@ -506,7 +532,8 @@ const App = () => {
                <Cpu size={18} className="text-slate-400"/>
                总 GPU: <span className={`text-lg ml-1 ${totalGpus === MAX_GPUS ? 'text-rose-500' : 'text-cyan-600'}`}>{totalGpus}</span> / {MAX_GPUS}
              </div>
-             <button onClick={reset} className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition tooltip shadow-sm" title="重置状态">
+             <button onClick={() => setLang((prev) => (prev === 'zh' ? 'en' : 'zh'))} className="px-2.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition shadow-sm flex items-center gap-1" title="Language"><Globe size={16}/> {t('langToggle')}</button>
+             <button onClick={reset} className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition tooltip shadow-sm" title={t('reset')}>
                 <RotateCcw size={18} />
              </button>
           </div>
@@ -524,7 +551,7 @@ const App = () => {
                 
                 <div className="flex items-center gap-1.5 lg:gap-2 mb-2">
                   <Icon size={16} className={`shrink-0 ${active ? getColorClass(strat.color, 'text') : 'text-slate-400'}`} />
-                  <h3 className={`font-bold text-[12px] md:text-[13px] whitespace-nowrap tracking-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{strat.name}</h3>
+                  <h3 className={`font-bold text-[12px] md:text-[13px] whitespace-nowrap tracking-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{t(`${strat.id}Name`)}</h3>
                 </div>
                 
                 <div className="flex gap-1 mb-2.5 lg:mb-3">
@@ -549,7 +576,7 @@ const App = () => {
                   })}
                 </div>
                 <p className={`text-[9px] lg:text-[10px] leading-relaxed mt-auto hidden sm:block ${active ? 'text-slate-700' : 'text-slate-400'}`}>
-                  {strat.desc}
+                  {t(`${strat.id}Desc`)}
                 </p>
               </div>
             )
@@ -587,11 +614,11 @@ const App = () => {
                  <div className="grid grid-cols-4 gap-4 w-full px-4">
                    {Array.from({ length: Math.min(4, MAX_GPUS - totalGpus) }).map((_, i) => (
                      <div key={`empty-${i}`} className="h-24 md:h-28 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50/50 flex items-center justify-center">
-                       <span className="text-slate-400 text-xs">可用槽位</span>
+                       <span className="text-slate-400 text-xs">{t('empty')}</span>
                      </div>
                    ))}
                  </div>
-                 <p className="text-xs text-slate-400 mt-4">调整上方并行策略以扩展集群使用量 (当前 {totalGpus}/{MAX_GPUS})</p>
+                 <p className="text-xs text-slate-400 mt-4">{t('expand')} {totalGpus}/{MAX_GPUS})</p>
                </div>
              )}
           </div>

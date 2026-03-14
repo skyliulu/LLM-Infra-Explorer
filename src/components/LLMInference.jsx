@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, ArrowDown, CornerDownRight, Network, Repeat, SlidersHorizontal, Orbit } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, ArrowDown, CornerDownRight, Network, Repeat, SlidersHorizontal, Orbit, Globe } from 'lucide-react';
+
+
+const i18n = {
+  zh: { title:'LLM 推理全景可视化', subtitle:'完全掌控大模型的底层脉络：看透注意力、稀疏路由、深度循环与采样艺术', reset:'重置', play:'播放', next:'下一步', langToggle:'EN', dense:'Dense (稠密)', moe:'MoE (稀疏)' },
+  en: { title:'LLM Inference Panorama', subtitle:'Understand attention, sparse routing, deep layer loop and sampling', reset:'Reset', play:'播放', next:'下一步', langToggle:'中文', dense:'Dense', moe:'MoE (Sparse)' }
+};
+
+const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 // 模拟的词汇和生成序列
 const MOCK_PROMPT = "人工智能的发展将会";
@@ -32,6 +40,8 @@ const App = () => {
   // activeModule 扩充: 0(未开始), 1(Embedding), 1.5(RoPE位置编码), 2(Attention), 3(FFN/MoE), 4(循环层), 5(LM Head), 6(Token完成)
   const [activeModule, setActiveModule] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [lang, setLang] = useState(getInitialLang());
+  const t = (k) => i18n[lang][k] ?? k;
 
   // 1. 自动播放与阶段推进逻辑
   useEffect(() => {
@@ -187,9 +197,9 @@ const App = () => {
           <div>
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900">
               <Zap className="text-amber-500" />
-              LLM 推理全景可视化
+              {t('title')}
             </h1>
-            <p className="text-slate-500 text-sm mt-1">完全掌控大模型的底层脉络：看透注意力、稀疏路由、深度循环与采样艺术</p>
+            <p className="text-slate-500 text-sm mt-1">{t('subtitle')}</p>
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -204,19 +214,20 @@ const App = () => {
             {/* Model Type Selector */}
             <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 mr-2">
               <button onClick={() => handleModelTypeChange('dense')} className={`flex items-center gap-1.5 px-3 py-1.5 text-xs lg:text-sm font-semibold rounded-md transition-all ${modelType === 'dense' ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}>
-                Dense (稠密)
+                {t('dense')}
               </button>
               <button onClick={() => handleModelTypeChange('moe')} className={`flex items-center gap-1.5 px-3 py-1.5 text-xs lg:text-sm font-semibold rounded-md transition-all ${modelType === 'moe' ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}>
-                <Network size={14} /> MoE (稀疏)
+                <Network size={14} /> {t('moe')}
               </button>
             </div>
 
-            <button onClick={reset} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="重置"><RotateCcw size={20} /></button>
-            <button onClick={togglePlay} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white transition shadow-sm ${isPlaying ? 'bg-rose-500 hover:bg-rose-600' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
-              {isPlaying ? <><Pause size={18} /> 暂停</> : <><Play size={18} /> {phase === 'done' ? '重播' : '自动播放'}</>}
+            <button onClick={() => setLang((prev) => (prev === 'zh' ? 'en' : 'zh'))} className="px-2 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition flex items-center gap-1" title="Language"><Globe size={16} /> {t('langToggle')}</button>
+            <button onClick={reset} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title={t('reset')}><RotateCcw size={20} /></button>
+            <button onClick={togglePlay} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white transition shadow-sm bg-blue-600 hover:bg-blue-700`}>
+              <>{isPlaying ? <Pause size={18} /> : <Play size={18} />} {t('play')}</>
             </button>
             <button onClick={() => { setIsPlaying(false); handleNextStep(); }} disabled={isPlaying || phase === 'done' || activeModule === 4} className="flex items-center gap-2 px-4 py-2 w-48 justify-center rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 disabled:opacity-50 transition shadow-sm font-semibold">
-              <SkipForward size={18} /> <span className="text-sm">{getNextStepLabel()}</span>
+              <SkipForward size={18} /> <span className="text-sm">{t('next')}</span>
             </button>
           </div>
         </div>
