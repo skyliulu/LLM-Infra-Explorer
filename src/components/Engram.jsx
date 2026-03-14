@@ -1,542 +1,908 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Database, Cpu, Combine, Hash, ArrowRight, ArrowDown, ArrowUp,
+  Database, Cpu, Combine, Hash, ArrowRight, ArrowDown, ArrowUp, ArrowLeft,
   Layers, BrainCircuit, Play, Pause, SkipForward, RotateCcw, 
   Activity, SlidersHorizontal, BookOpen, Server, Network, 
-  Clock, MemoryStick, HardDrive, Calculator
+  Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2
 } from 'lucide-react';
 
-const App = () => {
-  // 核心执行流状态 (0: 初始, 1: N-Gram提取, 2: 异步查表与哈希, 3: 动态门控, 4: 卷积与融合)
-  const [step, setStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+const MAX_GPUS = 16;
+const Big = ({ children }) => <span className="text-lg align-middle">{children}</span>;
 
-  // 稀疏容量分配状态
-  const [moeRatio, setMoeRatio] = useState(75);
+// --- 样式映射助手 ---
+const getTensorColors = (color, active) => {
+  const map = {
+    blue: { layer1: 'bg-blue-300', layer2: 'bg-blue-400', main: 'bg-blue-600', shadow: 'shadow-[0_0_15px_rgba(37,99,235,0.5)]' },
+    purple: { layer1: 'bg-purple-300', layer2: 'bg-purple-400', main: 'bg-purple-600', shadow: 'shadow-[0_0_15px_rgba(147,51,234,0.5)]' },
+    emerald: { layer1: 'bg-emerald-300', layer2: 'bg-emerald-400', main: 'bg-emerald-600', shadow: 'shadow-[0_0_15px_rgba(16,185,129,0.5)]' },
+    rose: { layer1: 'bg-rose-300', layer2: 'bg-rose-400', main: 'bg-rose-600', shadow: 'shadow-[0_0_15px_rgba(244,63,94,0.5)]' },
+    indigo: { layer1: 'bg-indigo-300', layer2: 'bg-indigo-400', main: 'bg-indigo-600', shadow: 'shadow-[0_0_15px_rgba(99,102,241,0.5)]' },
+    amber: { layer1: 'bg-amber-300', layer2: 'bg-amber-400', main: 'bg-amber-600', shadow: 'shadow-[0_0_15px_rgba(217,119,6,0.5)]' },
+    slate: { layer1: 'bg-slate-200', layer2: 'bg-slate-300', main: 'bg-slate-400', shadow: 'shadow-none' },
+  };
+  return active ? map[color] : map.slate;
+};
+
+const getLineColors = (color, active) => {
+  const map = {
+    blue: { bg: 'bg-blue-400', text: 'text-blue-500' },
+    purple: { bg: 'bg-purple-400', text: 'text-purple-500' },
+    emerald: { bg: 'bg-emerald-400', text: 'text-emerald-500' },
+    rose: { bg: 'bg-rose-400', text: 'text-rose-500' },
+    indigo: { bg: 'bg-indigo-400', text: 'text-indigo-500' },
+    amber: { bg: 'bg-amber-400', text: 'text-amber-500' },
+    slate: { bg: 'bg-slate-200', text: 'text-slate-300' },
+  };
+  return active ? map[color] : map.slate;
+};
+
+// --- 可视化组件库 ---
+const DimBadge = ({ text, active, posClasses }) => (
+  <div className={`absolute ${posClasses} text-[9px] font-mono whitespace-nowrap px-1.5 py-0.5 rounded transition-all duration-500 z-50 pointer-events-none
+    ${active ? 'text-slate-600 bg-slate-50/90 backdrop-blur-sm border border-slate-200 shadow-sm scale-100' : 'text-slate-300 scale-90 opacity-0'}`}>
+    {text}
+  </div>
+);
+
+const LayeredTensor = ({ label, dim, color, active, left, top, wClass="w-12", hClass="h-16", badgePos }) => {
+  const c = getTensorColors(color, active);
+  return (
+    <div className={`absolute flex flex-col items-center justify-center transition-all duration-500 z-20 ${active ? 'scale-110' : 'scale-90 opacity-60'}`} style={{ left, top, transform: `translate(-50%, -50%)` }}>
+       <div className={`relative ${wClass} ${hClass}`}>
+          <div className={`absolute inset-0 ${c.layer1} rounded-md translate-x-2 translate-y-2 opacity-40 transition-colors duration-500`}></div>
+          <div className={`absolute inset-0 ${c.layer2} rounded-md translate-x-1 translate-y-1 opacity-70 transition-colors duration-500`}></div>
+          <div className={`absolute inset-0 ${c.main} rounded-md flex items-center justify-center text-white font-serif text-lg ${c.shadow} transition-colors duration-500`}>
+             {label}
+          </div>
+       </div>
+       <DimBadge text={dim} active={active} posClasses={badgePos || "-bottom-6"} />
+    </div>
+  );
+};
+
+const FlatTensor = ({ label, dim, color, active, left, top, wClass="w-12", hClass="h-16", badgePos }) => {
+  const c = getTensorColors(color, active);
+  return (
+    <div className={`absolute flex flex-col items-center justify-center transition-all duration-500 z-20 ${active ? 'scale-110' : 'scale-90 opacity-60'}`} style={{ left, top, transform: `translate(-50%, -50%)` }}>
+       <div className={`relative ${wClass} ${hClass} ${c.main} rounded-md flex items-center justify-center text-white font-serif text-[15px] ${c.shadow} transition-colors duration-500`}>
+          {label}
+       </div>
+       <DimBadge text={dim} active={active} posClasses={badgePos || "-bottom-6"} />
+    </div>
+  );
+};
+
+const SplicedFlatTensor = ({ label, dim, active, left, top, wClass="w-24", hClass="h-16", badgePos }) => {
+  return (
+    <div className={`absolute flex flex-col items-center justify-center transition-all duration-500 z-20 ${active ? 'scale-110' : 'scale-90 opacity-60'}`} style={{ left, top, transform: `translate(-50%, -50%)` }}>
+       <div className={`relative ${wClass} ${hClass} rounded-md flex items-center justify-center text-white font-serif text-[15px] overflow-hidden shadow-[0_0_15px_rgba(147,51,234,0.4)] transition-all duration-500`}>
+          <div className={`absolute inset-y-0 left-0 w-1/2 ${active ? 'bg-indigo-600' : 'bg-slate-400'} transition-colors duration-500`}></div>
+          <div className={`absolute inset-y-0 right-0 w-1/2 ${active ? 'bg-purple-600' : 'bg-slate-400'} transition-colors duration-500 border-l border-white/20`}></div>
+          <span className="relative z-10 drop-shadow-md">{label}</span>
+       </div>
+       <DimBadge text={dim} active={active} posClasses={badgePos || "-bottom-6"} />
+    </div>
+  );
+};
+
+const OpNode = ({ label, subLabel, active, color="slate", left, top, isCircle=false, textClass="text-base", subLabelPos="bottom" }) => {
+  const c = getLineColors(color, active);
+  const currentBg = active ? `border-${color}-400 bg-${color}-50 ${c.text} shadow-[0_0_10px_currentColor]` : 'border-slate-200 bg-slate-50 text-slate-400';
+  let posClass = "absolute -bottom-4 whitespace-nowrap";
+  if (subLabelPos === "right") posClass = "absolute -right-3 translate-x-full whitespace-nowrap top-1/2 -translate-y-1/2";
+  if (subLabelPos === "left") posClass = "absolute -left-3 -translate-x-full whitespace-nowrap top-1/2 -translate-y-1/2";
+  if (subLabelPos === "top") posClass = "absolute -top-5 whitespace-nowrap";
+
+  return (
+    <div className={`absolute flex flex-col items-center justify-center transition-all duration-500 z-20`} style={{ left, top, transform: `translate(-50%, -50%) scale(${active ? 1.1 : 0.9})` }}>
+       <div className={`${isCircle ? 'w-10 h-10 rounded-full' : 'px-3 py-1.5 rounded-lg'} border-2 flex items-center justify-center font-bold transition-all duration-500 ${currentBg} ${textClass}`}>
+          {label}
+       </div>
+       {subLabel && <span className={`${posClass} text-[9px] font-bold mt-1 transition-colors ${active ? c.text : 'text-slate-400'}`}>{subLabel}</span>}
+    </div>
+  );
+};
+
+const VLine = ({ left, top, bottom, height, active, color }) => {
+  const c = getLineColors(color, active);
+  return <div className={`absolute w-0.5 transition-all duration-500 z-0 ${active ? `${c.bg} shadow-[0_0_5px_currentColor]` : 'bg-slate-200'}`} style={{ left, top, bottom, height, transform: 'translateX(-50%)' }} />
+};
+const HLine = ({ left, right, top, width, active, color }) => {
+  const c = getLineColors(color, active);
+  return <div className={`absolute h-0.5 transition-all duration-500 z-0 ${active ? `${c.bg} shadow-[0_0_5px_currentColor]` : 'bg-slate-200'}`} style={{ left, right, top, width, transform: 'translateY(-50%)' }} />
+};
+const Arrow = ({ left, top, dir, active, color }) => {
+  const icons = { up: ArrowUp, down: ArrowDown, left: ArrowLeft, right: ArrowRight };
+  const Icon = icons[dir];
+  const c = getLineColors(color, active);
+  return <Icon size={16} className={`absolute z-10 transition-colors duration-500 ${c.text}`} style={{ left, top, transform: 'translate(-50%, -50%)' }} />
+};
+
+const CodeLine = ({ active, indent=0, children, num }) => (
+  <div className={`font-mono text-[11px] md:text-[12px] leading-relaxed py-[2px] border-l-[3px] transition-colors duration-300 flex ${active ? 'bg-blue-500/20 border-blue-400 text-blue-100 shadow-[inset_0_0_10px_rgba(59,130,246,0.15)]' : 'border-transparent text-slate-400'}`}>
+     <span className="text-slate-600 select-none w-6 text-right pr-2 shrink-0">{num}</span>
+     <div style={{ paddingLeft: `${indent * 1.2}rem` }} className="flex-1 whitespace-pre-wrap">
+       {children}
+     </div>
+  </div>
+);
+
+const App = () => {
+  const [step, setStep] = useState(0); 
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [slideIdx, setSlideIdx] = useState(2);
+  const tokens = ['[BOS]', 'Only', 'Alexander', 'the', 'Great', 'could', 'tame'];
 
   useEffect(() => {
     let timer;
-    if (isPlaying && step < 4) {
-      timer = setTimeout(() => setStep(s => s + 1), 3500); // 稍微放慢节奏以便观察
-    } else if (step >= 4) {
-      setIsPlaying(false);
+    if (isPlaying) {
+      if (step < 9) {
+        const delays = [0, 2000, 2000, 1500, 1500, 1500, 2000, 2000, 2000, 2000];
+        timer = setTimeout(() => setStep(s => s + 1), delays[step + 1] || 2000); 
+      } else if (step === 9) {
+        timer = setTimeout(() => {
+          setSlideIdx(prev => prev >= tokens.length - 1 ? 2 : prev + 1);
+          setStep(1);
+        }, 2500); 
+      }
     }
     return () => clearTimeout(timer);
-  }, [isPlaying, step]);
+  }, [isPlaying, step, tokens.length]);
 
   const togglePlay = () => {
-    if (step >= 4) {
-      setStep(0);
-      setTimeout(() => setIsPlaying(true), 100);
+    if (!isPlaying && step >= 9) {
+      setSlideIdx(prev => prev >= tokens.length - 1 ? 2 : prev + 1);
+      setStep(1);
+      setIsPlaying(true);
     } else {
       setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleNextStep = () => {
+    setIsPlaying(false); 
+    if(step < 9) {
+      setStep(step + 1);
+    } else {
+      setSlideIdx(prev => prev >= tokens.length - 1 ? 2 : prev + 1);
+      setStep(1);
     }
   };
 
   const getStepDesc = () => {
     switch(step) {
       case 0: return "等待输入";
-      case 1: return "步骤 1: 提取 N-Gram / GPU 开始计算前置层";
-      case 2: return "步骤 2: CPU 异步查表 / PCIe 传输重叠";
-      case 3: return "步骤 3: Context-aware Gating (上下文感知门控)";
-      case 4: return "步骤 4: Short Conv 卷积增强与残差融合";
+      case 1: return "步骤 1: 滑动窗口提取 N-Gram";
+      case 2: return "步骤 2: 位异或与哈希取模";
+      case 3: return "步骤 3: 确定槽位并行查表";
+      case 4: return "步骤 4: 提取多通道记忆向量";
+      case 5: return "步骤 5: 维度展平为 E_t";
+      case 6: return "步骤 6: 张量投影 K_t / V_t";
+      case 7: return "步骤 7: 依赖建模与动态门控";
+      case 8: return "步骤 8: 规范化卷积残差融合";
+      case 9: return "步骤 9: 传递至后续 Block";
       default: return "";
     }
   };
 
-  const currentLoss = (Math.pow((moeRatio - 75) / 25, 2) * 0.015 + 1.710).toFixed(4);
+  // --- 权重模块联动高亮状态逻辑 ---
+  const isEmbActive = step >= 2 && step <= 5;
+  const isProjActive = step === 6;
+  const isNormActive = step === 7 || step === 8;
+  const isConvActive = step === 8;
+
+  // --- 拓扑与时间轴联动状态逻辑 ---
+  const isVocabActive = step === 1;
+  const isBlock0Active = step === 1;
+  const isBlock1Active = step >= 2 && step <= 8;
+  const isBlock2Active = step === 9;
+  const isBlock15Active = step === 9;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans py-6 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 overflow-x-hidden">
-      <div className="max-w-[100rem] mx-auto space-y-6">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans py-6 px-4 sm:px-6 md:px-8 overflow-x-hidden">
+      <div className="max-w-[120rem] mx-auto space-y-6">
         
         {/* Header */}
         <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-slate-900">
               <Database className="text-purple-600" />
-              DeepSeek Engram: 条件记忆与可扩展检索
+              DeepSeek Engram 架构可视化
             </h1>
             <p className="text-slate-500 text-sm mt-1">
-              引入全新的稀疏性维度 (Conditional Memory)。通过 O(1) N-Gram 哈希查表替代昂贵的计算重构，释放注意力机制。
+              条件记忆检索、微观张量流与硬件系统级预取过程演示
             </p>
           </div>
           <div className="flex items-center gap-3">
-             <button onClick={() => { setIsPlaying(false); setStep(0); }} className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition tooltip" title="重置">
+             <button onClick={() => { setIsPlaying(false); setStep(0); setSlideIdx(2); }} className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition tooltip" title="重置">
                 <RotateCcw size={18} />
              </button>
              <button onClick={togglePlay} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-white transition shadow-sm ${isPlaying ? 'bg-rose-500 hover:bg-rose-600' : 'bg-purple-600 hover:bg-purple-700'}`}>
-                {isPlaying ? <><Pause size={18} /> 暂停推演</> : <><Play size={18} /> 动态推演</>}
+                {isPlaying ? <><Pause size={18} /> 暂停</> : <><Play size={18} /> 播放</>}
              </button>
-             <button onClick={() => { setIsPlaying(false); if(step<4) setStep(step+1); }} disabled={step >= 4} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-purple-50 hover:text-purple-700 disabled:opacity-50 transition shadow-sm font-semibold whitespace-nowrap">
+             <button onClick={handleNextStep} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-purple-50 hover:text-purple-700 transition shadow-sm font-semibold whitespace-nowrap">
                 <SkipForward size={18} /> 下一步
              </button>
           </div>
         </div>
 
-        {/* 顶层：宏观架构与异步预取系统 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        {/* 顶层：并排三模块（拓扑 : 张量流 : 伪代码） */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
           
-          {/* 左侧：宏观模型架构 (Macro Architecture) */}
-          <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col">
-            <h3 className="text-sm font-bold flex items-center gap-2 text-slate-800 mb-4 border-b border-slate-100 pb-3">
-              <Network className="text-indigo-500" size={18}/> 
-              骨干网络拓扑位置
-            </h3>
+          {/* 1. 骨干网络拓扑 */}
+          <div className="xl:col-span-2 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col">
+            <div className="flex items-center mb-4 pb-3 border-b border-slate-100">
+               <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
+                 <Network className="text-indigo-500" size={20}/> 
+                 骨干网络拓扑
+               </h2>
+            </div>
+            
             <div className="flex-1 flex flex-col items-center justify-end w-full relative">
-              {/* 输出 */}
-              <ArrowUp className="text-slate-400 mb-1" size={16}/>
+              <div className={`w-full border border-dashed rounded-lg p-1.5 mb-1 transition-all duration-500
+                 ${isBlock15Active ? 'bg-purple-50 border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)] ring-1 ring-purple-300 scale-105 opacity-100' : 'bg-purple-50/50 border-purple-200 opacity-80'}`}>
+                <div className={`text-[10px] font-bold text-center transition-colors ${isBlock15Active ? 'text-purple-700' : 'text-purple-500'}`}>Block 15 (w/ Engram)</div>
+              </div>
               
-              {/* Transformer Block with Engram */}
-              <div className="border-2 border-slate-300 bg-slate-50 rounded-xl p-3 w-full relative">
-                {/* 修复：移除了多余的 absolute border 边框，避免重叠干扰 */}
-                <div className="text-[10px] font-bold text-slate-400 mb-2 text-center">Transformer Block (w/ Engram)</div>
+              <div className="text-slate-300 text-lg leading-none mb-1">⋮</div>
+
+              {/* Block 2 (Standard) */}
+              <div className={`w-full border rounded-xl p-2 mb-1.5 transition-all duration-500
+                 ${isBlock2Active ? 'bg-slate-50 border-slate-400 shadow-[0_0_10px_rgba(148,163,184,0.4)] ring-1 ring-slate-300 scale-105 opacity-100' : 'bg-slate-50 border-slate-200 shadow-sm opacity-70'}`}>
+                  <div className={`text-[10px] font-bold mb-1 text-center transition-colors ${isBlock2Active ? 'text-slate-700' : 'text-slate-500'}`}>Block 2 (Standard)</div>
+                  <div className="flex gap-1">
+                      <div className={`flex-1 text-[9px] font-bold py-1 rounded text-center transition-colors ${isBlock2Active ? 'bg-amber-50 border border-amber-400 text-amber-800 shadow-sm' : 'bg-amber-50 border border-amber-200 text-amber-700'}`}>MoE</div>
+                      <div className={`flex-1 text-[9px] font-bold py-1 rounded text-center transition-colors ${isBlock2Active ? 'bg-amber-50 border border-amber-400 text-amber-800 shadow-sm' : 'bg-amber-50 border border-amber-200 text-amber-700'}`}>Attn</div>
+                  </div>
+              </div>
+
+              <ArrowUp className="text-slate-400 mb-1.5" size={14}/>
+
+              {/* Block 1 (w/ Engram) */}
+              <div className={`border-2 rounded-xl p-2.5 w-full relative transition-all duration-500
+                 ${isBlock1Active ? 'border-purple-400 bg-purple-50 shadow-[0_0_15px_rgba(168,85,247,0.4)] scale-[1.02] opacity-100' : 'border-slate-200 bg-slate-50 opacity-60'}`}>
+                <div className={`text-[11px] font-bold mb-2 text-center flex items-center justify-center gap-1 transition-colors
+                   ${isBlock1Active ? 'text-purple-800' : 'text-slate-500'}`}>
+                   <Server size={12}/> Block 1 (w/ Engram)
+                </div>
                 
-                <div className="bg-amber-100 border border-amber-300 text-amber-800 text-xs font-bold py-2 rounded text-center mb-2 shadow-sm">MoE</div>
-                <ArrowUp className="text-slate-400 mx-auto mb-1" size={12}/>
-                <div className="bg-amber-100 border border-amber-300 text-amber-800 text-xs font-bold py-2 rounded text-center mb-2 shadow-sm">Attention</div>
-                <ArrowUp className="text-slate-400 mx-auto mb-1" size={12}/>
-                {/* 核心注入点 */}
-                <div className={`text-xs font-bold py-2 rounded text-center shadow-sm transition-all duration-500 relative
-                  ${step >= 3 ? 'bg-purple-500 border border-purple-600 text-white shadow-purple-500/40 ring-2 ring-purple-300' : 'bg-purple-100 border border-purple-300 text-purple-800'}`}>
-                  Engram
-                  {step >= 3 && <div className="absolute -right-2 top-1/2 w-2 h-0.5 bg-purple-500"></div>}
+                <div className="flex gap-1 mb-1.5">
+                   <div className={`flex-1 text-[10px] font-bold py-1 rounded text-center shadow-sm transition-colors ${isBlock1Active ? 'bg-amber-100 border border-amber-300 text-amber-800' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>MoE</div>
+                   <div className={`flex-1 text-[10px] font-bold py-1 rounded text-center shadow-sm transition-colors ${isBlock1Active ? 'bg-amber-100 border border-amber-300 text-amber-800' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>Attn</div>
+                </div>
+                
+                <div className={`border rounded-lg p-2 shadow-inner transition-all duration-500 relative
+                   ${isBlock1Active ? 'border-purple-300 bg-white' : 'border-slate-200 bg-slate-100/50'}`}>
+                   <div className={`text-[10px] font-bold text-center mb-1.5 border-b pb-1 flex items-center justify-center gap-1 transition-colors
+                      ${isBlock1Active ? 'text-purple-700 border-purple-100' : 'text-slate-400 border-slate-200'}`}>
+                     <BrainCircuit size={10}/> Engram Modules
+                   </div>
+                   <div className="grid grid-cols-2 gap-1.5 text-[8.5px] font-mono font-bold">
+                      <div className={`transition-all duration-300 p-1 rounded text-center flex items-center justify-center ${isEmbActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-[0_0_10px_rgba(79,70,229,0.5)] scale-105 z-10' : 'bg-indigo-50 border border-indigo-200 text-indigo-700'}`} title="MultiHeadEmbedding">Emb Table</div>
+                      <div className={`transition-all duration-300 p-1 rounded text-center flex items-center justify-center ${isProjActive ? 'bg-emerald-600 text-white border-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.5)] scale-105 z-10' : 'bg-emerald-50 border border-emerald-200 text-emerald-700'}`} title="value_proj">W_V Proj</div>
+                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center leading-tight ${isProjActive ? 'bg-amber-600 text-white border-amber-600 shadow-[0_0_10px_rgba(217,119,6,0.5)] scale-105 z-10' : 'bg-amber-50 border border-amber-200 text-amber-700'}`} title="key_projs (ModuleList)">W_K Projs (x HC)</div>
+                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center leading-tight ${isConvActive ? 'bg-blue-600 text-white border-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.5)] scale-105 z-10' : 'bg-blue-50 border border-blue-200 text-blue-700'}`} title="short_conv">Conv1D Weights</div>
+                      <div className={`col-span-2 transition-all duration-300 p-1 rounded text-center flex items-center justify-center ${isNormActive ? 'bg-slate-700 text-white border-slate-700 shadow-[0_0_10px_rgba(51,65,85,0.5)] scale-105 z-10' : 'bg-slate-50 border border-slate-200 text-slate-600'}`} title="norm1 & norm2">RMSNorm Params</div>
+                   </div>
                 </div>
               </div>
 
-              <ArrowUp className="text-slate-400 my-1" size={16}/>
-              <div className={`w-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold py-2 rounded text-center shadow-sm transition-all
-                 ${step === 1 || step === 2 ? 'ring-2 ring-amber-400' : ''}`}>
-                Transformer Block
+              <ArrowUp className="text-slate-400 my-1.5" size={14}/>
+
+              {/* Block 0 (Standard) */}
+              <div className={`w-full border rounded-xl p-2 mb-1.5 transition-all duration-500
+                 ${isBlock0Active ? 'bg-slate-50 border-slate-400 shadow-[0_0_10px_rgba(148,163,184,0.4)] ring-1 ring-slate-300 scale-105 opacity-100' : 'bg-slate-50 border-slate-200 shadow-sm opacity-70'}`}>
+                  <div className={`text-[10px] font-bold mb-1 text-center transition-colors ${isBlock0Active ? 'text-slate-700' : 'text-slate-500'}`}>Block 0 (Standard)</div>
+                  <div className="flex gap-1">
+                      <div className={`flex-1 text-[9px] font-bold py-1 rounded text-center transition-colors ${isBlock0Active ? 'bg-amber-50 border border-amber-400 text-amber-800 shadow-sm' : 'bg-amber-50 border border-amber-200 text-amber-700'}`}>MoE</div>
+                      <div className={`flex-1 text-[9px] font-bold py-1 rounded text-center transition-colors ${isBlock0Active ? 'bg-amber-50 border border-amber-400 text-amber-800 shadow-sm' : 'bg-amber-50 border border-amber-200 text-amber-700'}`}>Attn</div>
+                  </div>
               </div>
-              
-              <ArrowUp className="text-slate-400 my-1" size={16}/>
-              <div className="w-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold py-2 rounded text-center shadow-sm">
+
+              <ArrowUp className="text-slate-400 mb-1.5" size={14}/>
+              <div className={`w-full text-[11px] font-bold py-2 rounded text-center transition-all duration-500 border
+                 ${isVocabActive ? 'bg-rose-50 border-rose-400 text-rose-700 shadow-[0_0_10px_rgba(244,63,94,0.4)] ring-1 ring-rose-300 scale-105 opacity-100' : 'bg-rose-50 border-rose-200 text-rose-700 opacity-80'}`}>
                 Vocab Embedding
               </div>
+              <ArrowUp className="text-slate-400 my-1.5" size={14}/>
               
-              <ArrowUp className="text-slate-400 my-1" size={16}/>
-              <div className="flex gap-1 justify-center w-full">
-                {['Only', 'Alexander', 'the', 'Great', '...'].map((t, i) => (
-                  <span key={i} className="text-[9px] bg-slate-100 border border-slate-200 px-1 py-0.5 rounded text-slate-600">{t}</span>
-                ))}
+              {/* Input Tokens */}
+              <div className="flex gap-1 justify-center w-full flex-wrap px-1">
+                {tokens.map((t, i) => {
+                  const isCurrentToken = step > 0 && i === slideIdx;
+                  return (
+                    <span key={i} className={`text-[9px] px-1.5 py-0.5 rounded transition-all duration-300 border
+                      ${isCurrentToken ? 'bg-rose-500 border-rose-600 text-white shadow-md scale-110 font-bold z-10' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
+                      {t === '[BOS]' ? 'BOS' : t}
+                    </span>
+                  )
+                })}
               </div>
             </div>
           </div>
 
-          {/* 右侧：真正的系统级异步预取时间轴 (Async Prefetching Timeline) */}
-          <div className="lg:col-span-9 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-            <h3 className="text-sm font-bold flex items-center gap-2 text-slate-800 mb-4 border-b border-slate-100 pb-3">
-              <Clock className="text-blue-500" size={18}/> 
-              硬件系统级异步预取时间轴 (Computation-Communication Overlap)
-            </h3>
-            
-            {/* 修复：加大 pt-8 避免顶部刻度线遮挡 */}
-            <div className="flex-1 flex flex-col justify-center relative w-full pt-8 pb-2 px-2">
-               
-               {/* 时间轴刻度 (适当下调 top) */}
-               <div className="absolute top-2 left-20 right-0 h-4 flex justify-between text-[10px] md:text-xs font-mono text-slate-400">
-                 <span>T₀ (输入)</span><span>T₁ (重叠期)</span><span>T₂ (传输完成)</span><span>T₃ (融合)</span>
-               </div>
-
-               {/* CPU / Host 轨道 */}
-               <div className="flex items-center w-full h-16 mt-1 relative">
-                 <div className="w-20 shrink-0 flex flex-col items-center justify-center">
-                   <HardDrive className="text-slate-600" size={24}/>
-                   <span className="text-[10px] md:text-xs font-bold text-slate-700 mt-1">CPU / Host</span>
-                 </div>
-                 
-                 <div className="flex-1 bg-slate-50 border border-slate-200 rounded-r-xl h-12 relative flex items-center px-4 overflow-hidden">
-                    {/* 背景传输带 */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100 to-transparent opacity-50"></div>
-                    
-                    {/* Hash & Lookup 动作 */}
-                    <div className={`absolute left-[5%] px-3 py-1.5 rounded bg-slate-800 text-white text-[10px] font-bold transition-all duration-500 z-10
-                      ${step >= 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
-                      CPU: 计算 Hash & 查表
-                    </div>
-
-                    {/* PCIe 传输条 */}
-                    <div className={`absolute h-2 bg-purple-400 rounded-full transition-all duration-1000 ease-linear shadow-[0_0_8px_rgba(168,85,247,0.8)]
-                      ${step === 0 ? 'left-[25%] right-[75%] opacity-0' : 
-                        step === 1 ? 'left-[25%] right-[40%] opacity-100 animate-pulse' : 
-                        step === 2 ? 'left-[25%] right-[10%] opacity-100' : 
-                        'left-[80%] right-[10%] opacity-100 bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]'}`}
-                      style={{ top: '50%', transform: 'translateY(-50%)' }}>
-                    </div>
-                    {step === 1 || step === 2 ? (
-                      <span className="absolute left-[50%] -top-1 text-[9px] font-bold text-purple-700 animate-pulse bg-purple-50 px-1 rounded">PCIe 异步传输 100B 权重中...</span>
-                    ) : null}
-                 </div>
-               </div>
-
-               {/* GPU 轨道 */}
-               <div className="flex items-center w-full h-16 mt-4 relative">
-                 <div className="w-20 shrink-0 flex flex-col items-center justify-center">
-                   <MemoryStick className="text-blue-600" size={24}/>
-                   <span className="text-[10px] font-bold text-blue-700 mt-1">GPU</span>
-                 </div>
-                 
-                 <div className="flex-1 bg-blue-50/50 border border-blue-100 rounded-r-xl h-12 relative flex items-center px-4">
-                    {/* Layer 1 计算条 */}
-                    <div className={`absolute left-[5%] right-[40%] h-8 rounded-lg border flex items-center justify-center text-[10px] font-bold transition-all duration-500
-                      ${step === 1 || step === 2 ? 'bg-amber-100 border-amber-400 text-amber-800 shadow-inner' : 'bg-white border-slate-200 text-slate-400'}`}>
-                      {step === 1 || step === 2 ? (
-                        <span className="flex items-center gap-2"><Cpu size={12} className="animate-spin-slow"/> 执行前置 Transformer Block 计算 (完美掩盖 PCIe 延迟)</span>
-                      ) : '前置层计算'}
-                    </div>
-
-                    {/* Engram 融合接收 */}
-                    <div className={`absolute right-[5%] w-[30%] h-8 rounded-lg border flex items-center justify-center text-[10px] font-bold transition-all duration-500
-                      ${step >= 3 ? 'bg-purple-500 border-purple-600 text-white shadow-md shadow-purple-500/40' : 'bg-white border-slate-200 text-slate-400'}`}>
-                      {step >= 3 ? 'GPU: 接收 Memory 并执行融合' : '等待 Memory 数据'}
-                    </div>
-                 </div>
-               </div>
-
-               {/* 垂直对齐线 (表示汇合点) */}
-               {step >= 3 && (
-                 <div className="absolute right-[20%] top-[40%] bottom-[30%] w-0.5 border-r-2 border-dashed border-emerald-400 flex flex-col items-center justify-center z-0">
-                    <ArrowDown className="text-emerald-500 bg-white rounded-full mt-4" size={16}/>
-                 </div>
-               )}
-            </div>
-          </div>
-        </div>
-
-        {/* 中层：微观模块内部架构与前向传播动态流 (附带数学公式) */}
-        <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative">
-           <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-3">
-             <h3 className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800">
-               <BrainCircuit className="text-purple-600" />
-               Engram 模块微观执行流图 (带数学标识)
-             </h3>
-             <span className="text-xs px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full font-semibold border border-purple-200 shadow-sm">
+          {/* 2. Engram 模块微观张量流图 */}
+          <div className="xl:col-span-6 bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative overflow-x-auto overflow-y-hidden">
+           <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 min-w-[700px]">
+             <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
+               <BrainCircuit className="text-purple-600" size={20}/>
+               模块微观张量流图
+             </h2>
+             <span className="text-xs px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full font-bold border border-purple-200 shadow-sm transition-all duration-300">
                {getStepDesc()}
              </span>
            </div>
 
-           <div className="flex-1 flex flex-col justify-end items-center relative pb-4">
-             
-             {/* ------ 步骤 4：融合层 ------ */}
-             <div className={`w-[80%] flex flex-col items-center transition-all duration-700 relative ${step >= 4 ? 'opacity-100 translate-y-0' : 'opacity-20 translate-y-4'}`}>
-                {/* 修复：放大融合公式并调整偏移量 */}
-                <div className="absolute -top-10 right-0 bg-slate-800 text-white font-serif italic text-xs md:text-sm px-4 py-2 rounded shadow-md">
-                  Y = SiLU(Conv1D(V&#771;)) + V&#771;
-                </div>
-                
-                <div className="flex gap-4 items-center">
-                  <div className="bg-blue-50 border-2 border-blue-300 px-4 py-2 rounded-xl shadow-sm flex flex-col items-center">
-                    <span className="text-xs font-bold text-blue-700 mb-1">主干隐状态</span>
-                    <span className="font-serif italic text-blue-900 text-sm">H<sup>(l)</sup></span>
-                  </div>
-                  <div className="w-8 h-8 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-slate-500 bg-slate-50">+</div>
-                  <div className={`border-2 px-4 py-2 rounded-xl shadow-sm transition-colors duration-500 flex flex-col items-center
-                    ${step === 4 ? 'bg-purple-500 border-purple-600 text-white scale-110 shadow-purple-500/40' : 'bg-purple-50 border-purple-300 text-purple-700'}`}>
-                    <span className="text-xs font-bold flex items-center gap-1.5 mb-1"><Activity size={14}/> Short Conv 1D</span>
-                    <span className="font-serif italic text-[11px]">w=4, d=8</span>
-                  </div>
-                </div>
-                <div className="h-8 w-0.5 bg-slate-300 relative">
-                   <ArrowDown size={14} className="absolute -bottom-2 -left-[6px] text-slate-400"/>
-                </div>
-             </div>
+           {/* 全局维度图例 (Glossary) */}
+           <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center bg-slate-100 p-2 rounded-xl border border-slate-200 text-[10px] font-mono text-slate-600 mb-6 w-full max-w-4xl mx-auto shadow-inner min-w-[700px]">
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">B</span> Batch Size</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">L</span> Seq Len</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">D</span> Hidden Dim</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">HC</span> Hyper-Conn</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">E_D</span> Engram Dim</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">D_h</span> Head Dim</div>
+             <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">Vocab</span> Hash Size</div>
+           </div>
 
-             {/* ------ 步骤 3：上下文感知门控 (Context-Aware Gating) ------ */}
-             <div className={`w-full max-w-4xl bg-slate-50 border border-slate-200 rounded-2xl p-5 transition-all duration-700 relative
-                ${step >= 3 ? 'opacity-100 ring-2 ring-blue-100' : 'opacity-20'}`}>
+           <div className="flex-1 flex flex-col items-center relative w-full pt-2 min-w-[700px]">
+             
+             {/* ======================================================= */}
+             {/* CONTAINER 2: Context-aware Gating (动态门控)            */}
+             {/* ======================================================= */}
+             <div className={`w-full max-w-4xl border rounded-2xl px-2 py-6 transition-all duration-700 relative z-30
+                ${step >= 6 ? 'bg-slate-50 border-blue-200 shadow-md' : 'bg-slate-50/50 border-slate-200 opacity-40'}`}>
                 
-                <div className="absolute -top-3 left-6 bg-white px-2 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm">
+                <div className="absolute -top-3 left-6 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm z-40">
                   Context-aware Gating
                 </div>
 
-                <div className="flex justify-between items-center mt-2">
-                  {/* 左侧：来自主干的动态查询 */}
-                  <div className={`flex flex-col items-center w-1/3 transition-all ${step === 3 ? 'scale-105' : ''}`}>
-                     <div className="bg-blue-100 border border-blue-300 px-4 py-2 rounded-lg shadow-inner mb-2 w-[80%] text-center">
-                       <span className="text-xs font-bold text-blue-800 block mb-1">Dynamic Query</span>
-                       <span className="font-serif italic text-sm text-blue-900">h<sub>t</sub></span>
-                     </div>
-                     <div className="bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded shadow-sm">RMSNorm(h<sub>t</sub>)</div>
-                  </div>
+                <div className="relative w-full h-[580px] mt-4">
+                    {/* ====== 严格正交路由连线层 ====== */}
+                    <VLine left="10%" top="120px" height="400px" active={step>=6} color="blue" />
+                    <Arrow left="10%" top="320px" dir="up" active={step>=6} color="blue" />
+                    <HLine left="10%" width="7%" top="280px" active={step>=7} color="blue" />
+                    <Arrow left="14%" top="280px" dir="right" active={step>=7} color="blue" />
+                    <HLine left="17%" width="8%" top="280px" active={step>=7} color="blue" />
+                    <Arrow left="21%" top="280px" dir="right" active={step>=7} color="blue" />
 
-                  {/* 中间：点积计算门控 */}
-                  <div className="flex flex-col items-center w-1/3 px-4 relative">
-                     {/* 修复：放大 Gating 公式并拉高位置 (-top-14) 防止遮挡 */}
-                     <div className={`absolute -top-14 bg-white border border-rose-200 text-rose-700 font-serif italic text-xs md:text-sm px-4 py-2 rounded-lg shadow-md transition-opacity duration-500 whitespace-nowrap ${step >= 3 ? 'opacity-100' : 'opacity-0'}`}>
-                        &alpha;<sub>t</sub> = &sigma;( h&#770;<sub>t</sub><sup>T</sup> k&#770;<sub>t</sub> / &radic;d )
-                     </div>
+                    <VLine left="75%" top="420px" height="100px" active={step>=6} color="emerald" />
+                    <Arrow left="75%" top="470px" dir="up" active={step>=6} color="emerald" />
 
-                     <div className={`w-12 h-12 rounded-full border-4 flex items-center justify-center transition-all duration-500 z-10 bg-white
-                        ${step === 3 ? 'border-rose-400 shadow-[0_0_15px_rgba(251,113,133,0.6)] scale-110' : 'border-slate-200'}`}>
-                        <Combine size={20} className={step === 3 ? 'text-rose-500' : 'text-slate-400'}/>
-                     </div>
-                     
-                     <div className={`h-10 w-0.5 transition-colors duration-500 relative ${step >= 3 ? 'bg-rose-400' : 'bg-slate-200'}`}></div>
-                     {/* 修复：放大乘法符号和下方文字 */}
-                     <div className={`flex items-center justify-center gap-1 font-bold transition-colors bg-white px-3 py-1.5 rounded-md border ${step >= 3 ? 'text-rose-600 border-rose-200 shadow-sm' : 'text-slate-400 border-slate-200'}`}>
-                       <span className="text-xl leading-none">×</span>
-                       <span className="text-xs md:text-sm font-serif italic ml-1">&alpha;<sub>t</sub> &isin; (0,1)</span>
-                     </div>
-                  </div>
+                    <HLine left="45%" width="30%" top="520px" active={step>=6} color="amber" />
+                    <Arrow left="60%" top="520px" dir="left" active={step>=6} color="amber" />
+                    <VLine left="45%" top="420px" height="100px" active={step>=6} color="amber" />
+                    <Arrow left="45%" top="470px" dir="up" active={step>=6} color="amber" />
 
-                  {/* 右侧：来自静态记忆的键值 */}
-                  <div className={`flex flex-col items-center w-1/3 transition-all ${step === 3 ? 'scale-105' : ''}`}>
-                     <div className="bg-purple-100 border border-purple-300 px-4 py-2 rounded-lg shadow-inner mb-2 w-[80%] text-center">
-                       <span className="text-xs md:text-sm font-bold text-purple-800 block mb-1">Static Memory</span>
-                       <span className="font-serif italic text-sm md:text-base text-purple-900">e<sub>t</sub></span>
-                     </div>
-                     <div className="flex gap-3 w-[80%]">
-                        <div className="flex-1 flex flex-col items-center">
-                          {/* 修复：放大 kt, vt 的公式 */}
-                          <span className="font-serif italic text-xs text-slate-500 mb-1">k<sub>t</sub> = W<sub>K</sub>e<sub>t</sub></span>
-                          <div className="w-full bg-purple-500 text-white text-[10px] md:text-xs font-bold px-1 py-1.5 rounded shadow-sm text-center">Key Proj</div>
-                        </div>
-                        <div className="flex-1 flex flex-col items-center">
-                          <span className="font-serif italic text-xs text-slate-500 mb-1">v<sub>t</sub> = W<sub>V</sub>e<sub>t</sub></span>
-                          <div className="w-full bg-emerald-500 text-white text-[10px] md:text-xs font-bold px-1 py-1.5 rounded shadow-sm text-center">Value Proj</div>
-                        </div>
-                     </div>
-                  </div>
-                </div>
-                
-                {/* Value 流向 Conv 的虚线 */}
-                <svg className="absolute right-[16%] bottom-0 transform translate-y-full w-12 h-16 overflow-visible" style={{ zIndex: 0 }}>
-                   <path d="M 20,0 Q 20,30 -100,30 T -230,60" fill="transparent" stroke={step >= 4 ? '#8b5cf6' : '#cbd5e1'} strokeWidth="2" strokeDasharray="4 2" />
-                </svg>
-             </div>
+                    <HLine left="33%" width="12%" top="420px" active={step>=6} color="amber" />
+                    <Arrow left="39%" top="420px" dir="right" active={step>=6} color="amber" />
 
-             <div className="h-8 w-0.5 bg-slate-200 relative z-0"></div>
+                    <VLine left="45%" top="340px" height="80px" active={step>=6} color="amber" />
+                    <Arrow left="45%" top="380px" dir="up" active={step>=6} color="amber" />
 
-             {/* ------ 步骤 2：静态查表与哈希 ------ */}
-             <div className={`w-full max-w-4xl flex justify-between gap-6 transition-all duration-700 relative z-10
-                ${step >= 2 ? 'opacity-100' : 'opacity-30 translate-y-4'}`}>
-                
-                {/* 修复：放大提取合并公式 */}
-                <div className={`absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white px-4 py-1.5 rounded-full border border-slate-200 shadow-sm font-serif italic text-xs md:text-sm text-slate-700 transition-opacity ${step >= 2 ? 'opacity-100' : 'opacity-0'}`}>
-                  e<sub>t</sub> &equiv; &oplus;<sub>n</sub> &oplus;<sub>k</sub> e<sub>t,n,k</sub>
-                </div>
+                    <HLine left="75%" width="12%" top="420px" active={step>=6} color="emerald" />
+                    <Arrow left="81%" top="420px" dir="left" active={step>=6} color="emerald" />
 
-                {[
-                  { title: "2-Gram", n: 2, color: "indigo" },
-                  { title: "3-Gram", n: 3, color: "purple" },
-                ].map((item, idx) => (
-                  <div key={idx} className="flex-1 bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col items-center relative mt-2">
-                     <div className={`text-xs md:text-sm font-bold mb-3 text-slate-600`}>{item.title} Channel</div>
-                     
-                     <div className={`w-full py-2 rounded border text-center transition-colors flex flex-col items-center justify-center
-                        ${step === 2 ? `bg-${item.color}-50 border-${item.color}-300 shadow-inner` : 'bg-slate-50 border-slate-200'}`}>
-                        <span className={`text-xs md:text-sm font-bold ${step === 2 ? `text-${item.color}-700` : 'text-slate-400'}`}>Hash Heads (K=8)</span>
-                        {/* 修复：放大内部计算哈希的公式 */}
-                        <span className={`font-serif italic text-[11px] md:text-xs mt-1.5 ${step === 2 ? `text-${item.color}-600` : 'text-slate-400'}`}>z<sub>t,{item.n},k</sub> = &phi;<sub>{item.n},k</sub>(g<sub>t,{item.n}</sub>)</span>
-                     </div>
-                     
-                     <ArrowDown size={14} className="text-slate-300 my-2"/>
-                     
-                     <div className={`w-full h-12 rounded border flex flex-col items-center justify-center relative overflow-hidden
-                        ${step >= 2 ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>
-                        {step >= 2 ? (
-                          <div className="flex gap-[2px] w-full h-full p-1.5">
-                             {Array.from({length: 8}).map((_, i) => (
-                               <div key={i} className={`flex-1 bg-${item.color}-400 rounded-sm shadow-[0_0_8px_rgba(168,85,247,0.5)]`}></div>
-                             ))}
+                    <VLine left="75%" top="340px" height="80px" active={step>=6} color="emerald" />
+                    <Arrow left="75%" top="380px" dir="up" active={step>=6} color="emerald" />
+
+                    <VLine left="45%" top="280px" height="60px" active={step>=7} color="amber" />
+                    <HLine left="35%" width="10%" top="280px" active={step>=7} color="amber" />
+                    <Arrow left="45%" top="310px" dir="up" active={step>=7} color="amber" />
+                    <Arrow left="40%" top="280px" dir="left" active={step>=7} color="amber" />
+
+                    <HLine left="25%" width="10%" top="280px" active={step>=7} color="amber" />
+                    <Arrow left="30%" top="280px" dir="left" active={step>=7} color="amber" />
+
+                    <VLine left="25%" top="210px" height="70px" active={step>=7} color="rose" />
+                    <Arrow left="25%" top="245px" dir="up" active={step>=7} color="rose" />
+
+                    <HLine left="25%" width="50%" top="210px" active={step>=7} color="rose" />
+                    <Arrow left="50%" top="210px" dir="right" active={step>=7} color="rose" />
+
+                    <VLine left="75%" top="210px" height="130px" active={step>=7} color="emerald" />
+                    <Arrow left="75%" top="275px" dir="up" active={step>=7} color="emerald" />
+
+                    <VLine left="75%" top="120px" height="90px" active={step>=7} color="emerald" />
+                    <Arrow left="75%" top="165px" dir="up" active={step>=7} color="emerald" />
+
+                    <HLine left="45%" width="30%" top="120px" active={step>=8} color="emerald" />
+                    <Arrow left="60%" top="120px" dir="left" active={step>=8} color="emerald" />
+
+                    <HLine left="10%" width="35%" top="120px" active={step>=8} color="indigo" />
+                    <Arrow left="27%" top="120px" dir="left" active={step>=8} color="indigo" />
+
+                    <VLine left="10%" top="40px" height="80px" active={step>=8} color="blue" />
+                    <Arrow left="10%" top="80px" dir="up" active={step>=8} color="blue" />
+
+                    {/* ====== 张量实体与算子层 ====== */}
+                    <LayeredTensor label={<span>H<sub>in</sub></span>} dim="[B, L, HC, D]" color="blue" active={step>=6} left="10%" top="520px" wClass="w-12" hClass="h-16" badgePos="-bottom-6 left-1/2 -translate-x-1/2" />
+                    <SplicedFlatTensor label={<span>E<sub>t</sub></span>} dim="[B, L, E_D]" active={step>=5} left="75%" top="520px" wClass="w-24" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
+
+                    <LayeredTensor label={<span>W<sub>K</sub></span>} dim="[HC, E_D, D]" color="amber" active={step>=6} left="33%" top="420px" wClass="w-12" hClass="h-24" badgePos="-left-[85px] top-1/2 -translate-y-1/2" />
+                    <OpNode label="⊗" subLabel="MatMul" subLabelPos="right" isCircle active={step>=6} color="amber" left="45%" top="420px" textClass="text-xl" />
+                    
+                    <OpNode label="⊗" subLabel="MatMul" subLabelPos="left" isCircle active={step>=6} color="emerald" left="75%" top="420px" textClass="text-xl" />
+                    <FlatTensor label={<span>W<sub>V</sub></span>} dim="[E_D, D]" color="emerald" active={step>=6} left="87%" top="420px" wClass="w-12" hClass="h-24" badgePos="-right-[65px] top-1/2 -translate-y-1/2" />
+
+                    <LayeredTensor label={<span>K<sub>t</sub></span>} dim="[B, L, HC, D]" color="amber" active={step>=6} left="45%" top="340px" wClass="w-12" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
+                    <FlatTensor label={<span>V<sub>t</sub></span>} dim="[B, L, D]" color="emerald" active={step>=6} left="75%" top="340px" wClass="w-12" hClass="h-16" badgePos="-right-[65px] top-1/2 -translate-y-1/2" />
+
+                    <OpNode label="RMSNorm" active={step>=7} color="blue" left="17%" top="280px" textClass="text-[9px]" />
+                    <OpNode label="∑" subLabel="Dot ➔ sgn√ ➔ σ" isCircle active={step>=7} color="rose" left="25%" top="280px" textClass="text-xl" />
+                    <OpNode label="RMSNorm" active={step>=7} color="amber" left="35%" top="280px" textClass="text-[9px]" />
+
+                    <LayeredTensor label={<span>α<sub>t</sub></span>} dim="[B, L, HC, 1]" color="rose" active={step>=7} left="25%" top="210px" wClass="w-6" hClass="h-16" badgePos="-left-[80px] top-1/2 -translate-y-1/2" />
+                    <OpNode label="×" subLabel="Broadcast" subLabelPos="right" isCircle active={step>=7} color="emerald" left="75%" top="210px" textClass="text-xl" />
+
+                    <LayeredTensor label={<span>Ṽ<sub>t</sub></span>} dim="[B, L, HC, D]" color="emerald" active={step>=7} left="75%" top="120px" wClass="w-12" hClass="h-16" badgePos="-right-[85px] top-1/2 -translate-y-1/2" />
+
+                    <div className={`absolute flex flex-col items-center justify-center transition-all duration-500 z-20 ${step >= 8 ? 'scale-110' : 'scale-90 opacity-60'}`} style={{ left: '45%', top: '120px', transform: 'translate(-50%, -50%)' }}>
+                       <div className={`w-36 h-12 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.5)] border-2 flex flex-col items-center justify-center transition-colors duration-500 ${step >= 8 ? 'bg-indigo-600 border-indigo-400 text-white' : 'bg-slate-50 border-slate-300 text-slate-400 shadow-none'}`}>
+                          <div className="flex gap-1 mb-1">
+                             <span className={`text-[8px] px-1 py-0.5 rounded ${step >= 8 ? 'bg-indigo-400' : 'bg-slate-200 text-slate-500'}`}>RMSNorm</span>
+                             <span className={`text-[8px] px-1 py-0.5 rounded ${step >= 8 ? 'bg-indigo-400' : 'bg-slate-200 text-slate-500'}`}>SiLU</span>
                           </div>
-                        ) : (
-                          <span className="text-[10px] text-slate-400">Embedding Table E<sub>{item.n},k</sub></span>
-                        )}
-                     </div>
-                  </div>
-                ))}
+                          <span className="text-[11px] font-bold"><Activity size={10} className="inline mr-1 -mt-0.5"/>Conv1D</span>
+                       </div>
+                       <DimBadge text="[B, L, HC, D]" active={step >= 8} posClasses="-bottom-6 left-1/2 -translate-x-1/2" />
+                    </div>
+
+                    <OpNode label="+" subLabel="Residual" subLabelPos="left" isCircle active={step>=8} color="blue" left="10%" top="120px" textClass="text-xl" />
+                    <LayeredTensor label={<span>H<sub>out</sub></span>} dim="[B, L, HC, D]" color="blue" active={step>=8} left="10%" top="40px" wClass="w-12" hClass="h-16" badgePos="-top-6 left-1/2 -translate-x-1/2" />
+                </div>
              </div>
 
-             <div className="h-8 w-0.5 bg-slate-200 relative z-0"></div>
+             {/* ======================================================= */}
+             {/* BRIDGE 1：无遮挡数据总线 */}
+             {/* ======================================================= */}
+             <div className="w-full max-w-4xl relative h-12 z-40 -my-1">
+               <VLine left="25%" top="50%" bottom="0" active={step>=5} color="indigo" />
+               <HLine left="25%" width="50%" top="50%" active={step>=5} color="indigo" />
+               <VLine left="75%" top="0" bottom="50%" active={step>=5} color="indigo" />
+               <Arrow left="75%" top="10px" dir="up" active={step>=5} color="indigo" />
+               
+               <VLine left="75%" top="0" bottom="0" active={step>=5} color="purple" />
+               <Arrow left="75%" top="10px" dir="up" active={step>=5} color="purple" />
+             </div>
 
-             {/* ------ 步骤 1：输入与 Tokenizer 压缩 ------ */}
-             <div className={`w-full max-w-4xl bg-slate-50 border border-slate-200 rounded-xl p-5 transition-all duration-700 relative
-                ${step >= 1 ? 'opacity-100' : 'opacity-40 translate-y-4'}`}>
+             {/* ======================================================= */}
+             {/* CONTAINER 1：多头哈希稀疏检索 */}
+             {/* ======================================================= */}
+             <div className={`w-full max-w-4xl border rounded-2xl px-2 py-5 transition-all duration-700 relative z-20
+                ${step >= 2 ? 'bg-slate-50 border-indigo-200 shadow-md' : 'bg-slate-50/50 border-slate-200 opacity-50'}`}>
+                <div className="absolute -top-3 left-6 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm z-30">
+                  Multi-Head Hash Retrieval
+                </div>
+
+                <div className="flex w-full mt-3">
+                  {[
+                    { title: "2-Gram", n: 2, color: "indigo" },
+                    { title: "3-Gram", n: 3, color: "purple" },
+                  ].map((item, idx) => {
+                    const isHashActive = step >= 2;
+                    const isTableActive = step >= 3;
+                    const isVectorActive = step >= 4;
+                    const isConcatActive = step >= 5; 
+                    
+                    const tColor = getTensorColors(item.color, true);
+                    const lColor = getLineColors(item.color, true);
+
+                    return (
+                      <div key={idx} className={`w-1/2 rounded-xl p-3 mx-3 shadow-sm flex flex-col items-center transition-all duration-500
+                        ${isHashActive ? `bg-${item.color}-50 border border-${item.color}-300` : 'bg-white border border-slate-200 opacity-60'}`}>
+                         <div className={`text-xs font-bold mb-3 transition-colors ${isHashActive ? lColor.text : 'text-slate-500'}`}>{item.title} Channel</div>
+                         
+                         {/* Channel 输出端与展平节点 */}
+                         <div className="w-full flex flex-col items-center mb-3 relative">
+                           <div className={`w-[80%] flex flex-col items-center transition-all duration-500 z-10 ${isConcatActive ? 'scale-110' : ''}`}>
+                             <div className={`flex gap-[2px] w-full h-4 shadow-sm p-[2px] border rounded transition-colors duration-500
+                                ${isConcatActive ? `bg-white border-${item.color}-300` : 'bg-slate-100 border-slate-200'}`}>
+                               {Array.from({length: 8}).map((_, i) => (
+                                  <div key={i} className={`flex-1 rounded-[1px] transition-colors duration-500 ${isConcatActive ? tColor.main : 'bg-slate-200'}`} />
+                               ))}
+                             </div>
+                             <div className={`text-[10px] font-bold mt-1 transition-colors ${isConcatActive ? lColor.text : 'text-slate-400'}`}>E<sub>t,{item.n}</sub></div>
+                           </div>
+
+                           <div className={`h-3 w-0.5 my-0.5 transition-colors ${isConcatActive ? tColor.main : 'bg-slate-300'}`}></div>
+                           
+                           {/* 修正为 Flatten */}
+                           <div className={`relative w-[90%] flex items-center justify-center gap-1.5 bg-white border rounded py-1 shadow-sm z-10 transition-all duration-500
+                             ${isConcatActive ? `border-${item.color}-300 scale-105 shadow-[0_0_10px_currentColor] ${lColor.text}` : 'border-slate-300 text-slate-400'}`}>
+                             <span className="text-[10px] font-bold"><FunctionSquare size={10} className="inline mr-1 -mt-0.5"/>Flatten (⨁)</span>
+                             <DimBadge text="[B, L, E_D]" active={isConcatActive} posClasses="-right-16 top-1/2 -translate-y-1/2" />
+                           </div>
+                           
+                           <div className="flex w-[85%] justify-between mt-1 relative">
+                             {Array.from({length: 8}).map((_, k) => (
+                               <ArrowUp key={k} size={12} className={`transition-colors duration-500 ${isConcatActive ? lColor.text : 'text-slate-300'}`} />
+                             ))}
+                           </div>
+                         </div>
+
+                         {/* ====== 底部：水平重构的哈希管道层 ====== */}
+                         <div className="w-full flex flex-col relative mt-1">
+                            {/* 1. Vectors 层 */}
+                            <div className="flex gap-1.5 w-full justify-between z-10">
+                              {Array.from({length: 8}).map((_, k) => (
+                                  <div key={`vec-${k}`} className={`relative flex-1 h-6 rounded transition-all duration-500 ${isVectorActive ? tColor.main + ' scale-110 shadow-sm' : 'bg-slate-300'}`}>
+                                    {k === 0 && <DimBadge text="[B,L,D_h]" active={isVectorActive} posClasses="-top-6 left-1/2 -translate-x-1/2" />}
+                                  </div>
+                              ))}
+                            </div>
+
+                            {/* 连线 */}
+                            <div className="flex gap-1.5 w-full justify-between my-0.5">
+                              {Array.from({length: 8}).map((_, k) => (
+                                  <div key={`lv-${k}`} className="flex-1 flex justify-center">
+                                     <div className={`h-2 w-0.5 transition-colors ${isVectorActive ? tColor.main : 'bg-slate-300'}`}></div>
+                                  </div>
+                              ))}
+                            </div>
+
+                            {/* 2. Tabs 层 */}
+                            <div className="flex gap-1.5 w-full justify-between z-10">
+                              {Array.from({length: 8}).map((_, k) => (
+                                  <div key={`tab-${k}`} className={`relative flex-1 py-1.5 text-center rounded border text-[6px] font-mono transition-all duration-500 ${isTableActive ? `bg-slate-800 border-slate-700 text-${item.color}-200 shadow-[0_0_6px_rgba(0,0,0,0.5)] scale-105` : 'bg-slate-200 border-slate-300 text-slate-400'}`}>
+                                    T{k+1}
+                                    {k === 0 && <DimBadge text="[Vocab,D_h]" active={isTableActive} posClasses="-left-[70px] top-1/2 -translate-y-1/2" />}
+                                  </div>
+                              ))}
+                            </div>
+
+                            {/* 3. 中间共用的 Hash 公式层 */}
+                            <div className="relative w-full flex justify-center my-2 z-20">
+                                <div className={`w-[95%] py-1 rounded flex items-center justify-center text-[9px] font-mono font-bold transition-all duration-500 border ${isHashActive ? `bg-slate-800 text-${item.color}-300 border-${item.color}-400 shadow-[0_0_8px_rgba(0,0,0,0.6)] scale-105` : 'bg-slate-100 border-slate-300 text-slate-400 opacity-80'}`}>
+                                   H<sub className="ml-[1px] mt-1">k</sub> = ⨁(tok<sub className="ml-[1px] mt-1">i</sub> × M<sub className="ml-[1px] mt-1">i</sub>) % Prime<sub className="ml-[1px] mt-1">k</sub>
+                                </div>
+                            </div>
+
+                            {/* 4. H Index 层 */}
+                            <div className="flex gap-1.5 w-full justify-between z-10">
+                              {Array.from({length: 8}).map((_, k) => (
+                                  <div key={`h-${k}`} className={`relative flex-1 py-1 text-center rounded border text-[8px] font-bold transition-all duration-500 ${isHashActive ? `bg-${item.color}-100 border-${item.color}-400 ${lColor.text} shadow-sm scale-110` : 'bg-white border-slate-300 text-slate-400'}`}>
+                                    H{k+1}
+                                  </div>
+                              ))}
+                            </div>
+                         </div>
+                      </div>
+                    )
+                  })}
+                </div>
+             </div>
+
+             {/* BRIDGE 0：Tokenizer 向上输出 */}
+             <div className="w-full max-w-4xl relative h-10 z-0">
+                <VLine left="25%" top="0" bottom="0" active={step>=2} color="indigo" />
+                <Arrow left="25%" top="10px" dir="up" active={step>=2} color="indigo" />
+                <DimBadge text="[B, L]" active={step>=2} posClasses="left-[26%] top-1/2 -translate-y-1/2" />
+
+                <VLine left="75%" top="0" bottom="0" active={step>=2} color="purple" />
+                <Arrow left="75%" top="10px" dir="up" active={step>=2} color="purple" />
+                <DimBadge text="[B, L]" active={step>=2} posClasses="left-[76%] top-1/2 -translate-y-1/2" />
+             </div>
+
+             {/* ======================================================= */}
+             {/* CONTAINER 0：Tokenizer 压缩与滑动窗口 */}
+             {/* ======================================================= */}
+             <div className={`w-full max-w-4xl border rounded-2xl p-4 transition-all duration-700 relative z-20 bg-white shadow-sm
+                ${step >= 1 ? 'border-blue-200' : 'border-slate-200'}`}>
                 
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs md:text-sm font-bold text-slate-700 flex items-center gap-2"><BookOpen size={18} className="text-blue-500"/> Tokenizer Compression & N-Gram</span>
-                  {/* 修复：放大 N-gram 获取公式 */}
-                  {step >= 1 && <span className="font-serif italic text-xs md:text-sm text-slate-600 bg-white px-3 py-1 rounded border border-slate-200 shadow-sm">g<sub>t,n</sub> = (x'<sub>t-n+1</sub>, ..., x'<sub>t</sub>)</span>}
+                <div className="absolute -top-3 left-6 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm z-40">
+                  Tokenizer Compression & N-Gram Sliding Window
                 </div>
 
-                <div className="flex items-center justify-center gap-1.5 font-mono text-xs md:text-sm">
-                   <span className={`px-2.5 py-1.5 rounded border transition-colors ${step >= 1 ? 'bg-white border-slate-300 text-slate-400' : 'bg-white border-slate-300 text-slate-700'}`}>Only</span>
-                   
-                   <div className={`flex items-center gap-1 p-1.5 rounded-lg border-2 transition-colors duration-500
-                      ${step >= 1 ? 'border-purple-300 bg-purple-50 shadow-sm' : 'border-transparent'}`}>
-                      <span className={`px-2.5 py-1.5 rounded border transition-colors ${step >= 1 ? 'bg-purple-500 border-purple-600 text-white' : 'bg-white border-slate-300 text-slate-700'}`}>
-                        {step >= 1 ? 'Alexander' : ' Alexander'}
-                      </span>
-                      <span className={`px-2.5 py-1.5 rounded border transition-colors ${step >= 1 ? 'bg-purple-500 border-purple-600 text-white' : 'bg-white border-slate-300 text-slate-700'}`}>
-                        {step >= 1 ? 'the' : ' the'}
-                      </span>
-                      <span className={`px-2.5 py-1.5 rounded border transition-colors ${step >= 1 ? 'bg-purple-500 border-purple-600 text-white relative' : 'bg-white border-slate-300 text-slate-700'}`}>
-                        {step >= 1 ? 'Great' : ' Great'}
-                        {step >= 1 && (
-                          <span className="absolute -top-3 -right-2 bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-md animate-bounce">
-                            t
-                          </span>
-                        )}
-                      </span>
-                   </div>
-                   
-                   <span className={`px-2.5 py-1.5 rounded border transition-colors ${step >= 1 ? 'bg-white border-slate-300 text-slate-400' : 'bg-white border-slate-300 text-slate-700'}`}>could</span>
+                <div className="flex items-center justify-end mb-3">
+                  {step >= 1 && <span className="font-serif italic text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded border border-slate-200 shadow-sm">g<sub>t,n</sub> = (x'<sub>t-n+1</sub>, ..., x'<sub>t</sub>)</span>}
+                </div>
+
+                <div className="flex w-full max-w-3xl mx-auto relative px-2 pb-4">
+                   {tokens.map((tok, i) => {
+                     const isTarget = i === slideIdx;
+                     const is2Gram = i > slideIdx - 2 && i <= slideIdx;
+                     const is3Gram = i > slideIdx - 3 && i <= slideIdx;
+                     
+                     return (
+                        <div key={i} className="flex-1 flex flex-col items-center relative">
+                           <div className="h-5 w-full relative mb-1.5">
+                              {is3Gram && (
+                                <div className={`absolute bottom-0 w-full h-2 bg-indigo-200 ${i === slideIdx - 2 ? 'rounded-l-md' : ''} ${i === slideIdx ? 'rounded-r-md' : ''}`}></div>
+                              )}
+                              {i === slideIdx - 1 && is3Gram && (
+                                <span className="absolute bottom-3 w-[200%] left-1/2 -translate-x-1/2 text-center text-[10px] font-bold text-indigo-600">3-Gram Context</span>
+                              )}
+                           </div>
+
+                           <div className={`px-2 py-2 w-[95%] text-center rounded-lg border transition-all duration-300 font-mono text-[11px] md:text-xs z-10
+                              ${isTarget ? 'bg-rose-100 border-rose-400 text-rose-800 font-bold shadow-[0_0_10px_rgba(251,113,133,0.4)] scale-110' :
+                                (is2Gram || is3Gram) ? 'bg-blue-50 border-indigo-300 text-slate-800 shadow-sm' :
+                                'bg-slate-50 border-slate-200 text-slate-400'}`}>
+                              {tok}
+                              {isTarget && <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-rose-500 text-white text-[8px] px-1.5 py-[1px] rounded shadow-sm">t</div>}
+                           </div>
+
+                           <div className="h-5 w-full relative mt-1.5">
+                              {is2Gram && (
+                                <div className={`absolute top-0 w-full h-2 bg-purple-200 ${i === slideIdx - 1 ? 'rounded-l-md' : ''} ${i === slideIdx ? 'rounded-r-md' : ''}`}></div>
+                              )}
+                              {i === slideIdx && is2Gram && (
+                                <span className="absolute top-3 w-[200%] right-1/2 translate-x-1/2 text-center text-[10px] font-bold text-purple-600">2-Gram</span>
+                              )}
+                           </div>
+                        </div>
+                     );
+                   })}
                 </div>
              </div>
 
            </div>
-        </div>
+          </div>
 
-        {/* 底部功能栏：Sparsity Allocation & Gating Case Study */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-           {/* 左下：稀疏容量分配定律 */}
-           <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col">
-              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
-                 <h3 className="text-sm md:text-base font-bold flex items-center gap-2 text-slate-800">
-                   <SlidersHorizontal className="text-amber-500" size={18}/>
-                   Sparsity Allocation 定律 (参数分配)
-                 </h3>
-                 <span className="text-[10px] font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded">Iso-FLOPs & Iso-Params</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed mb-6">
-                在同等计算量和参数量下，如何将“闲置的”稀疏参数分配给 <strong>MoE (神经计算)</strong> 和 <strong>Engram (静态记忆)</strong>？底层实验揭示了一个完美的 U 型缩放定律。
-              </p>
-              <div className="mb-8 px-4">
-                 <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-2">
-                    <span>偏重静态 (MoE 40%)</span>
-                    <span className="text-blue-600">最佳甜点 (MoE ~75%)</span>
-                    <span>纯计算 (MoE 100%)</span>
-                 </div>
-                 <input 
-                   type="range" min="40" max="100" value={moeRatio} 
-                   onChange={(e) => setMoeRatio(Number(e.target.value))}
-                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                 />
-              </div>
-              <div className="mt-auto bg-slate-50 rounded-xl p-4 border border-slate-200 flex items-center justify-between">
-                 <div>
-                   <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Validation Loss</div>
-                   <div className="text-2xl font-mono font-bold text-slate-800">{currentLoss}</div>
-                 </div>
-                 <div className={`px-3 py-1.5 rounded text-[11px] font-bold text-white shadow-sm transition-colors duration-300
-                    ${moeRatio === 100 ? 'bg-amber-500' : moeRatio < 60 ? 'bg-amber-500' : 'bg-emerald-500'}`}>
-                    {moeRatio === 100 ? '次优：强迫模型计算重构知识' : moeRatio < 60 ? '次优：削弱了动态推理能力' : '最优：记忆与计算的完美解耦'}
-                 </div>
-              </div>
-           </div>
-
-           {/* 右下：门控可视化案例 */}
-           <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col">
-              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
-                 <h3 className="text-sm md:text-base font-bold flex items-center gap-2 text-slate-800">
-                   <BookOpen className="text-rose-500" size={18}/>
-                   门控可视化 (Gating Case Study)
-                 </h3>
-                 <span className="text-[10px] font-mono bg-rose-50 text-rose-600 border border-rose-200 px-2 py-1 rounded">Gate &alpha;<sub>t</sub></span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed mb-4">
-                热力图颜色越深，代表门控 $\alpha_t$ 的激活值越高。当模型遇到高度刻板、结构化的实体模式时，会直接从 Engram 表中检索，绕过繁重的深度推理。
-              </p>
-              <div className="flex-1 flex flex-col justify-center gap-4 py-2">
-                <div className="flex flex-wrap gap-[2px] font-mono text-[10px] md:text-xs">
-                  <span className="px-2 py-1 bg-rose-200 text-rose-900 rounded-sm">Only</span>
-                  <span className="px-2 py-1 bg-rose-100 text-rose-800 rounded-sm">Alexander</span>
-                  <span className="px-2 py-1 bg-rose-400 text-white rounded-sm font-bold shadow-sm">the</span>
-                  <span className="px-2 py-1 bg-rose-500 text-white rounded-sm font-bold shadow-sm">Great</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">could</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">tame</span>
-                  <span className="px-2 py-1 bg-rose-400 text-white rounded-sm font-bold shadow-sm">the</span>
-                  <span className="px-2 py-1 bg-rose-200 text-rose-900 rounded-sm">horse</span>
-                  <span className="px-2 py-1 bg-rose-100 text-rose-800 rounded-sm">Buce</span>
-                  <span className="px-2 py-1 bg-rose-500 text-white rounded-sm font-bold shadow-sm">phal</span>
-                  <span className="px-2 py-1 bg-rose-400 text-white rounded-sm font-bold shadow-sm">us</span>
-                </div>
-                <div className="flex flex-wrap gap-[2px] font-mono text-[10px] md:text-xs">
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">东汉</span>
-                  <span className="px-2 py-1 bg-rose-100 text-rose-800 rounded-sm">末年</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">名</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">医</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">张</span>
-                  <span className="px-2 py-1 bg-rose-300 text-rose-900 rounded-sm font-bold">仲</span>
-                  <span className="px-2 py-1 bg-rose-500 text-white rounded-sm font-bold shadow-sm">景</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">，</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">因其</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">...</span>
-                  <span className="px-2 py-1 bg-rose-100 text-rose-800 rounded-sm">《</span>
-                  <span className="px-2 py-1 bg-rose-300 text-rose-900 rounded-sm font-bold">伤寒</span>
-                  <span className="px-2 py-1 bg-rose-200 text-rose-900 rounded-sm">杂</span>
-                  <span className="px-2 py-1 bg-rose-500 text-white rounded-sm font-bold shadow-sm">病</span>
-                  <span className="px-2 py-1 bg-rose-400 text-white rounded-sm font-bold shadow-sm">论</span>
-                  <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded-sm">》</span>
-                </div>
-              </div>
-           </div>
-        </div>
-
-        {/* 底层原理：严谨的数学公式推导区 (Mathematical Principles) */}
-        <div className="bg-white rounded-2xl p-6 md:p-8 border border-slate-200 shadow-sm flex flex-col mt-6">
-           <div className="flex items-center gap-3 mb-6 border-b border-slate-200 pb-4">
-             <Calculator className="text-emerald-600" size={24}/>
-             <h2 className="text-lg md:text-xl font-bold text-slate-900">Engram 底层数学原理推导</h2>
+          {/* 3. Engram 伪代码 */}
+          <div className="xl:col-span-4 bg-[#1E1E1E] rounded-2xl border border-slate-700 shadow-xl flex flex-col overflow-hidden h-full min-h-[600px]">
+           <div className="bg-[#2D2D2D] px-4 py-3 flex items-center justify-between border-b border-slate-700">
+             <div className="flex items-center gap-3">
+               <div className="flex gap-1.5">
+                 <div className="w-2.5 h-2.5 rounded-full bg-rose-500"></div>
+                 <div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+               </div>
+               <span className="text-slate-300 text-xs font-mono flex items-center gap-1.5"><FileCode2 size={14} className="text-blue-400"/> engram_forward.py</span>
+             </div>
+             <span className="text-[9px] text-slate-500 font-mono">Python Tracer</span>
            </div>
            
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* 阶段 1：检索与哈希 */}
-              <div className="flex flex-col gap-3">
-                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 1</span> 稀疏检索与哈希</h4>
-                 <p className="text-[11px] text-slate-500 leading-relaxed">
-                   首先对原始 Token ID 进行字典投影压缩，获取规范化的等价 ID。随后截取后缀 N-Gram 作为上下文，并通过多头乘法异或哈希（Multi-Head Hashing）定位静态内存槽位。
-                 </p>
-                 <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg font-serif italic text-[13px] text-slate-700 space-y-3 mt-auto">
-                    <div>1. <span className="text-slate-500 ml-1">g<sub>t,n</sub> = (x'<sub>t-n+1</sub>, ..., x'<sub>t</sub>)</span></div>
-                    <div>2. <span className="text-slate-500 ml-1">z<sub>t,n,k</sub> &triangleq; &phi;<sub>n,k</sub>(g<sub>t,n</sub>)</span></div>
-                    <div>3. <span className="text-slate-500 ml-1">e<sub>t,n,k</sub> = E<sub>n,k</sub>[z<sub>t,n,k</sub>]</span></div>
-                    <div className="pt-2 border-t border-slate-200 text-purple-700 font-bold">
-                       e<sub>t</sub> &equiv; &oplus;<sub>n=2</sub><sup>N</sup> &oplus;<sub>k=1</sub><sup>K</sup> e<sub>t,n,k</sub>
-                    </div>
-                 </div>
-              </div>
+           <div className="py-3 overflow-y-auto flex-1 custom-scrollbar">
+              <CodeLine num="1" active={false} indent={0}>
+                <span className="text-purple-400">def</span> <span className="text-blue-400">forward</span>(self, hidden_states, input_ids):
+              </CodeLine>
+              <CodeLine num="2" active={step === 1} indent={1}>
+                <span className="text-slate-500 italic"># 1. 提取后缀 N-Gram 作为上下文特征</span>
+              </CodeLine>
+              <CodeLine num="3" active={step === 1} indent={1}>
+                <span className="text-purple-400">for</span> n <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(2, max_n + 1):
+              </CodeLine>
+              <CodeLine num="4" active={step === 1} indent={2}>
+                g_t[n] = extract_ngram(input_ids, n)
+              </CodeLine>
+              <CodeLine num="5" active={false} indent={0}></CodeLine>
+              
+              <CodeLine num="6" active={step === 2} indent={1}>
+                <span className="text-slate-500 italic"># 2. 多头乘法异或 Hash 映射计算</span>
+              </CodeLine>
+              <CodeLine num="7" active={step === 2} indent={1}>
+                <span className="text-purple-400">for</span> n <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(2, max_n + 1):
+              </CodeLine>
+              <CodeLine num="8" active={step === 2} indent={2}>
+                mix = bitwise_xor_mix(g_t[n], M[n])
+              </CodeLine>
+              <CodeLine num="9" active={step === 2} indent={2}>
+                <span className="text-purple-400">for</span> k <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(num_heads):
+              </CodeLine>
+              <CodeLine num="10" active={step === 2} indent={3}>
+                hash_idx[:,:,n,k] = mix % primes[n][k]
+              </CodeLine>
+              <CodeLine num="11" active={false} indent={0}></CodeLine>
 
-              {/* 阶段 2：上下文感知门控 */}
-              <div className="flex flex-col gap-3">
-                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 2</span> 上下文感知门控</h4>
-                 <p className="text-[11px] text-slate-500 leading-relaxed">
-                   静态的检索向量 e<sub>t</sub> 缺乏对动态语境的适应性。因此，使用主干网络当前层的隐状态 h<sub>t</sub> 作为 Query，结合静态记忆的 Key 计算动态门控标量 &alpha;<sub>t</sub>。
-                 </p>
-                 <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg font-serif italic text-[13px] text-slate-700 space-y-3 mt-auto">
-                    <div>1. <span className="text-slate-500 ml-1">k<sub>t</sub> = W<sub>K</sub> e<sub>t</sub>, v<sub>t</sub> = W<sub>V</sub> e<sub>t</sub></span></div>
-                    <div className="pt-2">2. <span className="text-rose-600 font-bold ml-1">&alpha;<sub>t</sub> = &sigma; <Big>(</Big> <sup className="text-slate-500">RMSNorm(h<sub>t</sub>)<sup>T</sup> RMSNorm(k<sub>t</sub>)</sup> / <sub className="text-slate-500">&radic;d</sub> <Big>)</Big></span></div>
-                    <div className="pt-2 border-t border-slate-200 text-purple-700 font-bold">
-                       v&#772;<sub>t</sub> = &alpha;<sub>t</sub> &middot; v<sub>t</sub>
-                    </div>
-                 </div>
-              </div>
+              <CodeLine num="12" active={step === 3 || step === 4} indent={1}>
+                <span className="text-slate-500 italic"># 3~4. 并行检索对应头部的 Embedding</span>
+              </CodeLine>
+              <CodeLine num="13" active={step === 3 || step === 4} indent={1}>
+                embeddings = []
+              </CodeLine>
+              <CodeLine num="14" active={step === 3 || step === 4} indent={1}>
+                <span className="text-purple-400">for</span> n <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(2, max_n + 1):
+              </CodeLine>
+              <CodeLine num="15" active={step === 3 || step === 4} indent={2}>
+                <span className="text-purple-400">for</span> k <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(num_heads):
+              </CodeLine>
+              <CodeLine num="16" active={step === 3 || step === 4} indent={3}>
+                tab = self.embed_tables[n][k]
+              </CodeLine>
+              <CodeLine num="17" active={step === 3 || step === 4} indent={3}>
+                embeddings.append(tab(hash_idx[...,n,k]))
+              </CodeLine>
+              <CodeLine num="18" active={false} indent={0}></CodeLine>
 
-              {/* 阶段 3：残差融合 */}
-              <div className="flex flex-col gap-3">
-                 <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 3</span> 卷积增强与残差融合</h4>
-                 <p className="text-[11px] text-slate-500 leading-relaxed">
-                   为扩展感受野并增加非线性，对门控后的特征序列应用轻量级的深度可分离卷积（Depthwise Causal Conv1D），最后将特征加回主干网络的残差流中。
-                 </p>
-                 <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg font-serif italic text-[13px] text-slate-700 space-y-3 mt-auto">
-                    <div>1. <span className="text-slate-500 ml-1">V&#771; = [v&#772;<sub>1</sub>, ..., v&#772;<sub>T</sub>]</span></div>
-                    <div className="pt-2">2. <span className="text-blue-700 font-bold ml-1">Y = SiLU(Conv1D(RMSNorm(V&#771;))) + V&#771;</span></div>
-                    <div className="pt-2 border-t border-slate-200 text-slate-800 font-bold">
-                       H<sup>(l)</sup> &larr; H<sup>(l)</sup> + Y
-                    </div>
-                 </div>
-              </div>
+              <CodeLine num="19" active={step === 5} indent={1}>
+                <span className="text-slate-500 italic"># 5. 维度展平汇聚</span>
+              </CodeLine>
+              <CodeLine num="20" active={step === 5} indent={1}>
+                E_t = torch.<span className="text-amber-200">cat</span>(embeddings, dim=-1)
+              </CodeLine>
+              <CodeLine num="21" active={false} indent={0}></CodeLine>
+
+              <CodeLine num="22" active={step === 6 || step === 7} indent={1}>
+                <span className="text-slate-500 italic"># 6~7. 依赖建模与动态门控</span>
+              </CodeLine>
+              <CodeLine num="23" active={step === 6 || step === 7} indent={1}>
+                <span className="text-purple-400">for</span> hc <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(self.hc_mult):
+              </CodeLine>
+              <CodeLine num="24" active={step === 6} indent={2}>
+                K_t = self.W_K[hc](E_t)
+              </CodeLine>
+              <CodeLine num="25" active={step === 6} indent={2}>
+                V_t = self.W_V(E_t)
+              </CodeLine>
+              <CodeLine num="26" active={step === 7} indent={2}>
+                norm_K = self.norm1[hc](K_t)
+              </CodeLine>
+              <CodeLine num="27" active={step === 7} indent={2}>
+                norm_Q = self.norm2[hc](hidden[:,:,hc,:])
+              </CodeLine>
+              <CodeLine num="28" active={step === 7} indent={2}>
+                <span className="text-slate-500 italic"># 保号平方根点积</span>
+              </CodeLine>
+              <CodeLine num="29" active={step === 7} indent={2}>
+                gt = (norm_K * norm_Q).<span className="text-amber-200">sum</span>(-1) / <span className="text-amber-200">sqrt</span>(D)
+              </CodeLine>
+              <CodeLine num="30" active={step === 7} indent={2}>
+                gt = gt.<span className="text-amber-200">abs</span>().<span className="text-amber-200">sqrt</span>() * gt.<span className="text-amber-200">sign</span>()
+              </CodeLine>
+              <CodeLine num="31" active={step === 7} indent={2}>
+                gates.append(gt.<span className="text-amber-200">sigmoid</span>().<span className="text-amber-200">unsqueeze</span>(-1))
+              </CodeLine>
+              <CodeLine num="32" active={false} indent={0}></CodeLine>
+              
+              <CodeLine num="33" active={step === 7} indent={1}>
+                V_tilde = gates * V_t.<span className="text-amber-200">unsqueeze</span>(2)
+              </CodeLine>
+              <CodeLine num="34" active={false} indent={0}></CodeLine>
+
+              <CodeLine num="35" active={step === 8} indent={1}>
+                <span className="text-slate-500 italic"># 8. 跨时间步平滑与残差相加</span>
+              </CodeLine>
+              <CodeLine num="36" active={step === 8} indent={1}>
+                Y = V_tilde + self.short_conv(V_tilde)
+              </CodeLine>
+              <CodeLine num="37" active={false} indent={0}></CodeLine>
+
+              <CodeLine num="38" active={step === 9} indent={1}>
+                <span className="text-slate-500 italic"># 9. 返回融合输出给后继网络</span>
+              </CodeLine>
+              <CodeLine num="39" active={step === 9} indent={1}>
+                <span className="text-purple-400">return</span> Y
+              </CodeLine>
            </div>
+          </div>
+
+        </div>
+
+        {/* ======================================================= */}
+        {/* 第二行：时间轴 与 数学推导 并排 */}
+        {/* ======================================================= */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch mt-2">
+            
+            {/* 中层：硬件系统级异步预取时间轴（双轨甘特图） */}
+            <div className="xl:col-span-7 bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative">
+                <div className="flex items-center mb-6 pb-3 border-b border-slate-100">
+                   <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
+                     <Clock className="text-blue-500" size={20}/> 
+                     硬件系统级异步预取时间轴
+                   </h2>
+                </div>
+                
+                <div className="flex flex-col gap-5 w-full justify-center flex-1">
+                   {/* Timeline markers */}
+                   <div className="flex justify-between text-[11px] font-bold text-slate-400 pl-[90px] pr-2">
+                      <span className={`transition-colors duration-500 ${step >= 1 ? 'text-slate-700' : ''}`}>T₀ 序列输入</span>
+                      <span className={`transition-colors duration-500 ${step >= 2 ? 'text-slate-700' : ''}`}>T₁ 异步并行预取</span>
+                      <span className={`transition-colors duration-500 ${step >= 6 ? 'text-slate-700' : ''}`}>T₂ 通信与同步</span>
+                      <span className={`transition-colors duration-500 ${step >= 8 ? 'text-slate-700' : ''}`}>T₃ 特征融合</span>
+                   </div>
+                   
+                   {/* CPU Row */}
+                   <div className="flex items-center gap-3">
+                      <div className="w-20 shrink-0 font-bold text-[11px] text-slate-600 flex flex-col items-center">
+                         <HardDrive size={22} className="mb-1 text-slate-500"/> 
+                         <span>CPU / Host</span>
+                      </div>
+                      <div className="flex-1 flex gap-1 h-14 bg-slate-100/50 p-1.5 rounded-xl border border-slate-200">
+                         <div className={`flex-[0.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                            ${step === 1 ? 'bg-slate-300 text-slate-600 shadow-sm scale-[1.02]' : step > 1 ? 'bg-slate-200 text-slate-400' : 'bg-transparent text-transparent'}`}>
+                            数据准备
+                         </div>
+                         <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                            ${step >= 2 && step <= 5 ? 'bg-purple-500 text-white shadow-[0_0_10px_rgba(168,85,247,0.5)] scale-[1.02] z-10' : step > 5 ? 'bg-purple-100 border border-purple-200 text-purple-400' : 'bg-transparent text-transparent'}`}>
+                            计算 Hash 与并行查表 (T1)
+                         </div>
+                         <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                            ${step >= 4 && step <= 5 ? 'bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.5)] animate-pulse scale-[1.02] z-10' : step > 5 ? 'bg-indigo-100 border border-indigo-200 text-indigo-400' : 'bg-transparent text-transparent'}`}>
+                            PCIe 异步传输
+                         </div>
+                         <div className="flex-[2] rounded bg-transparent border border-dashed border-slate-200"></div>
+                      </div>
+                   </div>
+                   
+                   {/* GPU Row */}
+                   <div className="flex items-center gap-3">
+                      <div className="w-20 shrink-0 font-bold text-[11px] text-slate-600 flex flex-col items-center">
+                         <MemoryStick size={22} className="mb-1 text-blue-500"/> 
+                         <span>GPU / Device</span>
+                      </div>
+                      <div className="flex-1 flex gap-1 h-14 bg-slate-100/50 p-1.5 rounded-xl border border-slate-200">
+                         <div className={`flex-[0.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                            ${step === 1 ? 'bg-rose-500 text-white shadow-[0_0_10px_rgba(244,63,94,0.5)] scale-[1.02] z-10' : step > 1 ? 'bg-rose-100 border border-rose-200 text-rose-400' : 'bg-transparent text-transparent'}`}>
+                            Vocab / Block 0
+                         </div>
+                         <div className={`flex-[3.0] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                            ${step >= 2 && step <= 5 ? 'bg-amber-500 text-white shadow-[0_0_10px_rgba(245,158,11,0.5)] scale-[1.02] z-10' : step > 5 ? 'bg-amber-100 border border-amber-200 text-amber-400' : 'bg-transparent text-transparent'}`}>
+                            前置 Transformer Block 计算 (完全掩盖 CPU 传输延迟)
+                         </div>
+                         <div className={`flex-[1.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                            ${step >= 6 && step <= 8 ? 'bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)] scale-[1.02] z-10' : step > 8 ? 'bg-blue-100 border border-blue-200 text-blue-400' : 'bg-transparent text-transparent'}`}>
+                            Engram 门控融合
+                         </div>
+                         <div className={`flex-[0.5] rounded flex items-center justify-center text-[10px] font-bold transition-all duration-500 
+                            ${step === 9 ? 'bg-slate-700 text-white shadow-[0_0_10px_rgba(51,65,85,0.5)] scale-[1.02] z-10' : 'bg-transparent text-transparent border border-dashed border-slate-200'}`}>
+                            后续计算
+                         </div>
+                      </div>
+                   </div>
+                </div>
+            </div>
+
+            {/* 底部原理公式区 */}
+            <div className="xl:col-span-5 bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative">
+               <div className="flex items-center mb-6 pb-3 border-b border-slate-100">
+                 <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
+                   <Calculator className="text-emerald-600" size={20}/>
+                   Engram 数学原理与维度推导
+                 </h2>
+               </div>
+               
+               <div className="flex flex-col gap-6 overflow-y-auto flex-1 custom-scrollbar pr-2">
+                  {/* 阶段 1 */}
+                  <div className="flex flex-col gap-2">
+                     <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 1</span> 记忆路由与特征检索</h4>
+                     <p className="text-[11px] text-slate-500 leading-relaxed">
+                       获取后缀 N-Gram，并通过多头乘法异或定位内存槽位，直接展平无需线性层。
+                     </p>
+                     <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-xs text-slate-700 space-y-2 shadow-sm">
+                        <div>1. <span className="text-slate-500 ml-1">g<sub>t,n</sub> = (x'<sub>t-n+1</sub>, ..., x'<sub>t</sub>)</span></div>
+                        <div>2. <span className="text-slate-500 ml-1">H<sub>k</sub> = ⨁(g<sub>i</sub> × M<sub>i</sub>) % P<sub>k</sub></span></div>
+                        <div className="pt-2 border-t border-slate-200 text-purple-700 font-bold">
+                           E<sub>t</sub> = Flatten(E<sub>n,k</sub>[H<sub>k</sub>]) &isin; <span className="text-[10px] font-mono text-purple-500">&reals;<sup>B&times;L&times;E_D</sup></span>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* 阶段 2 */}
+                  <div className="flex flex-col gap-2">
+                     <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 2</span> 依赖建模与动态门控</h4>
+                     <p className="text-[11px] text-slate-500 leading-relaxed">
+                       按 Hyper-Connection(HC) 切分。引入双侧 RMSNorm 与 <span className="font-mono bg-slate-200 px-1 rounded">sgn(x)√|x|</span> 平方根缩放解决内积数值爆炸。
+                     </p>
+                     <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-[11px] text-slate-700 space-y-2 shadow-sm">
+                        <div>1. <span className="text-slate-500 ml-1">K<sub>t</sub><sup>(c)</sup> = W<sub>K</sub><sup>(c)</sup> E<sub>t</sub>, V<sub>t</sub> = W<sub>V</sub> E<sub>t</sub></span></div>
+                        <div className="pt-1">2. <span className="text-rose-600 font-bold ml-1">&alpha;<sub>t</sub><sup>(c)</sup> = &sigma; <Big>(</Big> sgn(x)&radic;<span className="border-l border-r border-rose-400 mx-px px-[1px]">x</span> <Big>)</Big></span></div>
+                        <div className="pl-4 text-[10px] text-slate-400">其中 <span className="text-slate-500">x = &lang;Norm(H<sub>in</sub><sup>(c)</sup>), Norm(K<sub>t</sub><sup>(c)</sup>)&rang; / &radic;D</span></div>
+                        <div className="pt-2 border-t border-slate-200 text-emerald-700 font-bold text-xs">
+                           V&#772;<sub>t</sub> = &alpha;<sub>t</sub> &middot; V<sub>t</sub> &isin; <span className="text-[10px] font-mono text-emerald-500">&reals;<sup>B&times;L&times;HC&times;D</sup></span>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* 阶段 3 */}
+                  <div className="flex flex-col gap-2">
+                     <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2"><span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Phase 3</span> 时序平滑与状态融合</h4>
+                     <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg font-serif italic text-[12px] text-slate-700 space-y-2 shadow-sm">
+                        <div>1. <span className="text-slate-500 ml-1">V&#771; = [V&#772;<sub>1</sub>, ..., V&#772;<sub>T</sub>]</span></div>
+                        <div className="pt-1">2. <span className="text-emerald-700 font-bold ml-1">Y = SiLU(Conv1D(<span className="text-indigo-600">Norm(V&#771;)</span>)) + V&#771;</span></div>
+                        <div className="pt-2 border-t border-slate-200 text-blue-700 font-bold">
+                           H<sub>out</sub> = H<sub>in</sub> + Y &isin; <span className="text-[10px] font-mono text-blue-500">&reals;<sup>B&times;L&times;HC&times;D</sup></span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
         </div>
 
       </div>
     </div>
   );
 };
-
-// 简单的自定义符号组件用于公式排版
-const Big = ({ children }) => <span className="text-lg align-middle">{children}</span>;
 
 export default App;
