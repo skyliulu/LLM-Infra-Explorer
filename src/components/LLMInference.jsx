@@ -1,25 +1,180 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, ArrowDown, CornerDownRight, Network, Repeat, SlidersHorizontal, Orbit, Globe } from 'lucide-react';
 
-
 const i18n = {
-  zh: { title:'LLM 推理全景可视化', subtitle:'完全掌控大模型的底层脉络：看透注意力、稀疏路由、深度循环与采样艺术', reset:'重置', play:'播放', next:'下一步', langToggle:'EN', dense:'Dense (稠密)', moe:'MoE (稀疏)' },
-  en: { title:'LLM Inference Panorama', subtitle:'Understand attention, sparse routing, deep layer loop and sampling', reset:'Reset', play:'播放', next:'下一步', langToggle:'中文', dense:'Dense', moe:'MoE (Sparse)' }
+  zh: {
+    title: 'LLM 推理全景可视化',
+    subtitle: '完全掌控大模型的底层脉络：看透注意力、稀疏路由、深度循环与采样艺术',
+    reset: '重置',
+    play: '播放',
+    next: '下一步',
+    langToggle: 'EN',
+    dense: 'Dense (稠密)',
+    moe: 'MoE (稀疏)',
+    adjustRandomness: '调整生成随机性',
+    tempLabel: '温度(T):',
+    sequenceTitle: '序列 (Sequence) - 观察自回归回路',
+    promptLabel: 'Prompt (输入提示词):',
+    generationLabel: 'Generation (模型生成):',
+    kvCacheTitle: 'KV Cache (显存)',
+    slots: '槽位',
+    modelPipeline: '模型内部流水线',
+    moeArch: 'MoE 架构 (MoE Architecture)',
+    denseArch: '稠密架构 (Dense Architecture)',
+    prefill: 'Prefill',
+    decode: 'Decode',
+    currentInput: '当前输入: [完整 Prompt - 6 个 Token]',
+    autoRegInput: '自回归输入:',
+    asInput: '作为输入',
+    ropeWait: '等待输入序列...',
+    ropePrefill: '依据绝对位置 m 进行多维旋转',
+    ropeDecode: '当前生成词绝对位置: m=',
+    transformerBlock: 'Transformer Block (×32 Layers)',
+    loopingLayer: 'Looping Layer: ',
+    top2Fusion: 'Top-2 融合:',
+    waitingRouter: '等待 Router 打分分发...',
+    lmHeadSample: 'LM Head & 温度采样',
+    probDist: '采样概率分布 (Softmax)',
+    predDone: '预测完成 ✓',
+    waitStack: '等待层循环堆叠完成...',
+    waitCalc: '等待计算...',
+    codeTitle: '底层代码',
+    pyCode: '(Python 伪代码)',
+    c_emb1: '# Embedding',
+    c_emb2: '# [L, d]',
+    c_rope1: '# RoPE: 注入旋转位置编码 (让模型感知词序)',
+    c_rope2: '# m 为绝对位置',
+    c_loop1: '# 层循环堆叠',
+    c_attn1: '# 注意力与 KV Cache',
+    c_ffn1: '# Dense FFN',
+    c_ffn2: '# 残差连接并进入下一层',
+    c_moe1: '# Sparse MoE: 路由分发',
+    c_moe2: '# 残差连接',
+    c_lm1: '# LM Head & 温度采样',
+    c_lm2: '# 映射到词表',
+    c_lm3: '# 温度调整缩放',
+    stateTitle: '当前微观执行状态',
+    waitStartMsg1: '等待开始。当前选择：',
+    moeSparse: 'MoE 稀疏架构',
+    denseDense: 'Dense 稠密架构',
+    waitStartMsg2: '。请点击“播放”。',
+    stateEmbTitle: 'Embedding 阶段',
+    stateEmbPrefill: '并行读取整个 Prompt。',
+    stateEmbDecode: '【自回归现象】提取上轮生成的 Token 作为当前唯一输入。',
+    stateRopeTitle: 'RoPE 位置编码',
+    stateRopeDesc1: 'Transformer 本身是无视词序的。RoPE 通过将词向量当作复数平面的点，根据其所在的绝对位置 m，进行特定角度 θ 的旋转变换。',
+    stateRopeDesc2: '这样后续在算 Attention 向量点积时，模型就能自动感知词与词之间的相对距离！',
+    stateAttnTitle: 'Attention 机制与缓存',
+    stateAttnPrefill: '将计算出的 K, V 并行写入显存池。',
+    stateAttnDecode: '【显存墙瓶颈】模型必须读取全部历史 KV Cache (粉色维度) 来计算当前的注意力分布。',
+    stateDenseTitle: 'Dense FFN',
+    stateDenseDesc: '全量激活巨大的矩阵网络提取知识特征。',
+    stateMoeTitle: 'MoE 稀疏路由',
+    stateMoeDesc1: 'Router 对 8 个专家进行打分，仅激活 ',
+    stateMoeDesc2: ' 专家进行推理，最后加权融合。',
+    stateLoopTitle: '深度循环堆叠 (N-Layers)',
+    stateLoopDesc1: '大模型的“大”也体现在深度上。Attention 和 FFN 组成了一个 Block，数据不是走一遍就结束了，而是要通过残差连接，',
+    stateLoopDesc2: '反复堆叠计算 ',
+    stateLoopDesc3: ' 次',
+    stateLoopDesc4: ' 才能进入最后阶段！',
+    stateLmTitle: 'LM Head & 温度采样',
+    stateLmDesc1: '特征被映射为涵盖整个词表的 Logits (得分)。',
+    stateLmDesc2: '温度(T)缩放：',
+    stateLmDesc3: '你可以拖动上方滑块试试！',
+    stateLmDesc4: '`T < 1`: 放大概率差异，强制模型输出最可能的词（适合写代码）。',
+    stateLmDesc5: '`T > 1`: 缩小概率差异，长尾词也能被抽中（适合发散创作）。',
+    stateDoneTitle: 'Token 生成完毕',
+    stateDoneDesc: '通过采样掷骰子选中下一个词，准备丢回起点循环。',
+    routerMatrix: 'Router 矩阵'
+  },
+  en: {
+    title: 'LLM Inference Panorama',
+    subtitle: 'Understand attention, sparse routing, deep layer loop and sampling',
+    reset: 'Reset',
+    play: 'Play',
+    next: 'Next',
+    langToggle: '中文',
+    dense: 'Dense',
+    moe: 'MoE (Sparse)',
+    adjustRandomness: 'Adjust generation randomness',
+    tempLabel: 'Temp(T):',
+    sequenceTitle: 'Sequence - Observe Autoregressive Loop',
+    promptLabel: 'Prompt (Input):',
+    generationLabel: 'Generation (Model Output):',
+    kvCacheTitle: 'KV Cache (Memory)',
+    slots: 'Slots',
+    modelPipeline: 'Model Internal Pipeline',
+    moeArch: 'MoE Architecture',
+    denseArch: 'Dense Architecture',
+    prefill: 'Prefill',
+    decode: 'Decode',
+    currentInput: 'Current Input: [Full Prompt - 6 Tokens]',
+    autoRegInput: 'Autoregressive Input:',
+    asInput: 'As Input',
+    ropeWait: 'Waiting for input sequence...',
+    ropePrefill: 'Multi-dimensional rotation by absolute pos m',
+    ropeDecode: 'Current generated token abs pos: m=',
+    transformerBlock: 'Transformer Block (×32 Layers)',
+    loopingLayer: 'Looping Layer: ',
+    top2Fusion: 'Top-2 Fusion:',
+    waitingRouter: 'Waiting for Router scoring...',
+    lmHeadSample: 'LM Head & Temp Sampling',
+    probDist: 'Probability Distribution (Softmax)',
+    predDone: 'Prediction Done ✓',
+    waitStack: 'Waiting for layer loop stacking...',
+    waitCalc: 'Waiting for calculation...',
+    codeTitle: 'Underlying Code',
+    pyCode: '(Python Pseudocode)',
+    c_emb1: '# Embedding',
+    c_emb2: '# [L, d]',
+    c_rope1: '# RoPE: Inject rotary position embedding (seq awareness)',
+    c_rope2: '# m is absolute position',
+    c_loop1: '# Layer stacking loop',
+    c_attn1: '# Attention & KV Cache',
+    c_ffn1: '# Dense FFN',
+    c_ffn2: '# Residual connection & next layer',
+    c_moe1: '# Sparse MoE: Routing distribution',
+    c_moe2: '# Residual connection',
+    c_lm1: '# LM Head & Temp Sampling',
+    c_lm2: '# Map to vocabulary',
+    c_lm3: '# Temperature scaling',
+    stateTitle: 'Current Micro Execution State',
+    waitStartMsg1: 'Waiting to start. Current selection: ',
+    moeSparse: 'MoE Sparse Architecture',
+    denseDense: 'Dense Architecture',
+    waitStartMsg2: '. Please click "Play".',
+    stateEmbTitle: 'Embedding Phase',
+    stateEmbPrefill: 'Read the entire Prompt in parallel.',
+    stateEmbDecode: '[Autoregressive] Extract the last generated token as the sole input.',
+    stateRopeTitle: 'RoPE Position Embedding',
+    stateRopeDesc1: 'Transformers are inherently order-agnostic. RoPE treats word vectors as points on a complex plane and rotates them by angle θ based on absolute position m.',
+    stateRopeDesc2: 'This allows the model to automatically perceive the relative distance between words when calculating Attention dot products!',
+    stateAttnTitle: 'Attention Mechanism & Cache',
+    stateAttnPrefill: 'Compute K, V and write them in parallel to the memory pool.',
+    stateAttnDecode: '[Memory Wall Bottleneck] The model must read the entire historical KV Cache (pink dimension) to compute the current attention distribution.',
+    stateDenseTitle: 'Dense FFN',
+    stateDenseDesc: 'Fully activate the massive matrix network to extract knowledge features.',
+    stateMoeTitle: 'MoE Sparse Routing',
+    stateMoeDesc1: 'Router scores 8 experts and activates only ',
+    stateMoeDesc2: ' experts for inference, followed by weighted fusion.',
+    stateLoopTitle: 'Deep Stacking Loop (N-Layers)',
+    stateLoopDesc1: 'The "large" in LLM is also reflected in depth. Attention and FFN form a Block. Data does not pass through just once; via residual connections, it is ',
+    stateLoopDesc2: 'repeatedly stacked and computed ',
+    stateLoopDesc3: ' times ',
+    stateLoopDesc4: ' before entering the final phase!',
+    stateLmTitle: 'LM Head & Temp Sampling',
+    stateLmDesc1: 'Features are mapped to Logits (scores) covering the entire vocabulary.',
+    stateLmDesc2: 'Temp(T) Scaling: ',
+    stateLmDesc3: 'Drag the slider above to try it!',
+    stateLmDesc4: '`T < 1`: Amplifies probability diffs, forcing the model to output the most likely word (good for coding).',
+    stateLmDesc5: '`T > 1`: Shrinks probability diffs, allowing long-tail words to be chosen (good for creative writing).',
+    stateDoneTitle: 'Token Generation Complete',
+    stateDoneDesc: 'Select the next word via probability sampling and throw it back to the start of the loop.',
+    routerMatrix: 'Router Matrix'
+  }
 };
 
 const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
-
-// 模拟的词汇和生成序列
-const MOCK_PROMPT = "人工智能的发展将会";
-const MOCK_PROMPT_TOKENS = ["人工", "智能", "的", "发展", "将", "会"];
-const MOCK_GENERATED_TOKENS = [
-  { token: "带来", probs: [{t: "带来", p: 0.85}, {t: "导致", p: 0.10}, {t: "让", p: 0.05}] },
-  { token: "深远", probs: [{t: "深远", p: 0.72}, {t: "巨大", p: 0.20}, {t: "很多", p: 0.08}] },
-  { token: "的", probs: [{t: "的", p: 0.99}, {t: "地", p: 0.005}, {t: "得", p: 0.005}] },
-  { token: "变革", probs: [{t: "变革", p: 0.65}, {t: "影响", p: 0.30}, {t: "改变", p: 0.05}] },
-  { token: "。", probs: [{t: "。", p: 0.95}, {t: "！", p: 0.03}, {t: "？", p: 0.02}] },
-  { token: "<EOS>", probs: [{t: "<EOS>", p: 0.99}, {t: "\n", p: 0.01}] }
-];
 
 // 模拟 Router 动态打分与选择
 const MOCK_EXPERT_ROUTING = [
@@ -42,6 +197,35 @@ const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [lang, setLang] = useState(getInitialLang());
   const t = (k) => i18n[lang][k] ?? k;
+
+  // 根据语言动态提供 Token 与 Prompt 数据
+  const { promptTokens, generatedTokens } = useMemo(() => {
+    if (lang === 'zh') {
+      return {
+        promptTokens: ["人工", "智能", "的", "发展", "将", "会"],
+        generatedTokens: [
+          { token: "带来", probs: [{t: "带来", p: 0.85}, {t: "导致", p: 0.10}, {t: "让", p: 0.05}] },
+          { token: "深远", probs: [{t: "深远", p: 0.72}, {t: "巨大", p: 0.20}, {t: "很多", p: 0.08}] },
+          { token: "的", probs: [{t: "的", p: 0.99}, {t: "地", p: 0.005}, {t: "得", p: 0.005}] },
+          { token: "变革", probs: [{t: "变革", p: 0.65}, {t: "影响", p: 0.30}, {t: "改变", p: 0.05}] },
+          { token: "。", probs: [{t: "。", p: 0.95}, {t: "！", p: 0.03}, {t: "？", p: 0.02}] },
+          { token: "<EOS>", probs: [{t: "<EOS>", p: 0.99}, {t: "\n", p: 0.01}] }
+        ]
+      };
+    } else {
+      return {
+        promptTokens: ["The", " develop", "ment", " of", " AI", " will"],
+        generatedTokens: [
+          { token: " bring", probs: [{t: " bring", p: 0.85}, {t: " cause", p: 0.10}, {t: " let", p: 0.05}] },
+          { token: " profound", probs: [{t: " profound", p: 0.72}, {t: " massive", p: 0.20}, {t: " many", p: 0.08}] },
+          { token: " changes", probs: [{t: " changes", p: 0.99}, {t: " impacts", p: 0.005}, {t: " shifts", p: 0.005}] },
+          { token: " to", probs: [{t: " to", p: 0.65}, {t: " for", p: 0.30}, {t: " in", p: 0.05}] },
+          { token: " society.", probs: [{t: " society.", p: 0.95}, {t: " world.", p: 0.03}, {t: " us.", p: 0.02}] },
+          { token: "<EOS>", probs: [{t: "<EOS>", p: 0.99}, {t: "\n", p: 0.01}] }
+        ]
+      };
+    }
+  }, [lang]);
 
   // 1. 自动播放与阶段推进逻辑
   useEffect(() => {
@@ -85,7 +269,7 @@ const App = () => {
           setActiveModule(1);
           setCurrentLayer(1);
         } else if (phase === 'decode') {
-          if (step + 1 < MOCK_GENERATED_TOKENS.length) {
+          if (step + 1 < generatedTokens.length) {
             setStep(step + 1);
             setActiveModule(1);
             setCurrentLayer(1);
@@ -120,7 +304,7 @@ const App = () => {
   };
 
   // 2. 动态计算带温度的概率 (Temperature Scaling)
-  const currentProbs = activeModule >= 5 ? MOCK_GENERATED_TOKENS[step].probs : null;
+  const currentProbs = activeModule >= 5 ? generatedTokens[step].probs : null;
   const displayProbs = useMemo(() => {
     if (!currentProbs) return null;
     if (temperature === 1.0) return currentProbs; // T=1 时保持原样
@@ -131,20 +315,8 @@ const App = () => {
   }, [currentProbs, temperature]);
 
   const kvCacheSize = phase === 'idle' ? 0 : 
-    (phase === 'prefill' ? (activeModule >= 2 ? MOCK_PROMPT_TOKENS.length : 0) : 
-    (MOCK_PROMPT_TOKENS.length + step - 1 + (activeModule >= 2 ? 1 : 0)));
-
-  const getNextStepLabel = () => {
-    if (phase === 'idle') return "开始计算 (Prefill)";
-    if (activeModule === 1) return "注入位置编码(RoPE)";
-    if (activeModule === 1.5) return "进入 Attention";
-    if (activeModule === 2) return modelType === 'moe' ? "进入 MoE" : "进入 FFN";
-    if (activeModule === 3) return `循环计算 ${TOTAL_LAYERS} 层`;
-    if (activeModule === 4) return "光速堆叠中...";
-    if (activeModule === 5) return "输出概率 (可调温)";
-    if (activeModule === 6) return phase === 'prefill' ? "进入 Decode 阶段" : "预测下一 Token";
-    return "已完成";
-  };
+    (phase === 'prefill' ? (activeModule >= 2 ? promptTokens.length : 0) : 
+    (promptTokens.length + step - 1 + (activeModule >= 2 ? 1 : 0)));
 
   const renderTokens = (tokens, isInput) => (
     <div className="flex flex-wrap gap-2 mb-4">
@@ -178,7 +350,7 @@ const App = () => {
           `}>
             {isAutoRegressiveInput && (
               <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-bold text-indigo-600 whitespace-nowrap animate-bounce flex items-center gap-1">
-                作为输入 <CornerDownRight size={12} />
+                {t('asInput')} <CornerDownRight size={12} />
               </div>
             )}
             {token}
@@ -204,9 +376,9 @@ const App = () => {
           
           <div className="flex flex-wrap items-center justify-center gap-3">
             {/* 采样温度滑块 (Temperature) */}
-            <div className="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-200 mr-2" title="调整生成随机性">
+            <div className="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-200 mr-2" title={t('adjustRandomness')}>
               <SlidersHorizontal size={14} className="text-purple-600" />
-              <span className="text-xs font-semibold text-purple-800">温度(T):</span>
+              <span className="text-xs font-semibold text-purple-800">{t('tempLabel')}</span>
               <input type="range" min="0.1" max="2.0" step="0.1" value={temperature} onChange={(e) => setTemperature(parseFloat(e.target.value))} className="w-20 accent-purple-500" />
               <span className="text-xs font-mono font-bold text-purple-700 w-6 text-right">{temperature.toFixed(1)}</span>
             </div>
@@ -240,28 +412,28 @@ const App = () => {
               <div>
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <AlignLeft className="text-indigo-500" size={20} />
-                  序列 (Sequence) - 观察自回归回路
+                  {t('sequenceTitle')}
                 </h2>
-                <div className="mb-2 text-sm text-slate-500 font-medium">Prompt (输入提示词):</div>
-                {renderTokens(MOCK_PROMPT_TOKENS, true)}
-                <div className="mt-8 mb-2 text-sm text-slate-500 font-medium">Generation (模型生成):</div>
+                <div className="mb-2 text-sm text-slate-500 font-medium">{t('promptLabel')}</div>
+                {renderTokens(promptTokens, true)}
+                <div className="mt-8 mb-2 text-sm text-slate-500 font-medium">{t('generationLabel')}</div>
                 <div className="min-h-[60px]">
-                  {renderTokens(MOCK_GENERATED_TOKENS.map(t => t.token), false)}
+                  {renderTokens(generatedTokens.map(t => t.token), false)}
                 </div>
               </div>
 
               {/* 右侧：KV Cache */}
               <div className="border-t lg:border-t-0 lg:border-l border-slate-100 pt-6 lg:pt-0 lg:pl-12">
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Database className="text-indigo-500" size={20} /> KV Cache (显存)
+                  <Database className="text-indigo-500" size={20} /> {t('kvCacheTitle')}
                 </h2>
                 <div className="flex items-end gap-2 mb-2">
                   <span className="text-3xl font-bold text-indigo-600">{kvCacheSize}</span>
-                  <span className="text-slate-500 text-sm mb-1">/ {MOCK_PROMPT_TOKENS.length + MOCK_GENERATED_TOKENS.length - 1} 槽位</span>
+                  <span className="text-slate-500 text-sm mb-1">/ {promptTokens.length + generatedTokens.length - 1} {t('slots')}</span>
                 </div>
                 <div className="flex flex-wrap gap-1 mt-6">
-                  {Array.from({ length: MOCK_PROMPT_TOKENS.length + MOCK_GENERATED_TOKENS.length - 1 }).map((_, i) => (
-                    <div key={i} className={`h-8 md:h-10 flex-1 rounded-sm transition-all duration-300 ${i < kvCacheSize ? (i < MOCK_PROMPT_TOKENS.length ? 'bg-blue-400' : 'bg-green-400') : 'bg-slate-100'}`} title={i < kvCacheSize ? `Cached Token ${i}` : 'Empty Space'}></div>
+                  {Array.from({ length: promptTokens.length + generatedTokens.length - 1 }).map((_, i) => (
+                    <div key={i} className={`h-8 md:h-10 flex-1 rounded-sm transition-all duration-300 ${i < kvCacheSize ? (i < promptTokens.length ? 'bg-blue-400' : 'bg-green-400') : 'bg-slate-100'}`} title={i < kvCacheSize ? `Cached Token ${i}` : 'Empty Space'}></div>
                   ))}
                 </div>
               </div>
@@ -274,10 +446,10 @@ const App = () => {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 h-full flex flex-col min-w-0">
                <h2 className="text-lg font-semibold mb-6 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <Cpu className="text-indigo-500" size={20} /> 模型内部流水线
+                  <Cpu className="text-indigo-500" size={20} /> {t('modelPipeline')}
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full font-mono ${modelType === 'moe' ? 'bg-teal-100 text-teal-800 border border-teal-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
-                  {modelType === 'moe' ? 'MoE Architecture' : 'Dense Architecture'}
+                  {modelType === 'moe' ? t('moeArch') : t('denseArch')}
                 </span>
               </h2>
 
@@ -285,13 +457,13 @@ const App = () => {
                 <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all
                     ${phase === 'prefill' ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-400 scale-105' : 'bg-slate-100 text-slate-400'}`}>
-                    Prefill
+                    {t('prefill')}
                   </span>
                 </div>
                 <div className="absolute top-4 right-4 z-10">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all
                     ${phase === 'decode' ? 'bg-emerald-100 text-emerald-700 ring-2 ring-emerald-400 scale-105' : 'bg-slate-100 text-slate-400'}`}>
-                    Decode
+                    {t('decode')}
                   </span>
                 </div>
 
@@ -299,14 +471,14 @@ const App = () => {
                   ${phase === 'prefill' ? 'border-amber-300 ring-4 ring-amber-400/20' : phase === 'decode' ? 'border-emerald-300 ring-4 ring-emerald-400/20' : 'border-slate-200'}`}
                 >
                   <div className="text-center mb-4 h-8 flex items-center justify-center">
-                    {phase === 'prefill' && activeModule > 0 && <span className="text-xs md:text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 animate-fade-in">当前输入: [完整 Prompt - 6 个 Token]</span>}
-                    {phase === 'decode' && activeModule > 0 && step > 0 && <span className="text-xs md:text-sm font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-2 animate-fade-in"><CornerDownRight size={14} /> 自回归输入: "{MOCK_GENERATED_TOKENS[step-1].token}"</span>}
+                    {phase === 'prefill' && activeModule > 0 && <span className="text-xs md:text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 animate-fade-in">{t('currentInput')}</span>}
+                    {phase === 'decode' && activeModule > 0 && step > 0 && <span className="text-xs md:text-sm font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-2 animate-fade-in"><CornerDownRight size={14} /> {t('autoRegInput')} "{generatedTokens[step-1].token}"</span>}
                   </div>
                   
                   <div className="relative z-10 flex flex-col">
                     {(() => {
-                      const L_seq = phase === 'idle' ? "?" : (phase === 'prefill' ? MOCK_PROMPT_TOKENS.length : 1);
-                      const L_cache = phase === 'idle' ? "?" : (phase === 'prefill' ? MOCK_PROMPT_TOKENS.length : MOCK_PROMPT_TOKENS.length + step);
+                      const L_seq = phase === 'idle' ? "?" : (phase === 'prefill' ? promptTokens.length : 1);
+                      const L_cache = phase === 'idle' ? "?" : (phase === 'prefill' ? promptTokens.length : promptTokens.length + step);
                       const dimD = "d"; const dimV = "V"; 
                       const seqColorClass = phase === 'prefill' ? 'text-amber-600' : (phase === 'decode' ? 'text-emerald-600' : 'text-slate-400');
                       const currentRouting = MOCK_EXPERT_ROUTING[Math.min(step, MOCK_EXPERT_ROUTING.length - 1)];
@@ -328,11 +500,11 @@ const App = () => {
                           {/* Module 1.5: RoPE 位置编码 */}
                           <div className={`p-2 rounded border transition-all duration-300 shadow-sm ${activeModule === 1.5 ? 'bg-fuchsia-50 border-fuchsia-400 ring-2 ring-fuchsia-200 scale-105 z-10' : 'bg-slate-50 border-slate-200 opacity-60'}`}>
                             <div className={`font-semibold text-xs md:text-sm text-center flex items-center justify-center gap-1 ${activeModule === 1.5 ? 'text-fuchsia-900' : 'text-slate-500'}`}>
-                              <Orbit size={14} className={activeModule === 1.5 ? 'animate-spin' : ''} /> RoPE 旋转位置编码
+                              <Orbit size={14} className={activeModule === 1.5 ? 'animate-spin' : ''} /> RoPE
                             </div>
                             <div className="mt-1 text-[10px] md:text-xs font-mono bg-white p-1.5 rounded border border-fuchsia-100 flex flex-col gap-1.5">
                               <div className="text-center text-fuchsia-700 font-semibold mb-1 opacity-80 border-b border-fuchsia-100 pb-1">
-                                {phase === 'idle' ? '等待输入序列...' : (phase === 'prefill' ? '依据绝对位置 m 进行多维旋转' : `当前生成词绝对位置: m=${MOCK_PROMPT_TOKENS.length + step}`)}
+                                {phase === 'idle' ? t('ropeWait') : (phase === 'prefill' ? t('ropePrefill') : `${t('ropeDecode')}${promptTokens.length + step}`)}
                               </div>
                               <div className="flex justify-between items-center bg-fuchsia-50 -mx-1 px-2 py-0.5 rounded border border-fuchsia-100">
                                 <span className="font-serif text-[11px] md:text-[13px] tracking-wide">
@@ -348,13 +520,13 @@ const App = () => {
                             ${activeModule === 4 ? 'border-amber-400 bg-amber-50/50 ring-4 ring-amber-200/50 scale-105 z-20 shadow-xl' : 'border-slate-200 border-dashed'}`}>
                              <div className="absolute -left-2 -top-3 bg-white px-2 text-[10px] font-bold text-slate-500 flex items-center gap-1 rounded border border-slate-200">
                                <Repeat size={12} className={activeModule === 4 ? 'animate-spin text-amber-500' : ''}/> 
-                               Transformer Block (×{TOTAL_LAYERS} Layers)
+                               {t('transformerBlock')}
                              </div>
                              
                              {/* 光速循环层数指示器 */}
                              {activeModule === 4 && (
                                <div className="absolute right-2 -top-4 bg-amber-500 text-white px-3 py-0.5 rounded-full text-[11px] font-bold shadow-lg animate-pulse flex items-center gap-1">
-                                 <Zap size={12}/> Looping Layer: {currentLayer} / {TOTAL_LAYERS}
+                                 <Zap size={12}/> {t('loopingLayer')}{currentLayer} / {TOTAL_LAYERS}
                                </div>
                              )}
 
@@ -390,7 +562,7 @@ const App = () => {
                                     <span className={`${seqColorClass} font-bold text-xs bg-slate-100 px-1 rounded`}>[{L_seq}, <span className="text-indigo-600">4d</span>]</span>
                                   </div>
                                   <div className="flex justify-between px-1">
-                                    <span className="font-serif text-[11px] md:text-[13px] tracking-wide"><span className="italic">Out</span> = <span className="italic">HW</span><sub className="not-italic">down</sub> :</span> 
+                                    <span className="font-serif text-[11px] md:text-[13px] tracking-wide">Output = <span className="italic">HW</span><sub className="not-italic">down</sub> :</span> 
                                     <span className={`${seqColorClass} font-bold text-xs bg-slate-100 px-1 rounded`}>[{L_seq}, {dimD}]</span>
                                   </div>
                                 </div>
@@ -402,7 +574,7 @@ const App = () => {
                                 </div>
                                 <div className="mt-1 text-[10px] md:text-xs font-mono bg-white p-1 md:p-1.5 rounded border border-teal-100 flex flex-col gap-1.5">
                                   <div className="flex justify-between px-1 opacity-60">
-                                    <span className="font-serif text-[11px] md:text-[13px] tracking-wide">Router 矩阵 <span className="italic">W</span><sub className="not-italic">g</sub>:</span> 
+                                    <span className="font-serif text-[11px] md:text-[13px] tracking-wide">{t('routerMatrix')} <span className="italic">W</span><sub className="not-italic">g</sub>:</span> 
                                     <span>[{dimD}, <span className="text-teal-600 font-bold">8</span>]</span>
                                   </div>
                                   <div className={`flex justify-between px-1 rounded transition-colors ${(activeModule === 3 || activeModule === 4) ? 'bg-amber-50 text-amber-800 border border-amber-200' : ''}`}>
@@ -425,13 +597,13 @@ const App = () => {
                                   {/* 恢复 Top-K 融合计算式 */}
                                   <div className={`flex flex-col bg-teal-50 -mx-1 px-1 md:px-2 py-1 rounded border transition-colors ${(activeModule === 3 || activeModule === 4) ? 'border-teal-300' : 'border-teal-100'}`}>
                                     <div className="flex justify-between items-center w-full mb-1">
-                                      <span className="text-teal-800 font-semibold">Top-2 融合:</span>
+                                      <span className="text-teal-800 font-semibold">{t('top2Fusion')}</span>
                                       <span className={`${seqColorClass} font-bold text-[10px] bg-white px-1 rounded border border-teal-100`}>[{L_seq}, {dimD}]</span>
                                     </div>
                                     <div className="text-[10px] md:text-[12px] text-teal-900 text-center tracking-wide font-serif">
                                       {activeModule >= 3 
-                                        ? <><span className="italic font-bold">Out</span> = {currentRouting.weights[0].toFixed(2)} &middot; <span className="italic">E</span><sub className="not-italic">{currentRouting.topK[0]}</sub> + {currentRouting.weights[1].toFixed(2)} &middot; <span className="italic">E</span><sub className="not-italic">{currentRouting.topK[1]}</sub></>
-                                        : <span className="font-sans font-normal text-[10px]">等待 Router 打分分发...</span>}
+                                        ? <><span className="italic font-bold">Output</span> = {currentRouting.weights[0].toFixed(2)} &middot; <span className="italic">E</span><sub className="not-italic">{currentRouting.topK[0]}</sub> + {currentRouting.weights[1].toFixed(2)} &middot; <span className="italic">E</span><sub className="not-italic">{currentRouting.topK[1]}</sub></>
+                                        : <span className="font-sans font-normal text-[10px]">{t('waitingRouter')}</span>}
                                     </div>
                                   </div>
                                 </div>
@@ -444,7 +616,7 @@ const App = () => {
 
                           {/* Module 4: LM Head & Probabilities */}
                           <div className={`p-2 md:p-3 rounded border transition-all duration-300 shadow-sm ${activeModule >= 5 ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-200 scale-105 z-10' : 'bg-slate-50 border-slate-200 opacity-60'}`}>
-                            <div className={`font-semibold text-xs md:text-sm text-center mb-2 ${activeModule >= 5 ? 'text-purple-900' : 'text-slate-500'}`}>LM Head & 温度采样 (T={temperature.toFixed(1)})</div>
+                            <div className={`font-semibold text-xs md:text-sm text-center mb-2 ${activeModule >= 5 ? 'text-purple-900' : 'text-slate-500'}`}>{t('lmHeadSample')} (T={temperature.toFixed(1)})</div>
                             <div className="text-[10px] md:text-xs font-mono bg-white p-1.5 rounded border border-purple-100 flex flex-col gap-1.5">
                               <div className="flex justify-between items-center bg-purple-50 -mx-1 px-2 py-0.5 rounded border border-purple-100">
                                 <span className="font-serif text-[11px] md:text-[13px] tracking-wide"><span className="italic">Logits</span> = <span className="italic">XW</span><sub className="not-italic">vocab</sub> :</span> 
@@ -453,8 +625,8 @@ const App = () => {
                             </div>
                             <div className="mt-3 pt-3 border-t border-purple-200">
                                <div className="text-[10px] font-semibold text-purple-600 mb-2 uppercase tracking-wider flex justify-between">
-                                 <span>采样概率分布 (Softmax)</span>
-                                 {activeModule === 6 && <span className="text-emerald-600 font-bold animate-pulse">预测完成 ✓</span>}
+                                 <span>{t('probDist')}</span>
+                                 {activeModule === 6 && <span className="text-emerald-600 font-bold animate-pulse">{t('predDone')}</span>}
                                </div>
                                {displayProbs ? (
                                  <div className="space-y-1.5 animate-fade-in">
@@ -470,7 +642,7 @@ const App = () => {
                                  </div>
                                ) : (
                                  <div className="text-center text-purple-400 text-[10px] italic py-2">
-                                   {activeModule > 0 && activeModule < 5 ? '等待层循环堆叠完成...' : '等待计算...'}
+                                   {activeModule > 0 && activeModule < 5 ? t('waitStack') : t('waitCalc')}
                                  </div>
                                )}
                             </div>
@@ -487,7 +659,7 @@ const App = () => {
             <div className="bg-slate-900 rounded-2xl p-6 shadow-lg border border-slate-800 text-slate-300 h-full flex flex-col min-w-0">
                <h2 className="text-lg font-semibold mb-4 flex items-center justify-between text-white shrink-0">
                  <div className="flex items-center gap-2">
-                   <Code className="text-emerald-400" size={20} /> 底层代码 <span className="text-xs text-slate-400 font-normal ml-2">(Python 伪代码)</span>
+                   <Code className="text-emerald-400" size={20} /> {t('codeTitle')} <span className="text-xs text-slate-400 font-normal ml-2">{t('pyCode')}</span>
                  </div>
                  {modelType === 'moe' && <span className="text-xs bg-teal-900/50 text-teal-400 px-2 py-1 rounded border border-teal-800">MoE Enabled</span>}
               </h2>
@@ -497,27 +669,27 @@ const App = () => {
                   
                   {/* Emb 高亮 */}
                   <div className={activeModule === 1 ? "bg-indigo-900/60 text-indigo-200 px-1 -mx-1 rounded" : "text-slate-400"}>
-                    <div>  <span className="text-slate-500"># Embedding</span></div>
-                    <div>  x = embedding(input_tokens) <span className="text-slate-500"># [L, d]</span></div>
+                    <div>  <span className="text-slate-500">{t('c_emb1')}</span></div>
+                    <div>  x = embedding(input_tokens) <span className="text-slate-500">{t('c_emb2')}</span></div>
                   </div>
                   <br/>
 
                   {/* RoPE 高亮 */}
                   <div className={activeModule === 1.5 ? "bg-fuchsia-900/50 text-fuchsia-200 px-1 -mx-1 rounded" : "text-slate-400"}>
-                    <div>  <span className="text-slate-500"># RoPE: 注入旋转位置编码 (让模型感知词序)</span></div>
-                    <div>  <span className="text-emerald-400">for</span> m, seq_x <span className="text-emerald-400">in</span> enumerate(x): <span className="text-slate-500"># m 为绝对位置</span></div>
+                    <div>  <span className="text-slate-500">{t('c_rope1')}</span></div>
+                    <div>  <span className="text-emerald-400">for</span> m, seq_x <span className="text-emerald-400">in</span> enumerate(x): <span className="text-slate-500">{t('c_rope2')}</span></div>
                     <div>      x[m] = apply_rotary_emb(seq_x, pos=m) </div>
                   </div>
                   <br/>
 
                   {/* Transformer Loop */}
                   <div className={activeModule === 4 ? "bg-amber-900/40 text-amber-200 px-1 -mx-1 rounded font-bold border-l-2 border-amber-400" : "text-emerald-400"}>
-                      <span className="text-emerald-400">for</span> layer <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>({TOTAL_LAYERS}): <span className="text-slate-500 font-normal"># 层循环堆叠</span>
+                      <span className="text-emerald-400">for</span> layer <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>({TOTAL_LAYERS}): <span className="text-slate-500 font-normal">{t('c_loop1')}</span>
                   </div>
 
                   {/* Attention 高亮 */}
                   <div className={activeModule === 2 ? "bg-blue-900/60 text-blue-200 px-1 -mx-1 rounded" : "text-slate-400"}>
-                    <div>      <span className="text-slate-500"># 注意力与 KV Cache</span></div>
+                    <div>      <span className="text-slate-500">{t('c_attn1')}</span></div>
                     <div>      q, k, v = x@W_q, x@W_k, x@W_v</div>
                     <div className={activeModule === 2 && phase === 'decode' ? "text-pink-300 font-bold" : ""}>      {phase === 'prefill' ? 'kv_cache.append(k, v)' : 'kv_cache.K = concat([kv_cache.K, k]); kv_cache.V = ...'}</div>
                     <div>      scores = (q @ kv_cache.K.T) / sqrt(d)</div>
@@ -528,13 +700,13 @@ const App = () => {
                   {/* FFN / MoE 高亮 */}
                   {modelType === 'dense' ? (
                     <div className={activeModule === 3 ? "bg-indigo-900/60 text-indigo-200 px-1 -mx-1 rounded" : "text-slate-400"}>
-                      <div>      <span className="text-slate-500"># Dense FFN</span></div>
+                      <div>      <span className="text-slate-500">{t('c_ffn1')}</span></div>
                       <div>      hidden = gelu(attn_out @ W_up)</div>
-                      <div>      x = x + (hidden @ W_down) <span className="text-slate-500"># 残差连接并进入下一层</span></div>
+                      <div>      x = x + (hidden @ W_down) <span className="text-slate-500">{t('c_ffn2')}</span></div>
                     </div>
                   ) : (
                     <div className={activeModule === 3 ? "bg-teal-900/50 text-teal-200 px-1 -mx-1 rounded" : "text-slate-400"}>
-                      <div>      <span className="text-slate-500"># Sparse MoE: 路由分发</span></div>
+                      <div>      <span className="text-slate-500">{t('c_moe1')}</span></div>
                       <div className={activeModule === 3 ? "text-amber-200 font-bold" : ""}>      r_scores = softmax(attn_out @ W_gate) </div>
                       <div className={activeModule === 3 ? "text-amber-200" : ""}>      weights, experts = topk(r_scores, k=2)</div>
                       <div>      moe_out = zeros_like(attn_out)</div>
@@ -542,16 +714,16 @@ const App = () => {
                       <div>          e_idx = experts[i]; w = weights[i]</div>
                       <div>          e_out = gelu(attn_out @ W_up[e_idx]) @ W_down[e_idx]</div>
                       <div className={activeModule === 3 ? "text-amber-200" : ""}>          moe_out += w * e_out</div>
-                      <div>      x = x + moe_out <span className="text-slate-500"># 残差连接</span></div>
+                      <div>      x = x + moe_out <span className="text-slate-500">{t('c_moe2')}</span></div>
                     </div>
                   )}
                   <br/>
 
                   {/* LM Head 高亮 */}
                   <div className={activeModule >= 5 ? "bg-purple-900/60 text-purple-200 px-1 -mx-1 rounded" : "text-slate-400"}>
-                    <div>  <span className="text-slate-500"># LM Head & 温度采样</span></div>
-                    <div>  logits = x[-1] @ W_vocab <span className="text-slate-500"># 映射到词表</span></div>
-                    <div className={activeModule >= 5 && temperature !== 1.0 ? "text-purple-300 font-bold" : ""}>  logits = logits / temp   <span className="text-slate-500"># 温度调整缩放</span></div>
+                    <div>  <span className="text-slate-500">{t('c_lm1')}</span></div>
+                    <div>  logits = x[-1] @ W_vocab <span className="text-slate-500">{t('c_lm2')}</span></div>
+                    <div className={activeModule >= 5 && temperature !== 1.0 ? "text-purple-300 font-bold" : ""}>  logits = logits / temp   <span className="text-slate-500">{t('c_lm3')}</span></div>
                     <div>  probs = softmax(logits)</div>
                     <div>  <span className="text-emerald-400">return</span> sample(probs)</div>
                   </div>
@@ -564,45 +736,45 @@ const App = () => {
           <div className="bg-indigo-900 text-indigo-50 rounded-2xl p-6 md:p-8 shadow-lg">
             <h3 className="text-xl font-bold mb-6 text-white flex items-center gap-2">
               <Zap className="text-amber-400" size={24}/>
-              当前微观执行状态
+              {t('stateTitle')}
             </h3>
             
             <div className="space-y-4 text-sm md:text-base leading-relaxed max-w-5xl">
               {activeModule === 0 && (
-                <p className="opacity-90">等待开始。当前选择：<strong className="text-amber-300">{modelType === 'moe' ? 'MoE 稀疏架构' : 'Dense 稠密架构'}</strong>。请点击“开始计算”。</p>
+                <p className="opacity-90">{t('waitStartMsg1')}<strong className="text-amber-300">{modelType === 'moe' ? t('moeSparse') : t('denseDense')}</strong>{t('waitStartMsg2')}</p>
               )}
               
               {activeModule === 1 && (
                 <div className="animate-fade-in">
-                  <h4 className="font-bold text-indigo-300 text-base mb-2">Embedding 阶段</h4>
-                  <p className="opacity-90">{phase === 'prefill' ? '并行读取整个 Prompt。' : '【自回归现象】提取上轮生成的 Token 作为当前唯一输入。'}</p>
+                  <h4 className="font-bold text-indigo-300 text-base mb-2">{t('stateEmbTitle')}</h4>
+                  <p className="opacity-90">{phase === 'prefill' ? t('stateEmbPrefill') : t('stateEmbDecode')}</p>
                 </div>
               )}
 
               {activeModule === 1.5 && (
                 <div className="animate-fade-in">
-                  <h4 className="font-bold text-fuchsia-300 text-base mb-2 flex items-center gap-2"><Orbit size={16}/> RoPE 位置编码</h4>
+                  <h4 className="font-bold text-fuchsia-300 text-base mb-2 flex items-center gap-2"><Orbit size={16}/> {t('stateRopeTitle')}</h4>
                   <p className="opacity-90">
-                    Transformer 本身是无视词序的。RoPE 通过将词向量当作复数平面的点，根据其所在的绝对位置 $m$，进行特定角度 $\theta$ 的<strong>旋转变换</strong>。<br/>
-                    <span className="text-xs text-fuchsia-200 mt-1 block">这样后续在算 Attention 向量点积时，模型就能自动感知词与词之间的相对距离！</span>
+                    {t('stateRopeDesc1')}<br/>
+                    <span className="text-xs text-fuchsia-200 mt-1 block">{t('stateRopeDesc2')}</span>
                   </p>
                 </div>
               )}
 
               {activeModule === 2 && (
                 <div className="animate-fade-in">
-                  <h4 className="font-bold text-blue-300 text-base mb-2">Attention 机制与缓存</h4>
-                  <p className="opacity-90">{phase === 'prefill' ? '将计算出的 K, V 并行写入显存池。' : '【显存墙瓶颈】模型必须读取全部历史 KV Cache (粉色维度) 来计算当前的注意力分布。'}</p>
+                  <h4 className="font-bold text-blue-300 text-base mb-2">{t('stateAttnTitle')}</h4>
+                  <p className="opacity-90">{phase === 'prefill' ? t('stateAttnPrefill') : t('stateAttnDecode')}</p>
                 </div>
               )}
 
               {activeModule === 3 && (
                 <div className="animate-fade-in">
                   {modelType === 'dense' ? (
-                    <><h4 className="font-bold text-indigo-300 text-base mb-2">Dense FFN</h4><p className="opacity-90">全量激活巨大的矩阵网络提取知识特征。</p></>
+                    <><h4 className="font-bold text-indigo-300 text-base mb-2">{t('stateDenseTitle')}</h4><p className="opacity-90">{t('stateDenseDesc')}</p></>
                   ) : (
-                    <><h4 className="font-bold text-teal-300 text-base mb-2 flex items-center gap-2"><Network size={16}/> MoE 稀疏路由</h4>
-                      <p className="opacity-90">Router 对 8 个专家进行打分，仅激活 <strong className="text-amber-300">Top-2</strong> 专家进行推理，最后加权融合。</p>
+                    <><h4 className="font-bold text-teal-300 text-base mb-2 flex items-center gap-2"><Network size={16}/> {t('stateMoeTitle')}</h4>
+                      <p className="opacity-90">{t('stateMoeDesc1')}<strong className="text-amber-300">Top-2</strong>{t('stateMoeDesc2')}</p>
                     </>
                   )}
                 </div>
@@ -610,19 +782,19 @@ const App = () => {
 
               {activeModule === 4 && (
                 <div className="animate-fade-in">
-                  <h4 className="font-bold text-amber-300 text-base mb-2 flex items-center gap-2"><Repeat size={16}/> 深度循环堆叠 (N-Layers)</h4>
-                  <p className="opacity-90">大模型的“大”也体现在深度上。Attention 和 FFN 组成了一个 Block，数据不是走一遍就结束了，而是要通过残差连接，<strong className="text-white">反复堆叠计算 {TOTAL_LAYERS} 次</strong> 才能进入最后阶段！</p>
+                  <h4 className="font-bold text-amber-300 text-base mb-2 flex items-center gap-2"><Repeat size={16}/> {t('stateLoopTitle')}</h4>
+                  <p className="opacity-90">{t('stateLoopDesc1')}<strong className="text-white">{t('stateLoopDesc2')}{TOTAL_LAYERS}{t('stateLoopDesc3')}</strong>{t('stateLoopDesc4')}</p>
                 </div>
               )}
 
               {activeModule >= 5 && (
                 <div className="animate-fade-in">
-                  <h4 className="font-bold text-purple-300 text-base mb-2 flex items-center gap-2"><SlidersHorizontal size={16}/> LM Head & 温度采样</h4>
+                  <h4 className="font-bold text-purple-300 text-base mb-2 flex items-center gap-2"><SlidersHorizontal size={16}/> {t('stateLmTitle')}</h4>
                   <ul className="list-disc pl-4 space-y-2 opacity-90">
-                    <li>特征被映射为涵盖整个词表的 Logits (得分)。</li>
-                    <li><strong className="text-amber-300">温度(T)缩放：</strong>你可以拖动上方滑块试试！
-                      <br/>`T &lt; 1`: 放大概率差异，强制模型输出最可能的词（适合写代码）。
-                      <br/>`T &gt; 1`: 缩小概率差异，长尾词也能被抽中（适合发散创作）。
+                    <li>{t('stateLmDesc1')}</li>
+                    <li><strong className="text-amber-300">{t('stateLmDesc2')}</strong>{t('stateLmDesc3')}
+                      <br/>{t('stateLmDesc4')}
+                      <br/>{t('stateLmDesc5')}
                     </li>
                   </ul>
                 </div>
@@ -632,8 +804,8 @@ const App = () => {
                 <div className="animate-fade-in py-4 border-t border-indigo-700/50 mt-4 pt-4 flex items-center gap-4">
                   <div className="p-3 bg-emerald-800 rounded-full shrink-0"><Zap className="text-emerald-400" size={24} /></div>
                   <div>
-                    <h4 className="font-bold text-emerald-300 text-base md:text-lg">Token 生成完毕</h4>
-                    <p className="opacity-80 mt-1 text-sm">通过采样掷骰子选中下一个词，准备丢回起点循环。</p>
+                    <h4 className="font-bold text-emerald-300 text-base md:text-lg">{t('stateDoneTitle')}</h4>
+                    <p className="opacity-80 mt-1 text-sm">{t('stateDoneDesc')}</p>
                   </div>
                 </div>
               )}
