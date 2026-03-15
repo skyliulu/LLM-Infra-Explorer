@@ -25,7 +25,46 @@ const i18n = {
     ioWriteO: '写回 O 归一化块',
     done: '完成',
     physical: '物理层数据交换视图',
-    ioTraffic: '显存 IO 累计流量 (HBM)'
+    ioTraffic: '显存 IO 累计流量 (HBM)',
+    hbmTitle: 'HBM (主显存)',
+    sramTitle: 'SRAM (计算核心)',
+    microPipeline: '微观计算流水线',
+    memInit: '显存初始化',
+    allocHbm: 'allocate_hbm(N×N) // 分配庞大空间',
+    calcScore: '1. 计算 Attention Scores',
+    globalSoftmax: '2. 全局 Softmax',
+    outputAgg: '3. 输出聚合',
+    hwDecouple: '硬件感知解耦计算',
+    outerLoop: 'Outer Loop (Q块)',
+    innerLoop: 'Inner Loop (KV块)',
+    skipFuture: 'K完全在未来 → 物理拦截',
+    partialMask: '索引有交集 → 应用局部掩码',
+    fullCalc: 'K完全在过去 → 全量计算',
+    underlyingCode: '底层代码实现',
+    pyComment1: '# 申请极大的 HBM 空间',
+    pyComment2: '# 暴力计算并写入 HBM',
+    pyComment3: '# 从 HBM 读出并计算 Softmax',
+    pyComment4: '# 最后一次低效读写',
+    pyComment5: '# 硬件解耦切分',
+    pyComment6: '# 统一归一化写回',
+    principleAnalysis: '深度原理解析',
+    operatorStandby: '算子待命中...',
+    memWallTitle: '显存墙的统治',
+    memWallDesc: '在 N=192 时，中间矩阵 S 有 36,864 个元素。如果模型参数增大到 N=8K，单头显存即达惊人的 256MB。频繁的读写导致 GPU 带宽成为绝对瓶颈。',
+    splitPhysical: '1. 物理维度切分',
+    splitPhysicalDesc: '切块是在序列维度 N 上进行的。由于引入了 Br=64 和 Bc=96，内层循环每次只计算 64 × 96 的局部乘法，完美常驻在极快的 SRAM 中。',
+    dynamicExp: '2. 动态指数修正',
+    dynamicExpDesc: 'Softmax 分母 l 在计算中累积。引入 exp(m - m_new) 因子，使得旧有结果能按比例正确“缩减”，从而保证了数学上的完全等价。',
+    causalMask: '3. 因果掩码策略',
+    causalMaskRule1: '1. K 位于 Q 之前: 无需掩码',
+    causalMaskRule2: '2. K 与 Q 交叉: 局部掩码',
+    causalMaskRule3: '3. K 位于 Q 之后: 物理级跳过',
+    coreBreakthrough: '核心突破：O(N) IO 复杂度',
+    coreBreakthroughDesc: '通过以上三套机制的完美融合，Flash Attention 彻底消灭了 N² 级别的中间结果读写。显存访问量断崖式下降，让大模型的上下文长度得以指数级扩展。',
+    normWriteBack: 'Normalize & Write-Back',
+    safeExp: 'Safe Exp',
+    skipText: '🚫 SKIP',
+    skipLoad: 'Skip Load',
   },
   en: {
     title: 'Flash Attention Principle Visualization',
@@ -36,8 +75,8 @@ const i18n = {
     reset: 'Reset',
     pause: 'Pause',
     replay: 'Replay',
-    play: '播放',
-    next: '下一步',
+    play: 'Play',
+    next: 'Next',
     ioIdle: 'IO Idle',
     ioAlloc: 'Allocate memory address',
     ioQKS: 'Read Q,K / Write S',
@@ -50,7 +89,46 @@ const i18n = {
     ioWriteO: 'Write back normalized O tile',
     done: 'Done',
     physical: 'Physical Data Exchange View',
-    ioTraffic: 'Accumulated HBM IO Traffic'
+    ioTraffic: 'Accumulated HBM IO Traffic',
+    hbmTitle: 'HBM (Main Memory)',
+    sramTitle: 'SRAM (Compute Core)',
+    microPipeline: 'Micro Computing Pipeline',
+    memInit: 'Memory Initialization',
+    allocHbm: 'allocate_hbm(N×N) // Allocate massive space',
+    calcScore: '1. Compute Attention Scores',
+    globalSoftmax: '2. Global Softmax',
+    outputAgg: '3. Output Aggregation',
+    hwDecouple: 'Hardware-Aware Decoupling',
+    outerLoop: 'Outer Loop (Q Tile)',
+    innerLoop: 'Inner Loop (KV Tile)',
+    skipFuture: 'K in future → Physical Intercept',
+    partialMask: 'Indices overlap → Apply partial mask',
+    fullCalc: 'K in past → Full calculation',
+    underlyingCode: 'Underlying Code Implementation',
+    pyComment1: '# Allocate massive HBM space',
+    pyComment2: '# Brute-force compute & write to HBM',
+    pyComment3: '# Read from HBM & compute Softmax',
+    pyComment4: '# Final inefficient I/O',
+    pyComment5: '# Hardware-decoupled tiling',
+    pyComment6: '# Unified normalization & write-back',
+    principleAnalysis: 'Deep Principle Analysis',
+    operatorStandby: 'Operator standing by...',
+    memWallTitle: 'The Reign of Memory Wall',
+    memWallDesc: 'At N=192, matrix S has 36,864 elements. If parameters scale to N=8K, single-head memory reaches 256MB. Frequent I/O makes GPU bandwidth an absolute bottleneck.',
+    splitPhysical: '1. Physical Dimension Splitting',
+    splitPhysicalDesc: 'Tiling operates on sequence dimension N. With Br=64 and Bc=96, the inner loop computes a 64×96 local GEMM, residing perfectly in ultra-fast SRAM.',
+    dynamicExp: '2. Dynamic Exponent Correction',
+    dynamicExpDesc: 'Softmax denominator l accumulates. The exp(m - m_new) factor properly scales down old results, ensuring mathematical equivalence.',
+    causalMask: '3. Causal Mask Strategy',
+    causalMaskRule1: '1. K before Q: No mask needed',
+    causalMaskRule2: '2. K intersects Q: Partial mask',
+    causalMaskRule3: '3. K after Q: Physical skip',
+    coreBreakthrough: 'Core Breakthrough: O(N) IO Complexity',
+    coreBreakthroughDesc: 'Fusing these mechanisms, Flash Attention eliminates N² intermediate I/O. Memory accesses plummet, allowing exponential scaling of LLM context lengths.',
+    normWriteBack: 'Normalize & Write-Back',
+    safeExp: 'Safe Exp',
+    skipText: '🚫 SKIP',
+    skipLoad: 'Skip Load',
   }
 };
 
@@ -291,7 +369,7 @@ const App = () => {
               {/* 核心改动：flex-[2] md:flex-[2.5] 确保 HBM 并排放下 4 个矩阵 */}
               <div className="flex-[2] lg:flex-[2.5] bg-slate-100 rounded-2xl border-2 border-slate-300 p-3 md:p-4 flex flex-col items-center relative shadow-sm w-full">
                 <div className="font-bold text-slate-700 flex items-center gap-1 bg-white px-3 py-1 rounded-full shadow-sm mb-3 border border-slate-200 text-xs z-10">
-                  <Database size={14} className="text-blue-500"/> HBM (主显存)
+                  <Database size={14} className="text-blue-500"/> {t('hbmTitle')}
                 </div>
                 
                 <div className="w-full flex-1 flex flex-col justify-start relative pt-1">
@@ -372,7 +450,7 @@ const App = () => {
               {/* 核心改动：flex-1 控制 SRAM 不会过度拉伸 */}
               <div className="flex-1 bg-amber-50 rounded-2xl border-2 border-amber-300 p-3 md:p-4 flex flex-col items-center relative shadow-lg ring-1 ring-amber-100 w-full">
                 <div className="font-bold text-amber-800 flex items-center gap-1 bg-white px-3 py-1 rounded-full shadow-sm mb-3 border border-amber-200 text-xs z-10">
-                  <Cpu size={14} className="text-amber-500"/> SRAM (计算核心)
+                  <Cpu size={14} className="text-amber-500"/> {t('sramTitle')}
                 </div>
                 
                 <div className="flex-1 w-full flex flex-col items-center justify-center gap-3 md:gap-5">
@@ -407,7 +485,7 @@ const App = () => {
                           <span className="text-[10px] md:text-xs text-amber-600 font-black uppercase">KV-Tiles</span>
                           <span className="text-[8px] font-mono text-slate-400">Col Block</span>
                         </div>
-                        {fs.state === 'skip' && <div className="absolute inset-0 bg-rose-600/90 text-white text-[10px] md:text-xs font-black rounded-xl flex flex-col items-center justify-center z-20 ring-2 ring-white ring-inset shadow-lg uppercase"><EyeOff size={18} className="mb-1"/> Skip Load</div>}
+                        {fs.state === 'skip' && <div className="absolute inset-0 bg-rose-600/90 text-white text-[10px] md:text-xs font-black rounded-xl flex flex-col items-center justify-center z-20 ring-2 ring-white ring-inset shadow-lg uppercase"><EyeOff size={18} className="mb-1"/> {t('skipLoad')}</div>}
                         <div className={`flex gap-3 md:gap-4 items-end transition-all duration-300 ${fs.state === 'skip' ? 'opacity-20 blur-[1px]' : ''}`}>
                           <div className="flex flex-col items-center">
                             <div className={`w-14 md:w-[72px] lg:w-24 aspect-[3/2] rounded-lg flex items-center justify-center font-serif text-xs md:text-sm font-black transition-all ${fs.j > 0 ? 'bg-amber-100 text-amber-900 border-2 border-amber-500 scale-105 shadow-md' : 'bg-slate-50 text-slate-300 border border-slate-200 opacity-30'}`}>
@@ -454,7 +532,7 @@ const App = () => {
             <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col min-w-0">
                <h2 className="text-base md:text-lg font-semibold mb-4 md:mb-6 flex items-center justify-between shrink-0 border-b pb-2 border-slate-100">
                 <div className="flex items-center gap-2 text-slate-700">
-                  <Layers size={20} className="text-indigo-500" /> 微观计算流水线
+                  <Layers size={20} className="text-indigo-500" /> {t('microPipeline')}
                 </div>
               </h2>
 
@@ -463,19 +541,19 @@ const App = () => {
                   {modelType === 'standard' ? (
                     <>
                       <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${activeModule === 1 ? 'bg-slate-800 border-slate-900 text-white scale-105 shadow-xl' : 'bg-slate-50 border-slate-200 text-slate-400 opacity-70'}`}>
-                        <div className="font-bold text-xs uppercase mb-2 flex items-center gap-2"><Wrench size={14}/> 显存初始化</div>
-                        <div className="font-mono text-[11px] opacity-80">allocate_hbm(N×N) // 分配庞大空间</div>
+                        <div className="font-bold text-xs uppercase mb-2 flex items-center gap-2"><Wrench size={14}/> {t('memInit')}</div>
+                        <div className="font-mono text-[11px] opacity-80">{t('allocHbm')}</div>
                       </div>
                       <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${activeModule === 2 ? 'bg-blue-100 border-blue-400 text-blue-900 scale-105 shadow-md' : 'bg-white border-slate-200 text-slate-400 opacity-60'}`}>
-                        <div className="font-bold text-xs uppercase mb-2">1. 计算 Attention Scores</div>
+                        <div className="font-bold text-xs uppercase mb-2">{t('calcScore')}</div>
                         <div className="font-serif italic font-black text-center text-sm md:text-base">S = QK<sup>T</sup> + Mask</div>
                       </div>
                       <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${activeModule === 3 ? 'bg-fuchsia-100 border-fuchsia-400 text-fuchsia-900 scale-105 shadow-md' : 'bg-white border-slate-200 text-slate-400 opacity-60'}`}>
-                        <div className="font-bold text-xs uppercase mb-2">2. 全局 Softmax</div>
+                        <div className="font-bold text-xs uppercase mb-2">{t('globalSoftmax')}</div>
                         <div className="font-serif italic font-black text-center text-sm md:text-base">P = Softmax(S)</div>
                       </div>
                       <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${activeModule >= 4 ? 'bg-purple-100 border-purple-400 text-purple-900 scale-105 shadow-md' : 'bg-white border-slate-200 text-slate-400 opacity-60'}`}>
-                        <div className="font-bold text-xs uppercase mb-2">3. 输出聚合</div>
+                        <div className="font-bold text-xs uppercase mb-2">{t('outputAgg')}</div>
                         <div className="font-serif italic font-black text-center text-sm md:text-base">O = PV</div>
                       </div>
                     </>
@@ -483,7 +561,7 @@ const App = () => {
                     <div className="w-full flex flex-col gap-3">
                       {/* Setup */}
                       <div className={`p-3 rounded-xl border-2 transition-all duration-300 shadow-sm ${activeModule === 1 ? 'bg-slate-800 border-slate-900 text-white scale-[1.02] shadow-xl' : 'bg-white/60 border-slate-200 text-slate-500'}`}>
-                        <div className="font-bold text-[11px] mb-1 flex items-center gap-2"><Wrench size={14}/> 硬件感知解耦计算</div>
+                        <div className="font-bold text-[11px] mb-1 flex items-center gap-2"><Wrench size={14}/> {t('hwDecouple')}</div>
                         <div className="flex flex-col gap-1 text-[10px] md:text-[11px] font-mono border-t border-slate-700 pt-1.5 mt-1">
                           <div className="flex justify-between">
                             <span className={`${activeModule === 1 ? 'text-amber-400' : ''}`}>Bc = ceil(M / (4*d))</span>
@@ -498,7 +576,7 @@ const App = () => {
 
                       {/* Outer Loop */}
                       <div className="border-2 border-rose-300 rounded-2xl p-3 md:p-4 bg-rose-50/50 relative shadow-inner">
-                         <div className="absolute -top-3 left-4 bg-white px-2 text-[10px] font-black text-rose-600 border border-rose-200 rounded-full">Outer Loop (Q块)</div>
+                         <div className="absolute -top-3 left-4 bg-white px-2 text-[10px] font-black text-rose-600 border border-rose-200 rounded-full">{t('outerLoop')}</div>
                          <div className="font-mono text-[11px] text-rose-800 mb-3 mt-1 flex flex-wrap gap-2">
                            {[1, 2, 3].map(idx => {
                              const isActive = fs.i === idx;
@@ -512,7 +590,7 @@ const App = () => {
 
                          {/* Inner Loop */}
                          <div className={`border-2 border-amber-400 rounded-xl p-3 md:p-4 bg-amber-50/80 relative mt-4 transition-all duration-500 ${(fs.j > 0) ? 'opacity-100 shadow-md ring-4 ring-amber-500/10' : 'opacity-40 border-dashed blur-[0.5px]'}`}>
-                            <div className="absolute -top-3 left-4 bg-white px-2 text-[10px] font-bold text-amber-700 border border-amber-200 rounded-full">Inner Loop (KV块)</div>
+                            <div className="absolute -top-3 left-4 bg-white px-2 text-[10px] font-bold text-amber-700 border border-amber-200 rounded-full">{t('innerLoop')}</div>
                             <div className="font-mono text-[11px] text-amber-800 mb-3 mt-1 flex flex-wrap gap-2 md:gap-3 relative">
                              {[1, 2].map(idx => {
                                const isActive = fs.j === idx;
@@ -520,7 +598,7 @@ const App = () => {
                                return (
                                <span key={idx} className={`px-2 py-1 rounded-lg border-2 transition-all duration-300 relative ${isActive ? 'bg-amber-600 text-white font-bold scale-105 shadow-md border-amber-700' : 'bg-white border-amber-200 opacity-50'}`}>
                                  KV[{ranges[idx-1]}]
-                                 {isActive && fs.mask === 'skip' && <div className="absolute -top-8 left-0 bg-rose-600 text-white text-[9px] px-2 py-1 rounded-full font-sans font-black shadow-xl animate-bounce border border-white whitespace-nowrap z-20">🚫 SKIP</div>}
+                                 {isActive && fs.mask === 'skip' && <div className="absolute -top-8 left-0 bg-rose-600 text-white text-[9px] px-2 py-1 rounded-full font-sans font-black shadow-xl animate-bounce border border-white whitespace-nowrap z-20">{t('skipText')}</div>}
                                </span>
                              )})}
                             </div>
@@ -534,9 +612,9 @@ const App = () => {
                                   <span>Q:[{fs.rangeQ}]</span> vs <span>K:[{fs.rangeK}]</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                  {fs.mask === 'skip' ? <><EyeOff size={14}/> K完全在未来 → 物理拦截</> : 
-                                   (fs.mask === 'partial' ? <><Info size={14}/> 索引有交集 → 应用局部掩码</> : 
-                                   <><CheckCircle2 size={14}/> K完全在过去 → 全量计算</>)}
+                                  {fs.mask === 'skip' ? <><EyeOff size={14}/> {t('skipFuture')}</> : 
+                                   (fs.mask === 'partial' ? <><Info size={14}/> {t('partialMask')}</> : 
+                                   <><CheckCircle2 size={14}/> {t('fullCalc')}</>)}
                                 </div>
                               </div>
                             )}
@@ -548,7 +626,7 @@ const App = () => {
                               </div>
                               <div className="flex items-center justify-between text-emerald-700 font-bold">
                                 <span>m<sup className="not-italic">new</sup> = max(m, max(S<sub className="not-italic">ij</sub>))</span>
-                                <span className="text-[8px] font-sans opacity-60 bg-emerald-50 px-1 rounded uppercase tracking-tighter border border-emerald-100">Safe Exp</span>
+                                <span className="text-[8px] font-sans opacity-60 bg-emerald-50 px-1 rounded uppercase tracking-tighter border border-emerald-100">{t('safeExp')}</span>
                               </div>
                               <div className="flex justify-between text-emerald-700 font-bold border-b pb-1.5 border-emerald-50">
                                 <span>l<sup className="not-italic">new</sup> = exp(m-m<sup>new</sup>)&middot;l + &sum;exp(S<sub className="not-italic">ij</sub>-m<sup>new</sup>)</span>
@@ -565,7 +643,7 @@ const App = () => {
                          </div>
 
                          <div className={`mt-4 flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-500 shadow-md ${fs.state === 'write_o' ? 'bg-emerald-600 border-emerald-700 scale-[1.02] text-white' : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50'}`}>
-                           <div className="text-center text-[9px] font-bold mb-1 font-mono">Normalize & Write-Back</div>
+                           <div className="text-center text-[9px] font-bold mb-1 font-mono">{t('normWriteBack')}</div>
                            <div className={`font-serif text-[13px] font-black px-6 py-1 rounded-full border-2 transition-all ${fs.state === 'write_o' ? 'bg-white text-emerald-900' : 'bg-slate-200 border-slate-300'}`}>
                              O<sub className="not-italic">{fs.i || 'i'}</sub> = (1 / l) &middot; O<sub className="not-italic">{fs.i || 'i'}</sub>
                            </div>
@@ -581,7 +659,7 @@ const App = () => {
             <div className="bg-slate-900 rounded-2xl p-5 md:p-6 shadow-lg border border-slate-800 text-slate-300 h-full flex flex-col min-w-0">
                <h2 className="text-base md:text-lg font-semibold mb-4 text-white border-b border-slate-700 pb-2 flex items-center justify-between">
                  <div className="flex items-center gap-2">
-                   <Code className="text-emerald-400" size={20} /> 底层代码实现
+                   <Code className="text-emerald-400" size={20} /> {t('underlyingCode')}
                  </div>
                  <span className="text-[10px] text-slate-400 font-mono border border-slate-700 px-2 py-0.5 rounded bg-slate-800">Python</span>
               </h2>
@@ -591,23 +669,23 @@ const App = () => {
                     <div><span className="text-emerald-400">def</span> <span className="text-blue-400">standard_attention</span>(Q, K, V):</div>
                     <br/>
                     <div className={activeModule === 1 ? "bg-slate-800 text-slate-100 px-2 -mx-2 rounded border-l-2 border-slate-500 font-bold" : "text-slate-500"}>
-                      <div>  <span className="text-slate-600"># 申请极大的 HBM 空间</span></div>
+                      <div>  <span className="text-slate-600">{t('pyComment1')}</span></div>
                       <div>  S_buf = allocate(N, N) <span className="text-rose-500"># O(N²)</span></div>
                       <div>  P_buf = allocate(N, N)</div>
                     </div>
                     <br/>
                     <div className={activeModule === 2 ? "bg-blue-900/60 text-blue-100 px-2 -mx-2 rounded border-l-2 border-blue-400" : "text-slate-500"}>
-                      <div>  <span className="text-slate-600"># 暴力计算并写入 HBM</span></div>
+                      <div>  <span className="text-slate-600">{t('pyComment2')}</span></div>
                       <div>  S_buf = Q @ K.T + Mask</div>
                     </div>
                     <br/>
                     <div className={activeModule === 3 ? "bg-fuchsia-900/50 text-fuchsia-100 px-2 -mx-2 rounded border-l-2 border-fuchsia-400" : "text-slate-500"}>
-                      <div>  <span className="text-slate-600"># 从 HBM 读出并计算 Softmax</span></div>
+                      <div>  <span className="text-slate-600">{t('pyComment3')}</span></div>
                       <div>  P_buf = softmax(S_buf)</div>
                     </div>
                     <br/>
                     <div className={activeModule >= 4 ? "bg-purple-900/60 text-purple-100 px-2 -mx-2 rounded border-l-2 border-purple-400" : "text-slate-500"}>
-                      <div>  <span className="text-slate-600"># 最后一次低效读写</span></div>
+                      <div>  <span className="text-slate-600">{t('pyComment4')}</span></div>
                       <div>  O = P_buf @ V</div>
                       <div>  <span className="text-emerald-400">return</span> O</div>
                     </div>
@@ -617,7 +695,7 @@ const App = () => {
                     <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_attention</span>(Q, K, V):</div>
                     <br/>
                     <div className={activeModule === 1 ? "bg-slate-800 text-slate-100 px-2 -mx-2 rounded border-l-2 border-slate-500 font-bold" : "text-slate-500"}>
-                      <div>  <span className="text-slate-600"># 硬件解耦切分</span></div>
+                      <div>  <span className="text-slate-600">{t('pyComment5')}</span></div>
                       <div>  Bc = ceil(M / (4*d)); Br = min(Bc, d)</div>
                     </div>
                     <br/>
@@ -640,7 +718,7 @@ const App = () => {
                       <div>          m, l = m_new, l_new</div>
                     </div>
                     <div className={fs.state === 'write_o' ? "bg-emerald-900/60 text-emerald-100 px-2 -mx-2 rounded border-l-2 border-emerald-500 font-bold mt-1" : "text-slate-500 mt-1"}>
-                      <div>      O[i] = (1 / l) * O_i <span className="text-slate-600"># 统一归一化写回</span></div>
+                      <div>      O[i] = (1 / l) * O_i <span className="text-slate-600">{t('pyComment6')}</span></div>
                     </div>
                   </div>
                 )}
@@ -652,23 +730,23 @@ const App = () => {
           <div className="w-full">
             <div className="bg-indigo-900 text-indigo-50 rounded-2xl p-6 shadow-xl border border-indigo-700">
               <h3 className="text-lg font-bold mb-6 text-white border-b border-indigo-600 pb-3 flex items-center gap-2 uppercase tracking-widest text-sm">
-                <Info size={18} className="text-indigo-300"/> 深度原理解析
+                <Info size={18} className="text-indigo-300"/> {t('principleAnalysis')}
               </h3>
               
               <div className="text-sm leading-relaxed text-[13px]">
                 {activeModule === 0 && (
                   <div className="text-center py-10 opacity-40">
                     <Database size={64} className="mx-auto mb-4 animate-pulse"/>
-                    <p className="font-bold">算子待命中...</p>
+                    <p className="font-bold">{t('operatorStandby')}</p>
                   </div>
                 )}
                 
                 {modelType === 'standard' && activeModule >= 1 && (
                   <div className="animate-fade-in max-w-4xl mx-auto">
                     <div className="p-5 bg-rose-950/40 rounded-xl border border-rose-800 shadow-sm text-center">
-                      <h4 className="font-bold text-rose-300 text-base mb-2">显存墙的统治</h4>
+                      <h4 className="font-bold text-rose-300 text-base mb-2">{t('memWallTitle')}</h4>
                       <p className="opacity-90 leading-snug">
-                        在 N={N} 时，中间矩阵 S 有 {(N*N).toLocaleString()} 个元素。如果模型参数增大到 N=8K，单头显存即达惊人的 256MB。频繁的读写导致 GPU 带宽成为绝对瓶颈。
+                        {t('memWallDesc')}
                       </p>
                     </div>
                   </div>
@@ -679,25 +757,25 @@ const App = () => {
                     {/* 使用 3 列网格排布说明卡片 */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div className="p-4 bg-indigo-950/50 rounded-xl border border-indigo-700 h-full">
-                        <h4 className="font-bold text-emerald-300 text-sm mb-2 flex items-center gap-1.5"><Zap size={14}/> 1. 物理维度切分</h4>
+                        <h4 className="font-bold text-emerald-300 text-sm mb-2 flex items-center gap-1.5"><Zap size={14}/> {t('splitPhysical')}</h4>
                         <p className="opacity-80 leading-snug">
-                          切块是在序列维度 N 上进行的。由于引入了 Br=64 和 Bc=96，内层循环每次只计算 64 × 96 的局部乘法，完美常驻在极快的 SRAM 中。
+                          {t('splitPhysicalDesc')}
                         </p>
                       </div>
 
                       <div className="p-4 bg-amber-950/50 rounded-xl border border-amber-800 h-full">
-                        <h4 className="font-bold text-amber-300 text-sm mb-2 flex items-center gap-1.5"><RefreshCw size={14}/> 2. 动态指数修正</h4>
+                        <h4 className="font-bold text-amber-300 text-sm mb-2 flex items-center gap-1.5"><RefreshCw size={14}/> {t('dynamicExp')}</h4>
                         <p className="opacity-80 leading-snug">
-                          Softmax 分母 l 在计算中累积。引入 exp(m - m<sub className="not-italic">new</sub>) 因子，使得旧有结果能按比例正确“缩减”，从而保证了数学上的完全等价。
+                          {t('dynamicExpDesc')}
                         </p>
                       </div>
 
                       <div className="p-4 bg-rose-950/50 rounded-xl border border-rose-800 h-full">
-                        <h4 className="font-bold text-rose-300 text-sm mb-2 flex items-center gap-1.5"><EyeOff size={14}/> 3. 因果掩码策略</h4>
+                        <h4 className="font-bold text-rose-300 text-sm mb-2 flex items-center gap-1.5"><EyeOff size={14}/> {t('causalMask')}</h4>
                         <p className="opacity-80 leading-snug font-mono bg-black/20 p-2 rounded mt-1">
-                          1. K 位于 Q 之前: 无需掩码<br/>
-                          2. K 与 Q 交叉: 局部掩码<br/>
-                          3. K 位于 Q 之后: 物理级跳过
+                          {t('causalMaskRule1')}<br/>
+                          {t('causalMaskRule2')}<br/>
+                          {t('causalMaskRule3')}
                         </p>
                       </div>
                     </div>
@@ -707,10 +785,10 @@ const App = () => {
                       <div className="p-5 bg-emerald-950/40 rounded-xl border border-emerald-700 shadow-sm animate-fade-in relative overflow-hidden mt-2 max-w-4xl mx-auto w-full">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
                         <h4 className="font-bold text-emerald-400 text-lg mb-2 flex items-center justify-center gap-2">
-                          <CheckCircle2 size={20}/> 核心突破：O(N) IO 复杂度
+                          <CheckCircle2 size={20}/> {t('coreBreakthrough')}
                         </h4>
                         <p className="opacity-90 leading-snug text-emerald-100 text-center text-sm">
-                          通过以上三套机制的完美融合，Flash Attention 彻底消灭了 N² 级别的中间结果读写。显存访问量断崖式下降，让大模型的上下文长度得以指数级扩展。
+                          {t('coreBreakthroughDesc')}
                         </p>
                       </div>
                     )}
