@@ -27,3 +27,7 @@
 
 ### 🔗 在线体验
 访问 [GitHub Pages](https://skyliulu.github.io/AI-Infra-Viz/) 在线演示。
+
+### 📄 开源协议
+本项目基于 [GNU Affero General Public License v3.0 (AGPL-3.0)](./LICENSE) 协议开源。
+商业使用须遵守本协议条款。任何以网络服务形式部署的修改版本，须同样开源。

@@ -27,3 +27,7 @@ It bridges the cognitive gap between high-level concepts and low-level systems b
 
 ### 🔗 Live Demo
 Visit the [GitHub Pages](https://skyliulu.github.io/AI-Infra-Viz/) live demo.
+
+### 📄 License
+This project is licensed under the [GNU Affero General Public License v3.0 (AGPL-3.0)](./LICENSE).
+Commercial use is subject to the terms of this license. Any network-deployed modifications must also be open-sourced.
