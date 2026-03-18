@@ -71,15 +71,15 @@ export default function MainDashboard() {
                 setSidebarOpen(false);
               }}
               className="text-base font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent whitespace-nowrap select-none hover:opacity-90 transition-opacity"
-              aria-label="Back to homeland"
+              aria-label="Back to home"
             >
-              AI-Infra-Viz
+              LLM-Infra-Explorer
             </button>
           )}
           <div className={cn('flex items-center gap-1', sidebarCollapsed && 'w-full justify-center')}>
             {!sidebarCollapsed && (
               <a
-                href="https://github.com/skyliulu/AI-Infra-Viz"
+                href="https://github.com/skyliulu/LLM-Infra-Explorer"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-slate-300 hover:text-white transition-colors p-1 rounded hover:bg-slate-700"
@@ -135,7 +135,7 @@ export default function MainDashboard() {
         {sidebarCollapsed && (
           <div className="px-2 py-3 border-t border-slate-800 shrink-0 flex justify-center">
             <a
-              href="https://github.com/skyliulu/AI-Infra-Viz"
+              href="https://github.com/skyliulu/LLM-Infra-Explorer"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-300 hover:text-white transition-colors p-1.5 rounded hover:bg-slate-700"
@@ -159,9 +159,9 @@ export default function MainDashboard() {
           <button
             onClick={() => setActiveTab('home')}
             className="ml-3 text-base font-extrabold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent hover:opacity-90 transition-opacity"
-            aria-label="Back to homeland"
+            aria-label="Back to home"
           >
-            AI-Infra-Viz
+            LLM-Infra-Explorer
           </button>
         </header>
 
@@ -183,7 +183,7 @@ export default function MainDashboard() {
         </main>
 
         <footer className="shrink-0 border-t border-slate-800 py-3 px-6 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} AI-Infra-Viz — Interactive AI Infrastructure Explorer
+          © {new Date().getFullYear()} LLM-Infra-Explorer — Interactive AI Infrastructure Explorer
         </footer>
       </div>
     </div>
