@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, BrainCircuit, Cpu, Database, FastForward, Github, Globe, Network, Sparkles, Star, Zap } from 'lucide-react';
 
-const REPO_API = 'https://api.github.com/repos/skyliulu/AI-Infra-Viz';
-const REPO_URL = 'https://github.com/skyliulu/AI-Infra-Viz';
+const REPO_API = 'https://api.github.com/repos/skyliulu/LLM-Infra-Explorer';
+const REPO_URL = 'https://github.com/skyliulu/LLM-Infra-Explorer';
 
 const i18n = {
   en: {
@@ -11,7 +11,7 @@ const i18n = {
     titleHighlight: ' large-model infrastructure',
     titleSuffix: ' interactively',
     description:
-      'AI-Infra-Viz breaks down complex large-model infrastructure and inference optimization into interactive, experiment-friendly modules. You can not only see how each system works, but also build intuition through interaction.',
+      'LLM-Infra-Explorer breaks down complex large-model infrastructure and inference optimization into interactive, experiment-friendly modules. You can not only see how each system works, but also build intuition through interaction.',
     cta: 'Start interactive exploration',
     viewModule: 'Open module',
     languageLabel: 'Language',
@@ -22,7 +22,7 @@ const i18n = {
     titleHighlight: '大模型基础设施',
     titleSuffix: ' 的交互式世界',
     description:
-      'AI-Infra-Viz 将复杂的大模型基础设施与推理优化拆解为可交互、可实验、可理解的模块。你不仅能看见系统结构，还能通过交互快速建立直觉。',
+      'LLM-Infra-Explorer 将复杂的大模型基础设施与推理优化拆解为可交互、可实验、可理解的模块。你不仅能看见系统结构，还能通过交互快速建立直觉。',
     cta: '开始交互式探索',
     viewModule: '查看模块',
     languageLabel: '语言',
@@ -183,7 +183,7 @@ export default function HomeLanding({ onExplore }) {
           className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-200 transition hover:border-slate-500 hover:text-white"
         >
           <Github size={16} />
-          <span className="font-medium">skyliulu/AI-Infra-Viz</span>
+          <span className="font-medium">skyliulu/LLM-Infra-Explorer</span>
           <span className="inline-flex items-center gap-1 rounded-md bg-slate-800 px-2 py-0.5 text-xs text-slate-300">
             <Star size={12} />
             {formatStars(stars)}
