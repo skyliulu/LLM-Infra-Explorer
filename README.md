@@ -6,7 +6,7 @@
 
 An **interactive playground** for exploring **LLM systems, inference workflows, and AI infrastructure** through visualization and hands-on interaction.
 
-🌐 Live Demo: https://skyliulu.github.io/AI-Infra-Viz/
+🌐 Live Demo: https://skyliulu.github.io/LLM-Infra-Explorer/
 
 ---
 
@@ -64,10 +64,11 @@ Compare how workloads are split and executed across GPUs.
 
 ## 🎯 Key Features
 
-- 🎮 **Interactive** — not just diagrams, but explorable systems
-- 🧩 **Modular** — learn concepts independently or end-to-end
-- ⚙️ **System-focused** — beyond models, into real-world infra
-- 🔍 **Under-the-hood** — visualize what usually stays hidden
+- 🖥️ **LLM Inference Visualization** — step-by-step prefill/decode animation, KV cache lifecycle, MoE vs Dense architecture toggle, and temperature-controlled sampling
+- 🔀 **6D Parallel Strategy Explorer** — interactive DP / TP / PP / CP / EP / ETP topology with real-time tensor slicing and GPU resource mapping
+- ⚡ **Flash Attention Walkthrough** — Standard vs Flash Attention comparison, SRAM/HBM IO traffic tracking, and block-by-block tiled computation with causal mask skipping
+- 🚀 **Flash Decode** — KV Cache splitting across SM compute units, parallel two-step reduction, and memory-wall-breaking decode optimization
+- 🧬 **Engram (DeepSeek)** — n-gram conditional memory retrieval augmenting Transformer layers, with tensor flow visualization and hardware-level async prefetch timeline
 
 ---
 

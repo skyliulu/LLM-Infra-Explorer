@@ -6,7 +6,7 @@
 
 一个面向 **LLM 系统、推理工作流与 AI 基础设施**的**交互式探索项目**，通过可视化与动手实践帮助你建立深层理解。
 
-🌐 在线体验：https://skyliulu.github.io/AI-Infra-Viz/
+🌐 在线体验：https://skyliulu.github.io/LLM-Infra-Explorer/
 
 ---
 
@@ -64,10 +64,11 @@
 
 ## 🎯 核心特点
 
-- 🎮 **可交互** — 不只是图表，而是可探索的系统
-- 🧩 **模块化** — 可独立学习各概念，也可端到端串联
-- ⚙️ **系统视角** — 超越模型本身，深入真实基础设施
-- 🔍 **内部可见** — 可视化通常隐藏在底层的运行细节
+- 🖥️ **LLM 推理可视化** — 逐步动画展示 Prefill/Decode 阶段、KV Cache 生命周期，支持 MoE 与 Dense 架构切换及温度采样控制
+- 🔀 **6D 并行策略探索器** — 交互式 DP / TP / PP / CP / EP / ETP 拓扑，实时查看张量切分方式与 GPU 资源映射
+- ⚡ **Flash Attention 深度讲解** — 标准 Attention 与 Flash Attention 对比，SRAM/HBM IO 流量追踪，以及带因果掩码跳过机制的分块计算可视化
+- 🚀 **Flash Decode** — KV Cache 跨 SM 计算单元切分、并行两步归约，直观展示突破显存墙的解码优化路径
+- 🧬 **Engram（DeepSeek）** — N-gram 条件记忆检索增强 Transformer 层，附微观张量流图与硬件级异步预取时间轴
 
 ---
 
