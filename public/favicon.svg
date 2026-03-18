@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="LLM Infra Explorer icon">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#a78bfa" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="#0f172a" />
+  <path d="M18 20h11v6h-5v18h-6V20zm17 0h11v6h-5v12h-6V20zm12 20h-6v4h6v-4z" fill="url(#g)"/>
+  <circle cx="47" cy="42" r="3" fill="#22d3ee"/>
+</svg>

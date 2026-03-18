@@ -70,13 +70,14 @@ export default function MainDashboard() {
                 setActiveTab('home');
                 setSidebarOpen(false);
               }}
-              className="text-base font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent whitespace-nowrap select-none hover:opacity-90 transition-opacity"
+              className="min-w-0 flex-1 text-left text-sm font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent truncate select-none hover:opacity-90 transition-opacity"
               aria-label="Back to home"
+              title="LLM Infra Explorer"
             >
-              LLM-Infra-Explorer
+              LLM Infra Explorer
             </button>
           )}
-          <div className={cn('flex items-center gap-1', sidebarCollapsed && 'w-full justify-center')}>
+          <div className={cn('shrink-0 flex items-center gap-1', sidebarCollapsed && 'w-full justify-center')}>
             {!sidebarCollapsed && (
               <a
                 href="https://github.com/skyliulu/LLM-Infra-Explorer"
