@@ -1,21 +1,56 @@
-# AI-Infra-Viz 🚀
+# LLM-Infra-Explorer 🚀
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-> **An interactive explorer for large-model infrastructure — not just visualization, but hands-on understanding.**
+> **Understand how large language models really work — from tokens to systems.**
 
-`AI-Infra-Viz` is an **interactive infrastructure learning playground** for the LLM era.
-It bridges the cognitive gap between high-level concepts and low-level systems behavior through explorable modules, guided flows, and visual interaction.
+An **interactive playground** for exploring **LLM systems, inference workflows, and AI infrastructure** through visualization and hands-on interaction.
 
-### 🌟 Highlights
-- **Interactive Infrastructure Learning**: Learn by interacting with model-serving pipelines, memory movement, and system-level trade-offs.
-- **LLM End-to-End Inference**: Explore prefill/decode, KV cache evolution, and token generation loops.
-- **Parallel Strategies**: Compare DP / TP / PP / CP / EP / ETP via interactive topology and workload decomposition.
-- **Flash Attention Deep Dive**: Understand tiling and SRAM/HBM movement with step-by-step interaction.
-- **Flash Decode**: Inspect low-latency decode optimization paths for real-time generation.
-- **DeepSeek Engram**: Analyze memory-centric retrieval paths and tensor-level dataflow.
+🌐 Live Demo: https://skyliulu.github.io/AI-Infra-Viz/
 
-### 🗂️ Modules
+---
+
+## ✨ Why this project?
+
+Modern LLM systems are **complex, opaque, and hard to reason about**:
+
+- What actually happens during inference?
+- How does KV cache evolve over time?
+- What do DP / TP / PP really change in execution?
+- Why are optimizations like Flash Attention so effective?
+
+This project helps you **see and interact with these processes**, instead of just reading about them.
+
+---
+
+## 🧠 What you can explore
+
+### 🔹 LLM Inference
+- Token generation loop (prefill & decode)
+- KV cache lifecycle and memory growth
+- End-to-end inference workflow
+
+### 🔹 Parallelism Strategies
+- Data Parallel (DP)
+- Tensor Parallel (TP)
+- Pipeline Parallel (PP)
+- Expert Parallel (EP)
+
+Compare how workloads are split and executed across GPUs.
+
+### 🔹 Attention & Memory
+- Flash Attention (SRAM vs HBM movement)
+- Tiled computation and dataflow
+- Memory efficiency trade-offs
+
+### 🔹 System-Level Insights
+- Latency vs throughput trade-offs
+- Compute vs memory bottlenecks
+- Infrastructure-aware design patterns
+
+---
+
+## 🗂️ Modules
 
 | Module | Description |
 |---|---|
@@ -25,9 +60,35 @@ It bridges the cognitive gap between high-level concepts and low-level systems b
 | Flash Decode | Efficient attention decoding optimization walkthrough |
 | Engram | DeepSeek Engram memory retrieval and tensor pipeline interaction |
 
-### 🔗 Live Demo
-Visit the [GitHub Pages](https://skyliulu.github.io/AI-Infra-Viz/) live demo.
+---
 
-### 📄 License
+## 🎯 Key Features
+
+- 🎮 **Interactive** — not just diagrams, but explorable systems
+- 🧩 **Modular** — learn concepts independently or end-to-end
+- ⚙️ **System-focused** — beyond models, into real-world infra
+- 🔍 **Under-the-hood** — visualize what usually stays hidden
+
+---
+
+## 🖼️ Preview
+
+> *(Add screenshots / GIFs here)*
+
+---
+
+## 🚀 Getting Started
+
+```bash
+git clone https://github.com/skyliulu/LLM-Infra-Explorer.git
+cd LLM-Infra-Explorer
+npm install
+npm run dev
+```
+
+---
+
+## 📄 License
+
 This project is licensed under the [GNU Affero General Public License v3.0 (AGPL-3.0)](./LICENSE).
 Commercial use is subject to the terms of this license. Any network-deployed modifications must also be open-sourced.
