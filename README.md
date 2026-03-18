@@ -26,27 +26,26 @@ This project helps you **see and interact with these processes**, instead of jus
 ## 🧠 What you can explore
 
 ### 🔹 LLM Inference
-- Token generation loop (prefill & decode)
+- Token generation loop (prefill & decode stages)
 - KV cache lifecycle and memory growth
-- End-to-end inference workflow
+- MoE (sparse) vs Dense architecture comparison
+- RoPE positional encoding and temperature-controlled sampling
 
-### 🔹 Parallelism Strategies
-- Data Parallel (DP)
-- Tensor Parallel (TP)
-- Pipeline Parallel (PP)
-- Expert Parallel (EP)
+### 🔹 Parallelism Strategies (6D)
+- Data Parallel (DP), Tensor Parallel (TP), Pipeline Parallel (PP)
+- Context Parallel (CP) for long-sequence splitting
+- Expert Parallel (EP) and Expert-Tensor Parallel (ETP) for MoE models
 
-Compare how workloads are split and executed across GPUs.
+Compare tensor slicing patterns and GPU resource mapping across all 6 dimensions.
 
 ### 🔹 Attention & Memory
-- Flash Attention (SRAM vs HBM movement)
-- Tiled computation and dataflow
-- Memory efficiency trade-offs
+- Standard Attention vs Flash Attention
+- SRAM/HBM IO traffic tracking and tiled computation with causal mask skipping
+- Flash Decode: KV cache splitting across SM units and parallel two-step reduction
 
-### 🔹 System-Level Insights
-- Latency vs throughput trade-offs
-- Compute vs memory bottlenecks
-- Infrastructure-aware design patterns
+### 🔹 Memory Augmentation
+- DeepSeek Engram: n-gram conditional memory retrieval augmenting Transformer layers
+- Micro-level tensor flow and hardware-level async prefetch timeline
 
 ---
 

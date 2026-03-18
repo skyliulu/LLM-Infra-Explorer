@@ -26,27 +26,26 @@
 ## 🧠 可以探索哪些内容
 
 ### 🔹 LLM 推理
-- Token 生成循环（Prefill & Decode）
+- Token 生成循环（Prefill & Decode 阶段）
 - KV Cache 生命周期与内存增长
-- 端到端推理工作流
+- MoE（稀疏）与 Dense 架构对比
+- RoPE 位置编码与温度采样控制
 
-### 🔹 并行策略
-- 数据并行（DP）
-- 张量并行（TP）
-- 流水线并行（PP）
-- 专家并行（EP）
+### 🔹 并行策略（6D）
+- 数据并行（DP）、张量并行（TP）、流水线并行（PP）
+- 上下文并行（CP）：超长序列切分
+- 专家并行（EP）与专家张量并行（ETP）：MoE 模型专属
 
-直观对比各策略如何拆分和调度跨 GPU 负载。
+实时对比六大并行维度的张量切分方式与 GPU 资源映射。
 
 ### 🔹 注意力机制与内存
-- Flash Attention（SRAM 与 HBM 数据搬运）
-- 分块计算与数据流
-- 内存效率权衡
+- 标准 Attention 与 Flash Attention 对比
+- SRAM/HBM IO 流量追踪与带因果掩码的分块计算
+- Flash Decode：KV Cache 跨 SM 单元切分与两步归约
 
-### 🔹 系统级洞察
-- 时延与吞吐量权衡
-- 计算瓶颈与内存瓶颈
-- 面向基础设施的设计模式
+### 🔹 记忆增强机制
+- DeepSeek Engram：N-gram 条件记忆检索增强 Transformer 层
+- 微观张量流图与硬件级异步预取时间轴
 
 ---
 
