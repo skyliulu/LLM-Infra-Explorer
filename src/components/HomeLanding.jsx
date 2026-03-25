@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, BrainCircuit, Cpu, Database, FastForward, Github, Globe, Network, Sparkles, Star, Zap } from 'lucide-react';
+import { ArrowRight, BrainCircuit, Cpu, Database, FastForward, Github, GitBranch, Globe, Network, Sparkles, Star, Zap } from 'lucide-react';
 
 const REPO_API = 'https://api.github.com/repos/skyliulu/LLM-Infra-Explorer';
 const REPO_URL = 'https://github.com/skyliulu/LLM-Infra-Explorer';
@@ -79,6 +79,16 @@ const featureCards = [
     },
     icon: Database,
     iconClass: 'text-rose-300',
+  },
+  {
+    id: 'radixcache',
+    title: { en: 'Radix Cache', zh: 'Radix Cache' },
+    description: {
+      en: 'Explore how Radix Cache uses a radix tree for prefix-sharing KV cache to reduce memory usage and improve throughput.',
+      zh: '了解 Radix Cache 如何通过基数树实现前缀共享 KV Cache，减少显存占用并提升吞吐量。',
+    },
+    icon: GitBranch,
+    iconClass: 'text-indigo-300',
   },
 ];
 
