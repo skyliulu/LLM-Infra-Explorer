@@ -29,6 +29,7 @@
 - ⚡ **Flash Attention 深度讲解** — 标准 Attention 与 Flash Attention 对比，SRAM/HBM IO 流量追踪，以及带因果掩码跳过机制的分块计算可视化
 - 🚀 **Flash Decode** — KV Cache 跨 SM 计算单元切分、并行两步归约，直观展示突破显存墙的解码优化路径
 - 🧬 **Engram（DeepSeek）** — N-gram 条件记忆检索增强 Transformer 层，附微观张量流图与硬件级异步预取时间轴
+- 🌲 **Radix Cache** — SGLang 基于基数树的全局 KV Cache 共享机制，可视化惰性前缀分裂、LRU 驱逐与物理显存块复用全流程
 
 ---
 
