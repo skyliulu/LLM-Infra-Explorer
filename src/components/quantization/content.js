@@ -2,7 +2,7 @@ export const i18n = {
   zh: {
     title: '量化与低精度推理', subtitle:'先看低精度表示与离线算法，再沿真实推理流程追踪权重加载、激活转换与 KV 读写。',
     precisionScope:'精度作用于 01–02；下方算法与引擎单独配置',
-    language:'Switch to English', langToggle:'EN', fp16:'16 位基线', w4:'W4A16 · INT4', w8:'W8A8 · INT8', fp8:'W8A8 · FP8',
+    language:'Switch to English', langToggle:'EN', fp16:'16 位基线', w4:'权重 INT4 / 激活 FP16', w8:'权重 INT8 / 激活 INT8', fp8:'权重 FP8 / 激活 FP8', fp4:'权重 FP4 / 激活 FP16', kv4:'FP4 · E2M1 / 16', kvExample:'查看 FP4 缓存配方实例', fp4Metadata:'FP4 配方：每 16 个值共享 1 B 的 E4M3 scale；INT4/INT8/FP8 权重仍按每 128 值一个 FP32 scale 估算。',
     overview:'量化改变了什么', overviewHint:'点选对象看作用位置；切换精度，比较同一模型配置的存储需求。',
     weights:'权重', activation:'激活', kv:'KV Cache', offline:'部署准备 · 请求前', online:'在线 · 请求执行时',
     weightWhere:'Attention 投影 / MLP 权重：可以离线量化，也可以加载时转换一次；请求中反复读取，不随每个 Token 重做校准。',
@@ -111,7 +111,7 @@ export const i18n = {
     sourceFloat:'NVIDIA · Floating-point representation',
     title: 'Quantization & Low-Precision Inference', subtitle:'Explore low-precision representations and offline algorithms, then follow weight loading, activation conversion and KV access through inference.',
     precisionScope:'Precision for 01–02; algorithms and engine configured below',
-    language:'切换到中文', langToggle:'中文', fp16:'16-bit baseline', w4:'W4A16 · INT4', w8:'W8A8 · INT8', fp8:'W8A8 · FP8',
+    language:'切换到中文', langToggle:'中文', fp16:'16-bit baseline', w4:'Weights INT4 / Acts FP16', w8:'Weights INT8 / Acts INT8', fp8:'Weights FP8 / Acts FP8', fp4:'Weights FP4 / Acts FP16', kv4:'FP4 · E2M1 / 16', kvExample:'Inspect FP4 cache recipe examples', fp4Metadata:'FP4 recipe: one 1 B E4M3 scale per 16 values; INT4/INT8/FP8 weights retain one FP32 scale per 128 values.',
     overview:'What does quantization change?', overviewHint:'Select an object to locate it. Compare storage for the same model configuration.',
     weights:'Weights', activation:'Activations', kv:'KV Cache', offline:'Preparation · before requests', online:'Online · during requests',
     weightWhere:'Attention / MLP weights can be quantized offline or converted once at load time, then reused by requests. No per-token recalibration.',

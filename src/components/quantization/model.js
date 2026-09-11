@@ -152,17 +152,17 @@ export function deriveAlgorithmModel(algorithm = 'awq', outliers = true, step = 
 }
 export const modeFormat = mode => ({fp16:'fp16', w4:'int4', w8:'int8', fp8:'fp8'}[mode] || 'int4');
 export function deriveCapacityModel({mode = 'w4', batch = 1, context = 2048, kv = 'fp16', prefill = false} = {}) {
-  if (!MODES.includes(mode)) mode = 'w4';
+  if (![...MODES, 'fp4'].includes(mode)) mode = 'w4';
   batch = clamp(Math.round(Number.isFinite(batch) ? batch : 1), 1, 8);
   context = clamp(Math.round((Number.isFinite(context) ? context : 2048) / 256) * 256, 256, 8192);
   const d = 4096, layers = 32, heads = 8, hd = 128, ffn = 11008;
   const weights = layers * (2 * d * d + 2 * d * heads * hd + 3 * d * ffn);
-  const wb = mode === 'fp16' ? 16 : mode === 'w4' ? 4 : 8;
+  const wb = mode === 'fp16' ? 16 : (mode === 'w4' || mode === 'fp4') ? 4 : 8;
   const ab = mode === 'w8' || mode === 'fp8' ? 8 : 16;
-  const kb = kv === 'fp16' ? 16 : 8;
-  const weightPayload = weights * wb / 8, weightScales = wb === 16 ? 0 : Math.ceil(weights / 128) * 4;
+  const kb = kv === 'fp4' ? 4 : kv === 'fp8' ? 8 : 16;
+  const weightPayload = weights * wb / 8, weightScales = wb === 16 ? 0 : mode === 'fp4' ? weights / 16 : Math.ceil(weights / 128) * 4;
   const kvElements = 2 * layers * batch * context * heads * hd;
-  const kvScales = kb === 16 ? 0 : 2 * layers * batch * context * heads * 4;
+  const kvScales = kb === 16 ? 0 : kb === 4 ? kvElements / 16 : 2 * layers * batch * context * heads * 4;
   const highWeights = weights * 2, highKV = kvElements * 2;
   const tokens = batch * (prefill ? context : 1);
   return {shape:{layers, batch, context, heads, headDim:hd}, kvElements, kvPayload:kvElements * kb / 8,
