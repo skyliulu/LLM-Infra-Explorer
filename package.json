@@ -13,7 +13,7 @@
     "check:engram": "node scripts/check-engram.mjs",
     "check:radix": "node scripts/check-radix-cache.mjs",
     "check:dpa": "node scripts/check-dp-attention.mjs",
-    "check:llm": "node scripts/check-llm-inference.mjs",
+    "check:llm": "node scripts/check-llm-inference.mjs && node scripts/check-kv-representation.mjs",
     "check:speculative": "node scripts/check-speculative-decoding.mjs",
     "check:quantization": "node scripts/check-quantization.mjs && node scripts/check-sglang-quantization.mjs",
     "check:visual": "node scripts/visual-check.js",

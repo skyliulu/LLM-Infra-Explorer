@@ -1,0 +1,182 @@
+{
+  "dimensions": {
+    "mode": [
+      "mha",
+      "gqa",
+      "mla"
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "mha zh desktop",
+      "state": {
+        "mode": "mha",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "mha zh mobile",
+      "state": {
+        "mode": "mha",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "mha en desktop",
+      "state": {
+        "mode": "mha",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "mha en mobile",
+      "state": {
+        "mode": "mha",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "gqa zh desktop",
+      "state": {
+        "mode": "gqa",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "gqa zh mobile",
+      "state": {
+        "mode": "gqa",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "gqa en desktop",
+      "state": {
+        "mode": "gqa",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "gqa en mobile",
+      "state": {
+        "mode": "gqa",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "mla zh desktop",
+      "state": {
+        "mode": "mla",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "mla zh mobile",
+      "state": {
+        "mode": "mla",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "mla en desktop",
+      "state": {
+        "mode": "mla",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "mla en mobile",
+      "state": {
+        "mode": "mla",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "mode changes cache ownership and byte count",
+        "no page or workbench overflow",
+        "no KaTeX errors"
+      ]
+    }
+  ]
+}

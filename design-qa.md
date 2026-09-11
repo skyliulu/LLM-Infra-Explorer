@@ -1,5 +1,19 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-09-11 — LLMInference：MHA / GQA / MLA 表示基础扩展
+
+- 本次结果：新增局部工作台通过本轮验收；不代表整个站点的历史问题已全部解决。范围仅为 DeepSeek 学习路径规划第 1 项。
+- 变更契约：修改前已观察原章节桌面布局和 Dense/MoE 模式。新增内容位于原序列/KV 卡片底部，默认收起；原顶栏、时间轴、采样、张量工作台、代码区域与相对顺序保留。主组件只新增 import 和嵌入点，既有领域模型无改动。
+- 设计与技术证据见 `docs/kv-representation-design.md`。能力为 multiple-modes、resource-metrics、structural-comparison、dense-layout、math。采用局部结构实验与父级语言状态；没有强行添加播放阶段。
+- 实际观察：默认 MHA/GQA/MLA 为 2,048/512/320 bytes/token。8 个 query 头保持不变，缓存列数分别为 8/2/1；点选 head 联动引用列，点选历史 token 联动字段标识。MLA 明确保留联合 latent 和额外 RoPE key，后者 32 个 BF16 元素共 64 bytes。
+- 边界操作：GQA=1 为 256 bytes/token，GQA=8 为 2,048；MLA latent=256 为 576。历史长度从 16 降到 1，选择从 token 16 自动夹紧到 token 1，剩余 1 行。局部 reset 恢复默认值；语言切换保留模式与参数。
+- 浏览器矩阵：3 种模式 × zh/en × 1265px/390px，共 12 个状态完成真实页面检查。工作台 clientWidth/scrollWidth 在桌面为 976/976、手机为 293/293；所有状态无页面级横向溢出、无 KaTeX 错误。公式和代码的局部滚动容器用于较长推导。
+- 视觉证据：会话截图覆盖修改前桌面、展开 MHA、MLA token 放大、英文手机 MHA、中文手机 GQA、桌面公式/伪代码与最终 GQA。验收发现窄屏 K/V 标题拥挤，已统一改为窄屏双行，并对齐 query/组标题与历史列的左侧索引留白。
+- 原功能复核：干净重载后 Dense/MoE 均可从 idle 经 embedding 步进到 attention；reset 正常。原 96 个模型状态回归通过。没有声称完成整个旧章节的所有时间轴组合浏览器遍历。
+- 自动验收：新增纯模型检查 6,144 个组合通过，另覆盖非法输入、MQA/MHA 端点、选择归属及 MLA 并非恒为最小缓存。`npm run check:llm` 全部通过；新增组件 convention checker 3/3，父组件 9/9；`kv-qa-matrix.json` 12/12 覆盖检查通过。
+- 生产构建：Vite 构建成功，1917 modules transformed。保留环境已有 caniuse-lite 数据过期提示。开发期间跨文件重命名曾触发瞬时 HMR 导出错误；最终干净新标签页的 warning/error 日志为空。
+- 交付：本地预览 `http://127.0.0.1:5173/` 已打开到 LLM Inference 的展开工作台。未提交、未部署；第 2–4 项等待用户看过本项效果后继续。
+
 审计日期：2026-07-15（更新至 2026-07-18）
 
 审计范围：`LLMInference`、`ParallelStrategies`、`FlashAttention`、`FlashDecode`、`Engram`、`RadixCache`、`DpAttention`、`LinearAttention`

@@ -3,6 +3,7 @@ import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Cod
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveInferenceTensorSnapshot, deriveSamplingDistribution, MODULE, TOTAL_LAYERS } from './llm-inference/model';
 import { LayerKvOverview, TensorWorkbench } from './llm-inference/TensorWorkbench';
+import KvRepresentation from './llm-inference/KvRepresentation';
 
 const i18n = {
   zh: {
@@ -605,6 +606,7 @@ const App = () => {
                 />
               </div>
             </div>
+            <KvRepresentation lang={lang} />
           </div>
 
           {/* 中间层：流水线与底层代码 */}
