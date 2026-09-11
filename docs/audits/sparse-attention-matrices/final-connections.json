@@ -1,0 +1,219 @@
+[
+  {
+    "cellOverflows": 0,
+    "focus": "cache",
+    "katexErrors": 0,
+    "lang": "zh",
+    "matrices": [
+      {
+        "kind": "separate",
+        "rows": 24
+      },
+      {
+        "kind": "index",
+        "rows": 24
+      },
+      {
+        "kind": "query",
+        "rows": 3
+      },
+      {
+        "kind": "reads",
+        "rows": 2
+      }
+    ],
+    "mode": "dsa",
+    "nodes": [
+      {
+        "height": 124,
+        "id": "history",
+        "width": 419
+      },
+      {
+        "height": 350,
+        "id": "cache",
+        "width": 196
+      },
+      {
+        "height": 353,
+        "id": "index",
+        "width": 196
+      },
+      {
+        "height": 269,
+        "id": "query",
+        "width": 196
+      },
+      {
+        "height": 288,
+        "id": "attention",
+        "width": 419
+      }
+    ],
+    "oldQueryButtons": 0,
+    "overflow": 0,
+    "query": "偏向特征 0",
+    "queryGroups": 1,
+    "selected": [
+      "T3",
+      "T3"
+    ],
+    "width": 1280,
+    "edges": [
+      "history-cache",
+      "query-attention",
+      "cache-attention",
+      "history-index",
+      "query-index",
+      "index-attention"
+    ]
+  },
+  {
+    "cellOverflows": 0,
+    "focus": "cache",
+    "katexErrors": 0,
+    "lang": "zh",
+    "matrices": [
+      {
+        "kind": "shared",
+        "rows": 6
+      },
+      {
+        "kind": "index",
+        "rows": 6
+      },
+      {
+        "kind": "query",
+        "rows": 3
+      },
+      {
+        "kind": "local",
+        "rows": 8
+      },
+      {
+        "kind": "reads",
+        "rows": 10
+      }
+    ],
+    "mode": "csa",
+    "nodes": [
+      {
+        "height": 124,
+        "id": "history",
+        "width": 419
+      },
+      {
+        "height": 326,
+        "id": "cache",
+        "width": 196
+      },
+      {
+        "height": 324,
+        "id": "index",
+        "width": 196
+      },
+      {
+        "height": 269,
+        "id": "query",
+        "width": 196
+      },
+      {
+        "height": 296,
+        "id": "local",
+        "width": 196
+      },
+      {
+        "height": 381,
+        "id": "attention",
+        "width": 419
+      }
+    ],
+    "oldQueryButtons": 0,
+    "overflow": 0,
+    "query": "偏向特征 0",
+    "queryGroups": 1,
+    "selected": [
+      "C3",
+      "C3"
+    ],
+    "width": 1280,
+    "edges": [
+      "history-cache",
+      "query-attention",
+      "cache-attention",
+      "history-index",
+      "query-index",
+      "index-attention",
+      "history-local",
+      "local-attention"
+    ]
+  },
+  {
+    "cellOverflows": 0,
+    "focus": "cache",
+    "katexErrors": 0,
+    "lang": "zh",
+    "matrices": [
+      {
+        "kind": "shared",
+        "rows": 3
+      },
+      {
+        "kind": "query",
+        "rows": 1
+      },
+      {
+        "kind": "local",
+        "rows": 8
+      },
+      {
+        "kind": "reads",
+        "rows": 11
+      }
+    ],
+    "mode": "hca",
+    "nodes": [
+      {
+        "height": 124,
+        "id": "history",
+        "width": 419
+      },
+      {
+        "height": 236,
+        "id": "cache",
+        "width": 196
+      },
+      {
+        "height": 204,
+        "id": "query",
+        "width": 196
+      },
+      {
+        "height": 296,
+        "id": "local",
+        "width": 196
+      },
+      {
+        "height": 381,
+        "id": "attention",
+        "width": 419
+      }
+    ],
+    "oldQueryButtons": 0,
+    "overflow": 0,
+    "query": "偏向特征 0",
+    "queryGroups": 1,
+    "selected": [
+      "C3",
+      "C3"
+    ],
+    "width": 1280,
+    "edges": [
+      "history-cache",
+      "query-attention",
+      "cache-attention",
+      "history-local",
+      "local-attention"
+    ]
+  }
+]

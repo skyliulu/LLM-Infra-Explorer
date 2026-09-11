@@ -1,0 +1,536 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "width": [
+      1280,
+      1024,
+      390
+    ],
+    "focus": [
+      "overview",
+      "cache"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "width",
+      "focus"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "trim-0",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-1",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-2",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-3",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-4",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-5",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-6",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-7",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-8",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-9",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-10",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-11",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-12",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-13",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-14",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-15",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-16",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-17",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-18",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-19",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-20",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-21",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-22",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-23",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-24",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-25",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-26",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-27",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-28",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-29",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-30",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-31",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-32",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-33",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-34",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    },
+    {
+      "name": "trim-35",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/canvas/numeric-cell overflow or KaTeX errors",
+        "Overview and detail retain identical world coordinates",
+        "Matrix column width, type size and branch gap remain unchanged"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1437 @@
+{
+  "cases": [
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13",
+        "T14"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 688.6953125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7",
+        "T8"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 688.6953125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 701.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4",
+        "C5"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 965.9453125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 701.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 951.9453125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 684.71875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 855.8984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 684.71875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 855.8984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13",
+        "T14"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 703.6953125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7",
+        "T8"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 703.6953125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 716.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4",
+        "C5"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 980.9453125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 716.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 966.9453125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 684.71875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 870.8984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 684.71875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 870.8984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13",
+        "T14"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1024
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 604.6796875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1024
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7",
+        "T8"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1024
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 604.6796875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1024
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 701.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4",
+        "C5"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 881.9296875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 701.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 867.9296875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 684.71875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 815.8828125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 684.71875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 815.8828125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13",
+        "T14"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1024
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 641.6796875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1024
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7",
+        "T8"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1024
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 641.6796875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1024
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 716.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4",
+        "C5"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 918.9296875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 716.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 904.9296875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 684.71875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 830.8828125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 684.71875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 830.8828125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1024
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 756.4453125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13",
+        "T14"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 390
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.4453125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 390
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 756.4453125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7",
+        "T8"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 390
+    },
+    {
+      "mode": "dsa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 687.4453125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 390
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 1109.6953125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4",
+        "C5"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 964.6953125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 1109.6953125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "csa",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 950.6953125,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 983.6484375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 854.6484375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 983.6484375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "hca",
+      "lang": "zh",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 854.6484375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 834.8359375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13",
+        "T14"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 390
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 750.3359375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 390
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 834.8359375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7",
+        "T8"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 390
+    },
+    {
+      "mode": "dsa",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 750.3359375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T7"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 390
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 1188.0859375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4",
+        "C5"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 1027.5859375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 1188.0859375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "csa",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 1013.5859375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 0,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 1062.0390625,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 0,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 917.5390625,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 1,
+      "focus": "overview",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 1062.0390625,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    },
+    {
+      "mode": "hca",
+      "lang": "en",
+      "query": 1,
+      "focus": "cache",
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 917.5390625,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 390
+    }
+  ],
+  "boundaryCases": [
+    {
+      "mode": "dsa",
+      "tokens": 1,
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 549.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T1"
+      ],
+      "sectionOverflows": [],
+      "selected": "T1",
+      "width": 1280
+    },
+    {
+      "mode": "dsa",
+      "tokens": 64,
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 721.2421875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "T13",
+        "T32"
+      ],
+      "sectionOverflows": [],
+      "selected": "T3",
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "tokens": 1,
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 576.4765625,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [],
+      "sectionOverflows": [],
+      "width": 1280
+    },
+    {
+      "mode": "csa",
+      "tokens": 64,
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 749.3984375,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C4",
+        "C13"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "tokens": 1,
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 560.4296875,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [],
+      "sectionOverflows": [],
+      "width": 1280
+    },
+    {
+      "mode": "hca",
+      "tokens": 64,
+      "boundaries": true,
+      "cellOverflows": 0,
+      "graphHeight": 719.3515625,
+      "mathErrors": 0,
+      "overflow": false,
+      "reads": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C8"
+      ],
+      "sectionOverflows": [],
+      "selected": "C3",
+      "width": 1280
+    }
+  ],
+  "traceCache": {
+    "focus": "cache",
+    "selected": "C3",
+    "sources": [
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "values": [
+      "-0.64231",
+      "-0.19658"
+    ]
+  },
+  "traceIndex": {
+    "focus": "index",
+    "read": "true",
+    "selected": "C3",
+    "sources": [
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "values": [
+      "-0.64231",
+      "-0.19658"
+    ]
+  },
+  "consoleErrors": []
+}

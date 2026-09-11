@@ -1,0 +1,11 @@
+{
+  "trendInitial": 1,
+  "finalSmoke": {
+    "cells": 0,
+    "katexErrors": 0,
+    "mode": "hca",
+    "overflow": 0,
+    "queryGroups": 1
+  },
+  "cleanLogs": []
+}

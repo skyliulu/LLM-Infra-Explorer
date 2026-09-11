@@ -1,0 +1,1117 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "width": [
+      1280,
+      1024,
+      390
+    ],
+    "query": [
+      0,
+      1
+    ],
+    "focus": [
+      "overview",
+      "cache"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "width",
+      "query",
+      "focus"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "density-1",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-2",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-3",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-4",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-5",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-6",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-7",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-8",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-9",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-10",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-11",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-12",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-13",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-14",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-15",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-16",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-17",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-18",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-19",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-20",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-21",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-22",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-23",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-24",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-25",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-26",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-27",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-28",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-29",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-30",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-31",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-32",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-33",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-34",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-35",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-36",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-37",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-38",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-39",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-40",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-41",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-42",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-43",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-44",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-45",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-46",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-47",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-48",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-49",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-50",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-51",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-52",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-53",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-54",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-55",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-56",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-57",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-58",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-59",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-60",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-61",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-62",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-63",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-64",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-65",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-66",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-67",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-68",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-69",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-70",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-71",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    },
+    {
+      "name": "density-72",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page or cell overflow and no KaTeX errors",
+        "Single Change the question control; obsolete profile names absent",
+        "Connected matrices and current read set are visible"
+      ]
+    }
+  ]
+}

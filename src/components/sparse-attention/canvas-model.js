@@ -1,4 +1,5 @@
 import { DEFAULTS, deriveSparseModel, deriveTradeoff } from './model.js';
+import { deriveMatrixModel } from './matrix-model.js';
 
 export const CANVAS_DEFAULTS = { ...DEFAULTS, mode: 'csa', budgetKiB: 64 };
 
@@ -66,8 +67,8 @@ export function deriveCanvasModel(input = {}, selectedFocus = 'overview') {
   const scoreOrder = input.scoreOrder==='score'?'score':'position';
   const scoreEntries = scoreOrder==='score'?[...m.global].sort((a,b)=>a.rank-b.rank):m.global;
   const tradeoff = deriveTradeoff(m);
-  const edges = [['history','cache'], ['query','attention'], ['cache',m.indexed ? 'index' : 'attention'], ...(m.indexed ? [['query','index'],['index','attention']] : []), ...(m.hasWindow ? [['history','local'],['local','attention']] : [])];
+  const edges = [['history','cache'], ['query','attention'], ['cache','attention'], ...(m.indexed ? [['history','index'],['query','index'],['index','attention']] : []), ...(m.hasWindow ? [['history','local'],['local','attention']] : [])];
   return { ...m, baseline, nodes, edges, focus, budgetKiB, resources, benefits:deriveBenefitModel(resources),
-    tracedRecord, traceSources, scoreOrder, scoreEntries, tradeoff, trends:deriveTrends(m),
+    tracedRecord, traceSources, scoreOrder, scoreEntries, tradeoff, trends:deriveTrends(m), matrices:deriveMatrixModel(m,tracedRecord),
     next: { query: m.indexed ? 'index' : 'attention', cache: m.indexed ? 'index' : 'attention', index:'attention', local:'attention' }[focus] };
 }

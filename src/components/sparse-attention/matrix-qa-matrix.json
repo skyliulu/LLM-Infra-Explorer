@@ -1,0 +1,1617 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      390,
+      1024,
+      1517
+    ],
+    "query": [
+      0,
+      1
+    ],
+    "focus": [
+      "overview",
+      "cache",
+      "index",
+      "local",
+      "query",
+      "attention"
+    ],
+    "tokens": [
+      1,
+      24,
+      64
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "viewport",
+      "query"
+    ],
+    [
+      "mode",
+      "tokens"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "matrix-1",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-2",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-3",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-4",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-5",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-6",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-7",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-8",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-9",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-10",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-11",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-12",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-13",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-14",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-15",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-16",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-17",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-18",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-19",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-20",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-21",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-22",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-23",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-24",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-25",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-26",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-27",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-28",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-29",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-30",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-31",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-32",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-33",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-34",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-35",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-36",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-37",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-38",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-39",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-40",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-41",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-42",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-43",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-44",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-45",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-46",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-47",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-48",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-49",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-50",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-51",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-52",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-53",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-54",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-55",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-56",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-57",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-58",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-59",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-60",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-61",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-62",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-63",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-64",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-65",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-66",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-67",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-68",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-69",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 0,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-70",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 0,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-71",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-72",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "overview",
+        "tokens": 24
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-73",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "query",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-74",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-75",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "index",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-76",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "attention",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-77",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "query",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-78",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-79",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "index",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-80",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "attention",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-81",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "query",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-82",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-83",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "index",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-84",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "local",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-85",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "attention",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-86",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "query",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-87",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-88",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "index",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-89",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "local",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-90",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "attention",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-91",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "query",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-92",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-93",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "local",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-94",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "attention",
+        "tokens": 1
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-95",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "query",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-96",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "cache",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-97",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "local",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    },
+    {
+      "name": "matrix-98",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "query": 1,
+        "focus": "attention",
+        "tokens": 64
+      },
+      "checks": [
+        "Rendered matrices: no page or visible-cell overflow; no KaTeX errors",
+        "Exactly one named Query control in the relationship region",
+        "Overview or node drill retains dimensions and record matrices"
+      ]
+    }
+  ]
+}

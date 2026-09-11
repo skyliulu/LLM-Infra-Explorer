@@ -1,0 +1,1189 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "width": [
+      1280,
+      1024,
+      390
+    ],
+    "query": [
+      0,
+      1
+    ],
+    "focus": [
+      "overview",
+      "cache"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "width",
+      "query",
+      "focus"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "spacing-1",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-2",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-3",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-4",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-5",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-6",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-7",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-8",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-9",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-10",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-11",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-12",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-13",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-14",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-15",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-16",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-17",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-18",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-19",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-20",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-21",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-22",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-23",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-24",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-25",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-26",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-27",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-28",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-29",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-30",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-31",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-32",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-33",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-34",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-35",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-36",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-37",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-38",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-39",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-40",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-41",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-42",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-43",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-44",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-45",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-46",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-47",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-48",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-49",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-50",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-51",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-52",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-53",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-54",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-55",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-56",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-57",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-58",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-59",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-60",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-61",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-62",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-63",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-64",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-65",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-66",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-67",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-68",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-69",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-70",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-71",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    },
+    {
+      "name": "spacing-72",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "No page/cell/section overflow or KaTeX errors",
+        "Parallel branches have 48px horizontal or 24px vertical separation",
+        "Desktop join rail connects both outputs; narrow view has independent input and output destinations",
+        "Query/branch ports match available model paths; drill focus matches requested view"
+      ]
+    }
+  ]
+}

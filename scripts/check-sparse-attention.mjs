@@ -5,6 +5,8 @@ import { i18n } from '../src/components/sparse-attention/content.js';
 import { CANVAS_DEFAULTS, deriveCanvasModel } from '../src/components/sparse-attention/canvas-model.js';
 import { canvasI18n } from '../src/components/sparse-attention/canvas-content.js';
 import { explorerI18n } from '../src/components/sparse-attention/explorer-content.js';
+import { matrixI18n } from '../src/components/sparse-attention/matrix-content.js';
+import { sampleMatrixRows } from '../src/components/sparse-attention/matrix-model.js';
 
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-10, `${a} != ${b}`);
 assert.deepEqual(Object.keys(i18n.zh).sort(), Object.keys(i18n.en).sort());
@@ -97,6 +99,9 @@ for (const mode of ['dsa','csa','hca']) for (const tokens of [1,3,4,7,8,24,25,64
   assert.equal(m.baseline.mainReads,tokens);
   assert.ok(['overview',...m.nodes].includes(m.focus));
   assert.equal(m.edges.some(([a,b])=>a==='query'&&b==='index'),m.indexed);
+  assert.equal(m.edges.some(([a,b])=>a==='history'&&b==='index'),m.indexed);
+  assert.ok(m.edges.some(([a,b])=>a==='cache'&&b==='attention'));
+  assert.ok(!m.edges.some(([a,b])=>a==='cache'&&b==='index'));
   assert.equal(m.edges.some(([a,b])=>a==='local'&&b==='attention'),m.hasWindow);
   assert.equal(m.hasWindow,mode!=='dsa');
   assert.equal(m.mode,mode); // Zoom is presentation, never an algorithm toggle.
@@ -201,3 +206,43 @@ assert.deepEqual(beforeK.trends.capacity,afterK.trends.capacity);
 assert.deepEqual(beforeK.tradeoff.fullOutput,afterK.tradeoff.fullOutput);
 assert.deepEqual(beforeK.tradeoff.residentOutput,afterK.tradeoff.residentOutput);
 console.log(`PASS ${explorerCases} explorer cases: full/resident reference, coverage partition, trends, trace identity, sort isolation and Top-K invariants.`);
+
+assert.deepEqual(Object.keys(matrixI18n.zh).sort(), Object.keys(matrixI18n.en).sort());
+let matrixCases = 0;
+for (const mode of ['dsa','csa','hca']) for (const tokens of [1,4,24,64]) for (const query of [0,1]) {
+  const initial = deriveCanvasModel({...CANVAS_DEFAULTS, mode, tokens, query});
+  for (const record of [...initial.global, ...initial.local]) {
+    const m = deriveCanvasModel({...CANVAS_DEFAULTS, mode, tokens, query, traceId:record.id, ...(record.index !== undefined ? {inspect:record.index} : {})});
+    const matrix = m.matrices;
+    assert.deepEqual(matrix.selection.globalIds, m.reads.filter(row=>row.branch==='global').map(row=>row.id));
+    assert.equal(matrix.selection.total, matrix.selection.globalIds.length + m.local.length);
+    assert.deepEqual(matrix.selection.localRange, m.local.length ? [m.local[0].id, m.local.at(-1).id] : []);
+    assert.equal(matrix.traceId, record.id);
+    assert.deepEqual(matrix.history.filter(row => row.traced).map(row => row.position), m.traceSources);
+    assert.deepEqual(matrix.global.map(row => row.cells), m.global.map(row => m.compressed ? row.key : [...row.key, ...row.value]));
+    for (const row of matrix.global) {
+      const source = m.global.find(entry => entry.id === row.id);
+      assert.deepEqual(row.indexCells, m.indexed ? [...source.indexKey, source.score] : []);
+      assert.equal(row.read, source.read);
+    }
+    assert.deepEqual(matrix.output, m.output);
+    for (const row of matrix.reads) {
+      const source = m.reads.find(e => e.id === row.id);
+      assert.deepEqual(row.cells, [...source.key, source.logit, source.weight, ...source.value]);
+    }
+    for (const rows of [matrix.global, matrix.index, matrix.local, matrix.reads]) for (const limit of [4,6]) {
+      const sample = sampleMatrixRows(rows, record.id, limit);
+      const shown = sample.filter(row => !row.gap);
+      assert.ok(shown.length <= limit);
+      assert.equal(sample.reduce((n,row) => n + (row.gap ?? 1),0), rows.length);
+      assert.equal(new Set(shown.map(row => row.id)).size, shown.length);
+      if (rows.some(row => row.id === record.id)) assert.ok(shown.some(row => row.id === record.id));
+      for (const row of shown) assert.strictEqual(row, rows.find(source => source.id === row.id));
+    }
+    matrixCases++;
+  }
+  const changed = deriveCanvasModel({...CANVAS_DEFAULTS, mode, tokens, query:1-query});
+  assert.deepEqual(initial.matrices.global.map(row=>row.cells), changed.matrices.global.map(row=>row.cells));
+  assert.notDeepEqual(initial.matrices.query, changed.matrices.query);
+}
+console.log(`PASS ${matrixCases} matrix traces: full shapes, source identity, exact gathered values/weights, omission accounting and query/cache independence.`);

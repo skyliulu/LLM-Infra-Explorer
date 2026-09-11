@@ -1,0 +1,1189 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "width": [
+      1280,
+      1024,
+      390
+    ],
+    "query": [
+      0,
+      1
+    ],
+    "focus": [
+      "overview",
+      "cache"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "width",
+      "query",
+      "focus"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "scale-1",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-2",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-3",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-4",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-5",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-6",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-7",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-8",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-9",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-10",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-11",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-12",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-13",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-14",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-15",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-16",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-17",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-18",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-19",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-20",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-21",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-22",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-23",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-24",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1280,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-25",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-26",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-27",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-28",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-29",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-30",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-31",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-32",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-33",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-34",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-35",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-36",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-37",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-38",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-39",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-40",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-41",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-42",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-43",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-44",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-45",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-46",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-47",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-48",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 1024,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-49",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-50",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-51",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-52",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-53",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-54",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-55",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-56",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-57",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-58",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-59",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-60",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-61",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-62",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-63",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-64",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-65",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-66",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-67",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-68",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-69",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-70",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 0,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-71",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "overview"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "scale-72",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "width": 390,
+        "query": 1,
+        "focus": "cache"
+      },
+      "checks": [
+        "Whole-block native button covers content and padding; independent nested controls remain operable",
+        "World coordinates and sampled records are identical between overview and drill-down",
+        "Memory bar widths follow canonical global/local/index bytes",
+        "Fit view has no page/canvas/cell overflow or KaTeX errors"
+      ]
+    }
+  ]
+}
