@@ -1,0 +1,279 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      1517,
+      1024,
+      390
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "dsa zh 1517",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "dsa zh 1024",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "dsa zh 390",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "dsa en 1517",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "dsa en 1024",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "dsa en 390",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "csa zh 1517",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "csa zh 1024",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "csa zh 390",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "csa en 1517",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "csa en 1024",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "csa en 390",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "hca zh 1517",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "hca zh 1024",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "hca zh 390",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "hca en 1517",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "hca en 1024",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    },
+    {
+      "name": "hca en 390",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390
+      },
+      "checks": [
+        "three metrics visible simultaneously",
+        "direction and benefit use correct semantics",
+        "no overflow or math errors",
+        "capacity budget affects only third card"
+      ]
+    }
+  ]
+}

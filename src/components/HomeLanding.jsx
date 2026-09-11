@@ -59,6 +59,15 @@ const featureCards = [
     iconClass: 'text-emerald-300',
   },
   {
+    id: 'sparseattn',
+    description: {
+      en: 'Compare full attention with sparse reads and compressed history, then zoom into cooperating branches inside one canvas.',
+      zh: '先对照普通 Attention 的读取与缓存成本，再在同一画布逐层放大稀疏选择、压缩历史与局部窗口。',
+    },
+    icon: Database,
+    iconClass: 'text-indigo-300',
+  },
+  {
     id: 'flashdecode',
     description: {
       en: 'Dive into low-latency decoding optimizations for real-time responses.',

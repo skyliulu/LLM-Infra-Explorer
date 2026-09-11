@@ -1,0 +1,994 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      "wide",
+      "narrow"
+    ],
+    "focus": [
+      "overview",
+      "query",
+      "cache",
+      "index",
+      "local",
+      "attention"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "dsa zh wide overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh wide query",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh wide cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh wide index",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "index"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh wide attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh narrow overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh narrow query",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh narrow cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh narrow index",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "index"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh narrow attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en wide overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en wide query",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en wide cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en wide index",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "index"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en wide attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en narrow overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en narrow query",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en narrow cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en narrow index",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "index"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en narrow attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh wide overview",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh wide query",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh wide cache",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh wide index",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "index"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh wide local",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "local"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh wide attention",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh narrow overview",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh narrow query",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh narrow cache",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh narrow index",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "index"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh narrow local",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "local"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh narrow attention",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en wide overview",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en wide query",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en wide cache",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en wide index",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "index"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en wide local",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "local"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en wide attention",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en narrow overview",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en narrow query",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en narrow cache",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en narrow index",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "index"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en narrow local",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "local"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en narrow attention",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh wide overview",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh wide query",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh wide cache",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh wide local",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "local"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh wide attention",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "wide",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh narrow overview",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh narrow query",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh narrow cache",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh narrow local",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "local"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh narrow attention",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": "narrow",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en wide overview",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en wide query",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en wide cache",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en wide local",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "local"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en wide attention",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "wide",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en narrow overview",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "overview"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en narrow query",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "query"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en narrow cache",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "cache"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en narrow local",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "local"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en narrow attention",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": "narrow",
+        "focus": "attention"
+      },
+      "checks": [
+        "single canvas and persistent context",
+        "shared baseline counts",
+        "connected inputs and outputs",
+        "no horizontal overflow or KaTeX errors"
+      ]
+    }
+  ]
+}

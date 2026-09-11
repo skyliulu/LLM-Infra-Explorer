@@ -1,0 +1,992 @@
+{
+  "dimensions": {
+    "path": [
+      "swa-layer",
+      "swa-query",
+      "swa-local",
+      "swa-attention",
+      "csa-layer",
+      "csa-query",
+      "csa-local",
+      "csa-compress",
+      "csa-index",
+      "csa-attention",
+      "hca-layer",
+      "hca-query",
+      "hca-local",
+      "hca-compress",
+      "hca-attention",
+      "comparison-dense",
+      "comparison-dsa"
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "path",
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "swa-layer zh desktop",
+      "state": {
+        "path": "swa-layer",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-layer zh mobile",
+      "state": {
+        "path": "swa-layer",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-layer en desktop",
+      "state": {
+        "path": "swa-layer",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-layer en mobile",
+      "state": {
+        "path": "swa-layer",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-query zh desktop",
+      "state": {
+        "path": "swa-query",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-query zh mobile",
+      "state": {
+        "path": "swa-query",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-query en desktop",
+      "state": {
+        "path": "swa-query",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-query en mobile",
+      "state": {
+        "path": "swa-query",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-local zh desktop",
+      "state": {
+        "path": "swa-local",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-local zh mobile",
+      "state": {
+        "path": "swa-local",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-local en desktop",
+      "state": {
+        "path": "swa-local",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-local en mobile",
+      "state": {
+        "path": "swa-local",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-attention zh desktop",
+      "state": {
+        "path": "swa-attention",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-attention zh mobile",
+      "state": {
+        "path": "swa-attention",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-attention en desktop",
+      "state": {
+        "path": "swa-attention",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa-attention en mobile",
+      "state": {
+        "path": "swa-attention",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-layer zh desktop",
+      "state": {
+        "path": "csa-layer",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-layer zh mobile",
+      "state": {
+        "path": "csa-layer",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-layer en desktop",
+      "state": {
+        "path": "csa-layer",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-layer en mobile",
+      "state": {
+        "path": "csa-layer",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-query zh desktop",
+      "state": {
+        "path": "csa-query",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-query zh mobile",
+      "state": {
+        "path": "csa-query",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-query en desktop",
+      "state": {
+        "path": "csa-query",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-query en mobile",
+      "state": {
+        "path": "csa-query",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-local zh desktop",
+      "state": {
+        "path": "csa-local",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-local zh mobile",
+      "state": {
+        "path": "csa-local",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-local en desktop",
+      "state": {
+        "path": "csa-local",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-local en mobile",
+      "state": {
+        "path": "csa-local",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-compress zh desktop",
+      "state": {
+        "path": "csa-compress",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-compress zh mobile",
+      "state": {
+        "path": "csa-compress",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-compress en desktop",
+      "state": {
+        "path": "csa-compress",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-compress en mobile",
+      "state": {
+        "path": "csa-compress",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-index zh desktop",
+      "state": {
+        "path": "csa-index",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-index zh mobile",
+      "state": {
+        "path": "csa-index",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-index en desktop",
+      "state": {
+        "path": "csa-index",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-index en mobile",
+      "state": {
+        "path": "csa-index",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-attention zh desktop",
+      "state": {
+        "path": "csa-attention",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-attention zh mobile",
+      "state": {
+        "path": "csa-attention",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-attention en desktop",
+      "state": {
+        "path": "csa-attention",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa-attention en mobile",
+      "state": {
+        "path": "csa-attention",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-layer zh desktop",
+      "state": {
+        "path": "hca-layer",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-layer zh mobile",
+      "state": {
+        "path": "hca-layer",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-layer en desktop",
+      "state": {
+        "path": "hca-layer",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-layer en mobile",
+      "state": {
+        "path": "hca-layer",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-query zh desktop",
+      "state": {
+        "path": "hca-query",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-query zh mobile",
+      "state": {
+        "path": "hca-query",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-query en desktop",
+      "state": {
+        "path": "hca-query",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-query en mobile",
+      "state": {
+        "path": "hca-query",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-local zh desktop",
+      "state": {
+        "path": "hca-local",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-local zh mobile",
+      "state": {
+        "path": "hca-local",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-local en desktop",
+      "state": {
+        "path": "hca-local",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-local en mobile",
+      "state": {
+        "path": "hca-local",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-compress zh desktop",
+      "state": {
+        "path": "hca-compress",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-compress zh mobile",
+      "state": {
+        "path": "hca-compress",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-compress en desktop",
+      "state": {
+        "path": "hca-compress",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-compress en mobile",
+      "state": {
+        "path": "hca-compress",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-attention zh desktop",
+      "state": {
+        "path": "hca-attention",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-attention zh mobile",
+      "state": {
+        "path": "hca-attention",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-attention en desktop",
+      "state": {
+        "path": "hca-attention",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca-attention en mobile",
+      "state": {
+        "path": "hca-attention",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "comparison-dense zh desktop",
+      "state": {
+        "path": "comparison-dense",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "comparison-dense zh mobile",
+      "state": {
+        "path": "comparison-dense",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "comparison-dense en desktop",
+      "state": {
+        "path": "comparison-dense",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "comparison-dense en mobile",
+      "state": {
+        "path": "comparison-dense",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "comparison-dsa zh desktop",
+      "state": {
+        "path": "comparison-dsa",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "comparison-dsa zh mobile",
+      "state": {
+        "path": "comparison-dsa",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "comparison-dsa en desktop",
+      "state": {
+        "path": "comparison-dsa",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    },
+    {
+      "name": "comparison-dsa en mobile",
+      "state": {
+        "path": "comparison-dsa",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "architecture retains coexisting branches during node inspection",
+        "focus matches breadcrumb and visible panels",
+        "HCA has no indexer; first two layers have no global branch",
+        "no page or component overflow or KaTeX errors"
+      ]
+    }
+  ]
+}

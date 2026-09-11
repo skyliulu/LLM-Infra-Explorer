@@ -34,6 +34,7 @@ Each file is a self-contained, interactive visualization:
 | `LLMInference.jsx` | Token prefill/decode, KV cache lifecycle, MoE vs Dense, temperature sampling |
 | `ParallelStrategies.jsx` | 6D parallel topology (DP/TP/PP/CP/EP/ETP), tensor slicing, GPU mapping |
 | `FlashAttention.jsx` | Tiled attention vs standard, SRAM/HBM IO tracking |
+| `SparseAttention.jsx` | Single-canvas full-attention cost comparison, DSA selection, CSA/HCA compression with SWA, source provenance and separate indexer accounting |
 | `FlashDecode.jsx` | KV cache splitting, parallel reduction |
 | `SpeculativeDecoding.jsx` | Autoregressive baseline, Draft–Target verification, rejection correction, KV rollback, tree candidates |
 | `Quantization.jsx` | Offline RTN/AWQ/GPTQ/SmoothQuant, INT4/INT8/FP8 representation, online activation/KV quantization and scale lifecycle |
@@ -95,6 +96,7 @@ useEffect(() => {
 
 **Visualization principles:**
 - Start from one teaching question and make the design-level difference visible before implementation details
+- Distinguish alternative algorithms from coexisting subsystems. For a system with cooperating branches, start with its architecture and input/output connections, then let users drill into layers, components, and individual records while retaining a breadcrumb and return path. Use comparison switches for real alternatives, not for parts that coexist in one system.
 - Use Before/After only when a real baseline/solution comparison exists
 - Show logical and physical layers only when both materially explain the concept
 - Give different algorithms their real stage maps; never align fake stages for UI symmetry

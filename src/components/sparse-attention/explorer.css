@@ -1,0 +1,99 @@
+/* Refinements preserve the single canvas and its established graph/inspector split. */
+.sc-benefits { padding: 12px 20px; }
+.sc-benefit-columns { margin: 10px 0 8px; gap: 12px; }
+.sc-benefit-card { padding: 10px 12px; }
+.sc-benefit-card-title h3 { font-size: 14px; }
+.sc-benefit-card-title>span,.sc-outcome-label,.sc-side-row,.sc-estimate-badge { font-size: 12px; }
+.sc-benefit-delta { margin: 6px 0 10px; }
+.sc-benefit-delta strong { font-size: 24px; }
+.sc-benefit-delta small { font-size: 12px; font-weight: 400; }
+.sc-side-row { gap: 4px; margin-bottom: 8px; }
+.sc-benefit-card-foot { padding-top: 6px; }
+.sc-benefit-card-foot .sc-cost-parts { gap: 3px 6px; font-size: 12px; min-height: 30px; }
+.sc-cost-parts>button { display: flex; align-items: center; gap: 4px; padding: 4px 2px; border-radius: 4px; text-align: left; }
+.sc-cost-parts>button:hover:not(:disabled) { background: #eef2ff; color: #3730a3; }
+.sc-cost-parts>button:disabled { color: #64748b; cursor: default; }
+.sc-linked-track { height: 12px!important; overflow: visible; }
+.sc-linked-track>button { height: 100%; border-radius: 2px; min-width: 2px; cursor: pointer; }
+.sc-linked-track>button:hover { outline: 2px solid #312e81; outline-offset: 2px; }
+.sc-linked-track .sc-global-byte { background: #6366f1; }
+.sc-linked-track .sc-teal { background: #0d9488; }
+.sc-linked-track .sc-index-byte { background: #a78bfa; }
+.sc-benefit-card-foot .sc-select { min-height: 30px; font-size: 12px; }
+.sc-benefit-tools { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; color: #475569; }
+.sc-benefit-tools button,.sc-inline-link { color: #4338ca; font-weight: 600; padding: 6px 0; text-align: left; }
+.sc-assumption-visible { font-size: 12px; line-height: 1.55; margin-top: 4px; color: #475569; }
+.sc-estimate-detail { margin-top: 5px; }
+.sc-trend { border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 8px; }
+.sc-trend>strong,.sc-trend>small,.sc-trend p { font-size: 12px; display: block; color: #475569; line-height: 1.5; }
+.sc-trend svg { width: 100%; margin: 6px 0; }
+.sc-trend text { font-size: 11px; fill: #475569; }
+.sc-path { scroll-margin-top: 12px; }
+.sc-workspace { padding-top: 22px; }
+.sc-mini .sc-node>b { display: block; font-size: 12px; font-weight: 500; }
+.sc-mini .sc-node { gap: 4px; padding: 9px 6px; }
+.sc-microscope { min-height: 690px; }
+.sc-detail-scroll { min-height: 500px; padding: 16px 20px; }
+.sc-detail-heading { padding: 16px 20px; }
+.sc-io { padding: 12px 20px; }
+.sc-local-impact { background: #f8fafc; padding: 10px 12px; border: 1px solid #dbe2ed; border-radius: 8px; margin-bottom: 12px; }
+.sc-local-impact>div { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.sc-local-impact span { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.sc-local-impact b { font-size: 14px; color: #334155; }
+.sc-detail-scroll .sc-local-impact p { font-size: 12px; line-height: 1.5; margin: 7px 0 0; }
+.sc-record-trace { border-left: 3px solid #4f46e5; padding: 4px 10px; margin: 12px 0; background: #f5f3ff; }
+.sc-record-trace>div { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.sc-record-trace>div>span { font-size: 12px; color: #475569; }
+.sc-record-trace nav { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.sc-record-trace button { padding: 5px 0; color: #4338ca; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.sc-detail-scroll .sc-record-trace p { font-size: 12px; line-height: 1.5; }
+.sc-index-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; align-items: start; margin: 12px 0; }
+.sc-index-layout .sc-score-grid { grid-template-columns: 1fr; max-height: 390px; overflow: auto; margin: 0; padding: 3px; gap: 5px; align-content: start; }
+.sc-score-grid button { padding: 8px; font-size: 12px; min-height: 36px; }
+.sc-score-detail { padding: 12px; border: 1px solid #c7d2fe; border-radius: 8px; background: #fafaff; min-width: 0; }
+.sc-score-detail h3 { font-size: 14px; }
+.sc-score-detail .katex-display { font-size: 12px; }
+.sc-detail-scroll .sc-score-detail p { font-size: 12px; line-height: 1.65; }
+.sc-local-controls { gap: 10px 16px; margin-bottom: 12px; }
+.sc-records { gap: 6px; margin: 10px 0; }
+.sc-record-detail { margin-top: 12px; padding-top: 12px; }
+.sc-compression-result { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border: 1px solid #fcd34d; background: #fffbeb; padding: 9px 12px; border-radius: 6px; margin: 10px 0; }
+.sc-table th,.sc-table td { padding: 8px 6px; }
+.sc-weights>button { display: grid; grid-template-columns: 70px minmax(0,1fr) 54px; gap: 10px; align-items: center; width: 100%; text-align: left; border-radius: 6px; padding: 8px; margin: 4px 0; border: 1px solid transparent; }
+.sc-weights>button>span { display: flex; gap: 6px; flex-wrap: wrap; }
+.sc-weights>button b { text-align: right; font-size: 12px; }
+.sc-weights>button[aria-pressed=true] { background: #eef2ff; border-color: #4f46e5; outline: 1px solid #4f46e5; }
+.sc-weights>button:hover { background: #f1f5f9; }
+.sc-tradeoff { margin: 18px 0; padding: 16px; border: 1px solid #e2e8f0; border-radius: 10px; }
+.sc-tradeoff h3 { font-size: 16px; }
+.sc-tradeoff h4 { font-size: 13px; margin: 12px 0 6px; }
+.sc-detail-scroll .sc-tradeoff p { font-size: 13px; line-height: 1.65; margin: 8px 0; }
+.sc-coverage { display: flex; flex-wrap: wrap; gap: 4px; }
+.sc-coverage>span { font-size: 12px; padding: 4px 6px; border-radius: 4px; border-width: 1px; }
+.sc-coverage-direct { background: #ccfbf1; color: #115e59; border: 1px solid #0f766e; }
+.sc-coverage-summary { background: #fef3c7; color: #92400e; border: 1px dashed #b45309; }
+.sc-coverage-missing { background: #f1f5f9; color: #475569; border: 1px dotted #64748b; }
+.sc-coverage-legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.sc-coverage-legend>span { padding: 4px 6px; font-size: 12px; border-radius: 4px; }
+.sc-output-comparison { display: grid; grid-template-columns: 170px minmax(0,1fr); gap: 16px; align-items: center; margin-top: 12px; }
+.sc-output-comparison svg { width: 100%; }
+.sc-output-comparison svg text { font-size: 10px; fill: #475569; }
+.sc-point-full { color: #475569; }.sc-point-resident { color: #0f766e; }.sc-point-current { color: #4338ca; }
+.sc-vector { display: flex; flex-direction: column; gap: 4px; margin: 10px 0; font-size: 12px; }
+.sc-vector>strong { display: flex; align-items: center; gap: 5px; }
+.sc-vector>strong svg { width: 13px; height: 13px; flex-shrink: 0; }
+.sc-trace-contribution { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 12px; padding: 6px 0; }
+.sc-distance { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 8px 0; }
+.sc-distance>span { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.sc-tradeoff summary { font-size: 12px; color: #4338ca; cursor: pointer; }
+.sc-module button:focus-visible,.sc-module select:focus-visible,.sc-module input:focus-visible,.sc-score-grid:focus-visible { outline: 2px solid #4338ca; outline-offset: 3px; }
+@media(max-width:1100px) { .sc-benefit-card-title { flex-direction: row; align-items: flex-start; }.sc-benefit-card-title>span { font-size: 11px; }.sc-benefit-card { padding: 10px; } }
+@media(max-width:650px) {
+  .sc-benefits { padding: 12px; }.sc-benefit-columns { gap: 10px; }.sc-benefit-delta strong { font-size: 24px; }
+  .sc-benefit-tools { flex-wrap: wrap; }.sc-benefit-card-title>span { font-size: 12px; }
+  .sc-detail-scroll,.sc-detail-heading,.sc-io { padding: 12px; }
+  .sc-index-layout { grid-template-columns: 1fr; }.sc-score-detail { grid-row: 1; }.sc-index-layout .sc-score-grid { grid-template-columns: repeat(2,minmax(0,1fr)); max-height: 300px; }
+  .sc-score-grid button { display: grid; grid-template-columns: 1fr auto; gap: 4px; }.sc-score-grid .sc-track { grid-column: 1/-1; grid-row: 2; }.sc-score-grid b { grid-column: 2; grid-row: 1; }
+  .sc-output-comparison { grid-template-columns: 1fr; gap: 0; }.sc-output-comparison svg { max-width: 180px; margin: 0 auto; }.sc-tradeoff { padding: 12px; }
+  .sc-mini .sc-node>b { font-size: 11px; }.sc-local-impact { padding: 8px; }.sc-local-impact b { font-size: 12px; }.sc-local-impact small { font-size: 11px; }
+}

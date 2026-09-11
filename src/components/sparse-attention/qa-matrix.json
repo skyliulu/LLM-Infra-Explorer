@@ -1,0 +1,308 @@
+{
+  "dimensions": {
+    "mode": [
+      "dense",
+      "dsa",
+      "swa",
+      "csa",
+      "hca"
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "dense zh desktop",
+      "state": {
+        "mode": "dense",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "dense zh mobile",
+      "state": {
+        "mode": "dense",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "dense en desktop",
+      "state": {
+        "mode": "dense",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "dense en mobile",
+      "state": {
+        "mode": "dense",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh desktop",
+      "state": {
+        "mode": "dsa",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa zh mobile",
+      "state": {
+        "mode": "dsa",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en desktop",
+      "state": {
+        "mode": "dsa",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "dsa en mobile",
+      "state": {
+        "mode": "dsa",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa zh desktop",
+      "state": {
+        "mode": "swa",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa zh mobile",
+      "state": {
+        "mode": "swa",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa en desktop",
+      "state": {
+        "mode": "swa",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "swa en mobile",
+      "state": {
+        "mode": "swa",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh desktop",
+      "state": {
+        "mode": "csa",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa zh mobile",
+      "state": {
+        "mode": "csa",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en desktop",
+      "state": {
+        "mode": "csa",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "csa en mobile",
+      "state": {
+        "mode": "csa",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh desktop",
+      "state": {
+        "mode": "hca",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca zh mobile",
+      "state": {
+        "mode": "hca",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en desktop",
+      "state": {
+        "mode": "hca",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    },
+    {
+      "name": "hca en mobile",
+      "state": {
+        "mode": "hca",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "cache and read counts match the mode",
+        "selection updates source and indexer inspectors",
+        "no unintended page or component overflow",
+        "no KaTeX errors"
+      ]
+    }
+  ]
+}

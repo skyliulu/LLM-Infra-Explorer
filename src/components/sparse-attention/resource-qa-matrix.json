@@ -1,0 +1,572 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "metric": [
+      "memory",
+      "traffic",
+      "context"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      "wide",
+      "narrow"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "metric",
+      "lang",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "dsa memory zh wide",
+      "state": {
+        "mode": "dsa",
+        "metric": "memory",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa memory zh narrow",
+      "state": {
+        "mode": "dsa",
+        "metric": "memory",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa memory en wide",
+      "state": {
+        "mode": "dsa",
+        "metric": "memory",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa memory en narrow",
+      "state": {
+        "mode": "dsa",
+        "metric": "memory",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa traffic zh wide",
+      "state": {
+        "mode": "dsa",
+        "metric": "traffic",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa traffic zh narrow",
+      "state": {
+        "mode": "dsa",
+        "metric": "traffic",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa traffic en wide",
+      "state": {
+        "mode": "dsa",
+        "metric": "traffic",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa traffic en narrow",
+      "state": {
+        "mode": "dsa",
+        "metric": "traffic",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa context zh wide",
+      "state": {
+        "mode": "dsa",
+        "metric": "context",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa context zh narrow",
+      "state": {
+        "mode": "dsa",
+        "metric": "context",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa context en wide",
+      "state": {
+        "mode": "dsa",
+        "metric": "context",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "dsa context en narrow",
+      "state": {
+        "mode": "dsa",
+        "metric": "context",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa memory zh wide",
+      "state": {
+        "mode": "csa",
+        "metric": "memory",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa memory zh narrow",
+      "state": {
+        "mode": "csa",
+        "metric": "memory",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa memory en wide",
+      "state": {
+        "mode": "csa",
+        "metric": "memory",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa memory en narrow",
+      "state": {
+        "mode": "csa",
+        "metric": "memory",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa traffic zh wide",
+      "state": {
+        "mode": "csa",
+        "metric": "traffic",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa traffic zh narrow",
+      "state": {
+        "mode": "csa",
+        "metric": "traffic",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa traffic en wide",
+      "state": {
+        "mode": "csa",
+        "metric": "traffic",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa traffic en narrow",
+      "state": {
+        "mode": "csa",
+        "metric": "traffic",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa context zh wide",
+      "state": {
+        "mode": "csa",
+        "metric": "context",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa context zh narrow",
+      "state": {
+        "mode": "csa",
+        "metric": "context",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa context en wide",
+      "state": {
+        "mode": "csa",
+        "metric": "context",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "csa context en narrow",
+      "state": {
+        "mode": "csa",
+        "metric": "context",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca memory zh wide",
+      "state": {
+        "mode": "hca",
+        "metric": "memory",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca memory zh narrow",
+      "state": {
+        "mode": "hca",
+        "metric": "memory",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca memory en wide",
+      "state": {
+        "mode": "hca",
+        "metric": "memory",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca memory en narrow",
+      "state": {
+        "mode": "hca",
+        "metric": "memory",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca traffic zh wide",
+      "state": {
+        "mode": "hca",
+        "metric": "traffic",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca traffic zh narrow",
+      "state": {
+        "mode": "hca",
+        "metric": "traffic",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca traffic en wide",
+      "state": {
+        "mode": "hca",
+        "metric": "traffic",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca traffic en narrow",
+      "state": {
+        "mode": "hca",
+        "metric": "traffic",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca context zh wide",
+      "state": {
+        "mode": "hca",
+        "metric": "context",
+        "lang": "zh",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca context zh narrow",
+      "state": {
+        "mode": "hca",
+        "metric": "context",
+        "lang": "zh",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca context en wide",
+      "state": {
+        "mode": "hca",
+        "metric": "context",
+        "lang": "en",
+        "viewport": "wide"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    },
+    {
+      "name": "hca context en narrow",
+      "state": {
+        "mode": "hca",
+        "metric": "context",
+        "lang": "en",
+        "viewport": "narrow"
+      },
+      "checks": [
+        "shared estimate and source assumptions",
+        "no horizontal overflow or math error",
+        "metric selection preserves node focus",
+        "readable expanded principle area"
+      ]
+    }
+  ]
+}

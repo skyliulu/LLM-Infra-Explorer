@@ -1,0 +1,22 @@
+.sparse-module { padding: 24px; min-height: 100vh; font-size: 14px; line-height: 1.55; }
+.sparse-module * { box-sizing: border-box; }
+.sparse-module h1 { font-size: 24px; font-weight: 750; letter-spacing: -.025em; line-height: 1.25; }
+.sparse-module h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.sparse-module h3 { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.sa-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 22px; margin-bottom: 20px; min-width: 0; box-shadow: 0 1px 2px #0f172a04; }
+.sa-heading { display: flex; align-items: flex-start; gap: 12px; }
+.sa-heading p { color: #64748b; margin-top: 5px; }
+.sa-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+.sa-header-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.sa-actions { display: flex; gap: 8px; margin-left: auto; }
+.sa-modes, .sa-segment { display: inline-flex; gap: 3px; background: #f1f5f9; padding: 4px; border-radius: 9px; flex-wrap: wrap; }
+.sa-modes button, .sa-segment button { border-radius: 6px; padding: 6px 10px; color: #475569; font-size: 12px; font-weight: 650; min-height: 30px; }
+.sa-modes button[aria-pressed=true], .sa-segment button[aria-pressed=true] { background: #4338ca; color: white; box-shadow: 0 1px 3px #312e8120; }
+.sa-language, .sa-icon { display: flex; align-items: center; justify-content: center; background: #f1f5f9; border-radius: 8px; height: 36px; color: #475569; gap: 4px; }
+.sa-language { padding: 0 9px; }
+.sa-icon { width: 36px; }
+.sparse-module button:hover { filter: brightness(.96); }
+.sparse-module button:focus-visible, .sparse-module select:focus-visible, .sparse-module input:focus-visible, .sparse-module summary:focus-visible { outline: 3px solid #4f46e5; outline-offset: 3px; }
+
+.sa-sources { display: flex; flex-wrap: wrap; gap: 8px 20px; color: #64748b; font-size: 12px; padding: 0 3px 15px; }
+.sa-sources a { text-decoration: underline; text-underline-offset: 3px; color: #4338ca; }

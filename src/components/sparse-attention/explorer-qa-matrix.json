@@ -1,0 +1,1480 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      390,
+      1024,
+      1517
+    ],
+    "focus": [
+      "overview",
+      "cache",
+      "index",
+      "local",
+      "query",
+      "attention"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "viewport"
+    ],
+    [
+      "focus",
+      "lang",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "dsa zh 390 overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 390 cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 390 index",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 390 query",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 390 attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 390 overview",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 390 cache",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 390 index",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 390 local",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 390 query",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 390 attention",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 390 overview",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 390 cache",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 390 local",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 390 query",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 390 attention",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 390 overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 390 cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 390 index",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 390 query",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 390 attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 390 overview",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 390 cache",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 390 index",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 390 local",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 390 query",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 390 attention",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 390 overview",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 390 cache",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 390 local",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 390 query",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 390 attention",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1024 overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1024 cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1024 index",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1024 query",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1024 attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1024 overview",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1024 cache",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1024 index",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1024 local",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1024 query",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1024 attention",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1024 overview",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1024 cache",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1024 local",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1024 query",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1024 attention",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1024,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1024 overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1024 cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1024 index",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1024 query",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1024 attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1024 overview",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1024 cache",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1024 index",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1024 local",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1024 query",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1024 attention",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1024 overview",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1024 cache",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1024 local",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1024 query",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1024 attention",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1024,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1517 overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1517 cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1517 index",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1517 query",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa zh 1517 attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1517 overview",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1517 cache",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1517 index",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1517 local",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1517 query",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa zh 1517 attention",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1517 overview",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1517 cache",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1517 local",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1517 query",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca zh 1517 attention",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1517 overview",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1517 cache",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1517 index",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1517 query",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "dsa en 1517 attention",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1517 overview",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1517 cache",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1517 index",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "index"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1517 local",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1517 query",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "csa en 1517 attention",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1517 overview",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "overview"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1517 cache",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "cache"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1517 local",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "local"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1517 query",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "query"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    },
+    {
+      "name": "hca en 1517 attention",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517,
+        "focus": "attention"
+      },
+      "checks": [
+        "three benefit cards and all three trends present",
+        "no page or inspected panel overflow",
+        "no KaTeX errors",
+        "all legal nodes remain navigable"
+      ]
+    }
+  ]
+}

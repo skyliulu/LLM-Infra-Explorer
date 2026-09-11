@@ -1,0 +1,388 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "lang": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      1517,
+      1280,
+      768,
+      390
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "lang",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "dsa zh 1517",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1517
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "dsa zh 1280",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 1280
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "dsa zh 768",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 768
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "dsa zh 390",
+      "state": {
+        "mode": "dsa",
+        "lang": "zh",
+        "viewport": 390
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "dsa en 1517",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1517
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "dsa en 1280",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 1280
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "dsa en 768",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 768
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "dsa en 390",
+      "state": {
+        "mode": "dsa",
+        "lang": "en",
+        "viewport": 390
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "csa zh 1517",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1517
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "csa zh 1280",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 1280
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "csa zh 768",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 768
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "csa zh 390",
+      "state": {
+        "mode": "csa",
+        "lang": "zh",
+        "viewport": 390
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "csa en 1517",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1517
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "csa en 1280",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 1280
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "csa en 768",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 768
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "csa en 390",
+      "state": {
+        "mode": "csa",
+        "lang": "en",
+        "viewport": 390
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "hca zh 1517",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1517
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "hca zh 1280",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 1280
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "hca zh 768",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 768
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "hca zh 390",
+      "state": {
+        "mode": "hca",
+        "lang": "zh",
+        "viewport": 390
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "hca en 1517",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1517
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "hca en 1280",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 1280
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "hca en 768",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 768
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    },
+    {
+      "name": "hca en 390",
+      "state": {
+        "mode": "hca",
+        "lang": "en",
+        "viewport": 390
+      },
+      "checks": [
+        "readable node width and column spacing",
+        "no node or input overlap",
+        "SVG paths avoid unrelated nodes",
+        "no page or principle text overflow",
+        "same focus and domain model"
+      ]
+    }
+  ]
+}

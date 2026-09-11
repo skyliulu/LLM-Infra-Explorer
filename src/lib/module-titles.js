@@ -3,6 +3,7 @@ export const MODULE_LABELS = {
   llm: 'LLM Inference',
   parallel: 'Parallel Strategy',
   flash: 'Flash Attention',
+  sparseattn: 'Sparse Attention',
   flashdecode: 'Flash Decode',
   speculative: 'Spec Decode',
   quantization: 'Quantization',
