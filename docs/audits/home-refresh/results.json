@@ -1,0 +1,71 @@
+{
+  "viewports": [
+    {
+      "lang": "en",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "lang": "en",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "lang": "zh",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "lang": "zh",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "lang": "zh",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "lang": "zh",
+      "width": 360,
+      "overflow": false
+    }
+  ],
+  "filters": [
+    12,
+    2,
+    4,
+    4,
+    2
+  ],
+  "chapterLinks": [
+    "#llm",
+    "#parallel",
+    "#flash",
+    "#sparseattn",
+    "#cachearch",
+    "#flashdecode",
+    "#speculative",
+    "#quantization",
+    "#engram",
+    "#radixcache",
+    "#linearattn",
+    "#dpattention"
+  ],
+  "previews": 3,
+  "cta": true,
+  "browse": true,
+  "networkFailureFallback": true,
+  "reducedMotion": true,
+  "errors": []
+}

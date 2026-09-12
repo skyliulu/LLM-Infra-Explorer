@@ -1,0 +1,102 @@
+[
+  {
+    "page": "Quantization",
+    "language": "zh",
+    "width": 1280,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px",
+    "title": "量化与低精度推理"
+  },
+  {
+    "page": "Quantization",
+    "language": "zh",
+    "width": 390,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px",
+    "title": "量化与低精度推理"
+  },
+  {
+    "page": "Quantization",
+    "language": "en",
+    "width": 1280,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px",
+    "title": "Quantization & Low-Precision Inference"
+  },
+  {
+    "page": "Quantization",
+    "language": "en",
+    "width": 390,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px",
+    "title": "Quantization & Low-Precision Inference"
+  },
+  {
+    "page": "Spec Decode",
+    "language": "zh",
+    "width": 1280,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px"
+  },
+  {
+    "page": "Spec Decode",
+    "language": "zh",
+    "width": 390,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px"
+  },
+  {
+    "page": "Spec Decode",
+    "language": "en",
+    "width": 1280,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px"
+  },
+  {
+    "page": "Spec Decode",
+    "language": "en",
+    "width": 390,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px"
+  },
+  {
+    "page": "CED",
+    "language": "zh",
+    "width": 1280,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px"
+  },
+  {
+    "page": "CED",
+    "language": "zh",
+    "width": 390,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px"
+  },
+  {
+    "page": "CED",
+    "language": "en",
+    "width": 1280,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px"
+  },
+  {
+    "page": "CED",
+    "language": "en",
+    "width": 390,
+    "math": 0,
+    "overflow": false,
+    "rounded": "16px"
+  }
+]

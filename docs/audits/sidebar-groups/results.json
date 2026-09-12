@@ -1,0 +1,9 @@
+{
+  "groups": 4,
+  "chapters": 12,
+  "activeGroupReopens": true,
+  "compactNavigation": true,
+  "mobileAfterCompact": true,
+  "mobileClosesOnNavigation": true,
+  "errors": []
+}
