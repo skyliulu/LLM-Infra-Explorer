@@ -1166,3 +1166,29 @@ Playback pace refinement: user requested 2 seconds; default state and Chinese/En
 ## 2026-09-12 — README and favicon refresh
 
 English/Chinese READMEs now document Sparse Attention architecture drill-down, adjustable query playback, BF16/FP4 quantization and model-versus-measured-metric boundaries. The unpublished chapter is excluded. Favicon replaced by a three-layer tensor mark; visually checked at 16/32/64 px on light and dark backgrounds.
+
+## 2026-09-12 — README visual redesign and English preview refresh
+
+Documentation-only revision: integrated SVG brand banner (icon/title in one image), centered navigation, compact capability comparison, two featured previews plus three expandable close-ups, 11-workbench question map, local setup and concise roadmap. Both language editions share new English UI captures. Legacy GIF/video assets remain on disk but are no longer embedded or promoted as current.
+
+Five real application captures at device scale 2, with native PNG dimensions retained (no bitmap upscaling): Sparse Query inspector after four operations; BF16/FP4 storage section; completed prefill attention tensors; TP=2/PP=2 MoE shards; executed Engram gating/fusion. Source generation is scripts/capture-readme.cjs; capture.json records locale, viewports, states and zero runtime errors. Screenshots exclude the unpublished chapter and sidebar. Screenshot framing was revised after discovering overly tall full-page captures and an early inactive Engram state; final images show readable bounded regions and executed gates.
+
+Local GFM rendering with GitHub-like styling checked both README editions at desktop and 390px: all six images load, section links resolve, no page overflow. This is local renderer validation, not a claim of an already-published GitHub render. Evidence: docs/audits/readme-refresh/. Local asset references verified. No application code changed; no build needed for Markdown/PNG/SVG-only changes. Not committed or pushed in this revision.
+
+
+## 2026-09-12 — Animated README, portable rendering and chapter URLs
+
+Corrected the static-only interpretation: five current English UI sequences are embedded as looping GIFs, with native-resolution MP4 and 2x PNG companions. Main layout now uses standard Markdown images, links and tables instead of raw HTML alignment/details. A local GFM browser renderer (scripts/preview-readme.cjs, port 5180) resolves relative assets and plays GIFs; it is a local approximation, not an assertion that every Markdown viewer or GitHub chrome renders identically.
+
+Capture pipeline: actual user controls, two-second holds, up to 1600px GIF width and native-resolution video. Normalize PNG frame dimensions before encoding: varying component height initially reset the FFmpeg filter timeline and dropped intermediate frames. Final decoded checks verify 5/5 infinite-loop GIFs have multiple distinct frames, including 10 Sparse states; browser screenshots separated in time confirm changing pixels. English/Chinese local renders load all six images and have no page overflow at 390px. See docs/audits/readme-motion/, media/previews/motion-capture.json and scripts/capture-readme-motion.cjs.
+
+All 11 published chapters now have README links to their own Live Demo hash. MainDashboard reads the initial chapter, tracks hash changes and updates the URL on navigation. Invalid hashes fall back to home. Cold loads for all 11 modules, refresh, browser back/forward, unknown fallback and clean console verified by scripts/check-chapter-links.cjs. An early route test sampled old content before navigation finished; replaced with separate cold document loads and reverified each distinct chapter heading. Existing working-copy CED entry remains untouched; not added to the public README. Production build passed with only existing Browserslist age warning. Public deep links become active after deployment; this revision has not been pushed.
+
+
+## 2026-09-12 — Workbench-first README presentation
+
+Removed audience targeting from both introductions. Moved the complete chapter/link table before all previews, ordered it like the application navigation, and reordered featured demos as inference, parallel strategy, Sparse Attention, quantization and Engram.
+
+Replaced isolated component crops with five real full-viewport workbench tours. Each begins at the full overview with controls and adjacent views, follows actual operations or parameter changes into the page, and returns to the overview. Inference shows token/KV/tensor/code regions; parallel views show controls plus logical/physical mapping; Sparse spans benefits/architecture/query/drill-down; quantization spans storage, offline preparation and engine flow; Engram spans network, retrieval, gating, code and system timeline. The viewport is fixed at 1760x1160, captured at 2x; native PNG/MP4 are 3520x2320 and looping GIFs 1600x1054. First-frame PNGs are now full-workbench overviews. Retired the separate close-up capture script so future regeneration follows this contract.
+
+Checked overview captures and representative middle frames, five GIFs with 5–13 distinct frames and infinite looping, and actual changing GIF pixels in the local browser renderer. Both language editions load six images and pass the 390px overflow check. Assertions verify audience text removal, chapter table before previews, demo order and existing asset targets. Evidence: docs/audits/readme-overview/ and updated motion-capture.json. No application code changed in this presentation revision, so no repeat build was needed. Not committed or pushed.

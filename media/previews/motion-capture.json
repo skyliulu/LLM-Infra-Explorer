@@ -1,0 +1,96 @@
+{
+  "locale": "en-US",
+  "deviceScaleFactor": 2,
+  "frameDurationSeconds": 2,
+  "viewport": {
+    "width": 1760,
+    "height": 1160
+  },
+  "source": "Complete English workbench tours: overview, real controls, execution and connected details",
+  "previews": [
+    {
+      "name": "llm-inference",
+      "width": 3520,
+      "height": 2320,
+      "states": [
+        "Full inference workbench with committed first-layer KV",
+        "Replay prefill embedding in the full pipeline",
+        "Per-layer attention and cache",
+        "Attention results and FFN/MoE",
+        "Next layer begins; inspect the whole pipeline",
+        "Back to inference overview with accumulated state"
+      ],
+      "gifBytes": 1442299
+    },
+    {
+      "name": "parallel-strategies",
+      "width": 3520,
+      "height": 2320,
+      "states": [
+        "All six controls, TP=2/PP=2 and four physical GPUs",
+        "TP=4: tensor shards and eight-GPU map",
+        "PP=1: change the layer partition and GPU count",
+        "EP=2: expert ownership and communication",
+        "Return to controls with the composed topology"
+      ],
+      "gifBytes": 687793
+    },
+    {
+      "name": "sparse-attention",
+      "width": 3520,
+      "height": 2320,
+      "states": [
+        "Full workbench and simultaneous resource comparison",
+        "Connected architecture before querying",
+        "Query execution operation 1",
+        "Query execution operation 2",
+        "Query execution operation 3",
+        "Query execution operation 4",
+        "Query execution operation 5",
+        "Query execution operation 6",
+        "Query execution operation 7",
+        "Query execution operation 8",
+        "Query execution operation 9",
+        "Drill into Query while retaining the same architecture",
+        "Return to resource comparison"
+      ],
+      "gifBytes": 972571
+    },
+    {
+      "name": "quantization",
+      "width": 3520,
+      "height": 2320,
+      "states": [
+        "Full workbench: weight/activation modes and resource targets",
+        "BF16 source versus INT4 storage and error",
+        "Switch to grouped FP4 in the same storage workbench",
+        "Inspect another FP4 channel and reconstruction",
+        "Offline preparation and inference engine workbenches",
+        "Loading, activation conversion and paged KV access",
+        "Return to the full precision controls"
+      ],
+      "gifBytes": 1160160
+    },
+    {
+      "name": "engram",
+      "width": 3520,
+      "height": 2320,
+      "states": [
+        "Full network, completed retrieval/gating pipeline and code",
+        "Retrieval operation 1",
+        "Retrieval operation 2",
+        "Retrieval operation 3",
+        "Retrieval operation 4",
+        "Retrieval operation 5",
+        "Projection",
+        "Dependency gate",
+        "Convolution and residual",
+        "Block output",
+        "System data movement timeline",
+        "Return to the full architecture"
+      ],
+      "gifBytes": 1724463
+    }
+  ],
+  "errors": []
+}

@@ -1,106 +1,86 @@
-<img src="./public/favicon.svg" width="56" height="56" alt="LLM Infra Explorer" />
+[![LLM Infra Explorer — From a single token to the whole system](./media/readme-hero.svg)](https://skyliulu.github.io/LLM-Infra-Explorer/)
 
-# LLM-Infra-Explorer
+**[Open the Workbench ↗](https://skyliulu.github.io/LLM-Infra-Explorer/)** · [English](./README.md) · [简体中文](./README.zh-CN.md)
 
-[English](./README.md) | [简体中文](./README.zh-CN.md)
+React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
-> **从 Token 到系统，真正理解大语言模型的运作方式。**
+**让大模型基础设施看得见。** 追踪执行，检查张量与显存，理解各个组件如何组成完整系统。
 
-一个面向 **LLM 系统、推理工作流与 AI 基础设施**的**交互式探索项目**，通过可视化与动手实践帮助你建立深层理解。
+| 看整体系统 | 打开显微镜 | 跟随执行 |
+| :--- | :--- | :--- |
+| 对比架构、显存所有权与资源开销。 | 点击组件和矩阵记录，检查输入、输出与来源。 | 用播放、暂停与单步，按自己的节奏理解执行顺序。 |
 
-🌐 在线体验：https://skyliulu.github.io/LLM-Infra-Explorer/
+## 带着问题选择章节
 
----
+| 方向 | 工作台 | 可以探索什么 |
+| :--- | :--- | :--- |
+| 推理 | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/Decode、逐层 KV、Dense/MoE、温度与采样。 |
+| 分布式 | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank 与运行时拓扑。 |
+| Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard 与 V1–V4、分块、SRAM/HBM 与 IO。 |
+| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA、CSA、HCA、局部窗口、记录来源和单次 Query 执行。 |
+| Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K、分页 KV、Head 共享与并行归约。 |
+| 生成 | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、拒绝修正、EAGLE-2 与 DSpark。 |
+| 低精度 | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16、INT4/INT8、FP8/FP4、离线算法与引擎执行。 |
+| 存储 | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram 检索、上下文门控和数据移动。 |
+| 存储 | [**Radix Cache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | 前缀共享、引用锁、驱逐和 KV 分配。 |
+| 分布式 | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权，以及连接 FFN/MoE 的通信路径。 |
+| Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax、核函数、递归状态与 GLA 门控。 |
 
-## ✨ 为什么做这个项目？
+## 工作台预览
 
-现代 LLM 系统**复杂、不透明，难以直观理解**：
+以下为当前**英文完整工作台的动态导览**：从总览开始，展示组件之间的联动，再进入细节。点击动画可打开对应章节；每组还提供高清原始视频与工作台全景图。
 
-- 推理过程中到底发生了什么？
-- KV Cache 是如何随时间演化的？
-- DP / TP / PP 对执行流程有什么影响？
-- 为什么 Flash Attention 这类优化如此有效？
+### 01 / Inference — tokens, cache and the execution pipeline
 
-本项目帮助你**看见并亲手探索这些过程**，而不仅仅是阅读文字描述。
+先看 Token 序列、逐层 KV Cache、张量流水线与引擎代码的整体关系，再重放 Prefill，进入 Attention 和 MoE，最后返回更新后的总览。
 
----
+[![LLM Inference full workbench: tokens, layer KV, tensor pipeline and engine code](./media/previews/llm-inference.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#llm)
 
-## 🧠 可以探索哪些内容
+[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) · [HD video](./media/previews/llm-inference.mp4) · [Full workbench overview](./media/previews/llm-inference.png)
 
-- 🖥️ **LLM 推理全景** — 从 Token Embedding 依次观察 Attention、Dense FFN 或 MoE Expert、逐层 KV Cache、LM Head，以及 Temperature / Top-K / Top-P 采样
-- 🔀 **并行策略探索器** — 组合 DP / TP / PP / CP / EP / ETP，查看矩阵切分与 GPU Rank 映射，并对比 DP Attention、Wide-EP、P/D 分离和 Runtime 通信设计
-- ⚡ **Flash Attention** — 对比 Standard Softmax 与 FlashAttention V1–V4 的前向/反向分块流水线、片上 SRAM Tile、HBM 中间产物和 IO 流量
-- 🔎 **Sparse Attention** — 在同一画布对比完整 Attention 与 DSA、CSA、HCA 的缓存占用、读取量和容量预算；从整体关系下钻矩阵与单条记录，播放一次 Query 的投影、选择、读取、Softmax 和输出，支持暂停、单步与调速。
-- 🚀 **Flash Decode** — 对比 Unsplit / Split-K、Contiguous / Paged KV、MHA/GQA/MQA Head 共享、CTA 调度、Workspace 写入与最终归约
-- ✨ **推测解码** — 同屏对比 Target 串行 Decode 与块验证，并探索 EAGLE-2 动态候选树和 DSpark 置信度调度的半自回归候选块
-- 📦 **量化与低精度推理** — 从 BF16 权重基线观察 INT4、INT8、FP8 与 FP4 的数值表示、存储和误差，区分权重、激活与 KV 精度；探索离线算法，以及 SGLang v0.4.6.post5 的 checkpoint 加载、激活量化和分页 KV 读写。
-- 🧬 **Engram（DeepSeek）** — 追踪 Tokenizer Compression、多头 N-gram 检索、Context-aware Gating、Short Convolution，以及推理/训练的数据移动
-- 🌲 **Radix Cache** — 探索基数树前缀复用、请求引用锁、容量缺口、LRU 叶节点驱逐和成对 K/V Page 分配
-- 📈 **Linear Attention** — 从 Standard Softmax 推进到核函数 Linear Attention、递归状态更新与 Gated Linear Attention（GLA）
-- 🔁 **DP Attention** — 对比标准 TP Attention 与面向 MLA 的 DP Attention，包括 KV 所有权和 TP-FFN / EP-MoE 通信路径
+### 02 / Parallel strategies — from tensor shards to GPU topology
 
----
+组合不同并行维度，同时观察张量所有权、层划分与物理 GPU 映射的变化。
 
-## 如何使用交互工作台
+[![Parallel Strategy full workbench: controls, logical tensor layout and physical GPUs](./media/previews/parallel-strategies.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel)
 
-1. 先看要解决的问题，以及同一条件下的资源收益与代价。
-2. 切换真实的算法方案；同一系统的协作部件则在整体关系里一起查看。
-3. 点击画布中的组件或矩阵记录，下钻输入、输出、来源与原理。
-4. 对有执行顺序的模块使用播放、暂停和单步；Sparse Attention 默认每步 2 秒，也可调速。
+[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) · [HD video](./media/previews/parallel-strategies.mp4) · [Full workbench overview](./media/previews/parallel-strategies.png)
 
-资源数字来自各模块注明的教学模型或来源。缓存容量、读取字节与真实延迟不是同一指标；示意动画不代表 GPU 实际执行耗时。模块内可切换中英文。
+### 03 / Sparse Attention — tradeoffs, architecture and query execution
 
----
+先看显存与读取量的对比，再沿整体架构执行一次 Query，最后保留系统视图下钻具体组件。
 
-## 🖼️ 项目预览
+[![Sparse Attention full workbench: resource comparison, connected architecture and query execution](./media/previews/sparse-attention.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn)
 
-### LLM 推理：张量、KV Cache 与采样
+[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) · [HD video](./media/previews/sparse-attention.mp4) · [Full workbench overview](./media/previews/sparse-attention.png)
 
-![LLM 推理演示](./media/llm-inference.gif)
+### 04 / Quantization — precision, storage and runtime
 
-[直接打开视频](./media/llm-inference.mp4)
+从精度控制、存储与重建，继续查看离线准备和推理引擎的完整工作台。
 
-### 并行策略：切分、Rank 与 Runtime 拓扑
+[![Quantization full workbench: precision controls, storage, offline preparation and inference](./media/previews/quantization.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization)
 
-![并行策略演示](./media/parallel.gif)
+[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) · [HD video](./media/previews/quantization.mp4) · [Full workbench overview](./media/previews/quantization.png)
 
-[直接打开视频](./media/parallel.mp4)
+### 05 / Engram — architecture, retrieval and system dataflow
 
-### Engram：检索、门控与系统数据移动
+同屏查看网络拓扑、N-gram 检索和引擎代码，再追踪投影、门控、残差融合与系统数据移动。
 
-![Engram 演示](./media/engram.gif)
+[![Engram full workbench: network topology, retrieval, gating, code and system timeline](./media/previews/engram.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#engram)
 
-[直接打开视频](./media/engram.mp4)
+[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) · [HD video](./media/previews/engram.mp4) · [Full workbench overview](./media/previews/engram.png)
 
-以上动画展示代表性交互路径；完整模式与参数组合请进入[在线体验](https://skyliulu.github.io/LLM-Infra-Explorer/)探索。
+### 建议的探索方式
 
----
+**对比方案 → 改一个参数 → 检查一条记录 → 单步跟踪结果。**
 
-## 🧭 后续计划
+同一系统里的协作部件放在整体架构中，真实的替代方案使用切换。对有执行顺序的内容提供动态演示；Sparse Attention 默认**每步 2 秒**，可调速、暂停或单步。所有模块支持中英文。
 
-后续章节将继续把算法层的张量流，与 Runtime 调度、显存所有权和物理通信联系起来。以下是候选方向，不代表固定的开发顺序。
+> **如何理解数字：** 资源估算采用模块内注明的假设和来源。存储字节、传输字节、可容纳历史和实测延迟不是同一指标；动画节奏不代表 GPU 实际耗时。
 
-### 推理算法
+## 本地运行
 
-- **推测解码扩展** — 增加有实测依据的硬件配置、EAGLE-3、原生 MTP、多轮 Serving 轨迹和不同引擎的批处理/运行时边界
-- **量化扩展** — 接入真实 checkpoint 校准与任务评测，增加具体 Kernel 的硬件测量、更多低精度格式和量化图变换细节
-
-### Serving Runtime 与显存
-
-- **Continuous Batching 与 Scheduler** — 展示请求生命周期、Chunked Prefill、Decode Batching、抢占、准入控制和时延/吞吐权衡
-- **KV 显存层级** — 展示 GPU/CPU/NVMe Offload、分层 KV Cache、迁移、前缀复用和 P/D 分离下的 KV 所有权
-
-### 分布式系统
-
-- **MoE Serving 与负载均衡** — 展示 Expert 放置、Token Dispatch、容量压力、Expert Parallelism、All-to-All 和动态 Expert 再平衡
-- **互连拓扑与集合通信** — 展示 NVLink、PCIe、InfiniBand/RDMA、NCCL，以及分层 All-Reduce、Reduce-Scatter 和 All-to-All
-- **推理性能模型** — 拆解 TTFT/TPOT、计算与访存瓶颈、Roofline 直觉、利用率和端到端 Profiling 证据
-
-欢迎通过 GitHub Issues 提交章节建议和可参考的实现资料。
-
----
-
-## 🚀 快速开始
+需要 Node.js 和 npm。
 
 ```bash
 git clone https://github.com/skyliulu/LLM-Infra-Explorer.git
@@ -109,9 +89,37 @@ npm install
 npm run dev
 ```
 
----
+打开 Vite 输出的本地地址。构建并预览生产版本：
 
-## 📄 开源协议
+```bash
+npm run build
+npm run preview
+```
 
-本项目基于 [GNU Affero General Public License v3.0 (AGPL-3.0)](./LICENSE) 协议开源。
-商业使用须遵守本协议条款。任何以网络服务形式部署的修改版本，须同样开源。
+**技术栈：** React 18、Vite、Tailwind CSS、Framer Motion、KaTeX。应用为静态 SPA，部署在 GitHub Pages。
+
+## 后续方向
+
+- **Serving：** 连续批处理、请求调度与多级 KV 存储。
+- **分布式执行：** Expert 负载均衡、互联与集合通信。
+- **实测性能：** 硬件配置、TTFT/TPOT 与端到端权衡。
+
+以上是候选方向，不代表固定交付计划。欢迎[建议主题或反馈问题](https://github.com/skyliulu/LLM-Infra-Explorer/issues)，尤其欢迎附带来源、模块和复现参数的技术纠错。
+
+### 如何维护预览素材
+
+`scripts/capture-readme-motion.cjs` 通过真实页面控件录制动画，同时把总览画面保存为高清 PNG。环境中已有 Playwright、Chromium 和 FFmpeg 时，启动应用后执行：
+
+```bash
+node scripts/capture-readme-motion.cjs
+```
+
+通过 `PREVIEW_URL` 指定其他本地服务地址。采集状态与运行时错误记录在 `media/previews/motion-capture.json`。GIF 最大宽度为 1600 像素，视频和静态图保留原始采集分辨率。
+
+
+
+本地需要查看图片与 GIF 的完整渲染时，在环境中已有 `marked` 的情况下运行 `node scripts/preview-readme.cjs`，打开终端输出的浏览器地址。该预览使用 GFM 解析，GitHub 自身的外围样式由 GitHub 控制。
+
+## 许可证
+
+[GNU Affero General Public License v3.0](./LICENSE)。商业使用和网络部署须遵守该许可证条款。

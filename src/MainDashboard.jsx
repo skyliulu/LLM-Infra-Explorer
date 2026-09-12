@@ -1,5 +1,5 @@
 import { MODULE_LABELS } from './lib/module-titles';
-import React, { lazy, Suspense, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Github, Cpu, Zap, FastForward, Network, Database, GitBranch, Activity, Sparkles, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx } from 'clsx';
@@ -42,8 +42,22 @@ function LoadingFallback() {
   );
 }
 
+function readChapterHash() {
+  const chapter = window.location.hash.slice(1);
+  return TABS.some(tab => tab.id === chapter) ? chapter : 'home';
+}
+
 export default function MainDashboard() {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTabState] = useState(readChapterHash);
+  const setActiveTab = chapter => {
+    setActiveTabState(chapter);
+    if (window.location.hash !== `#${chapter}`) window.location.hash = chapter;
+  };
+  useEffect(() => {
+    const onHashChange = () => setActiveTabState(readChapterHash());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 

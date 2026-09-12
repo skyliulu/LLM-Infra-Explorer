@@ -1,0 +1,19 @@
+{
+  "chapters": [
+    "llm",
+    "parallel",
+    "flash",
+    "sparseattn",
+    "flashdecode",
+    "speculative",
+    "quantization",
+    "engram",
+    "radixcache",
+    "dpattention",
+    "linearattn"
+  ],
+  "refresh": true,
+  "backForward": true,
+  "unknownFallback": true,
+  "errors": []
+}

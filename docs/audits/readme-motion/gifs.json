@@ -1,0 +1,57 @@
+[
+  {
+    "file": "engram.gif",
+    "size": [
+      1600,
+      982
+    ],
+    "frames": 60,
+    "distinctFrames": 5,
+    "durationMs": 12000,
+    "loop": 0
+  },
+  {
+    "file": "llm-inference.gif",
+    "size": [
+      1276,
+      1090
+    ],
+    "frames": 70,
+    "distinctFrames": 5,
+    "durationMs": 14000,
+    "loop": 0
+  },
+  {
+    "file": "parallel-strategies.gif",
+    "size": [
+      1196,
+      878
+    ],
+    "frames": 60,
+    "distinctFrames": 4,
+    "durationMs": 12000,
+    "loop": 0
+  },
+  {
+    "file": "quantization.gif",
+    "size": [
+      1600,
+      906
+    ],
+    "frames": 60,
+    "distinctFrames": 5,
+    "durationMs": 12000,
+    "loop": 0
+  },
+  {
+    "file": "sparse-attention.gif",
+    "size": [
+      1600,
+      1318
+    ],
+    "frames": 110,
+    "distinctFrames": 10,
+    "durationMs": 22000,
+    "loop": 0
+  }
+]
