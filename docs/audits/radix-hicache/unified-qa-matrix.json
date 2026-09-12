@@ -1,0 +1,1731 @@
+{
+  "dimensions": {
+    "scenario": [
+      "mixed",
+      "gpu",
+      "host",
+      "miss",
+      "pressure",
+      "peer",
+      "split"
+    ],
+    "prefetch": [
+      "wait_complete",
+      "timeout",
+      "best_effort"
+    ],
+    "write": [
+      "write_through",
+      "write_through_selective",
+      "write_back"
+    ],
+    "tiers": [
+      "hierarchical",
+      "gpu"
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "scenario",
+      "prefetch",
+      "write",
+      "tiers"
+    ],
+    [
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "model mixed wait_complete write_through hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed wait_complete write_through gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed wait_complete write_through_selective hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed wait_complete write_through_selective gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed wait_complete write_back hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed wait_complete write_back gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_through hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_through gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_through_selective hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_through_selective gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_back hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_back gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_through hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_through gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_through_selective hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_through_selective gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_back hierarchical",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_back gpu",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_through hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_through gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_through_selective hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_through_selective gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_back hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_back gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_through hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_through gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_through_selective hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_through_selective gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_back hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_back gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_through hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_through gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_through_selective hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_through_selective gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_back hierarchical",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_back gpu",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_through hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_through gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_through_selective hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_through_selective gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_back hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_back gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host timeout write_through hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host timeout write_through gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host timeout write_through_selective hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host timeout write_through_selective gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host timeout write_back hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host timeout write_back gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host best_effort write_through hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host best_effort write_through gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host best_effort write_through_selective hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host best_effort write_through_selective gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host best_effort write_back hierarchical",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model host best_effort write_back gpu",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_through hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_through gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_through_selective hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_through_selective gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_back hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_back gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss timeout write_through hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss timeout write_through gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss timeout write_through_selective hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss timeout write_through_selective gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss timeout write_back hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss timeout write_back gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_through hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_through gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_through_selective hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_through_selective gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_back hierarchical",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_back gpu",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_through hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_through gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_through_selective hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_through_selective gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_back hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_back gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_through hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_through gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_through_selective hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_through_selective gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_back hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_back gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_through hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_through gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_through_selective hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_through_selective gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_back hierarchical",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_back gpu",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_through hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_through gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_through_selective hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_through_selective gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_back hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_back gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer timeout write_through hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer timeout write_through gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer timeout write_through_selective hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer timeout write_through_selective gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer timeout write_back hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer timeout write_back gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_through hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_through gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_through_selective hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_through_selective gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_back hierarchical",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_back gpu",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split wait_complete write_through hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split wait_complete write_through gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split wait_complete write_through_selective hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split wait_complete write_through_selective gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split wait_complete write_back hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split wait_complete write_back gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split timeout write_through hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split timeout write_through gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "timeout",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split timeout write_through_selective hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split timeout write_through_selective gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split timeout write_back hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split timeout write_back gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "timeout",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split best_effort write_through hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split best_effort write_through gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split best_effort write_through_selective hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split best_effort write_through_selective gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split best_effort write_back hierarchical",
+      "state": {
+        "scenario": "split",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "hierarchical"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "model split best_effort write_back gpu",
+      "state": {
+        "scenario": "split",
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "tiers": "gpu"
+      },
+      "checks": [
+        "All checkpoints: same prefix identity, split preserves physical pages, continuous retrieval",
+        "Disabled tiers never copied into; references and page addresses remain valid"
+      ]
+    },
+    {
+      "name": "render zh desktop",
+      "state": {
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "One tree, one timeline, no standalone foundation",
+        "No overflow; node and physical-page links preserved"
+      ]
+    },
+    {
+      "name": "render zh mobile",
+      "state": {
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "One tree, one timeline, no standalone foundation",
+        "No overflow; node and physical-page links preserved"
+      ]
+    },
+    {
+      "name": "render en desktop",
+      "state": {
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "One tree, one timeline, no standalone foundation",
+        "No overflow; node and physical-page links preserved"
+      ]
+    },
+    {
+      "name": "render en mobile",
+      "state": {
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "One tree, one timeline, no standalone foundation",
+        "No overflow; node and physical-page links preserved"
+      ]
+    }
+  ]
+}

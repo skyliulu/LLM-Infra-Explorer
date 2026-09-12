@@ -11,7 +11,7 @@ const examples={
  cachearch:{'CacheArchitecture.tokens':1000000,'CacheArchitecture.phase':'decode','CacheArchitecture.layer':39},
  quantization:{'Quantization.config':{mode:'fp4',batch:8,context:8192,kv:'fp4',prefill:true},'quantization/SGLangWorkbench.preset':'saved-static'},
  speculative:{'SpeculativeDecoding.config':{algorithm:'dspark',depth:3,width:2,budget:8,blockSize:8}},
- engram:{'Engram.systemMode':'training'},radixcache:{'RadixCache.modelType':'standard'},
+ engram:{'Engram.systemMode':'training'},radixcache:{},
 };
 assert.deepEqual(Object.keys(examples).sort(),Object.keys(SHARE_SCHEMA).sort());
 for(const [chapter,values] of Object.entries(examples)){
@@ -29,3 +29,5 @@ assert.deepEqual(sanitizeSettings('parallel',{'ParallelStrategies.degrees':{dp:4
 assert.deepEqual(readSharedSettings('llm','#llm?setup='+encodeURIComponent('{"v":1,"values":{"__proto__":{"polluted":true}}}')),{});
 assert.equal({}.polluted,undefined);
 console.log('Sharing schema: all 12 chapters round-trip; malformed, oversized, unknown and out-of-range settings rejected.');
+
+assert.deepEqual(sanitizeSettings('radixcache',{'HiCache.scenario':'unknown','HiCache.prefetch':'forever','HiCache.write':true}),{});

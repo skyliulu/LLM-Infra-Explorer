@@ -16,7 +16,7 @@ export const SHARE_SCHEMA={
  quantization:{'Quantization.config':object({mode:one('bf16','w4','fp4','w8','fp8'),batch:range(1,8),context:range(256,8192),kv:one('bf16','fp8','fp4'),prefill:bool}),'quantization/SGLangWorkbench.preset':one('bf16','load-fp8','saved-dynamic','saved-static'),'quantization/SGLangWorkbench.kv':one('auto','fp8-unit','fp8-file'),'Quantization.outliers':bool,'Quantization.algorithm':one('rtn','awq','gptq','smoothquant'),'Quantization.alpha':range(0,1)},
  speculative:{'SpeculativeDecoding.config':object({algorithm:one('eagle2','dspark'),depth:range(1,5),width:range(1,3),budget:range(2,16),blockSize:range(1,8)})},
  engram:{'Engram.systemMode':one('inference','training'),'Engram.slideIdx':one(2,3,4,5)},
- radixcache:{'RadixCache.modelType':one('radix','standard')},
+ radixcache:{},
 };
 export function sanitizeSettings(chapter, values){
  if(!values||typeof values!=='object'||Array.isArray(values)) return {};

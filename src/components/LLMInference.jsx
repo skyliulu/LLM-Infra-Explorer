@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -491,10 +492,10 @@ const App = () => {
         } else {
           if (index > step || (index === step && activeModule < MODULE.lmHead)) return null;
           if (index < step) {
-            isProcessed = true; 
+            isProcessed = true;
             if (phase === 'decode' && index === step - 1 && activeModule === MODULE.embedding) isAutoRegressiveInput = true;
           } else if (index === step && activeModule >= MODULE.lmHead) {
-            isProcessed = true; 
+            isProcessed = true;
             isJustGenerated = activeModule === MODULE.lmHead || activeModule === MODULE.tokenDone;
           }
         }
@@ -527,8 +528,8 @@ const App = () => {
         {/* Header & Controls */}
         <div className="chapter-header bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900">
-              <Zap className="text-amber-500" />
+            <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900"><ChapterIcon chapter="llm"/>
+
               {t('title')}
             </h1>
             <p className="text-slate-500 text-sm mt-1">{t('subtitle')}</p>

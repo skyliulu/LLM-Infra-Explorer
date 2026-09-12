@@ -104,3 +104,9 @@ node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs path/
 The matrix declares arbitrary dimensions and required cross-products; keep domain-specific values and assertions in the module, not in this skill.
 
 Turn every confirmed defect into a reusable regression assertion, browser case, or checklist item. Update `design-qa.md` with the current result, evidence, unresolved limitations, and change-contract impact. Do not declare completion from source inspection or a successful build alone.
+
+### Chapter identity and control prominence
+
+- Use `src/lib/chapter-icons.js` as the single chapter-icon mapping. Body titles render `ChapterIcon` with their chapter ID; navigation and home cards use the same mapping through the chapter registry. Do not choose a separate decorative icon in a chapter header. Preserve unique, content-relevant icons across chapters and check title/navigation agreement when adding or changing a chapter.
+- Keep primary experiment policies discoverable. For Radix HiCache, prefetch, backup and runtime-condition controls are expanded by default. Minimum-load tuning and the companion-reader toggle are deliberately omitted from the teaching UI; do not restore them just because the engine model supports them. Retain the shared-prefix visualization itself.
+- Distinguish optional runtime diagnostics from controls needed to explore the main teaching question. Reduce secondary controls before hiding primary policies. A preference for one chapter is not a requirement to expand every disclosure in every chapter.

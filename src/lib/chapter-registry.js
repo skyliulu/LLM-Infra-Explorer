@@ -1,5 +1,5 @@
 import {lazy} from 'react';
-import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split} from 'lucide-react';
+import {CHAPTER_ICONS} from './chapter-icons';
 import {getModuleLabel} from './module-titles';
 const LLMInference = lazy(() => import('../components/LLMInference.jsx'));
 const DpAttention = lazy(() => import('../components/DpAttention.jsx'));
@@ -15,18 +15,18 @@ const SparseAttention = lazy(() => import('../components/SparseAttention.jsx'));
 const CacheArchitecture = lazy(() => import('../components/CacheArchitecture.jsx'));
 
 const routes = [
-  { id: 'llm', icon: Cpu, component: LLMInference },
-  { id: 'parallel', icon: Network, component: ParallelStrategies },
-  { id: 'flash', icon: Zap, component: FlashAttention },
-  { id: 'sparseattn', icon: Filter, component: SparseAttention },
-  { id: 'cachearch', icon: Layers, component: CacheArchitecture },
-  { id: 'flashdecode', icon: Merge, component: FlashDecode },
-  { id: 'speculative', icon: ListChecks, component: SpeculativeDecoding },
-  { id: 'quantization', icon: Binary, component: Quantization },
-  { id: 'engram', icon: BrainCircuit, component: Engram },
-  { id: 'radixcache', icon: GitBranch, component: RadixCache },
-  { id: 'dpattention', icon: Split, component: DpAttention },
-  { id: 'linearattn', icon: Repeat2, component: LinearAttention },
+  { id: 'llm', icon: CHAPTER_ICONS.llm, component: LLMInference },
+  { id: 'parallel', icon: CHAPTER_ICONS.parallel, component: ParallelStrategies },
+  { id: 'flash', icon: CHAPTER_ICONS.flash, component: FlashAttention },
+  { id: 'sparseattn', icon: CHAPTER_ICONS.sparseattn, component: SparseAttention },
+  { id: 'cachearch', icon: CHAPTER_ICONS.cachearch, component: CacheArchitecture },
+  { id: 'flashdecode', icon: CHAPTER_ICONS.flashdecode, component: FlashDecode },
+  { id: 'speculative', icon: CHAPTER_ICONS.speculative, component: SpeculativeDecoding },
+  { id: 'quantization', icon: CHAPTER_ICONS.quantization, component: Quantization },
+  { id: 'engram', icon: CHAPTER_ICONS.engram, component: Engram },
+  { id: 'radixcache', icon: CHAPTER_ICONS.radixcache, component: RadixCache },
+  { id: 'dpattention', icon: CHAPTER_ICONS.dpattention, component: DpAttention },
+  { id: 'linearattn', icon: CHAPTER_ICONS.linearattn, component: LinearAttention },
 ];
 
 const descriptions = [
@@ -102,8 +102,8 @@ const descriptions = [
   {
     id: 'radixcache',
     description: {
-      en: 'Explore how Radix Cache uses a radix tree for prefix-sharing KV cache to reduce memory usage and improve throughput.',
-      zh: '了解 Radix Cache 如何通过基数树实现前缀共享 KV Cache，减少显存占用并提升吞吐量。',
+      en: 'Trace prefix reuse and KV movement across GPU, host memory and external storage with Radix HiCache.',
+      zh: '用 Radix HiCache 追踪前缀共享、分层存储，以及 KV 页的预取、加载、写回与淘汰。',
     },
     iconClass: 'text-indigo-300',
   },
@@ -124,7 +124,7 @@ const descriptions = [
     iconClass: 'text-sky-300',
   },
 ];
-const aliases={llm:'推理 预填充 生成 token moe dense kv',parallel:'并行 dp tp pp cp ep etp gpu helix',flash:'fa fa2 fa3 fa4 分块 注意力 sram hbm',sparseattn:'dsa csa hca swa 稀疏 压缩 注意力',cachearch:'ced csa2 deepseek 缓存 共享 编码 解码',flashdecode:'解码 split 分块 reduction',speculative:'投机解码 draft target eagle dspark',quantization:'量化 精度 int4 fp4 fp8 bf16 awq gptq smoothquant',engram:'记忆 ngram 预取',radixcache:'前缀缓存 基数树 sglang lru',linearattn:'线性注意力 gla 递归 状态',dpattention:'dp tp mla attention 数据并行'};
+const aliases={llm:'推理 预填充 生成 token moe dense kv',parallel:'并行 dp tp pp cp ep etp gpu helix',flash:'fa fa2 fa3 fa4 分块 注意力 sram hbm',sparseattn:'dsa csa hca swa 稀疏 压缩 注意力',cachearch:'ced csa2 deepseek 缓存 共享 编码 解码',flashdecode:'解码 split 分块 reduction',speculative:'投机解码 draft target eagle dspark',quantization:'量化 精度 int4 fp4 fp8 bf16 awq gptq smoothquant',engram:'记忆 ngram 预取',radixcache:'前缀缓存 基数树 sglang lru hicache 分层存储 预取 host gpu',linearattn:'线性注意力 gla 递归 状态',dpattention:'dp tp mla attention 数据并行'};
 const related={llm:['quantization','speculative'],parallel:['dpattention','flashdecode'],flash:['sparseattn','flashdecode'],sparseattn:['flash','cachearch'],cachearch:['sparseattn','quantization'],flashdecode:['flash','dpattention'],speculative:['llm','radixcache'],quantization:['llm','cachearch'],engram:['llm','radixcache'],radixcache:['llm','cachearch'],dpattention:['parallel','flashdecode'],linearattn:['flash','sparseattn']};
 export const CHAPTERS=routes.map(route=>({...descriptions.find(item=>item.id===route.id),...route,title:getModuleLabel(route.id),aliases:aliases[route.id],related:related[route.id]}));
 export function matchesChapter(chapter, query){return query.trim().toLowerCase().split(/\s+/).every(word=>[chapter.title,chapter.id,chapter.aliases,...Object.values(chapter.description)].join(' ').toLowerCase().includes(word));}

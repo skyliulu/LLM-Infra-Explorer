@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -50,7 +51,7 @@ function Algorithm({outliers,t}) {
 export default function Quantization() {
   const [lang] = useLanguage(), [config,setConfig] = useExperimentState('Quantization.config', {mode:'w4',batch:1,context:2048,kv:'bf16',prefill:false}), [outliers,setOutliers] = useExperimentState('Quantization.outliers', true);
   const t = key => key==='bf16' ? i18n[lang][key] : engineI18n[lang][key] ?? i18n[lang][key] ?? key;
-  return <div className="chapter-page quant-page min-h-full bg-slate-50 text-slate-800"><header className="q-top module-header-card chapter-header"><div><h1>{t('title')}</h1><p>{t('subtitle')}</p></div><div className="q-top-tools"><div className="q-top-actions"><Tabs values={['bf16','w4','fp4','w8','fp8']} value={config.mode} onChange={mode => setConfig({...config,mode})} t={t} label={t('title')}/></div><small className="q-mode-scope">{t('precisionScope')}</small></div></header><div className="chapter-body">
+  return <div className="chapter-page quant-page min-h-full bg-slate-50 text-slate-800"><header className="q-top module-header-card chapter-header"><div><h1><ChapterIcon chapter="quantization"/>{t('title')}</h1><p>{t('subtitle')}</p></div><div className="q-top-tools"><div className="q-top-actions"><Tabs values={['bf16','w4','fp4','w8','fp8']} value={config.mode} onChange={mode => setConfig({...config,mode})} t={t} label={t('title')}/></div><small className="q-mode-scope">{t('precisionScope')}</small></div></header><div className="chapter-body">
     <Overview config={config} setConfig={setConfig} t={t} lang={lang}/>{config.mode==='fp4' ? <FP4CacheWorkbench lang={lang}/> : <Numeric mode={config.mode} outliers={outliers} setOutliers={setOutliers} t={t}/>} <Algorithm outliers={outliers} t={t}/><SGLangWorkbench outliers={outliers} t={t}/>
     <footer className="q-card"><h3 data-section-anchor="quantization-2">{t('references')}</h3><p>{t('boundary')}</p><div className="q-source-links">{[['sourceAWQ','https://arxiv.org/html/2306.00978v5'],['sourceGPTQ','https://github.com/IST-DASLab/gptq/blob/main/gptq.py'],['sourceSmooth','https://arxiv.org/html/2211.10438v7'],['sourceSGLangFP8','https://github.com/sgl-project/sglang/blob/v0.4.6.post5/python/sglang/srt/layers/quantization/fp8.py'],['sourceSGLangKV','https://github.com/sgl-project/sglang/blob/v0.4.6.post5/python/sglang/srt/layers/attention/flashinfer_backend.py']].map(([k,url]) => <a href={url} target="_blank" rel="noreferrer" key={k}>{t(k)} ↗</a>)}</div></footer>
   </div></div>;

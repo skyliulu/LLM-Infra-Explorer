@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -902,8 +903,8 @@ const App = () => {
     const isNotResident = activeGpu !== null && !isLayerActive && Boolean(inactiveReason);
 
     // 替换原本的 hoveredGpu 为 activeGpu
-    const effectiveActive = (activeGpu === null) 
-        ? Array.from({length: numChunks}).map((_, i) => i) 
+    const effectiveActive = (activeGpu === null)
+        ? Array.from({length: numChunks}).map((_, i) => i)
         : (isLayerActive ? [activeChunkIndex] : []);
 
     return (
@@ -914,7 +915,7 @@ const App = () => {
         </div>
 
         <div className="flex-1 flex items-center justify-center py-1">
-          <div 
+          <div
             className={`flex ${sliceDir === 'row' ? 'flex-col' : 'flex-row'} gap-[1px]`}
             style={{ width: `${mW}px`, height: `${mH}px` }}
           >
@@ -947,9 +948,9 @@ const App = () => {
         </div>
 
         <div className="flex-1 flex items-center justify-center py-1">
-          <div 
+          <div
             className="grid gap-[1px]"
-            style={{ 
+            style={{
               width: `${mW}px`, height: `${mH}px`,
               gridTemplateColumns: `repeat(${dX}, minmax(0, 1fr))`,
               gridTemplateRows: `repeat(${dY}, minmax(0, 1fr))`
@@ -989,24 +990,24 @@ const App = () => {
         <div className="flex-1 flex items-center justify-center py-4 w-full">
           <div className="relative" style={{ width: `${mW}px`, height: `${mH}px` }}>
             {Array.from({ length: dZ }).map((_, z) => {
-              const actualZ = dZ - 1 - z; 
+              const actualZ = dZ - 1 - z;
               const isZActive = effectiveActive && (activeGpu === null || activeZ === actualZ);
 
-              const offsetStep = 14; 
+              const offsetStep = 14;
               const totalOffset = (dZ - 1) * offsetStep;
               const offsetX = (actualZ * offsetStep) - (totalOffset / 2);
               const offsetY = -(actualZ * offsetStep) + (totalOffset / 2);
 
               const layerZIndex = (isZActive && activeGpu !== null) ? 50 : actualZ;
-              const layerStyleClass = (!isZActive && activeGpu !== null) 
+              const layerStyleClass = (!isZActive && activeGpu !== null)
                   ? 'opacity-30 grayscale pointer-events-none' // 白色背景下的幽灵态调整
-                  : 'opacity-100 shadow-md shadow-slate-300'; 
+                  : 'opacity-100 shadow-md shadow-slate-300';
 
               return (
-                <div 
-                  key={actualZ} 
+                <div
+                  key={actualZ}
                   className={`absolute inset-0 transition-all duration-500 ${layerStyleClass} bg-white/95 rounded border border-slate-300 p-[1px]`}
-                  style={{ 
+                  style={{
                     transform: `translate(${offsetX}px, ${offsetY}px)`,
                     zIndex: layerZIndex
                   }}
@@ -1020,14 +1021,14 @@ const App = () => {
                       const x = i % dX;
                       const isActive = isZActive && (activeGpu === null || (activeY === y && activeX === x));
 
-                      const blockClass = isActive 
-                          ? activeColorClass 
+                      const blockClass = isActive
+                          ? activeColorClass
                           : "bg-slate-100 border border-slate-200/60";
 
                       return (
-                        <div 
-                          key={i} 
-                          className={`rounded-[1px] transition-colors duration-300 ${blockClass}`} 
+                        <div
+                          key={i}
+                          className={`rounded-[1px] transition-colors duration-300 ${blockClass}`}
                         />
                       );
                     })}
@@ -1417,8 +1418,8 @@ const App = () => {
         {/* 2. Embedding [V, H] */}
         <div className="flex justify-center">
           <div className="w-32">
-            <MatrixBlock 
-              title={t('embedMatrix')} dims="[V, H]" sliceDir="row" 
+            <MatrixBlock
+              title={t('embedMatrix')} dims="[V, H]" sliceDir="row"
               splitLabel={degrees.tp > 1 ? t('rowSplit', { tp: degrees.tp }) : t('fullWeight')}
               degree={degrees.tp} activeChunkIndex={coords?.tp_idx || 0}
               isLayerActive={isEmbeddingActive} activeColorClass={getColorClass('amber', 'active')}
@@ -1488,8 +1489,8 @@ const App = () => {
 
                  <div className="flex flex-col gap-1.5 md:gap-2">
                     <div className="grid grid-cols-[minmax(0,1fr)_24px_minmax(0,1fr)_32px_minmax(0,1fr)] items-stretch gap-1">
-                       <MatrixBlock 
-                          title="RMSNorm" dims="[H]" sliceDir="rep" 
+                       <MatrixBlock
+                          title="RMSNorm" dims="[H]" sliceDir="rep"
                           isLayerActive={true} activeColorClass={getColorClass('slate', 'active')}
                           mW={16} mH={4}
                        />
@@ -1506,8 +1507,8 @@ const App = () => {
                          <ArrowRight size={13} />
                          <span>{t('tpLocalAttentionEdge')}</span>
                        </div>
-                       <MatrixBlock 
-                          title={t('outProj')} dims="[H, H]" sliceDir="row" 
+                       <MatrixBlock
+                          title={t('outProj')} dims="[H, H]" sliceDir="row"
                           splitLabel={isDpAttention ? t('workerLocalWeight') : degrees.tp > 1 ? t('rowSplit', { tp: degrees.tp }) : t('fullWeight')}
                           degree={isDpAttention ? 1 : degrees.tp} activeChunkIndex={isDpAttention ? 0 : coords?.tp_idx || 0}
                           isLayerActive={true} activeColorClass={getColorClass('amber', 'active')}
@@ -1575,7 +1576,7 @@ const App = () => {
                     </div>
                     <div className="flex justify-center mt-1 pb-1">
                        <div className="w-full transition-[max-width] duration-300" style={{ maxWidth: `${kvVisualConfig.maxWidth}px` }}>
-                          <Tensor3DBlock 
+                          <Tensor3DBlock
                              title={t('kvCache')} dims={kvDims}
                              splitLabel={isHelix ? t('helixKvSplit', { kvp: componentParallel.kvParallel, tp: degrees.tp }) : isDpAttention ? t('dpAttentionKvSplit', { workers: attentionRequestDegree, cp: degrees.cp }) : componentParallel.attentionDp > 1 || degrees.cp > 1 || attentionArchitecture.kvHeadShardDegree > 1 ? t(componentProfile === 'wideEp' ? 'wideEpKvSplit' : 'split3D') : t('noSplit')}
                              degreeX={kvSequenceDegree} degreeY={isDpAttention ? attentionRequestDegree : componentParallel.attentionDp} degreeZ={isDpAttention ? 1 : attentionArchitecture.kvHeadShardDegree}
@@ -1634,13 +1635,13 @@ const App = () => {
 
                   <div ref={moeGraphRef} data-testid="moe-graph" className="relative">
                  <div className="relative z-10 mb-1 grid grid-cols-4 gap-1.5 md:gap-2">
-                    <MatrixBlock 
-                       title="RMSNorm" dims="[H]" sliceDir="rep" 
+                    <MatrixBlock
+                       title="RMSNorm" dims="[H]" sliceDir="rep"
                        isLayerActive={true} activeColorClass={getColorClass('slate', 'active')}
                        mW={16} mH={4}
                     />
                     <div ref={moeRouterRef} data-testid="moe-router-node" className="h-full">
-                    <MatrixBlock 
+                    <MatrixBlock
                        title={t('router')} dims="[H, E]" sliceDir="rep"
                        isLayerActive={true} activeColorClass="bg-pink-500 text-white shadow-md shadow-pink-500/40"
                        mW={8} mH={16}
@@ -1690,15 +1691,15 @@ const App = () => {
                              </div>
                            )}
                           <div className="flex flex-col gap-1.5 w-full">
-                            <MatrixBlock 
-                               title={t('w1w3')} dims="[H, 4H]" sliceDir="col" 
+                            <MatrixBlock
+                               title={t('w1w3')} dims="[H, 4H]" sliceDir="col"
                                splitLabel={expertTp > 1 ? t('colSlice', { label: expertLabel }) : t('fullCalc')}
                                degree={expertTp} activeChunkIndex={expertShardIndex}
                                isLayerActive={isEpActive} activeColorClass={expertActiveColor}
                                mW={48} mH={16}
                             />
-                            <MatrixBlock 
-                               title={t('w2')} dims="[4H, H]" sliceDir="row" 
+                            <MatrixBlock
+                               title={t('w2')} dims="[4H, H]" sliceDir="row"
                                splitLabel={expertTp > 1 ? t('rowSlice', { label: expertLabel }) : t('fullCalc')}
                                degree={expertTp} activeChunkIndex={expertShardIndex}
                                isLayerActive={isEpActive} activeColorClass={expertActiveColor}
@@ -1744,8 +1745,8 @@ const App = () => {
         {/* 4. LM Head [H, V] */}
         <div className="flex justify-center">
           <div className="w-48">
-            <MatrixBlock 
-              title={t('lmHead')} dims="[H, V]" sliceDir="col" 
+            <MatrixBlock
+              title={t('lmHead')} dims="[H, V]" sliceDir="col"
               splitLabel={degrees.tp > 1 ? t('colSplit', { tp: degrees.tp }) : t('fullWeight')}
               degree={degrees.tp} activeChunkIndex={coords?.tp_idx || 0}
               isLayerActive={isLmHeadActive} activeColorClass={getColorClass('amber', 'active')}
@@ -1825,7 +1826,7 @@ const App = () => {
             : 'border-slate-200 bg-white text-slate-500';
 
     return (
-      <div 
+      <div
         key={g}
         data-testid="gpu-card"
         data-gpu-index={g}
@@ -1911,8 +1912,8 @@ const App = () => {
 
         <div className="chapter-header bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-slate-900">
-              <Network className="text-cyan-500" />
+            <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-slate-900"><ChapterIcon chapter="parallel"/>
+
               {t('title')}
             </h1>
             <p className="text-slate-500 text-sm mt-1">{t('pageDesc')}</p>
@@ -1952,15 +1953,15 @@ const App = () => {
                     const isDisabled = !isSelected && (helixLocksAxis || !checkConstraints(tempDegrees));
 
                     return (
-                      <button 
+                      <button
                         key={val}
                         data-testid={`degree-${strat.id}-${val}`}
                         disabled={isDisabled}
                         title={helixLocksAxis ? t('helixBoundary') : undefined}
                         onClick={() => handleSetDegree(strat.id, val)}
                         className={`flex-1 py-1 text-xs font-bold rounded transition-all
-                          ${isSelected ? `${getColorClass(strat.color, 'bg')} text-white shadow-sm` : 
-                            isDisabled ? 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed opacity-70' : 
+                          ${isSelected ? `${getColorClass(strat.color, 'bg')} text-white shadow-sm` :
+                            isDisabled ? 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed opacity-70' :
                             'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}`}
                       >
                         {val}x

@@ -9,7 +9,7 @@ export const MODULE_LABELS = {
   speculative: 'Spec Decode',
   quantization: 'Quantization',
   engram: 'Engram',
-  radixcache: 'Radix Cache',
+  radixcache: 'Radix HiCache',
   dpattention: 'DP Attention',
   linearattn: 'Linear Attention',
 };

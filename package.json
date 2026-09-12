@@ -13,7 +13,7 @@
     "check:cachearch": "node scripts/check-cache-architecture.mjs && node scripts/check-ced-execution.mjs && node scripts/check-hierarchical-indexer.mjs",
     "check:flashdecode": "node scripts/check-flash-decode.mjs",
     "check:engram": "node scripts/check-engram.mjs",
-    "check:radix": "node scripts/check-radix-cache.mjs",
+    "check:radix": "node scripts/check-radix-cache.mjs && node scripts/check-hicache.mjs && node scripts/check-hicache-story.mjs && node scripts/check-hicache-engine.mjs",
     "check:dpa": "node scripts/check-dp-attention.mjs",
     "check:llm": "node scripts/check-llm-inference.mjs && node scripts/check-kv-representation.mjs",
     "check:speculative": "node scripts/check-speculative-decoding.mjs",

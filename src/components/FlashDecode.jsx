@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -245,7 +246,7 @@ const App = () => {
   const [kvLayout, setKvLayout] = useExperimentState('FlashDecode.kvLayout', 'contiguous');
   const [headMode, setHeadMode] = useExperimentState('FlashDecode.headMode', 'gqa');
   const [splitSetting, setSplitSetting] = useExperimentState('FlashDecode.splitSetting', 'auto');
-  const [step, setStep] = useState(0); 
+  const [step, setStep] = useState(0);
   /* Steps:
    0: Idle (等待开始)
    1: Split & Broadcast (切分KV)
@@ -287,7 +288,7 @@ const App = () => {
     let timer;
     if (isPlaying && step < snapshot.maxStep) {
       let delay = 2500;
-      if (step === 2 || step === 3 || step === 5) delay = 3500; 
+      if (step === 2 || step === 3 || step === 5) delay = 3500;
       timer = setTimeout(handleNextStep, delay);
     } else if (step >= snapshot.maxStep) {
       setIsPlaying(false);
@@ -443,8 +444,8 @@ const App = () => {
         {/* 顶部控制栏 */}
         <div className="chapter-header bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row md:flex-wrap items-center justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900">
-              <Zap className="text-amber-500" />
+            <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900"><ChapterIcon chapter="flashdecode"/>
+
               {t('title')}
             </h1>
             <p className="text-slate-500 text-sm mt-1">{t('subtitle')}</p>
@@ -626,7 +627,7 @@ const App = () => {
                         const isWritten = i < snapshot.writtenBlockCount;
                         return (
                           <div key={i} className={`flex-1 min-w-[60px] flex items-center justify-center py-1.5 text-[9px] font-mono rounded border transition-all duration-500 whitespace-nowrap
-                            ${!isWritten ? 'bg-slate-100 border-slate-200 text-transparent scale-90' : 
+                            ${!isWritten ? 'bg-slate-100 border-slate-200 text-transparent scale-90' :
                               snapshot.reductionActive ? 'bg-indigo-100 border-amber-500 text-indigo-800 shadow-md ring-2 ring-amber-400 animate-pulse z-10' :
                               'bg-indigo-100 border-indigo-300 text-indigo-800 shadow-sm'
                             }`}>
@@ -788,7 +789,7 @@ const App = () => {
             {snapshot.operation === 'splitViews' && (
               <div className="animate-fade-in">
                 <h4 className="font-bold text-indigo-300 text-base mb-2 flex items-center gap-2">
-                  <span className="bg-indigo-500 text-white px-2 py-0.5 rounded text-xs">{t('step1Title')}</span> 
+                  <span className="bg-indigo-500 text-white px-2 py-0.5 rounded text-xs">{t('step1Title')}</span>
                   <SplitSquareHorizontal size={18}/> {t('step1Name')}
                 </h4>
                 <p className="opacity-90 text-indigo-50">{t('step1Desc')}</p>
@@ -798,7 +799,7 @@ const App = () => {
             {snapshot.operation === 'localBatch1' && (
               <div className="animate-fade-in">
                 <h4 className="font-bold text-amber-300 text-base mb-2 flex items-center gap-2">
-                  <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-xs">{t('step21Title')}</span> 
+                  <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-xs">{t('step21Title')}</span>
                   <Cpu size={18}/> {t('step21Name')}
                 </h4>
                 <p className="opacity-90">{t('step21Desc')}</p>
@@ -808,7 +809,7 @@ const App = () => {
             {snapshot.operation === 'localBatch2' && (
               <div className="animate-fade-in">
                 <h4 className="font-bold text-amber-300 text-base mb-2 flex items-center gap-2">
-                  <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-xs">{t('step22Title')}</span> 
+                  <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-xs">{t('step22Title')}</span>
                   <Cpu size={18}/> {t('step22Name')}
                 </h4>
                 <p className="opacity-90">{t('step22Desc')}</p>
@@ -818,7 +819,7 @@ const App = () => {
             {snapshot.operation === 'reduceStats' && (
               <div className="animate-fade-in">
                 <h4 className="font-bold text-pink-300 text-base mb-2 flex items-center gap-2">
-                  <span className="bg-pink-500 text-white px-2 py-0.5 rounded text-xs">{t('step3Title')}</span> 
+                  <span className="bg-pink-500 text-white px-2 py-0.5 rounded text-xs">{t('step3Title')}</span>
                   <Combine size={18}/> {t('step3Name')}
                 </h4>
                 <p className="opacity-90 mb-2">{t('step3Desc1')}</p>
@@ -831,7 +832,7 @@ const App = () => {
             {snapshot.operation === 'mergeOutput' && (
               <div className="animate-fade-in">
                 <h4 className="font-bold text-purple-300 text-base mb-2 flex items-center gap-2">
-                  <span className="bg-purple-500 text-white px-2 py-0.5 rounded text-xs">{t('step4Title')}</span> 
+                  <span className="bg-purple-500 text-white px-2 py-0.5 rounded text-xs">{t('step4Title')}</span>
                   <Calculator size={18}/> {t('step4Name')}
                 </h4>
                 <p className="opacity-90">{t('step4Desc')}</p>

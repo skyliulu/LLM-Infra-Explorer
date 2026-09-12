@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -1076,9 +1077,9 @@ function FlashAttention() {
         <header className="chapter-header rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm"><Zap size={20} /></div>
+
               <div className="min-w-0">
-                <h1 className="text-xl font-bold tracking-tight text-slate-950 md:text-2xl">{t('title')}</h1>
+                <h1 className="text-xl font-bold tracking-tight text-slate-950 md:text-2xl"><ChapterIcon chapter="flash"/>{t('title')}</h1>
                 <p className="mt-1 text-xs leading-5 text-slate-500 md:text-sm">{t('subtitle')}</p>
               </div>
             </div>

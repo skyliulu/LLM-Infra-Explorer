@@ -1,0 +1,14 @@
+[
+  {
+    "setting": "wait_complete",
+    "metrics": "本次需重新 Prefill 的 Token ↓\n仅 GPU 前缀缓存\n256\n启用分层缓存\n64\n本次读取搬运量 ↑\n5 MiB\nL3→L2 与 L2→L1 分段累计；不是唯一 KV 大小。\n已完成的读写搬运\n6 MiB\n计划结果随场景和策略更新；各层驻留及已完成搬运随播放推进。"
+  },
+  {
+    "setting": "timeout",
+    "metrics": "本次需重新 Prefill 的 Token ↓\n仅 GPU 前缀缓存\n256\n启用分层缓存\n128\n本次读取搬运量 ↑\n3 MiB\nL3→L2 与 L2→L1 分段累计；不是唯一 KV 大小。\n已完成的读写搬运\n0 MiB\n计划结果随场景和策略更新；各层驻留及已完成搬运随播放推进。"
+  },
+  {
+    "setting": "best_effort",
+    "metrics": "本次需重新 Prefill 的 Token ↓\n仅 GPU 前缀缓存\n256\n启用分层缓存\n192\n本次读取搬运量 ↑\n1 MiB\nL3→L2 与 L2→L1 分段累计；不是唯一 KV 大小。\n已完成的读写搬运\n0 MiB\n计划结果随场景和策略更新；各层驻留及已完成搬运随播放推进。"
+  }
+]

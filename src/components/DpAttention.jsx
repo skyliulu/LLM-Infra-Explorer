@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -266,9 +267,9 @@ const i18n = {
 
 
 const bColors = [
-  'bg-rose-500', 
-  'bg-sky-500', 
-  'bg-amber-500', 
+  'bg-rose-500',
+  'bg-sky-500',
+  'bg-amber-500',
   'bg-purple-500'
 ];
 
@@ -477,8 +478,8 @@ const DpAttentionVisualizer = () => {
         {/* Top Control Bar */}
         <div className="chapter-header bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col xl:flex-row items-center justify-between gap-4">
           <div className="flex flex-col text-center xl:text-left">
-            <h1 className="text-xl md:text-2xl font-bold flex items-center justify-center xl:justify-start gap-2 text-indigo-900">
-              <GridHorizontalIcon />
+            <h1 className="text-xl md:text-2xl font-bold flex items-center justify-center xl:justify-start gap-2 text-indigo-900"><ChapterIcon chapter="dpattention"/>
+
               {t('title')}
             </h1>
             <p className="text-slate-500 text-[12px] md:text-sm mt-1">{t('subtitle')}</p>
@@ -603,7 +604,7 @@ const DpAttentionVisualizer = () => {
                    <div className="grid grid-cols-4 gap-2 w-full">
                       {[0, 1, 2, 3].map(i => (
                         <div key={i} className="flex justify-center transition-all duration-500 h-full">
-                           <DataBlock 
+                           <DataBlock
                               title={t('tInput')} dims={snapshot.tensors.inputShapeLatex}
                               mode={snapshot.isDp ? 'subset' : 'full'}
                               label={snapshot.isDp ? t('lblRowShardB4') : t('lblRepFull')}
@@ -628,17 +629,17 @@ const DpAttentionVisualizer = () => {
 
                           <WeightBlock title={t('tLatent')} dims={String.raw`H\times d_c`} splitDir="full_square" label={t('lblSharedFull')} rankIndex={i} />
 
-                          <WeightBlock 
-                             title={t('tWQ')} 
+                          <WeightBlock
+                             title={t('tWQ')}
                              dims={modelType === 'tp' ? String.raw`H\to d_q\to \frac{H_qd_h}{4}` : String.raw`H\to d_q\to H_qd_h`}
-                             splitDir={modelType === 'tp' ? 'col' : 'full_col'} 
-                             label={modelType === 'tp' ? t('lblColShardHead') : t('lblSharedNone')} 
-                             rankIndex={i} 
+                             splitDir={modelType === 'tp' ? 'col' : 'full_col'}
+                             label={modelType === 'tp' ? t('lblColShardHead') : t('lblSharedNone')}
+                             rankIndex={i}
                           />
 
                           <div className="relative my-1">
                              {modelType === 'tp' && snapshot.cache.visible && <div className="absolute inset-0 bg-rose-500/10 animate-pulse rounded-lg border border-rose-300 z-0"></div>}
-                             <DataBlock 
+                             <DataBlock
                                 title={t('tKV')} dims={snapshot.cache.shapeLatex}
                                 mode={modelType === 'tp' ? 'full' : 'subset'}
                                 label={modelType === 'tp' ? t('lblRepDisaster') : t('lblRowShardPerf')}
@@ -646,9 +647,9 @@ const DpAttentionVisualizer = () => {
                              />
                           </div>
 
-                          <DataBlock 
+                          <DataBlock
                              title={t('tAttnOut')} dims={snapshot.tensors.attentionOutputShapeLatex}
-                             mode={modelType === 'dp' ? 'subset' : 'full'} 
+                             mode={modelType === 'dp' ? 'subset' : 'full'}
                              label={modelType === 'dp' ? t('lblRowShardLocal') : t('lblFullReduce')}
                              emptyLabel={t('empty')} isEmpty={!snapshot.views.attentionVisible} rankIndex={i}
                           />
@@ -783,7 +784,7 @@ const DpAttentionVisualizer = () => {
                         const isFinalOutActive = snapshot.views.outputVisible;
                         return (
                           <div key={i} className={`flex min-w-0 justify-center transition-all duration-700 ${isFinalOutActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
-                             <DataBlock 
+                             <DataBlock
                                 title={t(modelType === 'dp' ? 'tReturnedOutput' : 'tMoEOut')} dims={snapshot.tensors.finalShapeLatex}
                                 mode={modelType === 'dp' ? 'localMatrix' : 'full'}
                                 label={modelType === 'dp' ? t('lblRowShardLoop') : t('lblRepFull')}

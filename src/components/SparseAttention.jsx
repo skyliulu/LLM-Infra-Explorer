@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -50,7 +51,7 @@ export default function SparseAttention() {
   };
   return <div className="chapter-page sparse-module sc-module bg-slate-50 text-slate-800" data-testid="sparse-module" data-mode={model.mode} data-focus={model.focus} lang={lang}>
     <header className="sa-card sa-header chapter-header">
-      <div className="sa-heading"><Layers size={25} className="text-indigo-600 shrink-0"/><div><h1>{t('title')}</h1><p>{t('canvasSubtitle')}</p></div></div>
+      <div className="sa-heading"><div><h1><ChapterIcon chapter="sparseattn"/>{t('title')}</h1><p>{t('canvasSubtitle')}</p></div></div>
       <div className="sa-header-controls"><div className="sa-segment" role="group" aria-label={t('strategy')}>{['dsa','csa','hca'].map(mode => <button key={mode} aria-pressed={model.mode === mode} onClick={() => { update({ mode }); setFocus('overview'); }}>{t(`strategy_${mode}`)}</button>)}</div><div className="sa-actions"><button className="sa-icon" aria-label={t('reset')} title={t('reset')} onClick={() => { setInput(CANVAS_DEFAULTS); setFocus('overview'); setProgress(null); setIsPlaying(false); }}><RotateCcw size={18}/></button></div></div>
     </header>
     <section className="sc-canvas" aria-label={t('overview')} data-testid="attention-canvas">

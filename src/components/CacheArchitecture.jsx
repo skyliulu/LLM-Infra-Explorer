@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React from 'react';
@@ -24,7 +25,7 @@ export default function CacheArchitecture(){
  const t=k=>i18n[lang][k],m=deriveCacheArchitectureModel({tokens,layer,phase,entry}),s=m.selected;
  const select=id=>{setLayer(id);setEntry(0);};
  const sections=[{key:'local',ids:[0,1]},...m.groups.map(g=>({key:g.owner<20?'encoder':'decoder',ids:g.consumers.map(l=>l.id),group:g}))];
- return <div className="chapter-page ca-page"><header className="ca-top module-header-card chapter-header"><div><h1>{t('title')}</h1><p>{t('subtitle')}</p></div></header>
+ return <div className="chapter-page ca-page"><header className="ca-top module-header-card chapter-header"><div><h1><ChapterIcon chapter="cachearch"/>{t('title')}</h1><p>{t('subtitle')}</p></div></header>
  <div className="chapter-body"><BusinessOverview m={m} lang={lang}><div className="ca-business-controls"><label>{t('tokens')}<select aria-label={t('tokens')} value={tokens} onChange={e=>{setTokens(Number(e.target.value));setEntry(0);}}>{[1,32,129,4096,1000000].map(n=><option key={n} value={n}>{number(n)}</option>)}</select></label><div className="ca-toggle" role="group" aria-label={t('phase')}>{['prefill','decode'].map(v=><button key={v} aria-pressed={phase===v} onClick={()=>setPhase(v)}>{t(v)}</button>)}</div></div></BusinessOverview> <TechnicalFlow key={`${tokens}-${phase}`} m={m} lang={lang} ShapeTensor={ShapeTensor} t={t}/><section className="ca-budget"><div className="ca-heading"><div><h2 data-section-anchor="cachearchitecture-1">{t('budget')}</h2><p>{t('budgetHint')}</p></div></div>
  <div className="ca-budget-grid"><div>{[['noShare',m.unshared16],['shared16',m.shared16],['shared4',m.total]].map(([key,v])=><div className="ca-budget-row" key={key}><div><strong>{t(key)}</strong><span>{size(v)}</span></div><div className="ca-track"><i className={key} style={{width:`${v/m.unshared16*100}%`}}/></div></div>)}</div><div className="ca-equation"><MathFormula block>{String.raw`b_{\mathrm{global}}=\left(\frac{3}{2}+1\right)(288+68)=890\ \mathrm{B/token}`}</MathFormula><p>{t('reported')}</p><small>{t('globalOnly')}</small></div></div>
  </section>

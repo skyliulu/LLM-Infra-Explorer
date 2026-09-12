@@ -22,7 +22,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Generation | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target verification, rejection correction, EAGLE-2 and DSpark. |
 | Low precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16, INT4/INT8, FP8/FP4; offline algorithms and engine execution. |
 | Memory | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram retrieval, context-aware gates and memory movement. |
-| Memory | [**Radix Cache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | Prefix sharing, reference locks, eviction and KV allocation. |
+| Memory | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | Prefix sharing, tiered KV storage, prefetch, write-back and eviction. |
 | Distributed | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV ownership and the communication paths into FFN/MoE. |
 | Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax, kernelization, recurrent state and GLA gates. |
 

@@ -1,3 +1,4 @@
+import ThemeControl from './ThemeControl';
 import React from 'react';
 import {Github, Menu} from 'lucide-react';
 import {useLanguage} from '../lib/LanguageContext';
@@ -15,7 +16,7 @@ export default function SiteHeader({onMenu, menuOpen=false, chapter}) {
     {chapter && <div className="site-context"><div id="site-location" className="site-location"/></div>}
     <div className="site-tools">
       {chapter && <div id="site-share" className="site-share"/>}
-      <div className="site-language" role="group" aria-label={t('language')}>
+      <ThemeControl/><div className="site-language" role="group" aria-label={t('language')}>
         <button onClick={()=>setLang('zh')} aria-pressed={lang==='zh'} lang="zh-CN">中文</button>
         <button onClick={()=>setLang('en')} aria-pressed={lang==='en'} lang="en">EN</button>
       </div>

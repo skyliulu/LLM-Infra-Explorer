@@ -1,0 +1,2582 @@
+{
+  "dimensions": {
+    "prefetch": [
+      "wait_complete",
+      "timeout",
+      "best_effort"
+    ],
+    "write": [
+      "write_through",
+      "write_through_selective",
+      "write_back"
+    ],
+    "fault": [
+      "none",
+      "host_pressure",
+      "gpu_pressure",
+      "partial_read",
+      "rank_lag"
+    ],
+    "concurrent": [
+      true,
+      false
+    ],
+    "minLoad": [
+      2,
+      4
+    ],
+    "pool": [
+      "mha",
+      "mla"
+    ],
+    "layout": [
+      "layer_first",
+      "page_first",
+      "page_first_direct"
+    ],
+    "operation": [
+      "layer",
+      "page"
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "prefetch",
+      "write",
+      "fault",
+      "concurrent",
+      "minLoad"
+    ],
+    [
+      "pool",
+      "layout",
+      "operation"
+    ],
+    [
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "engine wait_complete write_through none true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through none true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through none false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through none false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through host_pressure true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through host_pressure true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through host_pressure false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through host_pressure false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through gpu_pressure true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through gpu_pressure true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through gpu_pressure false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through gpu_pressure false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through partial_read true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through partial_read true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through partial_read false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through partial_read false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through rank_lag true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through rank_lag true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through rank_lag false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through rank_lag false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective none true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective none true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective none false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective none false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective host_pressure true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective host_pressure true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective host_pressure false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective host_pressure false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective gpu_pressure true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective gpu_pressure true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective gpu_pressure false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective gpu_pressure false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective partial_read true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective partial_read true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective partial_read false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective partial_read false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective rank_lag true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective rank_lag true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective rank_lag false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_through_selective rank_lag false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back none true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back none true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back none false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back none false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back host_pressure true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back host_pressure true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back host_pressure false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back host_pressure false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back gpu_pressure true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back gpu_pressure true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back gpu_pressure false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back gpu_pressure false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back partial_read true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back partial_read true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back partial_read false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back partial_read false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back rank_lag true 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back rank_lag true 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back rank_lag false 2",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine wait_complete write_back rank_lag false 4",
+      "state": {
+        "prefetch": "wait_complete",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through none true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through none true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through none false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through none false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through host_pressure true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through host_pressure true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through host_pressure false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through host_pressure false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through gpu_pressure true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through gpu_pressure true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through gpu_pressure false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through gpu_pressure false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through partial_read true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through partial_read true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through partial_read false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through partial_read false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through rank_lag true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through rank_lag true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through rank_lag false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through rank_lag false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective none true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective none true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective none false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective none false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective host_pressure true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective host_pressure true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective host_pressure false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective host_pressure false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective gpu_pressure true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective gpu_pressure true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective gpu_pressure false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective gpu_pressure false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective partial_read true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective partial_read true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective partial_read false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective partial_read false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective rank_lag true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective rank_lag true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective rank_lag false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_through_selective rank_lag false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back none true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back none true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back none false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back none false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back host_pressure true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back host_pressure true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back host_pressure false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back host_pressure false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back gpu_pressure true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back gpu_pressure true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back gpu_pressure false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back gpu_pressure false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back partial_read true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back partial_read true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back partial_read false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back partial_read false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back rank_lag true 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back rank_lag true 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back rank_lag false 2",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine timeout write_back rank_lag false 4",
+      "state": {
+        "prefetch": "timeout",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through none true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through none true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through none false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through none false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through host_pressure true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through host_pressure true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through host_pressure false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through host_pressure false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through gpu_pressure true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through gpu_pressure true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through gpu_pressure false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through gpu_pressure false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through partial_read true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through partial_read true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through partial_read false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through partial_read false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through rank_lag true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through rank_lag true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through rank_lag false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through rank_lag false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective none true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective none true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective none false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective none false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective host_pressure true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective host_pressure true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective host_pressure false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective host_pressure false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective gpu_pressure true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective gpu_pressure true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective gpu_pressure false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective gpu_pressure false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective partial_read true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective partial_read true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective partial_read false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective partial_read false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective rank_lag true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective rank_lag true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective rank_lag false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_through_selective rank_lag false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_through_selective",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back none true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back none true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back none false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back none false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "none",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back host_pressure true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back host_pressure true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back host_pressure false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back host_pressure false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "host_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back gpu_pressure true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back gpu_pressure true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back gpu_pressure false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back gpu_pressure false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "gpu_pressure",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back partial_read true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back partial_read true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back partial_read false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back partial_read false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "partial_read",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back rank_lag true 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back rank_lag true 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": true,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back rank_lag false 2",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 2
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "engine best_effort write_back rank_lag false 4",
+      "state": {
+        "prefetch": "best_effort",
+        "write": "write_back",
+        "fault": "rank_lag",
+        "concurrent": false,
+        "minLoad": 4
+      },
+      "checks": [
+        "Model: ready vs reserved, independent references, pruning, queried remote prefixes, fallback and released references."
+      ]
+    },
+    {
+      "name": "layout mha layer_first layer",
+      "state": {
+        "pool": "mha",
+        "layout": "layer_first",
+        "operation": "layer"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mha layer_first page",
+      "state": {
+        "pool": "mha",
+        "layout": "layer_first",
+        "operation": "page"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mha page_first layer",
+      "state": {
+        "pool": "mha",
+        "layout": "page_first",
+        "operation": "layer"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mha page_first page",
+      "state": {
+        "pool": "mha",
+        "layout": "page_first",
+        "operation": "page"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mha page_first_direct layer",
+      "state": {
+        "pool": "mha",
+        "layout": "page_first_direct",
+        "operation": "layer"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mha page_first_direct page",
+      "state": {
+        "pool": "mha",
+        "layout": "page_first_direct",
+        "operation": "page"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mla layer_first layer",
+      "state": {
+        "pool": "mla",
+        "layout": "layer_first",
+        "operation": "layer"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mla layer_first page",
+      "state": {
+        "pool": "mla",
+        "layout": "layer_first",
+        "operation": "page"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mla page_first layer",
+      "state": {
+        "pool": "mla",
+        "layout": "page_first",
+        "operation": "layer"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mla page_first page",
+      "state": {
+        "pool": "mla",
+        "layout": "page_first",
+        "operation": "page"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mla page_first_direct layer",
+      "state": {
+        "pool": "mla",
+        "layout": "page_first_direct",
+        "operation": "layer"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "layout mla page_first_direct page",
+      "state": {
+        "pool": "mla",
+        "layout": "page_first_direct",
+        "operation": "page"
+      },
+      "checks": [
+        "Model: identity, byte totals, contiguous segments, staging cost, interface eligibility and overlap dependencies."
+      ]
+    },
+    {
+      "name": "render zh desktop",
+      "state": {
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "Rendered sequence, tree, transfer states, matrix and address strip; horizontal scrolling confined to canvases."
+      ]
+    },
+    {
+      "name": "render zh mobile",
+      "state": {
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "Rendered sequence, tree, transfer states, matrix and address strip; horizontal scrolling confined to canvases."
+      ]
+    },
+    {
+      "name": "render en desktop",
+      "state": {
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "Rendered sequence, tree, transfer states, matrix and address strip; horizontal scrolling confined to canvases."
+      ]
+    },
+    {
+      "name": "render en mobile",
+      "state": {
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "Rendered sequence, tree, transfer states, matrix and address strip; horizontal scrolling confined to canvases."
+      ]
+    }
+  ]
+}

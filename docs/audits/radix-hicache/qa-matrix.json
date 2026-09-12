@@ -1,0 +1,735 @@
+{
+  "dimensions": {
+    "scenario": [
+      "mixed",
+      "gpu",
+      "host",
+      "miss",
+      "pressure",
+      "peer"
+    ],
+    "prefetch": [
+      "wait_complete",
+      "timeout",
+      "best_effort"
+    ],
+    "write": [
+      "write_through",
+      "write_through_selective",
+      "write_back"
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "viewport": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "scenario",
+      "prefetch",
+      "write"
+    ],
+    [
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "model mixed wait_complete write_through",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model mixed wait_complete write_through_selective",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model mixed wait_complete write_back",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "wait_complete",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_through",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_through_selective",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model mixed timeout write_back",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "timeout",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_through",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_through_selective",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model mixed best_effort write_back",
+      "state": {
+        "scenario": "mixed",
+        "prefetch": "best_effort",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_through",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_through_selective",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu wait_complete write_back",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "wait_complete",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_through",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_through_selective",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu timeout write_back",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "timeout",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_through",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_through_selective",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model gpu best_effort write_back",
+      "state": {
+        "scenario": "gpu",
+        "prefetch": "best_effort",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_through",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_through_selective",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host wait_complete write_back",
+      "state": {
+        "scenario": "host",
+        "prefetch": "wait_complete",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host timeout write_through",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host timeout write_through_selective",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host timeout write_back",
+      "state": {
+        "scenario": "host",
+        "prefetch": "timeout",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host best_effort write_through",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host best_effort write_through_selective",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model host best_effort write_back",
+      "state": {
+        "scenario": "host",
+        "prefetch": "best_effort",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_through",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_through_selective",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss wait_complete write_back",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "wait_complete",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss timeout write_through",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss timeout write_through_selective",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss timeout write_back",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "timeout",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_through",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_through_selective",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model miss best_effort write_back",
+      "state": {
+        "scenario": "miss",
+        "prefetch": "best_effort",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_through",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_through_selective",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure wait_complete write_back",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "wait_complete",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_through",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_through_selective",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure timeout write_back",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "timeout",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_through",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_through_selective",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model pressure best_effort write_back",
+      "state": {
+        "scenario": "pressure",
+        "prefetch": "best_effort",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_through",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_through_selective",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer wait_complete write_back",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "wait_complete",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer timeout write_through",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer timeout write_through_selective",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer timeout write_back",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "timeout",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_through",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_through"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_through_selective",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_through_selective"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "model peer best_effort write_back",
+      "state": {
+        "scenario": "peer",
+        "prefetch": "best_effort",
+        "write": "write_back"
+      },
+      "checks": [
+        "All checkpoints: continuous prefix, source before copy, stable physical addresses, capacities and locks",
+        "Final request ready and references released; transfers agree with policy"
+      ]
+    },
+    {
+      "name": "render zh desktop",
+      "state": {
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "No horizontal overflow; one shared header language control",
+        "Controls and selected physical pages readable; stable tree/storage structure"
+      ]
+    },
+    {
+      "name": "render zh mobile",
+      "state": {
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "No horizontal overflow; one shared header language control",
+        "Controls and selected physical pages readable; stable tree/storage structure"
+      ]
+    },
+    {
+      "name": "render en desktop",
+      "state": {
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "No horizontal overflow; one shared header language control",
+        "Controls and selected physical pages readable; stable tree/storage structure"
+      ]
+    },
+    {
+      "name": "render en mobile",
+      "state": {
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "No horizontal overflow; one shared header language control",
+        "Controls and selected physical pages readable; stable tree/storage structure"
+      ]
+    }
+  ]
+}

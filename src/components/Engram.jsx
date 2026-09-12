@@ -1,10 +1,11 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useState } from 'react';
-import { 
+import {
   Database, Cpu, Combine, Hash, ArrowRight, ArrowDown, ArrowUp, ArrowLeft,
-  Layers, BrainCircuit, Play, Pause, SkipForward, RotateCcw, 
-  Activity, SlidersHorizontal, BookOpen, Server, Network, 
+  Layers, BrainCircuit, Play, Pause, SkipForward, RotateCcw,
+  Activity, SlidersHorizontal, BookOpen, Server, Network,
   Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import {
@@ -522,8 +523,8 @@ const App = () => {
         {/* Header */}
         <div className="chapter-header bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="text-xl lg:text-2xl font-bold flex items-start sm:items-center gap-2 text-slate-900 leading-tight">
-              <Database className="text-purple-600 shrink-0" />
+            <h1 className="text-xl lg:text-2xl font-bold flex items-start sm:items-center gap-2 text-slate-900 leading-tight"><ChapterIcon chapter="engram"/>
+
               {t('title')}
             </h1>
             <p className="text-slate-500 text-sm mt-1">
@@ -551,7 +552,7 @@ const App = () => {
           <div className="xl:col-span-2 bg-white rounded-2xl p-4 md:p-5 border border-slate-200 shadow-sm flex flex-col">
             <div className="flex items-center mb-4 pb-3 border-b border-slate-100">
                <h2 data-section-anchor="engram-1" className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800 whitespace-nowrap">
-                 <Network className="text-indigo-500 shrink-0" size={20}/> 
+                 <Network className="text-indigo-500 shrink-0" size={20}/>
                  {t('topoTitle')}
                </h2>
             </div>
@@ -1161,7 +1162,7 @@ const App = () => {
         <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative mt-6 overflow-x-auto" data-testid="engram-system-timeline">
             <div className="flex items-center justify-between gap-4 mb-6 pb-3 border-b border-slate-100 min-w-[700px]">
                <h2 data-section-anchor="engram-3" className="text-lg font-bold flex items-center gap-2 text-slate-800">
-                 <Clock className="text-blue-500" size={20}/> 
+                 <Clock className="text-blue-500" size={20}/>
                  {t('timelineTitle')}
                </h2>
                <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1" data-testid="engram-system-mode">

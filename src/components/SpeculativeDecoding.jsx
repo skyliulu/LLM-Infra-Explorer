@@ -1,3 +1,4 @@
+import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -559,7 +560,7 @@ export default function SpeculativeDecoding() {
     return ()=>clearTimeout(timer);
   },[racePlaying,raceStep,s.race.isDone]);
   return <div className="chapter-page spec-page min-h-full bg-slate-50 text-slate-800">
-    <header className="module-header-card chapter-header"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold">{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div></div></div></header>
+    <header className="module-header-card chapter-header"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold"><ChapterIcon chapter="speculative"/>{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div></div></div></header>
     <div className="chapter-body mx-auto max-w-[1600px] space-y-3 p-3 lg:p-4">
       <Race s={s} t={t} config={config} setConfig={setConfig} playing={racePlaying} onPlay={racePlay} onNext={raceNext} onReset={resetRace} onInspect={inspect}/>
       <Principles t={t}/>
