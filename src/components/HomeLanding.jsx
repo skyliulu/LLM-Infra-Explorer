@@ -1,32 +1,38 @@
-import { MODULE_LABELS } from '../lib/module-titles';
+import { MODULE_GROUPS } from '../lib/module-groups';
+import { getModuleLabel } from '../lib/module-titles';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, BrainCircuit, Cpu, Database, FastForward, Github, GitBranch, Globe, Network, Sparkles, Star, Zap, Activity } from 'lucide-react';
-
-const REPO_API = 'https://api.github.com/repos/skyliulu/LLM-Infra-Explorer';
-const REPO_URL = 'https://github.com/skyliulu/LLM-Infra-Explorer';
+import { ArrowRight, Cpu, Database, FastForward, Github, GitBranch, Network, Sparkles, Star, Zap, Activity, Layers, ScanLine, Play } from 'lucide-react';
+import inferencePreview from '../../media/previews/llm-inference.png';
+import parallelPreview from '../../media/previews/parallel-strategies.png';
+import sparsePreview from '../../media/previews/sparse-attention.png';
+import './HomeLanding.css';
 
 const i18n = {
   en: {
-    badge: 'Interactive AI Infrastructure Explorer',
-    titlePrefix: 'Explore the world of',
-    titleHighlight: ' large-model infrastructure',
-    titleSuffix: ' interactively',
-    description:
-      'LLM-Infra-Explorer breaks down complex large-model infrastructure and inference optimization into interactive, experiment-friendly modules. You can not only see how each system works, but also build intuition through interaction.',
-    cta: 'Start interactive exploration',
-    viewModule: 'Open module',
-    languageLabel: 'Language',
+    chinese: '中文', english: 'EN', languages: 'EN / 中文', github: 'GitHub',
+    badge: 'An interactive systems workbench', title: 'From a single token', titleEnd: 'to the whole system.',
+    description: 'Trace tensors. Inspect memory. Understand the tradeoffs.',
+    cta: 'Start exploring', browse: 'Browse workbenches', language: 'Language',
+    preview: 'Inside the workbench', open: 'Open workbench', previewNote: 'Actual workbench preview · open to interact',
+    chapters: 'Choose your next deep dive.', chapterIntro: 'From execution to optimization. Every chapter is a place to experiment.',
+    all: 'All chapters', execution: 'Execution', attention: 'Attention', memory: 'Memory & precision', distributed: 'Parallelism',
+    system: 'See the system', systemBody: 'Start with the complete architecture and its connections.',
+    inspect: 'Look closer', inspectBody: 'Drill into tensors, caches and individual operations.',
+    follow: 'Follow execution', followBody: 'Step through data movement and compare the tradeoffs.',
+    count: 'interactive workbenches', footer: 'Built to make LLM infrastructure visible.', source: 'Explore the source', brand: 'LLM Infra Explorer',
   },
   zh: {
-    badge: '交互式大模型基础设施探索',
-    titlePrefix: '探索',
-    titleHighlight: '大模型基础设施',
-    titleSuffix: ' 的交互式世界',
-    description:
-      'LLM-Infra-Explorer 将复杂的大模型基础设施与推理优化拆解为可交互、可实验、可理解的模块。你不仅能看见系统结构，还能通过交互快速建立直觉。',
-    cta: '开始交互式探索',
-    viewModule: '查看模块',
-    languageLabel: '语言',
+    chinese: '中文', english: 'EN', languages: 'EN / 中文', github: 'GitHub',
+    badge: '大模型基础设施交互工作台', title: '从一个 Token，', titleEnd: '到整个系统。',
+    description: '追踪张量。检查显存。理解每一项权衡。',
+    cta: '开始探索', browse: '浏览全部章节', language: '语言',
+    preview: '走进工作台', open: '打开工作台', previewNote: '真实工作台预览 · 打开后交互探索',
+    chapters: '选择下一次深入探索。', chapterIntro: '从执行流程到优化原理，每个章节都可以动手实验。',
+    all: '全部章节', execution: '推理执行', attention: '注意力', memory: '缓存与精度', distributed: '并行策略',
+    system: '看见整体', systemBody: '从完整架构出发，理解各个组件之间的关系。',
+    inspect: '逐层放大', inspectBody: '深入张量、缓存与每一个具体操作。',
+    follow: '追踪执行', followBody: '逐步观察数据流动，对照优化前后的权衡。',
+    count: '个交互工作台', footer: '让大模型基础设施看得见。', source: '查看源代码', brand: 'LLM Infra Explorer',
   },
 };
 
@@ -112,8 +118,8 @@ const featureCards = [
   {
     id: 'linearattn',
     description: {
-      en: 'From O(N²) to O(N): understand how the kernel trick and associativity reorder transforms Attention into a recurrent state machine.',
-      zh: '从 O(N²) 到 O(N)：理解核函数近似与结合律重排如何将 Attention 变为 O(d²) 固定状态的递归更新。',
+      en: 'Compare full attention with fixed-size recurrent state, then inspect kernel features and gated updates.',
+      zh: '对照完整注意力与固定大小的递归状态，深入核函数特征与门控更新。',
     },
     icon: Activity,
     iconClass: 'text-violet-300',
@@ -129,161 +135,94 @@ const featureCards = [
   },
 ];
 
-function formatStars(count) {
-  if (count == null) return '--';
-  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
-  return String(count);
-}
+const groups = Object.fromEntries(MODULE_GROUPS.map(group => [group.id, group.chapters]));
+const previews = [
+  { id: 'llm', image: inferencePreview },
+  { id: 'parallel', image: parallelPreview },
+  { id: 'sparseattn', image: sparsePreview },
+];
 
 export default function HomeLanding({ onExplore }) {
+  const [language, setLanguage] = useState(() => navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en');
   const [stars, setStars] = useState(null);
-  const [language, setLanguage] = useState('en');
-
+  const [group, setGroup] = useState('all');
+  const [previewId, setPreviewId] = useState('llm');
+  const t = key => i18n[language][key];
+  const preview = previews.find(item => item.id === previewId);
+  const cards = useMemo(() => featureCards.filter(card => group === 'all' || groups[group].includes(card.id)), [group]);
   useEffect(() => {
-    let cancelled = false;
-
-    async function fetchStars() {
-      try {
-        const res = await fetch(REPO_API);
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!cancelled) {
-          setStars(data?.stargazers_count ?? null);
-        }
-      } catch {
-        // Ignore network failures and keep fallback display.
-      }
-    }
-
-    fetchStars();
-    return () => {
-      cancelled = true;
-    };
+    const controller = new AbortController();
+    fetch('https://api.github.com/repos/skyliulu/LLM-Infra-Explorer', { signal: controller.signal })
+      .then(response => response.ok ? response.json() : null)
+      .then(data => { if (Number.isFinite(data?.stargazers_count)) setStars(data.stargazers_count); })
+      .catch(() => {});
+    return () => controller.abort();
   }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function detectLanguageByLocation() {
-      try {
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-        if (timezone.startsWith('Asia/Shanghai') || timezone.startsWith('Asia/Chongqing')) {
-          if (!cancelled) setLanguage('zh');
-          return;
-        }
-
-        const res = await fetch('https://ipapi.co/json/');
-        if (!res.ok) return;
-        const data = await res.json();
-        const detectedLanguage = data?.country_code === 'CN' ? 'zh' : 'en';
-        if (!cancelled) {
-          setLanguage(detectedLanguage);
-        }
-      } catch {
-        if (!cancelled) {
-          setLanguage('en');
-        }
-      }
-    }
-
-    detectLanguageByLocation();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const copy = i18n[language] || i18n.en;
-  const cards = useMemo(
-    () => featureCards.map((card) => ({ ...card, titleText: MODULE_LABELS[card.id], descriptionText: card.description[language] })),
-    [language]
-  );
-
+  const navigate = (event, id) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    onExplore(id);
+  };
   return (
-    <section className="relative min-h-screen overflow-hidden bg-slate-950 px-6 py-10 md:px-10 md:py-16">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-blue-500/20 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl" />
-      </div>
+    <section className="home-landing" lang={language === 'zh' ? 'zh-CN' : 'en'}>
+      <div className="home-container">
+        <header className="home-header">
+          <a className="home-brand" href="#home"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="40" height="40" /><span>{t('brand')}</span></a>
+          <div className="home-header-actions">
+            <div className="home-language" role="group" aria-label={t('language')}>
+              <button aria-pressed={language === 'zh'} onClick={() => setLanguage('zh')}>{t('chinese')}</button>
+              <button aria-pressed={language === 'en'} onClick={() => setLanguage('en')}>{t('english')}</button>
+            </div>
+            <a className="home-github" href="https://github.com/skyliulu/LLM-Infra-Explorer" target="_blank" rel="noreferrer" aria-label={t('source')}><Github size={19} /><span>{t('github')}</span>{stars !== null && <span className="home-stars"><Star size={12} />{stars >= 1000 ? `${(stars / 1000).toFixed(1)}k` : stars}</span>}</a>
+          </div>
+        </header>
 
-      <div className="absolute right-6 top-6 z-10 flex items-center gap-2 md:right-10 md:top-8">
-        <div className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 text-xs text-slate-300">
-          <Globe size={14} />
-          <span>{copy.languageLabel}</span>
-          <button
-            onClick={() => setLanguage('zh')}
-            className={`rounded px-2 py-0.5 transition ${language === 'zh' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800'}`}
-          >
-            中文
-          </button>
-          <button
-            onClick={() => setLanguage('en')}
-            className={`rounded px-2 py-0.5 transition ${language === 'en' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800'}`}
-          >
-            EN
-          </button>
+        <div className="home-hero">
+          <div className="home-intro">
+            <p className="home-eyebrow"><span />{t('badge')}</p>
+            <h1>{t('title')}<br /><span>{t('titleEnd')}</span></h1>
+            <p className="home-description">{t('description')}</p>
+            <div className="home-hero-actions">
+              <a className="home-primary" href="#llm" onClick={event => navigate(event, 'llm')}>{t('cta')}<ArrowRight size={17} /></a>
+              <button className="home-secondary" onClick={() => document.getElementById('workbenches').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}>{t('browse')}<span aria-hidden="true">↓</span></button>
+            </div>
+            <div className="home-meta"><Layers size={15} /><strong>{featureCards.length}</strong> {t('count')}<span className="home-meta-divider" />{t('languages')}</div>
+          </div>
+          <div className="home-showcase">
+            <div className="home-showcase-heading"><span><span className="home-status-dot" />{t('preview')}</span><span aria-hidden="true">0{previews.findIndex(item => item.id === previewId) + 1} / 0{previews.length}</span></div>
+            <div className="home-preview-tabs" role="group" aria-label={t('preview')}>
+              {previews.map(item => <button key={item.id} aria-pressed={previewId === item.id} onClick={() => setPreviewId(item.id)}>{getModuleLabel(item.id, language)}</button>)}
+            </div>
+            <a className="home-preview-image" href={`#${preview.id}`} onClick={event => navigate(event, preview.id)} aria-label={`${t('open')}: ${getModuleLabel(preview.id, language)}`}>
+              <img src={preview.image} alt={`${getModuleLabel(preview.id, language)} — ${t('preview')}`} width="3520" height="2320" fetchPriority="high" />
+              <span className="home-preview-open">{t('open')}<ArrowRight size={16} /></span>
+            </a>
+            <p className="home-preview-note">{t('previewNote')}</p>
+          </div>
         </div>
 
-        <a
-          href={REPO_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-200 transition hover:border-slate-500 hover:text-white"
-        >
-          <Github size={16} />
-          <span className="font-medium">skyliulu/LLM-Infra-Explorer</span>
-          <span className="inline-flex items-center gap-1 rounded-md bg-slate-800 px-2 py-0.5 text-xs text-slate-300">
-            <Star size={12} />
-            {formatStars(stars)}
-          </span>
-        </a>
-      </div>
-
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12 pt-24 md:pt-16">
-        <div className="space-y-6 text-center md:text-left">
-          <p className="inline-flex items-center gap-2 rounded-full border border-slate-700/80 bg-slate-900/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-blue-300">
-            <Sparkles size={14} />
-            {copy.badge}
-          </p>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
-            {copy.titlePrefix}
-            <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">{copy.titleHighlight}</span>
-            {copy.titleSuffix}
-          </h1>
-          <p className="max-w-3xl text-base text-slate-300 md:text-lg">{copy.description}</p>
-          <button
-            onClick={() => onExplore('llm')}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
-          >
-            {copy.cta}
-            <ArrowRight size={16} />
-          </button>
+        <div className="home-principles">
+          {[[Layers, 'system', 'systemBody'], [ScanLine, 'inspect', 'inspectBody'], [Play, 'follow', 'followBody']].map(([Icon, title, body], index) => <div key={title} className="home-principle"><span className="home-principle-icon"><Icon size={19} /></span><div><h2><span>0{index + 1}</span>{t(title)}</h2><p>{t(body)}</p></div></div>)}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {cards.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onExplore(item.id)}
-                className="group rounded-xl border border-slate-800 bg-slate-900/80 p-5 text-left transition hover:-translate-y-1 hover:border-slate-700 hover:bg-slate-900"
-              >
-                <div className="mb-4 inline-flex rounded-lg bg-slate-800 p-2.5">
-                  <Icon size={18} className={item.iconClass} />
-                </div>
-                <h3 className="mb-2 inline-flex items-center gap-2 text-lg font-semibold text-white">
-                  <BrainCircuit size={16} className="text-slate-400" />
-                  {item.titleText}
-                </h3>
-                <p className="text-sm leading-relaxed text-slate-400">{item.descriptionText}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-blue-300 opacity-0 transition group-hover:opacity-100">
-                  {copy.viewModule}
-                  <ArrowRight size={13} />
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <section id="workbenches" className="home-workbenches" aria-labelledby="workbenches-title">
+          <div className="home-section-heading"><div><h2 id="workbenches-title">{t('chapters')}</h2><p>{t('chapterIntro')}</p></div><span className="home-chapter-count">{cards.length} / {featureCards.length}</span></div>
+          <div className="home-filters" role="group" aria-label={t('browse')}>
+            {['all', ...Object.keys(groups)].map(key => <button key={key} onClick={() => setGroup(key)} aria-pressed={group === key}>{key === 'all' ? t(key) : MODULE_GROUPS.find(group => group.id === key).label[language]}<span>{key === 'all' ? featureCards.length : featureCards.filter(card => groups[key].includes(card.id)).length}</span></button>)}
+          </div>
+          <div className="home-card-grid">
+            {cards.map(item => {
+              const Icon = item.icon;
+              const category = Object.keys(groups).find(key => groups[key].includes(item.id));
+              return <a key={item.id} className="home-module-card" href={`#${item.id}`} onClick={event => navigate(event, item.id)}>
+                <div className="home-card-top"><span className={`home-module-icon ${item.iconClass}`}><Icon size={22} /></span><span>{MODULE_GROUPS.find(group => group.id === category).label[language]}</span><ArrowRight size={17} className="home-card-arrow" /></div>
+                <h3>{getModuleLabel(item.id, language)}</h3>
+                <p>{item.description[language]}</p>
+              </a>;
+            })}
+          </div>
+        </section>
+        <footer className="home-footer"><span>{t('footer')}</span><a href="https://github.com/skyliulu/LLM-Infra-Explorer" target="_blank" rel="noreferrer">{t('source')}<ArrowRight size={14} /></a></footer>
       </div>
     </section>
   );

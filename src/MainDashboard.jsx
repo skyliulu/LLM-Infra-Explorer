@@ -1,4 +1,5 @@
-import { MODULE_LABELS } from './lib/module-titles';
+import { MODULE_GROUPS } from './lib/module-groups';
+import { getModuleLabel } from './lib/module-titles';
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Github, Cpu, Zap, FastForward, Network, Database, GitBranch, Activity, Sparkles, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -61,6 +62,10 @@ export default function MainDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
+  const compact = sidebarCollapsed && !sidebarOpen;
+  const lang = 'en';
+  const navigationGroups = MODULE_GROUPS.map(group => ({ ...group, tabs: group.chapters.map(id => TABS.find(tab => tab.id === id)).filter(Boolean) }));
+
   if (activeTab === 'home') {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -85,13 +90,13 @@ export default function MainDashboard() {
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-30 flex flex-col bg-slate-900 border-r border-slate-800 transition-all duration-300',
-          sidebarCollapsed ? 'w-14' : 'w-44',
-          'md:static md:translate-x-0',
+          compact ? 'w-14' : 'w-44',
+          'md:sticky md:top-0 md:h-screen md:translate-x-0 shrink-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex items-center justify-between h-14 px-3 border-b border-slate-800 shrink-0">
-          {!sidebarCollapsed && (
+          {!compact && (
             <button
               onClick={() => {
                 setActiveTab('home');
@@ -104,8 +109,8 @@ export default function MainDashboard() {
               LLM Infra Explorer
             </button>
           )}
-          <div className={cn('shrink-0 flex items-center gap-1', sidebarCollapsed && 'w-full justify-center')}>
-            {!sidebarCollapsed && (
+          <div className={cn('shrink-0 flex items-center gap-1', compact && 'w-full justify-center')}>
+            {!compact && (
               <a
                 href="https://github.com/skyliulu/LLM-Infra-Explorer"
                 target="_blank"
@@ -133,36 +138,31 @@ export default function MainDashboard() {
           </div>
         </div>
 
-        <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            const title = MODULE_LABELS[tab.id];
-            const isActive = tab.id === activeTab;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id);
-                  setSidebarOpen(false);
-                }}
-                className={cn(
-                  'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                  sidebarCollapsed && 'justify-center px-0',
-                  isActive
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                )}
-                aria-label={title}
-                title={title}
-              >
-                <Icon size={16} className="shrink-0" />
-                {!sidebarCollapsed && <span className="min-w-0 whitespace-nowrap">{title}</span>}
-              </button>
-            );
+        <nav aria-label="Chapter navigation" className="flex-1 min-h-0 py-3 px-2 overflow-y-auto">
+          {navigationGroups.map(group => {
+            return <section key={group.id} aria-label={group.label[lang]} className="mb-3 last:mb-0">
+              {compact ? <div className="mx-3 my-3 border-t border-slate-800" title={group.label.en} /> : (
+                <h2 className="px-3 pt-3 pb-2 text-[10px] font-medium tracking-wide text-slate-500">{group.label.en}</h2>
+              )}
+              <div id={`nav-group-${group.id}`} className="space-y-0.5">
+                {group.tabs.map(tab => {
+                  const Icon = tab.icon;
+                  const title = getModuleLabel(tab.id, lang);
+                  const isActive = tab.id === activeTab;
+                  return <button key={tab.id}
+                    onClick={() => { setActiveTab(tab.id); setSidebarOpen(false); }}
+                    className={cn('w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300', compact && 'justify-center px-0', isActive ? 'bg-slate-800 text-sky-200' : 'text-slate-400 hover:text-white hover:bg-slate-800')}
+                    aria-label={title} aria-current={isActive ? 'page' : undefined} title={compact ? `${group.label[lang]} · ${title}` : title}>
+                    <Icon size={16} className="shrink-0" />
+                    {!compact && <span className="min-w-0 whitespace-nowrap">{title}</span>}
+                  </button>;
+                })}
+              </div>
+            </section>;
           })}
         </nav>
 
-        {sidebarCollapsed && (
+        {compact && (
           <div className="px-2 py-3 border-t border-slate-800 shrink-0 flex justify-center">
             <a
               href="https://github.com/skyliulu/LLM-Infra-Explorer"

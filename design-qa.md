@@ -1192,3 +1192,30 @@ Removed audience targeting from both introductions. Moved the complete chapter/l
 Replaced isolated component crops with five real full-viewport workbench tours. Each begins at the full overview with controls and adjacent views, follows actual operations or parameter changes into the page, and returns to the overview. Inference shows token/KV/tensor/code regions; parallel views show controls plus logical/physical mapping; Sparse spans benefits/architecture/query/drill-down; quantization spans storage, offline preparation and engine flow; Engram spans network, retrieval, gating, code and system timeline. The viewport is fixed at 1760x1160, captured at 2x; native PNG/MP4 are 3520x2320 and looping GIFs 1600x1054. First-frame PNGs are now full-workbench overviews. Retired the separate close-up capture script so future regeneration follows this contract.
 
 Checked overview captures and representative middle frames, five GIFs with 5–13 distinct frames and infinite looping, and actual changing GIF pixels in the local browser renderer. Both language editions load six images and pass the 390px overflow check. Assertions verify audience text removal, chapter table before previews, demo order and existing asset targets. Evidence: docs/audits/readme-overview/ and updated motion-capture.json. No application code changed in this presentation revision, so no repeat build was needed. Not committed or pushed.
+
+## 2026-09-12 — Homepage brand and workbench navigation refresh
+
+- Authorized structural redesign of HomeLanding using the new layered tensor favicon and README slogan: “From a single token to the whole system.” Preserved all chapter destinations (including local-only CED), source link, language selection and primary start action.
+- Change surface: English/Chinese, desktop/tablet/mobile widths, category selection, preview selection, chapter navigation and unavailable GitHub star API. Capabilities: dense-layout; no algorithm timeline or quantitative performance claims added.
+- New composition: brand header, bilingual hero, selectable real workbench screenshots, three exploration principles, full-card chapter links with topic filters. Counts derive from actual entries. Browser language initializes the preference without an asynchronous location lookup overriding manual selection.
+- Before evidence: docs/audits/home-refresh/before-desktop.png and before-mobile.png. After: after-{1440,768,390,360}-{en,zh}.png. Visually inspected desktop English and mobile Chinese; confirmed clear card boundaries, complete screenshot framing and responsive stacking.
+- Browser QA: docs/audits/home-refresh/results.json. Both languages at four widths have no horizontal overflow. All five filter counts, all 12 chapter links, all three preview images/targets, start and browse actions pass; reduced-motion browse avoids animation; failed GitHub API leaves a usable source link; zero page errors.
+- Convention checker: 2 required checks pass. Heuristic warnings concern Chinese language literals and punctuation rather than mathematical expressions (homepage summaries contain no formulas). Production build passes; existing Browserslist age advisory remains.
+- README/deep-link commit 61aff96 pushed to main. Homepage remains local for review; CED remains excluded from the push.
+
+## 2026-09-12 — Grouped workbench sidebar
+
+- Extension authorized to mirror homepage categories in the workbench sidebar. Shared `src/lib/module-groups.js` supplies category membership and bilingual labels to both surfaces; chapter routes remain unchanged.
+- Dimensions: expanded/compact sidebar, individually expanded/collapsed groups, active chapter/hash navigation, Chinese/English browser locale, desktop/mobile. Groups default open; navigation reopens the active chapter's group. Compact mode exposes all chapter icons with category tooltips and separators. Mobile opening shows full groups even after desktop collapse.
+- Increased expanded sidebar from 176 to 208 px to fit group labels and chapter names; kept its left-side position and existing navigation controls. Sidebar is viewport-bound with an independently scrolling chapter list.
+- Rendered baseline and final desktop, English, compact and mobile captures: docs/audits/sidebar-groups/. Browser results.json verifies four groups, 12 local entries, collapse/reopen, compact entries, mobile selection dismissal and zero page errors. Build and diff checks pass (existing Browserslist advisory only). CED remains local and unpublished.
+
+## 2026-09-12 — Quiet, English-only sidebar
+
+- User requested a less busy sidebar and fixed English navigation. Replaced collapsible category controls with understated English headings; removed counts, arrows and active-group dots. All groups remain visible. Reduced selected-item styling from bright blue with shadow to a slate background and light blue text.
+- Homepage remains bilingual; sidebar labels use English independently of browser/content language. Shared category membership is preserved.
+- Checked with zh-CN browser locale: no Chinese in navigation, four headings and 12 local chapter buttons, chapter navigation and compact mode pass. Rendered evidence: docs/audits/sidebar-groups/simplified-english.png. Production build passes. This supersedes earlier per-group collapse behavior.
+
+## 2026-09-12 — Narrower sidebar
+
+- Reduced expanded navigation width from 208 to 176 px at user request; retained 56 px compact mode. Browser measurement confirms 176 px and no chapter-button text overflow. Visually reviewed docs/audits/sidebar-groups/narrow-176.png. Styling-only change; chapter structure and navigation unchanged.

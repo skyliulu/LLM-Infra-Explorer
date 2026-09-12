@@ -12,3 +12,5 @@ export const MODULE_LABELS = {
   dpattention: 'DP Attention',
   linearattn: 'Linear Attention',
 };
+
+export const getModuleLabel = id => MODULE_LABELS[id];
