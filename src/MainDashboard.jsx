@@ -20,12 +20,14 @@ const RadixCache = lazy(() => import('./components/RadixCache.jsx'));
 const LinearAttention = lazy(() => import('./components/LinearAttention.jsx'));
 const Quantization = lazy(() => import('./components/Quantization.jsx'));
 const SparseAttention = lazy(() => import('./components/SparseAttention.jsx'));
+const CacheArchitecture = lazy(() => import('./components/CacheArchitecture.jsx'));
 
 const TABS = [
   { id: 'llm', icon: Cpu, component: LLMInference },
   { id: 'parallel', icon: Network, component: ParallelStrategies },
   { id: 'flash', icon: Zap, component: FlashAttention },
   { id: 'sparseattn', icon: Database, component: SparseAttention },
+  { id: 'cachearch', icon: Database, component: CacheArchitecture },
   { id: 'flashdecode', icon: FastForward, component: FlashDecode },
   { id: 'speculative', icon: Sparkles, component: SpeculativeDecoding },
   { id: 'quantization', icon: Cpu, component: Quantization },

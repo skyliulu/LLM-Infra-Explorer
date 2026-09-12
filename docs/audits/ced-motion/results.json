@@ -1,0 +1,13 @@
+{
+  "singleStep": true,
+  "writeBeforeRead": true,
+  "inspectionIndependent": true,
+  "completed": true,
+  "twoSecondPlayback": true,
+  "pause": true,
+  "phaseReset": true,
+  "tokenReset": true,
+  "decodeHistory": true,
+  "mobileOverflow": false,
+  "errors": []
+}

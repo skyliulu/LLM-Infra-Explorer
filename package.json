@@ -10,6 +10,7 @@
     "check:parallel": "node scripts/check-parallel-strategies.mjs",
     "check:flash": "node scripts/check-flash-attention.mjs",
     "check:sparse": "node scripts/check-sparse-attention.mjs",
+    "check:cachearch": "node scripts/check-cache-architecture.mjs && node scripts/check-ced-execution.mjs",
     "check:flashdecode": "node scripts/check-flash-decode.mjs",
     "check:engram": "node scripts/check-engram.mjs",
     "check:radix": "node scripts/check-radix-cache.mjs",

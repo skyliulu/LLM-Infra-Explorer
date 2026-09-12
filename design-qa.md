@@ -1149,6 +1149,46 @@ Basis: NVIDIA CUDA floating-point format appendix and CUTLASS bfloat16.h; round-
 
 Rendered checks: desktop Chinese BF16 selected-weight fields and INT4 reconstruction, English 390px selected-weight layout, FP16 primer with unchanged BF16 baseline, INT8 and FP8 encoding labels. No page or bit-field overflow, no KaTeX errors and no browser warnings/errors. Screenshots: docs/audits/bf16/desktop-zh.png and mobile-en.png. Existing region order, drill-down and engine lifecycle controls preserved.
 
+## 2026-09-12 · 第四项：层间缓存共享 / Cache Sharing
+
+- 第三项 FP4 已由用户确认后提交推送：db1708a。随后实现第四项首版，新入口位于 Sparse Attention 后。现有章节的布局和状态未改动；新章节采用轻色工作台与单语言切换，结构选择而非播放时间线。
+- 能力：multiple-modes（Prefill/Decode）、resource-metrics、structural-comparison、dense-layout、math。控制维度：Token 数、层、条目、阶段和语言。唯一纯模型 deriveCacheArchitectureModel 导出所有所有权、计数、源位置和工作量；语言不参与计算。
+- 依据：官方 inference/config.json 与 model.py 固定 517ef625df97ec57aadc91b67506a57c20fdc5bb；技术报告 §2.2–2.4、§3.2、§4.2.1。报告 PDF 已下载到系统临时目录用于核验，不纳入仓库。配置 0-based KV owners 2/8/14/20，index sources 2/8/14/20/24/28/32/36；UI 一律加 1 标示，共 40 个骨干层，不含 MTP。
+- 交互与证据：选择层保留完整拓扑，在右侧分别追踪缓存拥有者与 Top-K 来源，来源按钮可返回对应层；缓存组整块可点击。L26 指向 L21 的缓存与 L25 的选择。条目编号映射回原始 Token（Encoder 2:1，Decoder 1:1），同尺度显示 main 288 B / index 68 B。N=129 最后一条 Encoder 记录来自 127/128，尾部 129 计入未完成组。
+- 字节账本控制变量：同一拓扑每层独存16位 → 共享16位 → 共享FP4+scale。第一行明确不是 V4 实际结构；报告 3514→890 另列为跨架构参照。完整全局账本为 (3 floor(N/2)+N)*356；暂存 Token 槽与40层局部窗口槽分账，未宣称总显存或内核实测。
+- CED：最终 Encoder 输出派生 Decoder 全局缓存；Prefill 的 Decoder 仍处理至多128尾部 Token，以近似 bounded replay 准备本层 SWA。Decode 当前 Token 运行完整40层。Token×层仅为处理位置数示意，排除投影、算子差异，不能转成 FLOPs/延迟。未模拟分层候选池分数或 Encoder 持久化命中回放，这些是后续基础设施扩展。
+- 验收：480纯模型快照覆盖层所有权、索引来源、奇偶边界、字节账本、记录范围及CED工作量；百万Token完整全局记录890,000,000 B。34浏览器案例覆盖四种层角色×双语×1280/820/390px，以及五种Token数×两阶段；无页面横向溢出、KaTeX错误或控制台warn/error。手机视口切换后一次读取早于React更新，分开点击/读取复验通过，已保存最终结果。实际检查桌面拓扑、手机拓扑与CED路径截图。
+- 证据：docs/audits/cache-architecture/ 中 browser-results.json、phase-results.json、qa-matrix.json 与 ownership.png。规范检查通过（Unicode符号提示已人工核验公式使用MathFormula），覆盖矩阵检查通过，生产构建通过，只有现有Browserslist数据提示。新章节未提交或推送，留待用户查看。
+
+## 2026-09-12 · CED 命名、架构展示与统一标题卡片
+
+- 根据用户指正将入口 Cache Sharing 改名为 CED，标题明确 Causal Encoder-Decoder；CSA2 作为其层间缓存与选择机制。CED 总体关系移到首屏，随后保留字节账本及40层追踪。
+- 增加来源/位置/维度矩阵示意：Encoder 输出、投影全局 KV、Decoder 尾部局部 KV。颜色仅编码来源，不生成伪数值。Prefill 展示全部历史与至多128尾部位置；Decode 标注仅展示当前Token新记录，不将既有缓存画成已清空。模型补充形状与范围，480状态回归增加范围断言。
+- 量化、投机解码、CED 使用同一个 module-header.css，统一独立白色圆角标题卡片、边框、留白与标题颜色，控制器行为未改。量化选项缩为 W(INT4) / A(FP16) 等，旁边解释W/A。
+- 数值基线明确为FP16：对应现有FP16编码教学；通用FP4的存储参照也标为FP16。容量仍按16位计费，主数值实验保留JS高精度参照、不冒充位精确FP16计算。独立SGLang BF16执行路径及具体KV实例BF16参照保持原语义。
+- 12个布局案例覆盖三个章节×双语×1280/390px，标题圆角均16px，无页面横向溢出、无KaTeX错误。实际查看桌面与手机截图，五种量化短标签切换通过；CED Decode矩阵为本步1行，说明保留历史。编辑时新CSS尚未落盘造成短暂HMR错误，文件完成后页面可正常渲染、所有模式可操作，最终生产构建通过。
+- Quantization、Speculative、CED模型回归均通过。证据 docs/audits/header-polish/。未提交推送；此前Skill更新也保留在工作区。
+
+## 2026-09-12 · 以业务问题组织上下文构建与复用
+
+- 依据用户反馈重读报告 §1、§2.2–2.3、§3.2，首屏改为输入等待、历史容量、会话恢复三个问题与同屏资源对照；CED 改为内部原理名，中文入口/标题可直接理解。原矩阵、拓扑、来源和记录追踪保留。总览整块按钮展开同区说明；全局 Token 与阶段控制移至首屏。
+- 比较明确区分同模型处理位置数、官方跨模型全局缓存斜率、报告同工作负载持久化比例。业务指标说明覆盖 TTFT、吞吐、并发、恢复时间和任务质量，但未编造实测数字或将容量比换成速度比。
+- 新增 benefits 纯模型验证短输入无处理位置减量、Decode 40 层不变、长输入趋近半量、重放范围不超历史。既有480快照通过。规范检查通过，Unicode箭头为流程连线，数学公式仍由 MathFormula 渲染。
+- 渲染基线和改后截图在 docs/audits/context-review/。已检查三个整块选择、32 Token边界、1M Decode，中文桌面和英文390px；无页面溢出、KaTeX错误。生产构建通过（既有 Browserslist 数据陈旧提示）。详见 docs/context-reuse-review.md。未提交推送。
+
+## 2026-09-12 · DeepSeek CED 专名与技术输入输出详解
+
+- 用户明确否定泛化名称，页面改为“DeepSeek 因果编码器—解码器”，首页与侧栏使用“DeepSeek CED”，副标题指向 V4.1 Flash。保留已认可的业务问题与收益首屏，仅重做下一段技术说明。
+- 原矩阵场景（可对照 docs/audits/context-review/before.png）升级为普通逐层依赖参照 + 同区四节点数据流。Encoder 输出分叉至全部位置的全局投影和尾部的 Decoder 局部窗口，最后供本层查询；全色块选择后右侧展开输入/操作/输出、公式、关键区别和位置账本。矩阵顺序和全局/局部来源保留，所有位置条使用相同满刻度长度；手机保留两条支路与同样的拓扑，检查面板下移。
+- 依据前述官方报告 §2.2–2.3：区分 CED 改变全局 KV 来源与 CSA2 共享单份 KV；投影成本仍存在，公式明确省略归一化、位置编码、量化和头展开。补充 L21 Full 的主 KV 实际来自 H20，局部窗口仍来自本层输入。区分 Prefill 尾部近似重放与 Decode 当前记录增量更新；不是每次生成重放尾段。
+- 模型新增 technical 派生量，验证全局记录覆盖全部本次输入、局部记录只覆盖尾部、剩余位置跳过 Decoder、Decode 无跳层、账本与收益一致。既有480快照及新边界、技术说明中英文键完整性检查通过。
+- 实际点击普通基线及四节点，检查输入/输出公式；129位置只跳过1个位置，1M历史下Decode新增1行且仍保留历史；英文390px无页面和节点溢出、KaTeX错误。最终冷启动日志无warn/error。截图 docs/audits/ced-technical/projection-zh.png、decode-mobile-en.png。
+- 开发中 Positions JSX 漏闭合造成短暂 HMR/构建失败，补齐标签后构建通过，触发父组件更新清除旧叠层并以新标签页冷启动复验。最终规范检查通过；仅既有Unicode流程符号提示与Browserslist陈旧提示。未提交或推送。
+
+## 2026-09-12 · 动态展示缺口评估（未实施）
+
+检查 Sparse Attention 的 Query切换/矩阵关系与 CED 的投影检查画布，并核对源码：当前是参数和结构交互，无可单步执行的算法过程。评估建议先补单次Attention、再补CED Prefill/Decode，随后扩展缓存增长和会话恢复。保留现有总览与下钻，不引入无语义循环动画。方案与验收约束见 docs/attention-motion-review.md。本轮无应用代码修改，未运行或宣称新功能验收。
+
 
 ## 2026-09-12 — Sparse Attention query execution animation
 
@@ -1166,6 +1206,7 @@ Playback pace refinement: user requested 2 seconds; default state and Chinese/En
 ## 2026-09-12 — README and favicon refresh
 
 English/Chinese READMEs now document Sparse Attention architecture drill-down, adjustable query playback, BF16/FP4 quantization and model-versus-measured-metric boundaries. The unpublished chapter is excluded. Favicon replaced by a three-layer tensor mark; visually checked at 16/32/64 px on light and dark backgrounds.
+
 
 ## 2026-09-12 — README visual redesign and English preview refresh
 
@@ -1219,3 +1260,24 @@ Checked overview captures and representative middle frames, five GIFs with 5–1
 ## 2026-09-12 — Narrower sidebar
 
 - Reduced expanded navigation width from 208 to 176 px at user request; retained 56 px compact mode. Browser measurement confirms 176 px and no chapter-button text overflow. Visually reviewed docs/audits/sidebar-groups/narrow-176.png. Styling-only change; chapter structure and navigation unchanged.
+
+## 2026-09-12 — CED forward execution checkpoints
+
+- User authorized dynamic enhancement of local CED. Preserved business comparison, baseline, fork/merge canvas and independent principle inspector; added local play/pause/step/replay/overview controls. Default remains structural overview. Two seconds per checkpoint follows prior playback preference.
+- Capabilities: timeline, data movement, resource metrics, dense layout. Dimensions: Prefill/Decode, token count (1 through 1M), overview/0–10 checkpoints, playing/paused/done, selected inspector, language and viewport. Phase/token changes remount the execution view and stop old timers; inspection/language do not change execution progress.
+- Pure deriveCedExecution models four five-layer Encoder checkpoints, shared global publication, four five-layer Decoder checkpoints and final output readiness. Five-layer groups are sequential teaching checkpoints, not concurrent GPU work. Node state, layer progress, active connections and committed counts derive from this model. Pause stops arrow motion; reduced-motion disables it. H20 stays ghosted until all Encoder layers complete; logits remain unavailable until completion.
+- Decode starts with N-1 resident Decoder global records and publishes one new record; Prefill starts with zero. Decoder reads preserve the same single global cache. Byte count covers main+index Decoder global cache only (356 B/record); excludes Encoder caches and local windows. Other page metrics explicitly remain completed-target comparisons.
+- Source recheck: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/inference/model.py (visible revision 517ef62), SharedAttentionRuntime, _window_kv and Transformer.forward. Public reference forward loops over layers; bounded-tail Prefill comes from the previously reviewed report, not a literal trace of this reference loop. Added this boundary visibly. Report PDF redirect was unavailable during this recheck; no new report claims introduced.
+- Model QA: scripts/check-ced-execution.mjs checks 132 snapshots across both phases and six lengths: dependencies, existing history, allocation invariants, work totals and final readiness. Existing 480 architecture snapshots and technical/business assertions pass.
+- Browser evidence docs/audits/ced-motion/: baseline, publication, Decoder progress and mobile English screenshots plus results.json. Verified single step, independent inspector, completed-state disable, two-second playback, pause, mode/token reset, retained Decode history, English 390px without overflow and zero page errors. Virtual-clock check covers auto-stop after all ten transitions, reduced-motion setting and return to overview. Desktop and mobile captures visually inspected. Production build passes; existing Browserslist advisory only.
+- CED remains local; no commit or push requested for this iteration.
+
+## 2026-09-12 — Compact CSA2 inspection
+
+- User requested less repeated text and color-coded layer roles. Preserved all 40 selectable layers and original cache-group order. Layer tiles now show only layer numbers; a shared role legend, hover titles, accessible names and inspector retain Full/Reindex/Reuse/Local meaning. Borders reinforce color; selected-layer outline remains independent.
+- Condensed group cache metadata and spacing, ten-column desktop/five-column mobile grids. Source-position and byte-layout inspection remains accessible in a disclosure, collapsed initially; cache-source chain and independent local computation remain visible.
+- Same desktop viewport section height reduced from 869 to 680 px (~22%). Evidence: docs/audits/csa2-density/before.png, after.png, mobile.png. Verified 40 layer buttons, absence of repeated role text inside tiles, L26 selection, opening record controls and English mobile without overflow. No model or execution behavior changed.
+
+## 2026-09-12 — CSA2 disclosure default and legend cleanup
+
+- User preference supersedes prior compact default: source-record inspection now opens by default, while remaining collapsible. Removed redundant upper-right border/color prose; retained the four-role legend. Browser checks confirm record input initially visible, no duplicate heading legend, and all four legend entries present.

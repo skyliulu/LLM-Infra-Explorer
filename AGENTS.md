@@ -35,6 +35,7 @@ Each file is a self-contained, interactive visualization:
 | `ParallelStrategies.jsx` | 6D parallel topology (DP/TP/PP/CP/EP/ETP), tensor slicing, GPU mapping |
 | `FlashAttention.jsx` | Tiled attention vs standard, SRAM/HBM IO tracking |
 | `SparseAttention.jsx` | Single-canvas full-attention cost comparison, DSA selection, CSA/HCA compression with SWA, source provenance and separate indexer accounting |
+| `CacheArchitecture.jsx` | CSA2 40-layer cache ownership, separate Top-K sources, FP4 byte budgets, CED prefill/decode and bounded decoder replay |
 | `FlashDecode.jsx` | KV cache splitting, parallel reduction |
 | `SpeculativeDecoding.jsx` | Autoregressive baseline, Draft–Target verification, rejection correction, KV rollback, tree candidates |
 | `Quantization.jsx` | Offline RTN/AWQ/GPTQ/SmoothQuant, INT4/INT8/FP8 representation, online activation/KV quantization and scale lifecycle |

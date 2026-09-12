@@ -1,0 +1,62 @@
+[
+  {
+    "tokens": 1,
+    "phase": "prefill",
+    "math": 0,
+    "work": "40/ 40"
+  },
+  {
+    "tokens": 1,
+    "phase": "decode",
+    "math": 0,
+    "work": "40/ 40"
+  },
+  {
+    "tokens": 32,
+    "phase": "prefill",
+    "math": 0,
+    "work": "1,280/ 1,280"
+  },
+  {
+    "tokens": 32,
+    "phase": "decode",
+    "math": 0,
+    "work": "40/ 40"
+  },
+  {
+    "tokens": 129,
+    "phase": "prefill",
+    "math": 0,
+    "work": "5,140/ 5,160"
+  },
+  {
+    "tokens": 129,
+    "phase": "decode",
+    "math": 0,
+    "work": "40/ 40"
+  },
+  {
+    "tokens": 4096,
+    "phase": "prefill",
+    "math": 0,
+    "work": "84,480/ 163,840"
+  },
+  {
+    "tokens": 4096,
+    "phase": "decode",
+    "math": 0,
+    "work": "40/ 40"
+  },
+  {
+    "tokens": 1000000,
+    "phase": "prefill",
+    "math": 0,
+    "work": "20,002,560/ 40,000,000"
+  },
+  {
+    "tokens": 1000000,
+    "phase": "decode",
+    "math": 0,
+    "work": "40/ 40"
+  }
+]

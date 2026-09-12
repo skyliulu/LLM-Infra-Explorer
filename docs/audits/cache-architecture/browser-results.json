@@ -1,0 +1,218 @@
+[
+  {
+    "viewport": 1280,
+    "language": "zh",
+    "layer": 1,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L1 · 仅局部窗口"
+  },
+  {
+    "viewport": 1280,
+    "language": "zh",
+    "layer": 3,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L3 · Full · 生成缓存"
+  },
+  {
+    "viewport": 1280,
+    "language": "zh",
+    "layer": 25,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L25 · Reindex · 重新选取"
+  },
+  {
+    "viewport": 1280,
+    "language": "zh",
+    "layer": 26,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L26 · Reuse · 引用选择"
+  },
+  {
+    "viewport": 1280,
+    "language": "en",
+    "layer": 1,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L1 · Local window only"
+  },
+  {
+    "viewport": 1280,
+    "language": "en",
+    "layer": 3,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L3 · Full · create cache"
+  },
+  {
+    "viewport": 1280,
+    "language": "en",
+    "layer": 25,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L25 · Reindex · new selection"
+  },
+  {
+    "viewport": 1280,
+    "language": "en",
+    "layer": 26,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L26 · Reuse · shared selection"
+  },
+  {
+    "viewport": 820,
+    "language": "zh",
+    "layer": 1,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L1 · 仅局部窗口"
+  },
+  {
+    "viewport": 820,
+    "language": "zh",
+    "layer": 3,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L3 · Full · 生成缓存"
+  },
+  {
+    "viewport": 820,
+    "language": "zh",
+    "layer": 25,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L25 · Reindex · 重新选取"
+  },
+  {
+    "viewport": 820,
+    "language": "zh",
+    "layer": 26,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L26 · Reuse · 引用选择"
+  },
+  {
+    "viewport": 820,
+    "language": "en",
+    "layer": 1,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L1 · Local window only"
+  },
+  {
+    "viewport": 820,
+    "language": "en",
+    "layer": 3,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L3 · Full · create cache"
+  },
+  {
+    "viewport": 820,
+    "language": "en",
+    "layer": 25,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L25 · Reindex · new selection"
+  },
+  {
+    "viewport": 820,
+    "language": "en",
+    "layer": 26,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L26 · Reuse · shared selection"
+  },
+  {
+    "viewport": 390,
+    "language": "zh",
+    "layer": 1,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L1 · 仅局部窗口"
+  },
+  {
+    "viewport": 390,
+    "language": "zh",
+    "layer": 3,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L3 · Full · 生成缓存"
+  },
+  {
+    "viewport": 390,
+    "language": "zh",
+    "layer": 25,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L25 · Reindex · 重新选取"
+  },
+  {
+    "viewport": 390,
+    "language": "zh",
+    "layer": 26,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L26 · Reuse · 引用选择"
+  },
+  {
+    "viewport": 390,
+    "language": "en",
+    "layer": 1,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L1 · Local window only"
+  },
+  {
+    "viewport": 390,
+    "language": "en",
+    "layer": 3,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L3 · Full · create cache"
+  },
+  {
+    "viewport": 390,
+    "language": "en",
+    "layer": 25,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L25 · Reindex · new selection"
+  },
+  {
+    "viewport": 390,
+    "language": "en",
+    "layer": 26,
+    "layers": 40,
+    "mathErrors": 0,
+    "overflow": false,
+    "selection": "L26 · Reuse · shared selection"
+  }
+]

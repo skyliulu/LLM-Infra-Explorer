@@ -74,6 +74,15 @@ const featureCards = [
     iconClass: 'text-indigo-300',
   },
   {
+    id: 'cachearch',
+    description: {
+      zh: '为什么读长材料慢、保留历史贵、旧会话恢复会卡？从业务收益下钻上下文构建、共享与恢复。',
+      en: 'Explore slow prompt processing, costly history and session recovery, then trace context construction, sharing and replay.',
+    },
+    icon: Database,
+    iconClass: 'text-blue-300',
+  },
+  {
     id: 'flashdecode',
     description: {
       en: 'Dive into low-latency decoding optimizations for real-time responses.',

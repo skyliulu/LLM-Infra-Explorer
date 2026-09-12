@@ -1,0 +1,455 @@
+{
+  "dimensions": {
+    "viewport": [
+      1280,
+      820,
+      390
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "layer": [
+      1,
+      3,
+      25,
+      26
+    ],
+    "tokens": [
+      1,
+      32,
+      129,
+      4096,
+      1000000
+    ],
+    "phase": [
+      "prefill",
+      "decode"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "viewport",
+      "language",
+      "layer"
+    ],
+    [
+      "tokens",
+      "phase"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "1280-zh-1",
+      "state": {
+        "viewport": 1280,
+        "language": "zh",
+        "layer": 1
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "1280-zh-3",
+      "state": {
+        "viewport": 1280,
+        "language": "zh",
+        "layer": 3
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "1280-zh-25",
+      "state": {
+        "viewport": 1280,
+        "language": "zh",
+        "layer": 25
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "1280-zh-26",
+      "state": {
+        "viewport": 1280,
+        "language": "zh",
+        "layer": 26
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "1280-en-1",
+      "state": {
+        "viewport": 1280,
+        "language": "en",
+        "layer": 1
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "1280-en-3",
+      "state": {
+        "viewport": 1280,
+        "language": "en",
+        "layer": 3
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "1280-en-25",
+      "state": {
+        "viewport": 1280,
+        "language": "en",
+        "layer": 25
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "1280-en-26",
+      "state": {
+        "viewport": 1280,
+        "language": "en",
+        "layer": 26
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "820-zh-1",
+      "state": {
+        "viewport": 820,
+        "language": "zh",
+        "layer": 1
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "820-zh-3",
+      "state": {
+        "viewport": 820,
+        "language": "zh",
+        "layer": 3
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "820-zh-25",
+      "state": {
+        "viewport": 820,
+        "language": "zh",
+        "layer": 25
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "820-zh-26",
+      "state": {
+        "viewport": 820,
+        "language": "zh",
+        "layer": 26
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "820-en-1",
+      "state": {
+        "viewport": 820,
+        "language": "en",
+        "layer": 1
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "820-en-3",
+      "state": {
+        "viewport": 820,
+        "language": "en",
+        "layer": 3
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "820-en-25",
+      "state": {
+        "viewport": 820,
+        "language": "en",
+        "layer": 25
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "820-en-26",
+      "state": {
+        "viewport": 820,
+        "language": "en",
+        "layer": 26
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "390-zh-1",
+      "state": {
+        "viewport": 390,
+        "language": "zh",
+        "layer": 1
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "390-zh-3",
+      "state": {
+        "viewport": 390,
+        "language": "zh",
+        "layer": 3
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "390-zh-25",
+      "state": {
+        "viewport": 390,
+        "language": "zh",
+        "layer": 25
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "390-zh-26",
+      "state": {
+        "viewport": 390,
+        "language": "zh",
+        "layer": 26
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "390-en-1",
+      "state": {
+        "viewport": 390,
+        "language": "en",
+        "layer": 1
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "390-en-3",
+      "state": {
+        "viewport": 390,
+        "language": "en",
+        "layer": 3
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "390-en-25",
+      "state": {
+        "viewport": 390,
+        "language": "en",
+        "layer": 25
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "390-en-26",
+      "state": {
+        "viewport": 390,
+        "language": "en",
+        "layer": 26
+      },
+      "checks": [
+        "40 layers retained",
+        "selection updated",
+        "no overflow or math error"
+      ]
+    },
+    {
+      "name": "1-prefill",
+      "state": {
+        "tokens": 1,
+        "phase": "prefill"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "1-decode",
+      "state": {
+        "tokens": 1,
+        "phase": "decode"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "32-prefill",
+      "state": {
+        "tokens": 32,
+        "phase": "prefill"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "32-decode",
+      "state": {
+        "tokens": 32,
+        "phase": "decode"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "129-prefill",
+      "state": {
+        "tokens": 129,
+        "phase": "prefill"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "129-decode",
+      "state": {
+        "tokens": 129,
+        "phase": "decode"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "4096-prefill",
+      "state": {
+        "tokens": 4096,
+        "phase": "prefill"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "4096-decode",
+      "state": {
+        "tokens": 4096,
+        "phase": "decode"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "1000000-prefill",
+      "state": {
+        "tokens": 1000000,
+        "phase": "prefill"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    },
+    {
+      "name": "1000000-decode",
+      "state": {
+        "tokens": 1000000,
+        "phase": "decode"
+      },
+      "checks": [
+        "phase work matches model"
+      ]
+    }
+  ]
+}

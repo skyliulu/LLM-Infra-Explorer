@@ -4,6 +4,7 @@ export const MODULE_LABELS = {
   parallel: 'Parallel Strategy',
   flash: 'Flash Attention',
   sparseattn: 'Sparse Attention',
+  cachearch: 'DeepSeek CED',
   flashdecode: 'Flash Decode',
   speculative: 'Spec Decode',
   quantization: 'Quantization',
