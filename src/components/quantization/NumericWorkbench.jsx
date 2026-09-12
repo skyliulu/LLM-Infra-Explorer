@@ -11,16 +11,16 @@ const texNumber=value=>Number(value.toPrecision(4)).toString().replace(/e([+-]?\
 function FloatBasics({m,source,onSource,t}) {
   const f=m.float16;
   return <section className="qn-float" data-testid="float-basics" aria-label={t('floatSource')}>
-    <div className="qn-float-heading"><h4>{t('floatBasics')}</h4><div role="group" aria-label={t('floatSource')}>
+    <div className="qn-float-heading"><h4>{f.format} · {t('floatBasics')}</h4><div role="group" aria-label={t('floatSource')}>
       <button aria-pressed={source==='example'} onClick={()=>onSource('example')}>{t('floatExample')} · 0.75</button>
       <button aria-pressed={source==='selected'} onClick={()=>onSource('selected')}>{t('floatSelected')} · {fmt(m.value)}</button>
     </div></div>
     <div className="qn-float-fields" data-testid="float-fields">
       {['floatSign','floatExponent','floatFraction'].map((key,i)=><div key={key} className={`qn-float-field field-${i}`}>
-        <small>{t(key)}</small><span className="qn-float-bits">{f.fields[i].split('').map((bit,j)=><i key={j}>{bit}</i>)}</span>
+        <small>{t(key)} · {[1,f.exponentBits,f.fractionBits][i]} bit</small><span className="qn-float-bits">{f.fields[i].split('').map((bit,j)=><i key={j}>{bit}</i>)}</span>
         <MathFormula>{i===0?`b=${f.sign}`:i===1?`E=${f.exponent}`:`F=${f.fraction}`}</MathFormula>
-        <small>{t(i===0?(f.sign?'floatNegative':'floatPositive'):i===1?'floatBias':'floatImplicit')}</small>
-        {i===1 && <MathFormula>{`${f.exponent}-15=${f.power}`}</MathFormula>}
+        <small>{t(i===0?(f.sign?'floatNegative':'floatPositive'):i===1?'floatBias':'floatImplicit')}{i===1&&<> {f.bias}</>}</small>
+        {i===1 && <MathFormula>{`${f.exponent}-${f.bias}=${f.power}`}</MathFormula>}
       </div>)}
     </div>
     <div className="qn-float-value" data-testid="float-value"><MathFormula>{`${f.sign?'-':''}(1.${f.fields[2].replace(/0+$/,'')||'0'})_2\\times2^{${f.power}}${Number(f.represented.toPrecision(6))===f.represented?'=':'\\approx'}${Number(f.represented.toPrecision(6))}`}</MathFormula></div>
@@ -62,7 +62,7 @@ function Reconstruction({m,t}) {
   const shownTicks=m.ticks.filter((_,i)=>i%Math.max(1,Math.ceil(m.ticks.length/40))===0);
   return <div className="qn-reconstruction">
     <h3>{t('reconstructionQuestion')} <MathFormula>{`W_{${m.r+1},${m.c+1}}`}</MathFormula></h3>
-    <div className="q-value-flow"><div><small>{t('originalValue')}</small><strong>{fmt(m.value)}</strong><span className="qn-bit-budget" aria-label={t('baselineBitBudget')}>{Array.from({length:16},(_,i)=><i key={i}/>)}</span><small>16 bit</small></div><ArrowRight size={15}/><div><small>{t('encoded')}</small><strong>{fmt(m.code)}</strong><span className="qn-binary" data-testid="numeric-bits">{m.low ? m.storage.packedCodes[m.selected].split('').map((bit,i)=><i key={i}>{bit}</i>) : t('noConversion')}</span><small>{m.q.bits} bit</small></div><ArrowRight size={15}/><div><small>{t('reconstructed')}</small><strong>{fmt(m.restored)}</strong><small>{t('usedForCompute')}</small></div></div>
+    <div className="q-value-flow"><div><small>{t('originalValue')}</small><strong>{fmt(m.value)}</strong><span className="qn-bit-budget" aria-label={t('baselineBitBudget')}>{Array.from({length:16},(_,i)=><i key={i}/>)}</span><small>BF16 · 16 bit</small></div><ArrowRight size={15}/><div><small>{t('encoded')}</small><strong>{fmt(m.code)}</strong><span className="qn-binary" data-testid="numeric-bits">{m.low ? m.storage.packedCodes[m.selected].split('').map((bit,i)=><i key={i}>{bit}</i>) : t('noConversion')}</span><small>{m.storageFormat} · {m.q.bits} bit</small></div><ArrowRight size={15}/><div><small>{t('reconstructed')}</small><strong>{fmt(m.restored)}</strong><small>{t('usedForCompute')}</small></div></div>
     {m.low ? <><div className="qn-scale-equation"><span>{t('scaleRuler')}</span><MathFormula>{m.affine ? `(${texNumber(m.code)}-${m.p.zero})\\times ${texNumber(m.p.scale)}\\approx ${texNumber(m.restored)}` : `${texNumber(m.code)}\\times ${texNumber(m.p.scale)}\\approx ${texNumber(m.restored)}`}</MathFormula></div><p>{t(m.format==='fp8'?'fp8Ruler':'integerRuler')}</p></> : <p>{t('baseHint')}</p>}
     <div className="q-numberline" role="img" aria-label={`${t('originalValue')} ${fmt(m.value)}, ${t('reconstructed')} ${fmt(m.restored)}`}><div className="q-axis"/>{shownTicks.map((v,i)=><i key={i} style={{left:pos(v)}}/>)}<span className="q-original-dot" style={{left:pos(m.value)}}/><span className="q-restored-dot" style={{left:pos(m.restored)}}/><small className="q-axis-left">{fmt(-bound)}</small><small className="q-axis-right">{fmt(bound)}</small></div>
     <div className="q-legend"><span><i className="weights"/>{t('originalValue')}</span><span><i className="kv"/>{t('reconstructed')}</span><span>{t('weightDelta')} {fmt(m.weightDelta)}</span></div>
@@ -73,10 +73,10 @@ function Reconstruction({m,t}) {
 
 export default function Numeric({mode,outliers,setOutliers,t}) {
   const [group,setGroup]=useState('8'),[clip,setClip]=useState(100),[affine,setAffine]=useState(false),[selected,setSelected]=useState(2);
-  const [floatSource,setFloatSource]=useState('example');
-  const m=useMemo(()=>deriveNumericModel({mode,group:group==='tensor'?group:Number(group),clip:clip/100,affine,outliers,selected,floatSource}),[mode,group,clip,affine,outliers,selected,floatSource]);
+  const [floatSource,setFloatSource]=useState('example'),[floatFormat,setFloatFormat]=useState('bf16');
+  const m=useMemo(()=>deriveNumericModel({mode,group:group==='tensor'?group:Number(group),clip:clip/100,affine,outliers,selected,floatSource,floatFormat}),[mode,group,clip,affine,outliers,selected,floatSource,floatFormat]);
   return <Card id="quant-numeric" number="02" title="numeric" hint="numericHint" t={t}>
-    <div className="qn-main"><Storage m={m} onSelect={setSelected} floatSource={floatSource} onFloatSource={setFloatSource} t={t}/><Reconstruction m={m} t={t}/></div>
+    <div className="q-controls"><Choice label="floatCompare" value={floatFormat} options={[['bf16','formatBF16'],['fp16','formatFP16']]} onChange={setFloatFormat} t={t}/></div><div className="qn-main"><Storage m={m} onSelect={setSelected} floatSource={floatSource} onFloatSource={setFloatSource} t={t}/><Reconstruction m={m} t={t}/></div>
     {m.low && <div className="qn-group-experiment"><div><h3>{t('groupQuestion')}</h3><p>{t('groupAnswer')}</p></div><Choice label="group" value={group} options={[['tensor','tensor'],['8','channel'],['4','group4'],['2','group2']]} onChange={setGroup} t={t}/><div className="qn-group-result"><strong>{m.groupCount} {t('sharedRulers')} · {bytes(m.storage.scaleBytes)}{m.affine && <> + {bytes(m.storage.zeroBytes)} {t('zero')}</>}</strong><small>{m.p.count} {t('weightsPerRuler')} · {t('scale')} {fmt(m.p.scale)}</small></div></div>}
     <details className="qn-detail"><summary>{t('matricesAndSettings')}</summary>
       {m.low && <div className="q-controls"><Range label="clip" value={clip} min={30} max={100} step={5} suffix="%" onChange={setClip} t={t}/>{mode!=='fp8' && <Choice label="scheme" value={affine?'affine':'symmetric'} options={['symmetric','affine'].map(v=>[v,v])} onChange={v=>setAffine(v==='affine')} t={t}/>}<Metric label="weightError" value={fmt(m.q.error)} t={t}/></div>}
@@ -88,7 +88,7 @@ export default function Numeric({mode,outliers,setOutliers,t}) {
       <div className="q-columns"><div><div className="qn-input-bars" aria-label={t('inputMagnitudes')}>{m.x[0].map((v,i)=><button key={i} aria-label={`${t('inputFeature')} ${i+1}: ${fmt(v)}`} aria-pressed={i===m.c} onClick={()=>setSelected(m.r*8+i)}><small>{i+1}</small><span><i style={{height:`${Math.abs(v)/m.inputExtent*100}%`}}/></span><strong>{fmt(v)}</strong></button>)}</div><small>{t('inputMagnitudes')}</small></div><div className="qn-impact"><h4>{t('weightContribution')} <MathFormula>{`X_{1,${m.c+1}}`}</MathFormula></h4><MathFormula block>{`${texNumber(m.weightDelta)}\\times ${texNumber(m.x[0][m.c])}\\approx ${texNumber(m.contribution)}`}</MathFormula><p>{t('contributionHint')}</p><Metric label="error" value={fmt(m.error)} t={t}/>{(mode==='w8'||mode==='fp8') && <small>{t('activationErrorAlso')} {fmt(m.extraActivationError)}</small>}</div></div>
       <small>{t('inputSharedHint')}</small>
     </details>
-    <details><summary>{t('formulas')}</summary><MathFormula block>{FORMULAS.float16}</MathFormula><p>{t('floatFormulaHint')}</p><a className="qn-source" href="https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/mathematical-functions.html#floating-point-format" target="_blank" rel="noreferrer">{t('sourceFloat')} ↗</a><MathFormula block>{mode==='fp16'?String.raw`\hat W=W`:mode==='fp8'?FORMULAS.fp8:FORMULAS.quant}</MathFormula><MathFormula block>{FORMULAS.error}</MathFormula><p>{t(mode==='fp16'?'baseHint':mode==='fp8'?'floatHint':'formulaHint')}</p><a className="qn-source" href="https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/quantized-types-schemes.html" target="_blank" rel="noreferrer">{t('sourceQuantSchemes')} ↗</a></details>
+    <details><summary>{t('formulas')}</summary><MathFormula block>{floatFormat==='fp16'?FORMULAS.float16:FORMULAS.bfloat16}</MathFormula><p>{t('floatFormulaHint')}</p><a className="qn-source" href="https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/mathematical-functions.html#floating-point-format" target="_blank" rel="noreferrer">{t('sourceFloat')} ↗</a><MathFormula block>{['fp16','bf16'].includes(mode)?String.raw`\hat W=W`:mode==='fp8'?FORMULAS.fp8:FORMULAS.quant}</MathFormula><MathFormula block>{FORMULAS.error}</MathFormula><p>{t(['fp16','bf16'].includes(mode)?'baseHint':mode==='fp8'?'floatHint':'formulaHint')}</p><a className="qn-source" href="https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/quantized-types-schemes.html" target="_blank" rel="noreferrer">{t('sourceQuantSchemes')} ↗</a></details>
     <p className="q-footnote">{t('numericBoundary')}</p>
   </Card>;
 }

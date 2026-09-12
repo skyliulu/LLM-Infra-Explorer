@@ -1,3 +1,4 @@
+import {toBF16} from './bfloat16.js';
 import { WEIGHTS, fixture, quantize, linear, maxAbs, mse } from './model.js';
 
 // Source contract: SGLang v0.4.6.post5, CUDA SM90+, native sgl-kernel,
@@ -34,17 +35,18 @@ export function deriveSGLangModel({preset = 'load-fp8', kv = 'fp8-file', step = 
   const operations = operationsFor(cycle);
   const at = (op, c = cycle) => stages.findIndex(s => s.op === op && s.cycle === c);
   const passed = (op, c = cycle) => { const i = at(op, c); return i >= 0 && completed > i; };
-  const xs = fixture(outliers), weights = quantize(WEIGHTS, {format: low ? 'fp8' : 'fp16', group: 8});
+  const sourceWeights = WEIGHTS.map(r=>r.map(toBF16));
+  const xs = fixture(outliers).map(r=>r.map(toBF16)), weights = quantize(sourceWeights, {format: low ? 'fp8' : 'fp16', group: 8});
   const activationScale = maxAbs(xs.slice(0, 4)) / 448 || 1;
-  const batches = [xs.slice(0, 4), [xs[4].map(v => v * 1.8)], [xs[5].map(v => v * 3)]];
+  const batches = [xs.slice(0, 4), [xs[4].map(v => toBF16(v * 1.8))], [xs[5].map(v => toBF16(v * 3))]];
   // Offline KV calibration includes the stress-input range, with headroom.
   // Raw torch FP8 casts in set_kv_buffer do NOT promise saturating overflow.
-  const calibrationKV = linear(batches.flat(), WEIGHTS).map(r => r.slice(1));
+  const calibrationKV = linear(batches.flat(), sourceWeights).map(r => r.slice(1));
   const kvScale = kv === 'fp8-file' ? maxAbs(calibrationKV) * 1.25 / 448 || 1 : 1;
   const allKV = [];
   const passes = batches.map((input, c) => {
     const qx = quantize(input, {format: low ? 'fp8' : 'fp16', group: 8, ...(staticActivation ? {fixedScale: activationScale} : {})});
-    const qkv = linear(qx.values, weights.values), reference = linear(input, WEIGHTS);
+    const qkv = linear(qx.values, weights.values), reference = linear(input, sourceWeights);
     const stored = quantize(qkv.map(r => r.slice(1)), {format: kv === 'auto' ? 'fp16' : 'fp8', group: 'tensor', fixedScale: kvScale});
     const start = allKV.length;
     stored.values.forEach((r, i) => allKV.push({loc: start + i + 1, cycle: c, values: r, codes: stored.codes[i]}));
@@ -89,8 +91,8 @@ export function deriveSGLangModel({preset = 'load-fp8', kv = 'fp8-file', step = 
   };
   const snapshot = {preset, kv, low, saved, staticActivation, stages, startup, operations, completed, active, focus, cycle, inStartup,
     phase: completed === 0 ? 'idle' : active ? 'running' : 'done', at, passed, current, passes, weights,
-    checkpointView: saved ? weights.codes : WEIGHTS,
-    weightView: ready && low ? transpose(weights.codes) : loaded ? saved ? weights.codes : WEIGHTS : null,
+    checkpointView: saved ? weights.codes : sourceWeights,
+    weightView: ready && low ? transpose(weights.codes) : loaded ? saved ? weights.codes : sourceWeights : null,
     weightShape: ready && low ? [8, 3] : [3, 8],
     weightBytes: loaded ? ready || saved ? weights.payload + weights.metadata : 48 : 0,
     weightQuantizations: preset === 'load-fp8' && ready ? 1 : 0,

@@ -96,6 +96,16 @@ Apply common checks to every module, then apply only the capability sections dec
 - [ ] Convert every confirmed defect into a model assertion, browser case, or checklist item.
 - [ ] Record P0-P3 findings, current result, evidence, contract impact, and unresolved limitations in `design-qa.md`.
 
+## Extensions and microscope explorers
+
+- [ ] Classify comparison alternatives versus cooperating subsystems; the latter remain visible together in the architecture.
+- [ ] Follow a complete overview → component → record → return path. Click the component background as well as its caption and check keyboard access.
+- [ ] Compare full and miniature overviews: node topology, ordering, selected record and connections remain consistent; dense detail remains inspectable at a larger scale.
+- [ ] Inspect principal tradeoffs without opening hidden tabs. Check baseline, units, improvement direction, and the boundary between bytes, latency and context capacity.
+- [ ] Switch every affected format and independently vary object settings. Relevant content appears in its existing teaching region, and unrelated settings retain their values.
+- [ ] Compare corresponding regions across formats at the same viewport. Check shared style and placement, then verify sample counts, bit labels and dimensions against the active model.
+- [ ] Review both empty space inside modules and clearance between them. Surface grouping, matrix readability and connection endpoints must all remain clear after compression.
+
 ## Optional QA matrix
 
 Use a module-owned JSON matrix when a change spans several values or coupled dimensions. Keep only affected dimensions in the file:

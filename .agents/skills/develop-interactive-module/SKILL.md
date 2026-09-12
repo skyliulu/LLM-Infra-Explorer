@@ -30,6 +30,8 @@ Capture a rendered baseline before the first layout-affecting edit. After implem
 
 Declare the change surface before editing: list the dimensions that can alter behavior (for example mode, lifecycle state, language, or viewport), the affected views, and the behavior that must remain unchanged. Include only dimensions relevant to this iteration.
 
+Before adding an entry or panel, classify the new content as an alternative mechanism, a cooperating subsystem, a numeric format, or an implementation example. This determines its place in the existing chapter and control hierarchy; a new technical term alone does not justify a new section. Apply the integration guidance in [content-and-math.md](references/content-and-math.md) and the architecture drill-down guidance in [interaction-model.md](references/interaction-model.md).
+
 For top-level controls, first inventory neighboring modules and capture the repository's control contract: order, grouping, shape, label semantics, trailing-edge placement, and responsive breakpoint. Reuse the established pattern for semantically equivalent controls instead of introducing a chapter-specific variant. Treat language as a presentation preference; use the repository's established single-toggle or segmented pattern consistently, and make a toggle label communicate the target language. In timeline modules, keep the reset/play/next group at the trailing edge when that is the repository convention. Deviate only when the chapter has a real interaction need, and record the reason in QA.
 
 ## 2. Declare the teaching capabilities

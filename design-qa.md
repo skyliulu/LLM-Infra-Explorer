@@ -1136,3 +1136,15 @@ Browser console:     LinearAttention and LLMInference clean; remaining chapters 
 - 按用户反馈将通用 FP4 的第二块改为与 NumericWorkbench 相同的 qn-main 双栏：左侧可点击的同尺度存储条、节省字节、浮点位字段；右侧原值/编码值/还原值、scale、数轴和打包字节。直接复用 numeric.css 的配色、分隔线、字号、间距、响应式与折叠区样式。
 - 下方保留分组说明、完整数值选择和幅度实验；FP4 E2M1、scale、误差与打包仍由原纯模型导出，KV 实例布局不受影响。修正复用文案不能继承的数量与位宽：32 个示例权重，符号 1、指数 2、尾数 1 bit。
 - 实际浏览器对比修改前后布局，检查存储点击切换通道 18/19、双语及 390px 数值区；无页面横向溢出与 KaTeX 错误。既有量化回归和生产构建通过。此次仅调整呈现，不改变计算配方；未提交推送。
+
+## 2026-09-12 · 统一标题卡片与可复用交互规范
+
+量化与投机解码复用 module-header.css，统一独立白色圆角标题卡片；保留原控制行为。量化选项明确 W/A 实际类型。此前桌面、窄屏及双语布局验收通过，量化截图见 docs/audits/header-polish/quantization.png。交互 Skill 沉淀系统层级下钻、矩阵密度、整块点击、收益对照和格式融入现有章节的规范。
+
+## 2026-09-12 · BF16 source and quantization reference
+
+Repair within the accepted quantization layout: the primary baseline, KV default, source bit primer, numerical source weights/inputs and engine source tensors now use BF16. The primer defaults to 1 sign / 8 exponent / 7 fraction bits, bias 127; FP16 remains a presentation-only comparison. Weight and output quantization errors reference BF16-rounded sources. Explicit W/A labels distinguish INT4, FP4, INT8 and FP8. Engine deployment labels distinguish BF16 checkpoints from already-quantized FP8 checkpoints. No claim that all checkpoints are BF16 or that the JS arithmetic reproduces intermediate GPU rounding.
+
+Basis: NVIDIA CUDA floating-point format appendix and CUTLASS bfloat16.h; round-to-nearest-even FP32-to-BF16 conversion. Full non-NaN BF16 code round trips, tie rounding, signed zero, Infinity/NaN, baseline zero added error and primer independence pass. Existing quantization, SGLang and FP4 regression checks pass; conventions pass with the existing Unicode notation review warning. Build passes (Browserslist age warning only).
+
+Rendered checks: desktop Chinese BF16 selected-weight fields and INT4 reconstruction, English 390px selected-weight layout, FP16 primer with unchanged BF16 baseline, INT8 and FP8 encoding labels. No page or bit-field overflow, no KaTeX errors and no browser warnings/errors. Screenshots: docs/audits/bf16/desktop-zh.png and mobile-en.png. Existing region order, drill-down and engine lifecycle controls preserved.

@@ -1,0 +1,5 @@
+.quant-page,.spec-page,.ca-page{padding-top:14px}
+.quant-page .module-header-card,.spec-page .module-header-card,.ca-page .module-header-card{width:calc(100% - 28px);margin:0 auto;border:1px solid #e2e8f0;border-radius:16px;background:#fff;padding:18px 20px;box-shadow:0 1px 3px #0f172a0a}
+.quant-page .module-header-card{max-width:1472px}.spec-page .module-header-card{max-width:1572px}.ca-page .module-header-card{max-width:1452px}
+.module-header-card h1{font-size:24px;font-weight:750;color:#312e81;line-height:1.3}
+@media(max-width:640px){.quant-page .module-header-card,.spec-page .module-header-card,.ca-page .module-header-card{width:calc(100% - 16px);padding:16px}.module-header-card h1{font-size:21px}}

@@ -4,6 +4,7 @@ import { ArrowDown, ArrowRight, BrainCircuit, Cpu, Database, Globe, Pause, Play,
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveSpeculativeSnapshot, deriveCorrectnessExample, getNextLifecycle, PREFIX, STREAM } from './speculative-decoding/model';
 import './speculative-decoding/style.css';
+import './module-header.css';
 
 const getInitialLang = () => navigator.language?.toLowerCase().includes('zh') ? 'zh' : 'en';
 const i18n = {
@@ -557,7 +558,7 @@ export default function SpeculativeDecoding() {
     return ()=>clearTimeout(timer);
   },[racePlaying,raceStep,s.race.isDone]);
   return <div className="spec-page min-h-full bg-slate-50 text-slate-800">
-    <header className="border-b border-slate-200 bg-white px-4 py-4 lg:px-6"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold">{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div><button onClick={()=>setLang(value=>value==='zh'?'en':'zh')} aria-label={t('language')} className="spec-icon !w-auto gap-1 !px-2 text-xs"><Globe size={15}/>{t('langToggle')}</button></div></div></header>
+    <header className="module-header-card"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold">{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div><button onClick={()=>setLang(value=>value==='zh'?'en':'zh')} aria-label={t('language')} className="spec-icon !w-auto gap-1 !px-2 text-xs"><Globe size={15}/>{t('langToggle')}</button></div></div></header>
     <main className="mx-auto max-w-[1600px] space-y-3 p-3 lg:p-4">
       <Race s={s} t={t} config={config} setConfig={setConfig} playing={racePlaying} onPlay={racePlay} onNext={raceNext} onReset={resetRace} onInspect={inspect}/>
       <Principles t={t}/>

@@ -1,3 +1,4 @@
+import {toBF16, bf16Bits, fromBF16, describeBF16} from '../src/components/quantization/bfloat16.js';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {WEIGHTS, MODES, ALGORITHMS, FP8_VALUES, roundEven, nearestFP8, quantize, fixture, linear, mse, deriveNumericModel, deriveAlgorithmModel, deriveCapacityModel, deriveRuntimeModel} from '../src/components/quantization/model.js';
@@ -22,12 +23,12 @@ for(let raw=0x400;raw<=0x7bff;raw++) {
 for(const mode of MODES) for(let selected=0;selected<24;selected++) {
   const base=deriveNumericModel({mode,selected}), m=deriveNumericModel({mode,selected,floatSource:'selected'});
   assert.equal(base.float16.input,.75);
-  assert.equal(m.float16.input,WEIGHTS.flat()[selected]);
+  assert.equal(m.float16.input,toBF16(WEIGHTS.flat()[selected]));
   assert.deepEqual(base.q,m.q,'primer choice must not change quantization');
   assert.deepEqual(base.storage,m.storage,'primer is not another storage allocation');
   assert.equal(base.error,m.error);
   const f=m.float16;
-  near(f.represented,(-1)**f.sign*(1+f.fraction/1024)*2**(f.exponent-15));
+  near(f.represented,(-1)**f.sign*(1+f.fraction/2**f.fractionBits)*2**(f.exponent-f.bias));
   katex.renderToString(`(-1)^{${f.sign}}\\times\\left(1+\\frac{${f.fraction}}{1024}\\right)\\times2^{${f.power}}\\approx${f.represented}`,{throwOnError:true});
   katex.renderToString(`${f.sign?'-':''}(1.${f.fields[2].replace(/0+$/,'')||'0'})_2\\times2^{${f.power}}\\approx${f.represented}`,{throwOnError:true});
 }
@@ -65,7 +66,7 @@ for (const mode of MODES) for(const group of ['tensor',2,4,8]) for(const clip of
   if(mode!=='fp16') assert.equal(m.q.ids.flat().filter(id=>id===m.selectedGroup).length,m.p.count);
   for (let r=0;r<3;r++) for(let c=0;c<8;c++) {
     const p=m.q.params[m.q.ids[r][c]];
-    near(m.q.values[r][c],mode==='fp16'?WEIGHTS[r][c]:(m.q.codes[r][c]-p.zero)*p.scale);
+    near(m.q.values[r][c],mode==='fp16'?toBF16(WEIGHTS[r][c]):(m.q.codes[r][c]-p.zero)*p.scale);
   }
   near(m.error,mse(m.reference,m.output));
   if(mode==='fp16') {near(m.q.error,0);near(m.error,0);assert.equal(m.q.metadata,0);}
@@ -86,7 +87,7 @@ for (const outliers of [false,true]) for(const algorithm of ALGORITHMS) {
   }
   if(algorithm==='awq') assert.ok(end.finalError<=end.baselineError+1e-12);
   const start=deriveAlgorithmModel(algorithm,outliers,0);
-  assert.deepEqual(start.visibleW,WEIGHTS); near(start.error,0);
+  assert.deepEqual(start.visibleW,WEIGHTS.map(r=>r.map(toBF16))); near(start.error,0);
 }
 // Compensation changes remaining columns instead of merely changing labels.
 const gp=deriveAlgorithmModel('gptq',true,2);
@@ -146,3 +147,24 @@ assert.ok(jsx.indexOf('<Overview config')<jsx.indexOf('<Numeric mode'));
 assert.ok(jsx.indexOf('<Numeric mode')<jsx.indexOf('<Algorithm outliers'));
 assert.ok(jsx.indexOf('<Algorithm outliers')<jsx.indexOf('<SGLangWorkbench outliers'));
 console.log(`Quantization: ${numericCases} numeric combinations; ${runtimeCases} lifecycle snapshots; FP8 codebook, rounding, offline algorithms, KV commit/scale identity, capacity and i18n passed.`);
+
+// BF16 encoding and source-reference regression checks.
+assert.equal(describeBF16(.75).bits, '0011111101000000');
+assert.equal(toBF16(1 + 2**-8), 1);
+assert.equal(toBF16(1 + 3*2**-8), 1 + 2**-6);
+assert.ok(Object.is(toBF16(-0), -0));
+assert.equal(toBF16(Infinity), Infinity);
+assert.ok(Number.isNaN(toBF16(NaN)));
+for (let bits=0; bits<65536; bits++) {
+  if ((bits & 0x7f80) === 0x7f80 && (bits & 0x7f)) continue;
+  assert.equal(bf16Bits(fromBF16(bits)), bits);
+}
+const bfBase=deriveNumericModel({mode:'bf16',floatSource:'selected'});
+assert.equal(bfBase.error,0);
+assert.equal(bfBase.storageFormat,'BF16');
+for(const row of [...bfBase.w,...bfBase.x]) for(const value of row) assert.equal(value,toBF16(value));
+const fpPrimer=deriveNumericModel({mode:'bf16',floatSource:'selected',floatFormat:'fp16'});
+assert.deepEqual(fpPrimer.q,bfBase.q);
+assert.deepEqual(fpPrimer.reference,bfBase.reference);
+assert.equal(fpPrimer.float16.format,'FP16');
+console.log('BF16: exact code round-trip, ties-to-even, source rounding and independent primer passed.');

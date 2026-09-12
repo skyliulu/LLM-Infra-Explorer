@@ -12,6 +12,12 @@ Create a compact claim-to-evidence matrix before implementation:
 
 Every important claim needs an observable consequence. If the consequence exists only in prose, the visual explanation is incomplete.
 
+## Make the problem and tradeoffs visible together
+
+For an optimization, show the bottleneck and a named baseline alongside the mechanism. Keep the principal benefits and costs visible together so the reader can see what rises, falls or stays unchanged without discovering hidden metric tabs. Show essential comparisons by default; reserve disclosure for optional detail. This does not require expanding every secondary chart.
+
+Compare memory, bytes read, computation and capacity only where the model supports them. Identify the unit and whether higher or lower is desirable; make the direction visible beyond color. Distinguish derived byte counts from measured speed, and cache-budget capacity from a model's supported context length. Do not invent a speedup merely to populate a benefits panel.
+
 ## Encode claims as visible changes
 
 | Technical claim | Preferred visual evidence |
@@ -57,6 +63,10 @@ Preserve semantic identity across synchronized views. Use a shared label, positi
 Do not force every chapter into the same panel count. Choose the smallest layout that makes the relationships legible.
 
 ## Control information density
+
+Compactness means more understandable evidence per area, not uniformly smaller boxes. Remove excess internal padding and stretched matrix cells first; preserve readable labels, click targets and space for connections between modules. Give complex canvases enough vertical room rather than squeezing branches into a short strip. Distinguish neighboring modules with restrained surface fills, borders or shadows so grouping remains visible, then check that arrows still have clear endpoints.
+
+Where the claim concerns matrix operations, show compact dimension-labeled inputs and outputs and their transformation, rather than only boxes named after operations. State when cells are sampled or schematic. Never let illustrative cell count or a convenient minimum segment width imply an inverted resource ratio. Use calibrated bars or counts for actual occupancy, while sizing controls independently for usability.
 
 - Size matrix and tensor cells from readable values, not from available whitespace.
 - Keep labels close to their objects and dimension annotations on the corresponding edge.

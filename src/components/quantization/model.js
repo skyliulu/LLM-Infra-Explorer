@@ -1,3 +1,4 @@
+import {toBF16, describeBF16} from './bfloat16.js';
 // Deterministic teaching fixtures, not checkpoint inference or a hardware benchmark.
 export const WEIGHTS = [
   [.12, -.37, .64, -.91, 1.23, -.18, .43, -.72],
@@ -32,7 +33,7 @@ export function describeFP16(value) {
   const sign = +(value < 0), exponent = power + 15, significand = 1 + fraction / 1024;
   const fields = [String(sign), exponent.toString(2).padStart(5, '0'), fraction.toString(2).padStart(10, '0')];
   const represented = (-1) ** sign * significand * 2 ** power;
-  return {input:value, sign, exponent, fraction, power, significand, fields, bits:fields.join(''), represented, error:represented-value};
+  return {input:value, sign, exponent, fraction, power, significand, fields, bits:fields.join(''), represented, error:represented-value, bias:15, fractionBits:10, exponentBits:5, format:'FP16'};
 }
 // Positive finite E4M3FN encodings, including subnormals, excluding NaN (0x7f).
 export const FP8_VALUES = Array.from({length: 127}, (_, code) => {
@@ -93,7 +94,7 @@ function inverse(a) {
 export function deriveAlgorithmModel(algorithm = 'awq', outliers = true, step = 0, alpha = .5) {
   if (!ALGORITHMS.includes(algorithm)) algorithm = 'awq';
   alpha = clamp(Number.isFinite(alpha) ? alpha : .5, 0, 1);
-  const x = fixture(outliers), w = clone(WEIGHTS), reference = linear(x, w);
+  const x = fixture(outliers).map(r=>r.map(toBF16)), w = WEIGHTS.map(r=>r.map(toBF16)), reference = linear(x, w);
   const baseline = quantize(w), scores = [], snapshots = [];
   let scales = Array(8).fill(1), transformed = w, input = x, q = baseline, finalW = baseline.values;
   let stages = ['calibrate', 'quantWeights', 'pack'];
@@ -150,14 +151,14 @@ export function deriveAlgorithmModel(algorithm = 'awq', outliers = true, step = 
     error: mse(reference, linear(visibleX, visibleW)), finalError: mse(reference, linear(input, finalW)),
     baselineError: mse(reference, linear(x, baseline.values)), q};
 }
-export const modeFormat = mode => ({fp16:'fp16', w4:'int4', w8:'int8', fp8:'fp8'}[mode] || 'int4');
+export const modeFormat = mode => ({bf16:'fp16', fp16:'fp16', w4:'int4', w8:'int8', fp8:'fp8'}[mode] || 'int4');
 export function deriveCapacityModel({mode = 'w4', batch = 1, context = 2048, kv = 'fp16', prefill = false} = {}) {
-  if (![...MODES, 'fp4'].includes(mode)) mode = 'w4';
+  if (![...MODES, 'fp4', 'bf16'].includes(mode)) mode = 'w4';
   batch = clamp(Math.round(Number.isFinite(batch) ? batch : 1), 1, 8);
   context = clamp(Math.round((Number.isFinite(context) ? context : 2048) / 256) * 256, 256, 8192);
   const d = 4096, layers = 32, heads = 8, hd = 128, ffn = 11008;
   const weights = layers * (2 * d * d + 2 * d * heads * hd + 3 * d * ffn);
-  const wb = mode === 'fp16' ? 16 : (mode === 'w4' || mode === 'fp4') ? 4 : 8;
+  const wb = ['fp16','bf16'].includes(mode) ? 16 : (mode === 'w4' || mode === 'fp4') ? 4 : 8;
   const ab = mode === 'w8' || mode === 'fp8' ? 8 : 16;
   const kb = kv === 'fp4' ? 4 : kv === 'fp8' ? 8 : 16;
   const weightPayload = weights * wb / 8, weightScales = wb === 16 ? 0 : mode === 'fp4' ? weights / 16 : Math.ceil(weights / 128) * 4;
@@ -172,14 +173,14 @@ export function deriveCapacityModel({mode = 'w4', batch = 1, context = 2048, kv 
     activation:tokens * d * ab / 8, highActivation:tokens * d * 2,
     weightBytesPerToken:(weightPayload + weightScales) / tokens, tokens, wb, ab, kb};
 }
-export function deriveNumericModel({mode = 'w4', group = 8, clip = 1, affine = false, outliers = true, selected = 2, floatSource = 'example'} = {}) {
-  const x = fixture(outliers), w = clone(WEIGHTS), format = modeFormat(mode);
+export function deriveNumericModel({mode = 'w4', group = 8, clip = 1, affine = false, outliers = true, selected = 2, floatSource = 'example', floatFormat = 'bf16'} = {}) {
+  const x = fixture(outliers).map(r=>r.map(toBF16)), w = WEIGHTS.map(r=>r.map(toBF16)), format = modeFormat(mode);
   const q = quantize(w, {format, group, clip, affine});
   const i = clamp(Math.floor(Number.isFinite(selected) ? selected : 0), 0, 23), r = Math.floor(i / 8), c = i % 8, p = q.params[q.ids[r][c]];
   const input = mode === 'w8' || mode === 'fp8' ? quantize(x, {format, group:8}).values : x;
   const baselineBytes = w.flat().length * 2, totalBytes = q.payload + q.metadata;
-  // Real low-precision bit patterns; the high-precision baseline remains a
-  // storage budget, not a fabricated FP16 rounding simulation.
+  // Quantization error is incremental to BF16-rounded source values.
+  // The legacy fp16 identity format is an internal no-quantization path.
   const packedCodes = format === 'fp16' ? [] : q.codes.flat().map(value => {
     const raw = format === 'fp8' ? FP8_VALUES.indexOf(Math.abs(value)) + (value < 0 ? 128 : 0)
       : (value + 2 ** q.bits) % 2 ** q.bits;
@@ -188,8 +189,8 @@ export function deriveNumericModel({mode = 'w4', group = 8, clip = 1, affine = f
   const contributions = w[r].map((value, col) => (q.values[r][col] - value) * x[0][col]);
   const extraActivationError = input[0].reduce((sum, value, col) => sum + (value - x[0][col]) * q.values[r][col], 0);
   return {x, w, q, r, c, p, selected:i, selectedGroup:format === 'fp16' ? null : q.ids[r][c],
-    format, low:format !== 'fp16', affine:affine && format !== 'fp8' && format !== 'fp16',
-    float16:describeFP16(floatSource === 'selected' ? w[r][c] : .75),
+    storageFormat:format === 'fp16' ? 'BF16' : format.toUpperCase(), format, low:format !== 'fp16', affine:affine && format !== 'fp8' && format !== 'fp16',
+    float16:(floatFormat==='fp16'?describeFP16:describeBF16)(floatSource === 'selected' ? w[r][c] : .75),
     storage:{count:w.flat().length, baselineBytes, totalBytes, extent:Math.max(baselineBytes,totalBytes),
       savedBytes:baselineBytes-totalBytes, packedCodes, scaleBytes:format === 'fp16' ? 0 : q.params.length * 4,
       zeroBytes:format !== 'fp16' && format !== 'fp8' && affine ? q.params.length : 0},

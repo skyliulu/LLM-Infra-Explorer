@@ -15,6 +15,16 @@ Choose the smallest interaction grammar that exposes the concept:
 
 Do not invent a timeline for a structural explorer or reduce a real dependency chain to disconnected configuration cards.
 
+## Architecture drill-down
+
+For cooperating subsystems, show their organization and input/output connections together before explaining each one. Use selection within the architecture, not comparison tabs that imply the subsystems are alternatives. Real alternatives may still use mode switches.
+
+In a microscope-style explorer, keep overview, selection and detailed principle in one workbench. A click should reveal the selected component's inputs, operation and outputs without requiring a jump to an unrelated section below. Retain the parent context and a return path. A component with one drill-down action should expose its whole visible surface as a keyboard-accessible target, not only a small caption; avoid nesting controls inside that target.
+
+When the overview becomes a miniature beside detail, render the same topology with the same node order, connections and selection. Scale that scene instead of inventing a different compact arrangement. If values become too small, offer a larger/original-size view. Page columns may stack responsively without changing the internal scene's meaning.
+
+Controls that alter an architecture-wide input belong beside its overview. Name input presets by an understandable behavior or feature, not just A/B or an unexplained technical adjective. Keep a stable record identity when tracing it between caches, indices and outputs.
+
 ## Use one canonical domain model
 
 Store only user-controlled input and genuine lifecycle state. Names may vary by module, but the dependency direction must remain explicit:

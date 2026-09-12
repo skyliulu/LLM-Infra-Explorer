@@ -21,6 +21,16 @@ Keep titles concise and consistent with neighboring chapters. Separate two expla
 
 Use parallel heading grammar and typography across levels. Avoid internal engineering labels such as "single real decoder routine" in user-facing titles.
 
+## Integrate extensions into their teaching family
+
+A format extension belongs in the existing representation/configuration workflow when it answers the same question. Do not append an always-visible standalone panel simply because the format is new. Separate the object being configured, its numeric format, and the implementation recipe. For example, W4A16 describes bit budgets, not whether weights use INT4 or FP4, and neither determines KV precision. Dependent views follow the selected format; independent object settings stay independent.
+
+Teach the general mechanism before a model-specific recipe. Keep implementation names, constraints and sources available in the example or provenance, rather than making them the title of a general concept. This does not prohibit architecture-specific chapters when their organization is itself the learning object.
+
+Within one teaching family, keep corresponding regions in the same place across modes: for example storage comparison on the left and reconstruction on the right when that is the accepted arrangement. Reuse its visual components, density and disclosure pattern; do not give each format a different visual language. Preserve real structural differences rather than forcing all mechanisms into identical stages.
+
+When reusing a view, recheck its text as well as its numbers: sample counts, dimensions, bit fields, units and precision labels must describe the active format. Copying an FP16 field label into an FP4 view can produce a convincing but incorrect diagram.
+
 ## Structure the inspector around the current selection or stage
 
 Prefer this order:
