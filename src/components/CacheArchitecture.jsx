@@ -1,6 +1,6 @@
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
-import React, {useState} from 'react';
+import React from 'react';
 import {ArrowDown, ArrowRight} from 'lucide-react';
 import {MathFormula} from './linear-attention/MathFormula';
 import {deriveCacheArchitectureModel, LAYERS} from './cache-architecture/model';
@@ -9,6 +9,7 @@ import './cache-architecture/style.css';
 import './module-header.css';
 import BusinessOverview from './cache-architecture/BusinessOverview';
 import TechnicalFlow from './cache-architecture/TechnicalFlow';
+import HierarchicalIndexer from './cache-architecture/HierarchicalIndexer';
 
 const number=n=>n.toLocaleString('en-US');
 const size=n=>n>=1e6?`${(n/1e6).toFixed(2)} MB`:n>=1024?`${(n/1024).toFixed(2)} KiB`:`${n} B`;
@@ -33,11 +34,11 @@ export default function CacheArchitecture(){
  <div className="ca-layers">{part.ids.map(id=>{const l=LAYERS[id];return <button key={id} className={`ca-layer ${l.mode}`} title={`${t('layer')} ${id+1} · ${t(l.mode)}`} aria-label={`${t('layer')} ${id+1} ${t(l.mode)}`} aria-pressed={layer===id} onClick={()=>select(id)}><strong>L{id+1}</strong></button>;})}</div>
  {i<sections.length-1&&<ArrowDown className="ca-down" size={17}/>}</div>)}</div>
  <div className="ca-inspector" aria-live="polite"><h3>L{layer+1} · {t(s.mode)}</h3><p>{t(s.mode==='full'&&s.half==='decoder'?'decoderFullNote':`${s.mode}Note`)}</p>
- {s.owner!==null&&<><h4>{t('source')}</h4><div className="ca-sources"><button onClick={()=>select(s.owner)}><small>{t('owner')}</small><strong>L{s.owner+1}</strong></button><ArrowRight size={16}/><button onClick={()=>select(s.indexOwner)}><small>{t('indexOwner')}</small><strong>L{s.indexOwner+1}</strong></button><ArrowRight size={16}/><div><small>{t('layer')}</small><strong>L{layer+1}</strong></div></div>{s.half==='decoder'&&<small>{t('hierarchy')}</small>}</>}
+ {s.owner!==null&&<><h4>{t('source')}</h4><div className="ca-sources"><button onClick={()=>select(s.owner)}><small>{t('owner')}</small><strong>L{s.owner+1}</strong></button><ArrowRight size={16}/><button onClick={()=>select(s.indexOwner)}><small>{t('indexOwner')}</small><strong>L{s.indexOwner+1}</strong></button><ArrowRight size={16}/><div><small>{t('layer')}</small><strong>L{layer+1}</strong></div></div></>}
  <div className="ca-own"><h4>{t('own')}</h4><MathFormula>{`Q_{${layer+1}},\\quad KV^{\\mathrm{SWA}}_{${layer+1}},\\quad O_{${layer+1}}`}</MathFormula><p>{t('ownNote')}</p></div>
  {m.group&&<details className="ca-entry" open><summary>{t('entryTitle')}</summary>{m.group.count>0?<><label>{t('entry')}<input aria-label={t('entry')} type="number" min={1} max={m.group.count} value={m.entry+1} onChange={e=>setEntry(Number(e.target.value)-1)}/></label><div className="ca-position-flow"><div><small>{t('positions')}</small><div>{m.sourceTokens.map(v=><span key={v}>{number(v)}</span>)}</div></div><ArrowRight size={18}/><div><small>{t('entry')}</small><strong>{number(m.entry+1)}</strong></div></div>
  <div className="ca-record"><div><strong>{t('main')} · 288 B</strong><div className="ca-packed"><i style={{width:`${256/356*100}%`}}/><b style={{width:`${32/356*100}%`}}/></div><small>512 × E2M1 · {t('payload')} 256 B + {t('scale')} 32 B</small></div><div><strong>{t('index')} · 68 B</strong><div className="ca-packed"><i style={{width:`${64/356*100}%`}}/><b style={{width:`${4/356*100}%`}}/></div><small>128 × E2M1 · {t('payload')} 64 B + {t('scale')} 4 B</small></div></div><MathFormula>{m.group.ratio===2?`\\{x_{${2*m.entry+1}},x_{${2*m.entry+2}}\\}\\longrightarrow c_{${m.entry+1}}`:`x_{${m.entry+1}}\\longrightarrow c_{${m.entry+1}}`}</MathFormula></>:<p>{t('empty')}</p>}</details>}
  <div className="ca-local-budget"><span>{t('pending')} <strong>{m.pending}</strong></span><span>{t('window')} <strong>{number(m.localRecords)}</strong></span></div>
- </div></div></section>
+ </div></div><HierarchicalIndexer key={`${tokens}-${layer}-${phase}`} m={m} lang={lang} onSelect={select}/></section>
 <details className="ca-evidence"><summary>{t('sourceTitle')}</summary><p>{t('sourceNote')}</p>{[['config','inference/config.json'],['implementation','inference/model.py'],['report','DeepSeek_V41_Tech_Report.pdf']].map(([key,path])=><a key={key} href={sourceBase+path} target="_blank" rel="noreferrer">{t(key)} ↗</a>)}</details></div></div>;
 }
