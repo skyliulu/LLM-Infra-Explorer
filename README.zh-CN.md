@@ -1,4 +1,6 @@
-# LLM-Infra-Explorer 🚀
+<img src="./public/favicon.svg" width="56" height="56" alt="LLM Infra Explorer" />
+
+# LLM-Infra-Explorer
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
@@ -28,13 +30,25 @@
 - 🖥️ **LLM 推理全景** — 从 Token Embedding 依次观察 Attention、Dense FFN 或 MoE Expert、逐层 KV Cache、LM Head，以及 Temperature / Top-K / Top-P 采样
 - 🔀 **并行策略探索器** — 组合 DP / TP / PP / CP / EP / ETP，查看矩阵切分与 GPU Rank 映射，并对比 DP Attention、Wide-EP、P/D 分离和 Runtime 通信设计
 - ⚡ **Flash Attention** — 对比 Standard Softmax 与 FlashAttention V1–V4 的前向/反向分块流水线、片上 SRAM Tile、HBM 中间产物和 IO 流量
+- 🔎 **Sparse Attention** — 在同一画布对比完整 Attention 与 DSA、CSA、HCA 的缓存占用、读取量和容量预算；从整体关系下钻矩阵与单条记录，播放一次 Query 的投影、选择、读取、Softmax 和输出，支持暂停、单步与调速。
 - 🚀 **Flash Decode** — 对比 Unsplit / Split-K、Contiguous / Paged KV、MHA/GQA/MQA Head 共享、CTA 调度、Workspace 写入与最终归约
 - ✨ **推测解码** — 同屏对比 Target 串行 Decode 与块验证，并探索 EAGLE-2 动态候选树和 DSpark 置信度调度的半自回归候选块
-- 📦 **量化与低精度推理** — 对比 W4A16、INT8、FP8 的容量与数值误差，探索离线算法，再沿 SGLang v0.4.6.post5 追踪 FP8 checkpoint 加载、逐次前向激活量化，以及 Prefill / Decode 中固定 scale 的分页 KV 写入与读取
+- 📦 **量化与低精度推理** — 从 BF16 权重基线观察 INT4、INT8、FP8 与 FP4 的数值表示、存储和误差，区分权重、激活与 KV 精度；探索离线算法，以及 SGLang v0.4.6.post5 的 checkpoint 加载、激活量化和分页 KV 读写。
 - 🧬 **Engram（DeepSeek）** — 追踪 Tokenizer Compression、多头 N-gram 检索、Context-aware Gating、Short Convolution，以及推理/训练的数据移动
 - 🌲 **Radix Cache** — 探索基数树前缀复用、请求引用锁、容量缺口、LRU 叶节点驱逐和成对 K/V Page 分配
 - 📈 **Linear Attention** — 从 Standard Softmax 推进到核函数 Linear Attention、递归状态更新与 Gated Linear Attention（GLA）
 - 🔁 **DP Attention** — 对比标准 TP Attention 与面向 MLA 的 DP Attention，包括 KV 所有权和 TP-FFN / EP-MoE 通信路径
+
+---
+
+## 如何使用交互工作台
+
+1. 先看要解决的问题，以及同一条件下的资源收益与代价。
+2. 切换真实的算法方案；同一系统的协作部件则在整体关系里一起查看。
+3. 点击画布中的组件或矩阵记录，下钻输入、输出、来源与原理。
+4. 对有执行顺序的模块使用播放、暂停和单步；Sparse Attention 默认每步 2 秒，也可调速。
+
+资源数字来自各模块注明的教学模型或来源。缓存容量、读取字节与真实延迟不是同一指标；示意动画不代表 GPU 实际执行耗时。模块内可切换中英文。
 
 ---
 

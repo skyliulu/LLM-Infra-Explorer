@@ -1,4 +1,6 @@
-# LLM-Infra-Explorer 🚀
+<img src="./public/favicon.svg" width="56" height="56" alt="LLM Infra Explorer" />
+
+# LLM-Infra-Explorer
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
@@ -28,13 +30,25 @@ This project helps you **see and interact with these processes**, instead of jus
 - 🖥️ **LLM Inference Panorama** — follow tensors from token embedding through Attention, Dense FFN or MoE experts, per-layer KV Cache, LM Head, and Temperature / Top-K / Top-P sampling
 - 🔀 **Parallel Strategy Explorer** — compose DP / TP / PP / CP / EP / ETP, inspect matrix slicing and GPU rank mapping, and compare DP Attention, Wide-EP, P/D disaggregation, and runtime communication designs
 - ⚡ **Flash Attention** — compare Standard Softmax with FlashAttention V1–V4 through forward/backward tiled pipelines, active SRAM tiles, HBM intermediates, and IO traffic
+- 🔎 **Sparse Attention** — compare full Attention with DSA, CSA and HCA through cache, traffic and capacity budgets; drill from one architecture canvas into matrices and individual records, then play a query through projection, selection, reads, softmax and output with pause, step and speed controls.
 - 🚀 **Flash Decode** — contrast Unsplit and Split-K decode, Contiguous and Paged KV layouts, MHA/GQA/MQA head sharing, CTA scheduling, workspace writes, and final reduction
 - ✨ **Speculative Decoding** — compare serial Target decoding with block verification, then explore EAGLE-2 dynamic draft trees and DSpark confidence-scheduled semi-autoregressive blocks
-- 📦 **Quantization & Low-Precision Inference** — compare W4A16, INT8 and FP8 storage/error; explore offline algorithms, then trace SGLang v0.4.6.post5 FP8 checkpoint loading, per-forward activation quantization, and fixed-scale paged KV writes / reads through Prefill and Decode
+- 📦 **Quantization & Low-Precision Inference** — start from BF16 weights to inspect INT4, INT8, FP8 and FP4 representation, storage and error; distinguish weight, activation and KV precision, then explore offline algorithms and SGLang v0.4.6.post5 checkpoint loading, activation quantization and paged KV access.
 - 🧬 **Engram (DeepSeek)** — trace tokenizer compression, multi-head n-gram retrieval, context-aware gating, short convolution, and inference/training data movement
 - 🌲 **Radix Cache** — explore radix-tree prefix reuse, per-request reference locks, capacity deficits, LRU leaf eviction, and paired K/V page allocation
 - 📈 **Linear Attention** — move from Standard Softmax to kernelized linear Attention, recurrent state updates, and Gated Linear Attention (GLA)
 - 🔁 **DP Attention** — compare standard TP Attention with MLA-oriented DP Attention, including KV ownership and TP-FFN or EP-MoE communication paths
+
+---
+
+## Using the interactive workbench
+
+1. Start with the problem, then compare resource benefits and costs under shared assumptions.
+2. Switch between actual algorithm alternatives; inspect cooperating components together in their system overview.
+3. Click a component or matrix record to inspect its inputs, outputs, provenance and mechanism.
+4. Use play, pause and step for ordered processes. Sparse Attention defaults to two seconds per step and offers adjustable speed.
+
+Resource values use each module's stated teaching model or sources. Cache capacity, read bytes and measured latency are different quantities; animation pacing is not GPU execution time. Modules support Chinese and English.
 
 ---
 

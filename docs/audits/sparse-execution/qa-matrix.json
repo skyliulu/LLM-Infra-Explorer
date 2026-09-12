@@ -1,0 +1,1286 @@
+{
+  "dimensions": {
+    "mode": [
+      "dsa",
+      "csa",
+      "hca"
+    ],
+    "tokens": [
+      1,
+      7,
+      24,
+      64
+    ],
+    "query": [
+      0,
+      1
+    ],
+    "topK": [
+      1,
+      8
+    ],
+    "window": [
+      4,
+      16
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "mode",
+      "tokens",
+      "query",
+      "topK",
+      "window"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "model-0",
+      "state": {
+        "mode": "dsa",
+        "tokens": 1,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-1",
+      "state": {
+        "mode": "dsa",
+        "tokens": 1,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-2",
+      "state": {
+        "mode": "dsa",
+        "tokens": 1,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-3",
+      "state": {
+        "mode": "dsa",
+        "tokens": 1,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-4",
+      "state": {
+        "mode": "dsa",
+        "tokens": 1,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-5",
+      "state": {
+        "mode": "dsa",
+        "tokens": 1,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-6",
+      "state": {
+        "mode": "dsa",
+        "tokens": 1,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-7",
+      "state": {
+        "mode": "dsa",
+        "tokens": 1,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-8",
+      "state": {
+        "mode": "dsa",
+        "tokens": 7,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-9",
+      "state": {
+        "mode": "dsa",
+        "tokens": 7,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-10",
+      "state": {
+        "mode": "dsa",
+        "tokens": 7,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-11",
+      "state": {
+        "mode": "dsa",
+        "tokens": 7,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-12",
+      "state": {
+        "mode": "dsa",
+        "tokens": 7,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-13",
+      "state": {
+        "mode": "dsa",
+        "tokens": 7,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-14",
+      "state": {
+        "mode": "dsa",
+        "tokens": 7,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-15",
+      "state": {
+        "mode": "dsa",
+        "tokens": 7,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-16",
+      "state": {
+        "mode": "dsa",
+        "tokens": 24,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-17",
+      "state": {
+        "mode": "dsa",
+        "tokens": 24,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-18",
+      "state": {
+        "mode": "dsa",
+        "tokens": 24,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-19",
+      "state": {
+        "mode": "dsa",
+        "tokens": 24,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-20",
+      "state": {
+        "mode": "dsa",
+        "tokens": 24,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-21",
+      "state": {
+        "mode": "dsa",
+        "tokens": 24,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-22",
+      "state": {
+        "mode": "dsa",
+        "tokens": 24,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-23",
+      "state": {
+        "mode": "dsa",
+        "tokens": 24,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-24",
+      "state": {
+        "mode": "dsa",
+        "tokens": 64,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-25",
+      "state": {
+        "mode": "dsa",
+        "tokens": 64,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-26",
+      "state": {
+        "mode": "dsa",
+        "tokens": 64,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-27",
+      "state": {
+        "mode": "dsa",
+        "tokens": 64,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-28",
+      "state": {
+        "mode": "dsa",
+        "tokens": 64,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-29",
+      "state": {
+        "mode": "dsa",
+        "tokens": 64,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-30",
+      "state": {
+        "mode": "dsa",
+        "tokens": 64,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-31",
+      "state": {
+        "mode": "dsa",
+        "tokens": 64,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-32",
+      "state": {
+        "mode": "csa",
+        "tokens": 1,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-33",
+      "state": {
+        "mode": "csa",
+        "tokens": 1,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-34",
+      "state": {
+        "mode": "csa",
+        "tokens": 1,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-35",
+      "state": {
+        "mode": "csa",
+        "tokens": 1,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-36",
+      "state": {
+        "mode": "csa",
+        "tokens": 1,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-37",
+      "state": {
+        "mode": "csa",
+        "tokens": 1,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-38",
+      "state": {
+        "mode": "csa",
+        "tokens": 1,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-39",
+      "state": {
+        "mode": "csa",
+        "tokens": 1,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-40",
+      "state": {
+        "mode": "csa",
+        "tokens": 7,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-41",
+      "state": {
+        "mode": "csa",
+        "tokens": 7,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-42",
+      "state": {
+        "mode": "csa",
+        "tokens": 7,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-43",
+      "state": {
+        "mode": "csa",
+        "tokens": 7,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-44",
+      "state": {
+        "mode": "csa",
+        "tokens": 7,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-45",
+      "state": {
+        "mode": "csa",
+        "tokens": 7,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-46",
+      "state": {
+        "mode": "csa",
+        "tokens": 7,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-47",
+      "state": {
+        "mode": "csa",
+        "tokens": 7,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-48",
+      "state": {
+        "mode": "csa",
+        "tokens": 24,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-49",
+      "state": {
+        "mode": "csa",
+        "tokens": 24,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-50",
+      "state": {
+        "mode": "csa",
+        "tokens": 24,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-51",
+      "state": {
+        "mode": "csa",
+        "tokens": 24,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-52",
+      "state": {
+        "mode": "csa",
+        "tokens": 24,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-53",
+      "state": {
+        "mode": "csa",
+        "tokens": 24,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-54",
+      "state": {
+        "mode": "csa",
+        "tokens": 24,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-55",
+      "state": {
+        "mode": "csa",
+        "tokens": 24,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-56",
+      "state": {
+        "mode": "csa",
+        "tokens": 64,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-57",
+      "state": {
+        "mode": "csa",
+        "tokens": 64,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-58",
+      "state": {
+        "mode": "csa",
+        "tokens": 64,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-59",
+      "state": {
+        "mode": "csa",
+        "tokens": 64,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-60",
+      "state": {
+        "mode": "csa",
+        "tokens": 64,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-61",
+      "state": {
+        "mode": "csa",
+        "tokens": 64,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-62",
+      "state": {
+        "mode": "csa",
+        "tokens": 64,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-63",
+      "state": {
+        "mode": "csa",
+        "tokens": 64,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-64",
+      "state": {
+        "mode": "hca",
+        "tokens": 1,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-65",
+      "state": {
+        "mode": "hca",
+        "tokens": 1,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-66",
+      "state": {
+        "mode": "hca",
+        "tokens": 1,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-67",
+      "state": {
+        "mode": "hca",
+        "tokens": 1,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-68",
+      "state": {
+        "mode": "hca",
+        "tokens": 1,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-69",
+      "state": {
+        "mode": "hca",
+        "tokens": 1,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-70",
+      "state": {
+        "mode": "hca",
+        "tokens": 1,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-71",
+      "state": {
+        "mode": "hca",
+        "tokens": 1,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-72",
+      "state": {
+        "mode": "hca",
+        "tokens": 7,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-73",
+      "state": {
+        "mode": "hca",
+        "tokens": 7,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-74",
+      "state": {
+        "mode": "hca",
+        "tokens": 7,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-75",
+      "state": {
+        "mode": "hca",
+        "tokens": 7,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-76",
+      "state": {
+        "mode": "hca",
+        "tokens": 7,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-77",
+      "state": {
+        "mode": "hca",
+        "tokens": 7,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-78",
+      "state": {
+        "mode": "hca",
+        "tokens": 7,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-79",
+      "state": {
+        "mode": "hca",
+        "tokens": 7,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-80",
+      "state": {
+        "mode": "hca",
+        "tokens": 24,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-81",
+      "state": {
+        "mode": "hca",
+        "tokens": 24,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-82",
+      "state": {
+        "mode": "hca",
+        "tokens": 24,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-83",
+      "state": {
+        "mode": "hca",
+        "tokens": 24,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-84",
+      "state": {
+        "mode": "hca",
+        "tokens": 24,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-85",
+      "state": {
+        "mode": "hca",
+        "tokens": 24,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-86",
+      "state": {
+        "mode": "hca",
+        "tokens": 24,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-87",
+      "state": {
+        "mode": "hca",
+        "tokens": 24,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-88",
+      "state": {
+        "mode": "hca",
+        "tokens": 64,
+        "query": 0,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-89",
+      "state": {
+        "mode": "hca",
+        "tokens": 64,
+        "query": 0,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-90",
+      "state": {
+        "mode": "hca",
+        "tokens": 64,
+        "query": 0,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-91",
+      "state": {
+        "mode": "hca",
+        "tokens": 64,
+        "query": 0,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-92",
+      "state": {
+        "mode": "hca",
+        "tokens": 64,
+        "query": 1,
+        "topK": 1,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-93",
+      "state": {
+        "mode": "hca",
+        "tokens": 64,
+        "query": 1,
+        "topK": 1,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-94",
+      "state": {
+        "mode": "hca",
+        "tokens": 64,
+        "query": 1,
+        "topK": 8,
+        "window": 4
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    },
+    {
+      "name": "model-95",
+      "state": {
+        "mode": "hca",
+        "tokens": 64,
+        "query": 1,
+        "topK": 8,
+        "window": 16
+      },
+      "checks": [
+        "All execution stages: monotonic exact reads, no premature scores/weights/output, unchanged resident records, final result matches static model."
+      ]
+    }
+  ]
+}

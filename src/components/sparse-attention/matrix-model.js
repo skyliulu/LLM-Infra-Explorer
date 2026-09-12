@@ -4,6 +4,7 @@ export function sampleMatrixRows(rows, traceId, limit = 6) {
   const indexes = new Set();
   const add = i => { if (i >= 0 && indexes.size < limit) indexes.add(i); };
   add(rows.findIndex(row => row.id === traceId));
+  rows.forEach((row,i)=>{if(row.transferring)add(i);});
   add(0);
   add(rows.length - 1);
   rows.forEach((row, i) => { if (row.read) add(i); });

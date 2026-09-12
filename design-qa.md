@@ -1148,3 +1148,21 @@ Repair within the accepted quantization layout: the primary baseline, KV default
 Basis: NVIDIA CUDA floating-point format appendix and CUTLASS bfloat16.h; round-to-nearest-even FP32-to-BF16 conversion. Full non-NaN BF16 code round trips, tie rounding, signed zero, Infinity/NaN, baseline zero added error and primer independence pass. Existing quantization, SGLang and FP4 regression checks pass; conventions pass with the existing Unicode notation review warning. Build passes (Browserslist age warning only).
 
 Rendered checks: desktop Chinese BF16 selected-weight fields and INT4 reconstruction, English 390px selected-weight layout, FP16 primer with unchanged BF16 baseline, INT8 and FP8 encoding labels. No page or bit-field overflow, no KaTeX errors and no browser warnings/errors. Screenshots: docs/audits/bf16/desktop-zh.png and mobile-en.png. Existing region order, drill-down and engine lifecycle controls preserved.
+
+
+## 2026-09-12 — Sparse Attention query execution animation
+
+Extension of the accepted single-canvas architecture; resource comparisons, whole-block drill-down, record tracing and same-scene scaling retained. Playback controls sit beside the canvas they control. Capabilities: timeline, data movement, resource metrics, multiple modes, dense layout, math.
+
+One resident-cache query now proceeds through projection, index scoring / Top-K where applicable, grouped record reads, attention scores, joint softmax and output. HCA skips index stages. Selected and read records have separate states; future scores, weights and output remain hidden. Actual reads accumulate separately from unchanged resident capacity and full-query benefit estimates. Groups of up to four are explicitly educational, not hardware scheduling or timing. Inspector remains a clearly labeled full-computation reference; selecting a component pauses execution without resetting it. Query/mechanism parameter changes reset execution; language changes do not.
+
+Validation: `node scripts/check-sparse-execution.mjs` passed all stages in 96 configurations; existing `npm run check:sparse` passed; conventions 9/9; production build passed (existing Browserslist freshness warning). Browser checked CSA step/read/complete, DSA query reset and drill-down, HCA stage omission, pause/replay, English 390px layout (document width equals scroll width), and clean cold-start autoplay completion with no console warnings/errors. During development an incomplete HMR update caused a missing execution prop error; fixed and cold-start retested. Screenshot evidence: `docs/audits/sparse-execution/drill-zh.png`, `mobile-en.png`. QA matrix covers the model cross-product, not a claim of browser coverage for all combinations. Reduced-motion CSS disables moving highlights; manually stepping remains available. No CED changes or push in this task.
+
+### Sparse playback pace follow-up
+Default interval increased from 850 ms to 3 seconds. Canvas-local bilingual speed selector offers 6, 3 and 1.5 seconds per step. Changing pace restarts the current dwell timer without changing execution progress. Rendered Chinese selector and slow playback/pause checked; build passed. No algorithm or layout restructuring.
+
+Playback pace refinement: user requested 2 seconds; default state and Chinese/English standard option now consistently use 2000 ms. Slow/fast options unchanged.
+
+## 2026-09-12 — README and favicon refresh
+
+English/Chinese READMEs now document Sparse Attention architecture drill-down, adjustable query playback, BF16/FP4 quantization and model-versus-measured-metric boundaries. The unpublished chapter is excluded. Favicon replaced by a three-layer tensor mark; visually checked at 16/32/64 px on light and dark backgrounds.
