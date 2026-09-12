@@ -1,87 +1,95 @@
+import {useLanguage} from './lib/LanguageContext';
+import {readSharedSettings} from './lib/experiment-sharing';
+import {CHAPTERS as TABS, matchesChapter} from './lib/chapter-registry';
+import {ExperimentContext} from './lib/ExperimentContext';
+import ChapterTools,{RelatedChapters} from './components/ChapterTools';
+import './components/workbench.css';
+import SiteHeader from './components/SiteHeader';
 import { MODULE_GROUPS } from './lib/module-groups';
 import { getModuleLabel } from './lib/module-titles';
-import React, { lazy, Suspense, useEffect, useState } from 'react';
-import { Github, Cpu, Zap, FastForward, Network, Database, GitBranch, Activity, Sparkles, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { lazy, Suspense, useEffect, useLayoutEffect, useState, useRef } from 'react';
+import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 const cn = (...inputs) => twMerge(clsx(inputs));
 
 const HomeLanding = lazy(() => import('./components/HomeLanding.jsx'));
-const LLMInference = lazy(() => import('./components/LLMInference.jsx'));
-const DpAttention = lazy(() => import('./components/DpAttention.jsx'));
-const FlashAttention = lazy(() => import('./components/FlashAttention.jsx'));
-const FlashDecode = lazy(() => import('./components/FlashDecode.jsx'));
-const SpeculativeDecoding = lazy(() => import('./components/SpeculativeDecoding.jsx'));
-const ParallelStrategies = lazy(() => import('./components/ParallelStrategies.jsx'));
-const Engram = lazy(() => import('./components/Engram.jsx'));
-const RadixCache = lazy(() => import('./components/RadixCache.jsx'));
-const LinearAttention = lazy(() => import('./components/LinearAttention.jsx'));
-const Quantization = lazy(() => import('./components/Quantization.jsx'));
-const SparseAttention = lazy(() => import('./components/SparseAttention.jsx'));
-const CacheArchitecture = lazy(() => import('./components/CacheArchitecture.jsx'));
-
-const TABS = [
-  { id: 'llm', icon: Cpu, component: LLMInference },
-  { id: 'parallel', icon: Network, component: ParallelStrategies },
-  { id: 'flash', icon: Zap, component: FlashAttention },
-  { id: 'sparseattn', icon: Database, component: SparseAttention },
-  { id: 'cachearch', icon: Database, component: CacheArchitecture },
-  { id: 'flashdecode', icon: FastForward, component: FlashDecode },
-  { id: 'speculative', icon: Sparkles, component: SpeculativeDecoding },
-  { id: 'quantization', icon: Cpu, component: Quantization },
-  { id: 'engram', icon: Database, component: Engram },
-  { id: 'radixcache', icon: GitBranch, component: RadixCache },
-  { id: 'dpattention', icon: Network, component: DpAttention },
-  { id: 'linearattn', icon: Activity, component: LinearAttention },
-];
 
 function LoadingFallback() {
+  const [lang]=useLanguage();
   return (
     <div className="flex items-center justify-center h-64 text-slate-400 text-lg animate-pulse">
-      Loading visualization…
+      {lang==='zh'?'正在载入工作台…':'Loading visualization…'}
     </div>
   );
 }
 
 function readChapterHash() {
-  const chapter = window.location.hash.slice(1);
+  const chapter = window.location.hash.slice(1).split('?')[0];
   return TABS.some(tab => tab.id === chapter) ? chapter : 'home';
 }
 
 export default function MainDashboard() {
+  const experiments = useRef({});
+  const [navigationHash,setNavigationHash]=useState(()=>location.hash);
+  const [search,setSearch] = useState('');
   const [activeTab, setActiveTabState] = useState(readChapterHash);
   const setActiveTab = chapter => {
-    setActiveTabState(chapter);
     if (window.location.hash !== `#${chapter}`) window.location.hash = chapter;
   };
   useEffect(() => {
-    const onHashChange = () => setActiveTabState(readChapterHash());
+    const onHashChange = () => {setActiveTabState(readChapterHash());setNavigationHash(location.hash);};
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
+  useLayoutEffect(()=>{window.scrollTo({top:0,behavior:'instant'});},[activeTab]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => { try { return localStorage.getItem('llm-infra.sidebar-collapsed') === 'true'; } catch { return false; } });
+  useEffect(() => { try { localStorage.setItem('llm-infra.sidebar-collapsed', String(sidebarCollapsed)); } catch {} }, [sidebarCollapsed]);
+  useEffect(() => {
+    document.title = activeTab === 'home' ? 'LLM Infra Explorer' : `${getModuleLabel(activeTab)} · LLM Infra Explorer`;
+    setSidebarOpen(false);
+  }, [activeTab]);
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const sidebar = document.getElementById('chapter-sidebar');
+    const items = () => [...sidebar.querySelectorAll('button,a,input')].filter(el => el.getClientRects().length);
+    items()[0]?.focus();
+    const handleKey = event => {
+      if (event.key === 'Escape') { setSidebarOpen(false); document.getElementById('site-menu')?.focus(); }
+      if (event.key === 'Tab') {
+        const controls=items(), first=controls[0], last=controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last?.focus();}
+        else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first?.focus();}
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [sidebarOpen]);
 
   const compact = sidebarCollapsed && !sidebarOpen;
   const lang = 'en';
-  const navigationGroups = MODULE_GROUPS.map(group => ({ ...group, tabs: group.chapters.map(id => TABS.find(tab => tab.id === id)).filter(Boolean) }));
+  const navigationGroups = MODULE_GROUPS.map(group => ({ ...group, tabs: group.chapters.map(id => TABS.find(tab => tab.id === id)).filter(tab=>tab && matchesChapter(tab,search)) })).filter(group=>group.tabs.length);
 
   if (activeTab === 'home') {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100">
-        <Suspense fallback={<LoadingFallback />}>
+        <SiteHeader />
+        <main id="main-content" tabIndex={-1}><Suspense fallback={<LoadingFallback />}>
           <HomeLanding onExplore={setActiveTab} />
-        </Suspense>
+        </Suspense></main>
       </div>
     );
   }
 
-  const ActiveComponent = TABS.find((t) => t.id === activeTab)?.component;
+  const chapter = TABS.find(t=>t.id===activeTab);
+  const ActiveComponent = chapter?.component;
+  const session = experiments.current[activeTab] ||= {values:{}};
+  if(session.hash!==navigationHash){const shared=readSharedSettings(activeTab,navigationHash);if(shared)session.values={...session.values,...shared};session.hash=navigationHash;}
 
   return (
-    <div className="min-h-screen flex bg-slate-950 text-slate-100">
+    <><SiteHeader onMenu={()=>setSidebarOpen(open=>!open)} menuOpen={sidebarOpen} chapter={getModuleLabel(activeTab)}/><div className="min-h-[calc(100vh-52px)] flex bg-slate-950 text-slate-100">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/60 md:hidden"
@@ -89,57 +97,21 @@ export default function MainDashboard() {
         />
       )}
 
-      <aside
+      <aside id="chapter-sidebar"
         className={cn(
-          'fixed inset-y-0 left-0 z-30 flex flex-col bg-slate-900 border-r border-slate-800 transition-all duration-300',
+          'fixed top-[52px] bottom-0 left-0 z-30 flex flex-col bg-slate-900 border-r border-slate-800 transition-transform duration-300',
           compact ? 'w-14' : 'w-44',
-          'md:sticky md:top-0 md:h-screen md:translate-x-0 shrink-0',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          'md:sticky md:top-[52px] md:h-[calc(100vh-52px)] md:translate-x-0 shrink-0',
+          sidebarOpen ? 'translate-x-0 visible' : '-translate-x-full invisible md:visible'
         )}
       >
-        <div className="flex items-center justify-between h-14 px-3 border-b border-slate-800 shrink-0">
-          {!compact && (
-            <button
-              onClick={() => {
-                setActiveTab('home');
-                setSidebarOpen(false);
-              }}
-              className="min-w-0 flex-1 text-left text-sm font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent truncate select-none hover:opacity-90 transition-opacity"
-              aria-label="Back to home"
-              title="LLM Infra Explorer"
-            >
-              LLM Infra Explorer
-            </button>
-          )}
-          <div className={cn('shrink-0 flex items-center gap-1', compact && 'w-full justify-center')}>
-            {!compact && (
-              <a
-                href="https://github.com/skyliulu/LLM-Infra-Explorer"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-300 hover:text-white transition-colors p-1 rounded hover:bg-slate-700"
-                aria-label="GitHub repository"
-              >
-                <Github size={20} />
-              </a>
-            )}
-            <button
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="hidden md:block text-slate-400 hover:text-white transition-colors p-1 rounded"
-              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-            </button>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="md:hidden text-slate-400 hover:text-white transition-colors"
-              aria-label="Close sidebar"
-            >
-              <X size={20} />
-            </button>
-          </div>
+        <div className="sidebar-edge">
+          <button onClick={()=>setSidebarCollapsed(value=>!value)} className="sidebar-edge-toggle" aria-label={sidebarCollapsed?'Expand sidebar':'Collapse sidebar'} title={sidebarCollapsed?'Expand sidebar':'Collapse sidebar'}>{sidebarCollapsed?<ChevronRight size={16}/>:<ChevronLeft size={16}/>}</button>
         </div>
+        <button onClick={()=>{setSidebarOpen(false);document.getElementById('site-menu')?.focus();}} className="sidebar-mobile-close md:hidden" aria-label="Close sidebar"><X size={18}/></button>
 
+        {compact ? <button className="mx-auto mt-2 p-2 text-slate-400" title="Search chapters" aria-label="Search chapters" onClick={()=>{setSidebarCollapsed(false);requestAnimationFrame(()=>document.getElementById('chapter-search')?.focus());}}><Search size={16}/></button> : <div className="chapter-search"><Search size={14}/><input id="chapter-search" type="search" placeholder="Search chapters" aria-label="Search chapters" value={search} onChange={event=>setSearch(event.target.value)}/></div>}
+        {!navigationGroups.length && <p className="px-3 py-4 text-xs text-slate-400" role="status">No chapters found</p>}
         <nav aria-label="Chapter navigation" className="flex-1 min-h-0 py-3 px-2 overflow-y-auto">
           {navigationGroups.map(group => {
             return <section key={group.id} aria-label={group.label[lang]} className="mb-3 last:mb-0">
@@ -151,73 +123,38 @@ export default function MainDashboard() {
                   const Icon = tab.icon;
                   const title = getModuleLabel(tab.id, lang);
                   const isActive = tab.id === activeTab;
-                  return <button key={tab.id}
-                    onClick={() => { setActiveTab(tab.id); setSidebarOpen(false); }}
+                  return <a key={tab.id} href={`#${tab.id}`}
+                    onClick={() => {setSidebarOpen(false);if(sidebarOpen)requestAnimationFrame(()=>document.getElementById("main-content")?.focus({preventScroll:true}));}}
                     className={cn('w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300', compact && 'justify-center px-0', isActive ? 'bg-slate-800 text-sky-200' : 'text-slate-400 hover:text-white hover:bg-slate-800')}
                     aria-label={title} aria-current={isActive ? 'page' : undefined} title={compact ? `${group.label[lang]} · ${title}` : title}>
                     <Icon size={16} className="shrink-0" />
                     {!compact && <span className="min-w-0 whitespace-nowrap">{title}</span>}
-                  </button>;
+                  </a>;
                 })}
               </div>
             </section>;
           })}
         </nav>
 
-        {compact && (
-          <div className="px-2 py-3 border-t border-slate-800 shrink-0 flex justify-center">
-            <a
-              href="https://github.com/skyliulu/LLM-Infra-Explorer"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-300 hover:text-white transition-colors p-1.5 rounded hover:bg-slate-700"
-              aria-label="GitHub repository"
-            >
-              <Github size={20} />
-            </a>
-          </div>
-        )}
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="md:hidden flex items-center h-14 px-4 bg-slate-900 border-b border-slate-800 shrink-0">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="text-slate-400 hover:text-white transition-colors"
-            aria-label="Open sidebar"
-          >
-            <Menu size={22} />
-          </button>
-          <button
-            onClick={() => setActiveTab('home')}
-            className="ml-3 text-base font-extrabold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent hover:opacity-90 transition-opacity"
-            aria-label="Back to home"
-          >
-            LLM-Infra-Explorer
-          </button>
-        </header>
-
-        <main className="flex-1 overflow-auto">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-              className="h-full"
-            >
+        <main id="main-content" tabIndex={-1} className="workbench-content flex-1 min-w-0">
+          <ExperimentContext.Provider value={session}>
+            <ChapterTools key={`tools-${navigationHash}`} chapter={chapter} session={session}/>
+            <div key={`chapter-${navigationHash}`} data-chapter={activeTab}>
               <Suspense fallback={<LoadingFallback />}>
                 {ActiveComponent && <ActiveComponent />}
               </Suspense>
-            </motion.div>
-          </AnimatePresence>
+            </div>
+            <RelatedChapters chapter={chapter}/>
+          </ExperimentContext.Provider>
         </main>
 
         <footer className="shrink-0 border-t border-slate-800 py-3 px-6 text-center text-xs text-slate-500">
           © {new Date().getFullYear()} LLM-Infra-Explorer — Interactive AI Infrastructure Explorer
         </footer>
       </div>
-    </div>
+    </div></>
   );
 }

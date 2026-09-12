@@ -1,0 +1,50 @@
+[
+  {
+    "name": "LLM Inference",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Spec Decode",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Flash Attention",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Sparse Attention",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Flash Decode",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Linear Attention",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "DeepSeek CED",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Quantization",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Engram",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Radix Cache",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "Parallel Strategy",
+    "localLanguageButtons": 0
+  },
+  {
+    "name": "DP Attention",
+    "localLanguageButtons": 0
+  }
+]

@@ -1,10 +1,11 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useState } from 'react';
 import { 
   Database, Cpu, Combine, Hash, ArrowRight, ArrowDown, ArrowUp, ArrowLeft,
   Layers, BrainCircuit, Play, Pause, SkipForward, RotateCcw, 
   Activity, SlidersHorizontal, BookOpen, Server, Network, 
-  Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2, Globe
-} from 'lucide-react';
+  Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import {
   ENGRAM_DEMO_CONFIG,
@@ -262,14 +263,6 @@ const i18n = {
   }
 };
 
-// 获取系统默认语言
-const getInitialLang = () => {
-  if (typeof navigator !== 'undefined') {
-    const browserLang = navigator.language || navigator.userLanguage;
-    return browserLang.toLowerCase().includes('zh') ? 'zh' : 'en';
-  }
-  return 'en';
-};
 
 // --- 样式映射助手 ---
 const resolveVisualStatus = (status, active) => status || (active ? 'active' : 'pending');
@@ -446,10 +439,10 @@ const TimelineSegment = ({ status, color, grow, children }) => {
 const App = () => {
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [slideIdx, setSlideIdx] = useState(2);
-  const [systemMode, setSystemMode] = useState('inference');
-  const [lang, setLang] = useState(getInitialLang());
-  
+  const [slideIdx, setSlideIdx] = useExperimentState('Engram.slideIdx', 2);
+  const [systemMode, setSystemMode] = useExperimentState('Engram.systemMode', 'inference');
+  const [lang] = useLanguage();
+
   const t = (key) => i18n[lang][key] || key;
   const snapshot = useMemo(
     () => deriveEngramSnapshot({ step, tokenIndex: slideIdx, systemMode }),
@@ -510,9 +503,7 @@ const App = () => {
     return t(`step${step}`);
   };
 
-  const toggleLang = () => {
-    setLang(lang === 'zh' ? 'en' : 'zh');
-  };
+
 
   const isEmbActive = snapshot.topology.embedding === 'active';
   const isProjActive = snapshot.topology.projections === 'active';
@@ -525,11 +516,11 @@ const App = () => {
   const isBlock15Active = snapshot.topology.subsequentBlock === 'active';
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans py-6 px-4 sm:px-6 md:px-8 overflow-x-hidden">
-      <div className="max-w-[120rem] mx-auto space-y-6">
-        
+    <div className="chapter-page min-h-screen bg-slate-50 text-slate-800 font-sans py-6 px-4 sm:px-6 md:px-8 overflow-x-hidden">
+      <div className="chapter-layout max-w-[120rem] mx-auto space-y-6">
+
         {/* Header */}
-        <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
+        <div className="chapter-header bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
           <div className="min-w-0">
             <h1 className="text-xl lg:text-2xl font-bold flex items-start sm:items-center gap-2 text-slate-900 leading-tight">
               <Database className="text-purple-600 shrink-0" />
@@ -540,10 +531,8 @@ const App = () => {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full xl:w-auto" data-testid="engram-global-controls">
-             <button onClick={toggleLang} aria-label={t('langToggle')} className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition font-bold text-sm shadow-sm whitespace-nowrap">
-                <Globe size={16} /> {t('langToggle')}
-             </button>
-             <button type="button" onClick={reset} aria-label={t('reset')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-600 transition hover:bg-slate-200" title={t('reset')}>
+
+             <div className="chapter-playback"><button type="button" onClick={reset} aria-label={t('reset')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-600 transition hover:bg-slate-200" title={t('reset')}>
                 <RotateCcw size={18} />
              </button>
              <button type="button" onClick={togglePlay} aria-label={isPlaying ? t('pause') : phase === 'done' ? t('replay') : t('play')} title={isPlaying ? t('pause') : phase === 'done' ? t('replay') : t('play')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm transition hover:bg-blue-700">
@@ -551,24 +540,24 @@ const App = () => {
              </button>
              <button type="button" onClick={handleNextStep} disabled={phase === 'done'} aria-label={phase === 'done' ? t('completed') : t('next')} title={phase === 'done' ? t('completed') : t('next')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-purple-50 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-700">
                 <SkipForward size={18} />
-             </button>
+             </button></div>
           </div>
         </div>
 
         {/* 第一行：并排三模块（拓扑 : 张量流 : 伪代码） */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
-          
+
           {/* 1. 网络拓扑结构 (自上而下翻转) */}
           <div className="xl:col-span-2 bg-white rounded-2xl p-4 md:p-5 border border-slate-200 shadow-sm flex flex-col">
             <div className="flex items-center mb-4 pb-3 border-b border-slate-100">
-               <h2 className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800 whitespace-nowrap">
+               <h2 data-section-anchor="engram-1" className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800 whitespace-nowrap">
                  <Network className="text-indigo-500 shrink-0" size={20}/> 
                  {t('topoTitle')}
                </h2>
             </div>
-            
+
             <div className="flex-1 flex flex-col items-center justify-start w-full relative pt-2">
-              
+
               {/* Input Tokens */}
               <div className="flex gap-1 justify-center w-full flex-wrap px-1">
                 {tokens.map((t_str, i) => {
@@ -588,7 +577,7 @@ const App = () => {
                  ${isVocabActive ? 'bg-rose-50 border-rose-400 text-rose-700 shadow-[0_0_10px_rgba(244,63,94,0.4)] ring-1 ring-rose-300 scale-105 opacity-100' : 'bg-rose-50 border-rose-200 text-rose-700 opacity-80'}`}>
                 {t('vocabEmbedding')}
               </div>
-              
+
               <ArrowDown className="text-slate-400 my-1.5" size={14}/>
 
               {/* Block 0 (Standard) */}
@@ -662,7 +651,7 @@ const App = () => {
             data-phase={phase}
           >
            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 min-w-[700px]">
-             <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
+             <h2 data-section-anchor="engram-2" className="text-lg font-bold flex items-center gap-2 text-slate-800">
                <BrainCircuit className="text-purple-600" size={20}/>
                {t('flowTitle')}
              </h2>
@@ -687,13 +676,13 @@ const App = () => {
            </div>
 
            <div className="flex-1 flex flex-col items-center relative w-full min-w-[700px]">
-             
+
              {/* ======================================================= */}
              {/* [层层下落] 1：Tokenizer 压缩与滑动窗口 */}
              {/* ======================================================= */}
              <div className={`w-full max-w-4xl border rounded-2xl p-4 transition-all duration-700 relative z-20 bg-white
                 ${stageClass(snapshot.stageStatus.extract, 'border-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.18)]', 'border-blue-200 shadow-sm opacity-80', 'border-slate-200 opacity-60')}`}>
-                
+
                 <div className="absolute -top-3 left-6 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm z-40">
                   {t('tokenizerCompression')}
                 </div>
@@ -743,7 +732,7 @@ const App = () => {
                               {tok}
                               {isTarget && <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-rose-500 text-white text-[8px] px-1.5 py-[1px] rounded shadow-sm">t</div>}
                            </div>
-                           
+
                            {/* 2-Gram Context Flowing BELOW */}
                            <div className="h-6 w-full relative mt-1.5">
                               {is2Gram && (
@@ -799,7 +788,7 @@ const App = () => {
                       <div key={idx} className={`w-1/2 rounded-xl p-3 mx-3 shadow-sm flex flex-col items-center transition-all duration-500
                         ${hashStatus === 'active' ? `bg-${item.color}-50 border border-${item.color}-400 shadow-[0_0_10px_rgba(99,102,241,0.12)]` : hashReached ? `bg-${item.color}-50 border border-${item.color}-200 opacity-85` : 'bg-white border border-slate-200 opacity-50'}`}>
                          <div className={`text-xs font-bold mb-3 transition-colors ${hashReached ? lColor.text : 'text-slate-500'}`}>{item.title}</div>
-                         
+
                          {/* ====== 顶部：倒置重构的哈希管道层 ====== */}
                          <div className="w-full flex flex-col relative mt-1 mb-2">
                             {/* 1. H Index 层 (接受上面下来的输入) */}
@@ -853,7 +842,7 @@ const App = () => {
                              ))}
                            </div>
                          </div>
-                         
+
                          {/* ====== 底部：展平节点 (Flatten -> E_t) ====== */}
                          <div className="w-full flex flex-col items-center relative">
                            <div className={`relative w-[90%] flex items-center justify-center gap-1.5 bg-white border rounded py-1 shadow-sm z-10 transition-all duration-500 mb-0.5
@@ -903,7 +892,7 @@ const App = () => {
              {/* ======================================================= */}
              <div className={`w-full max-w-4xl border rounded-2xl px-2 py-6 transition-all duration-700 relative z-30
                 ${stageClass(snapshot.stageStatus.project, 'bg-slate-50 border-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.16)]', 'bg-slate-50 border-blue-200 shadow-sm opacity-85', 'bg-slate-50/50 border-slate-200 opacity-40')}`}>
-                
+
                 <div className="absolute -top-3 left-6 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 border border-slate-200 rounded shadow-sm z-40">
                   {t('gating')}
                 </div>
@@ -1023,7 +1012,7 @@ const App = () => {
              </div>
              <span className="text-[9px] text-slate-500 font-mono">{t('codeTitle')}</span>
            </div>
-           
+
            <div className="py-3 overflow-y-auto overflow-x-auto flex-1 custom-scrollbar">
               <CodeLine num="1" active={false} indent={0}>
                 <span className="text-purple-400">def</span> <span className="text-blue-400">forward</span>(self, hidden_states, input_ids):
@@ -1043,7 +1032,7 @@ const App = () => {
               <CodeLine num="6" active={step === 1} indent={2}>
                 g_t[n] = extract_ngram_window(input_ids, n)
               </CodeLine>
-              
+
               <CodeLine num="7" active={step === 2} indent={1}>
                 <span className="text-slate-500 italic">{t('c2')}</span>
               </CodeLine>
@@ -1171,7 +1160,7 @@ const App = () => {
         {/* ======================================================= */}
         <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative mt-6 overflow-x-auto" data-testid="engram-system-timeline">
             <div className="flex items-center justify-between gap-4 mb-6 pb-3 border-b border-slate-100 min-w-[700px]">
-               <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
+               <h2 data-section-anchor="engram-3" className="text-lg font-bold flex items-center gap-2 text-slate-800">
                  <Clock className="text-blue-500" size={20}/> 
                  {t('timelineTitle')}
                </h2>
@@ -1189,7 +1178,7 @@ const App = () => {
                  ))}
                </div>
             </div>
-            
+
             <div className="flex flex-col gap-5 w-full justify-center flex-1 min-w-[700px]">
                {/* Timeline markers */}
                <div className="flex justify-between text-[11px] font-bold text-slate-400 pl-[90px] pr-2">
@@ -1198,7 +1187,7 @@ const App = () => {
                   <span className={`transition-colors duration-500 ${step >= 3 ? 'text-slate-700' : ''}`}>{t(systemMode === 'inference' ? 't2' : 't2Training')}</span>
                   <span className={`transition-colors duration-500 ${step >= 6 ? 'text-slate-700' : ''}`}>{t(systemMode === 'inference' ? 't3' : 't3Training')}</span>
                </div>
-               
+
                {systemMode === 'inference' ? (
                  <>
                    <div className="flex items-center gap-3">
@@ -1254,12 +1243,12 @@ const App = () => {
         {/* ======================================================= */}
         <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative mt-6" data-testid="engram-math-panel">
            <div className="flex items-center mb-6 pb-3 border-b border-slate-100">
-             <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800">
+             <h2 data-section-anchor="engram-4" className="text-lg font-bold flex items-center gap-2 text-slate-800">
                <Calculator className="text-emerald-600" size={20}/>
                {t('mathTitle')}
              </h2>
            </div>
-           
+
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
               {/* 阶段 1 */}
               <div className="flex flex-col gap-2">

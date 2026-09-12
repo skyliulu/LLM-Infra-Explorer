@@ -1,3 +1,4 @@
+import {useExperimentState} from '../../lib/ExperimentContext';
 import React, { useEffect, useMemo, useState } from 'react';
 import { MathFormula } from '../linear-attention/MathFormula';
 import { Card, Choice, Metric, Matrix, Playback, usePlayback, fmt, bytes } from './primitives';
@@ -61,7 +62,7 @@ function Inspector({m,t,object,row,onRow,slot,onFollow}) {
 }
 
 export default function SGLangWorkbench({outliers, t}) {
-  const [preset,setPreset]=useState('load-fp8'),[kv,setKV]=useState('fp8-file');
+  const [preset,setPreset]=useExperimentState('quantization/SGLangWorkbench.preset', 'load-fp8'),[kv,setKV]=useExperimentState('quantization/SGLangWorkbench.kv', 'fp8-file');
   const [step,setStep]=useState(0),[isPlaying,setIsPlaying]=useState(false);
   const [selection,setSelection]=useState(null),[row,setRow]=useState(0),[slot,setSlot]=useState(null);
   const m=useMemo(()=>deriveSGLangModel({preset,kv,step,outliers}),[preset,kv,step,outliers]);

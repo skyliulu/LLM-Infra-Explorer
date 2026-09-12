@@ -15,7 +15,7 @@ export function Tabs({ values, value, onChange, t, label }) {
   return <div className="q-tabs" role="group" aria-label={label}>{values.map(v => <button key={v} aria-pressed={value === v} onClick={() => onChange(v)}>{t(v)}</button>)}</div>;
 }
 export function Card({ number, title, hint, t, children, controls, id }) {
-  return <section className="q-card" data-testid={id}><div className="q-heading"><div><h2><span className="q-number">{number}</span>{t(title)}</h2><p>{t(hint)}</p></div>{controls}</div>{children}</section>;
+  return <section className="q-card" data-testid={id}><div className="q-heading"><div><h2 data-section-anchor={`quant-${title}`}><span className="q-number">{number}</span>{t(title)}</h2><p>{t(hint)}</p></div>{controls}</div>{children}</section>;
 }
 export function Metric({ label, value, t }) {return <div className="q-metric"><span>{t(label)}</span><strong>{value}</strong></div>;}
 export function Matrix({ values, label, symbol, t, selected, onSelect, ids, highlightedGroup = null, emphasisColumn = null, committed = 0, range }) {

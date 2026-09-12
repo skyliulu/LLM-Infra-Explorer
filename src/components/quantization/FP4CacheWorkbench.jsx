@@ -1,3 +1,4 @@
+import {useExperimentState} from '../../lib/ExperimentContext';
 import React, { useState } from 'react';
 import { MathFormula } from '../linear-attention/MathFormula';
 import { Card, Range, fmt } from './primitives';
@@ -53,7 +54,7 @@ function FP4Numeric({m, setSelected, setPeak, t, lang}) {
   </Card>;
 }
 export default function FP4CacheWorkbench({lang, example = false}) {
-  const [kind,setKind] = useState('main'), [selected,setSelected] = useState(17), [peak,setPeak] = useState(6);
+  const [kind,setKind] = useExperimentState('quantization/FP4CacheWorkbench.kind', 'main'), [selected,setSelected] = useState(17), [peak,setPeak] = useExperimentState('quantization/FP4CacheWorkbench.peak', 6);
   const t = key => generic[lang][key] && !example ? generic[lang][key] : copy[lang][key], m = deriveFP4Model(example ? kind : 'main',selected,peak,!example), b = m.block, code = b.codes[m.local];
   const bits = code.toString(2).padStart(4,'0');
   if (!example) return <FP4Numeric m={m} setSelected={setSelected} setPeak={setPeak} t={t} lang={lang}/>;

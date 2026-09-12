@@ -1,5 +1,7 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Layers, Grid, Boxes, SplitSquareHorizontal, BrainCircuit, Cpu, Network, RotateCcw, Info, ArrowDown, ArrowRight, Pin, Globe, Play, Pause, SkipForward } from 'lucide-react';
+import { Layers, Grid, Boxes, SplitSquareHorizontal, BrainCircuit, Cpu, Network, RotateCcw, Info, ArrowDown, ArrowRight, Pin, Play, Pause, SkipForward } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import {
   MAX_GPUS,
@@ -473,7 +475,6 @@ const i18n = {
   }
 };
 
-const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 const getPipelineState = (ppDegree, phase, step) => {
   const stageCount = Math.max(1, ppDegree);
@@ -640,24 +641,24 @@ const ExpertConnectionOverlay = ({
 };
 
 const App = () => {
-  const [degrees, setDegrees] = useState({ dp: 1, tp: 1, pp: 1, cp: 1, ep: 1, etp: 1 });
+  const [degrees, setDegrees] = useExperimentState('ParallelStrategies.degrees', { dp: 1, tp: 1, pp: 1, cp: 1, ep: 1, etp: 1 });
   const [hoveredGpu, setHoveredGpu] = useState(null);
   const [pinnedGpu, setPinnedGpu] = useState(null);
-  const [lang, setLang] = useState(getInitialLang());
-  const [contextMode, setContextMode] = useState('prefill');
-  const [mappingModel, setMappingModel] = useState('orthogonal');
-  const [componentProfile, setComponentProfile] = useState('standard');
-  const [attentionMode, setAttentionMode] = useState('standard');
-  const [attentionType, setAttentionType] = useState('mla');
-  const [servingMode, setServingMode] = useState('unified');
-  const [moeTransport, setMoeTransport] = useState('tokenA2a');
+  const [lang] = useLanguage();
+  const [contextMode, setContextMode] = useExperimentState('ParallelStrategies.contextMode', 'prefill');
+  const [mappingModel, setMappingModel] = useExperimentState('ParallelStrategies.mappingModel', 'orthogonal');
+  const [componentProfile, setComponentProfile] = useExperimentState('ParallelStrategies.componentProfile', 'standard');
+  const [attentionMode, setAttentionMode] = useExperimentState('ParallelStrategies.attentionMode', 'standard');
+  const [attentionType, setAttentionType] = useExperimentState('ParallelStrategies.attentionType', 'mla');
+  const [servingMode, setServingMode] = useExperimentState('ParallelStrategies.servingMode', 'unified');
+  const [moeTransport, setMoeTransport] = useExperimentState('ParallelStrategies.moeTransport', 'tokenA2a');
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const moeGraphRef = useRef(null);
   const moeRouterRef = useRef(null);
   const moeExpertRefs = useRef([]);
-  
+
   // 支持插值的 t 函数
   const t = (k, vars = {}) => {
     let str = i18n[lang][k] ?? k;
@@ -899,7 +900,7 @@ const App = () => {
     const inactiveColorClass = "bg-slate-100 border border-slate-200/60";
     const numChunks = sliceDir === 'rep' ? 1 : Math.max(1, degree);
     const isNotResident = activeGpu !== null && !isLayerActive && Boolean(inactiveReason);
-    
+
     // 替换原本的 hoveredGpu 为 activeGpu
     const effectiveActive = (activeGpu === null) 
         ? Array.from({length: numChunks}).map((_, i) => i) 
@@ -911,7 +912,7 @@ const App = () => {
           <span className="text-[9px] md:text-[11px] font-semibold text-slate-700 text-center leading-tight break-words">{title}</span>
           {dims && <span className="text-[8px] md:text-[9px] font-mono text-slate-400 mt-[2px]">{dims}</span>}
         </div>
-        
+
         <div className="flex-1 flex items-center justify-center py-1">
           <div 
             className={`flex ${sliceDir === 'row' ? 'flex-col' : 'flex-row'} gap-[1px]`}
@@ -922,7 +923,7 @@ const App = () => {
             ))}
           </div>
         </div>
-        
+
         <div className={`text-[7px] md:text-[8px] whitespace-nowrap mt-1 text-center min-h-[14px] flex items-end justify-center ${isNotResident ? 'font-semibold text-purple-700' : 'text-slate-500'}`}>
           {isNotResident ? inactiveReason : sliceDir === 'rep' ? t('fullCopy') : splitLabel}
         </div>
@@ -934,7 +935,7 @@ const App = () => {
   const GridBlock = ({ title, dims, splitLabel, isLayerActive, activeColorClass, degreeX = 1, degreeY = 1, activeX = 0, activeY = 0, mW, mH }) => {
     const inactiveColorClass = "bg-slate-100 border border-slate-200/60";
     const effectiveActive = (activeGpu === null) ? true : isLayerActive;
-    
+
     const dX = Math.max(1, degreeX);
     const dY = Math.max(1, degreeY);
 
@@ -944,7 +945,7 @@ const App = () => {
           <span className="text-[9px] md:text-[11px] font-semibold text-slate-700 text-center leading-tight break-words">{title}</span>
           {dims && <span className="text-[8px] md:text-[9px] font-mono text-slate-400 mt-[2px]">{dims}</span>}
         </div>
-        
+
         <div className="flex-1 flex items-center justify-center py-1">
           <div 
             className="grid gap-[1px]"
@@ -962,7 +963,7 @@ const App = () => {
             })}
           </div>
         </div>
-        
+
         <div className="text-[7px] md:text-[8px] text-slate-500 whitespace-nowrap mt-1 text-center h-[14px] flex items-end justify-center">
           {splitLabel}
         </div>
@@ -984,13 +985,13 @@ const App = () => {
           <span className="text-[9px] md:text-[11px] font-semibold text-slate-700 text-center leading-tight break-words">{title}</span>
           {dims && <span className="text-[8px] md:text-[9px] font-mono text-slate-400 mt-[2px]">{dims}</span>}
         </div>
-        
+
         <div className="flex-1 flex items-center justify-center py-4 w-full">
           <div className="relative" style={{ width: `${mW}px`, height: `${mH}px` }}>
             {Array.from({ length: dZ }).map((_, z) => {
               const actualZ = dZ - 1 - z; 
               const isZActive = effectiveActive && (activeGpu === null || activeZ === actualZ);
-              
+
               const offsetStep = 14; 
               const totalOffset = (dZ - 1) * offsetStep;
               const offsetX = (actualZ * offsetStep) - (totalOffset / 2);
@@ -1018,7 +1019,7 @@ const App = () => {
                       const y = Math.floor(i / dX);
                       const x = i % dX;
                       const isActive = isZActive && (activeGpu === null || (activeY === y && activeX === x));
-                      
+
                       const blockClass = isActive 
                           ? activeColorClass 
                           : "bg-slate-100 border border-slate-200/60";
@@ -1036,7 +1037,7 @@ const App = () => {
             })}
           </div>
         </div>
-        
+
         <div className="text-[7px] md:text-[8px] text-slate-500 whitespace-nowrap mt-4 text-center h-[14px] flex items-end justify-center">
           {splitLabel}
         </div>
@@ -1314,11 +1315,11 @@ const App = () => {
       <div className="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200 flex flex-col gap-2 relative overflow-hidden h-full">
         {/* 修复：移除 xl:flex-row 和 justify-between，始终保持 flex-col 上下排列 */}
         <div className="flex flex-col items-start border-b border-slate-200 pb-3 mb-2 gap-2.5">
-          <h3 className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800">
+          <h3 data-section-anchor="parallelstrategies-1" className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800">
             <Network className="text-cyan-600" size={20} />
             {t('logicalTitle')}
           </h3>
-          
+
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap gap-1.5 text-[9px] font-mono">
               <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200 shadow-sm">B=Batch(32)</span>
@@ -1459,7 +1460,7 @@ const App = () => {
             {renderPipelineSchedule()}
 
             <div className="bg-slate-50 p-2 md:p-3 rounded-lg border border-slate-200">
-               
+
                {/* Attention Block */}
                <div className="bg-white p-2 md:p-3 rounded-lg border border-slate-200 shadow-sm">
                   <div className="mb-2.5 flex flex-wrap items-center justify-between gap-1.5 text-xs font-semibold text-slate-700">
@@ -1484,7 +1485,7 @@ const App = () => {
                    </div>
                    <p className="text-[8px] leading-relaxed text-violet-800">{t(structureKey)}</p>
                  </div>
-                 
+
                  <div className="flex flex-col gap-1.5 md:gap-2">
                     <div className="grid grid-cols-[minmax(0,1fr)_24px_minmax(0,1fr)_32px_minmax(0,1fr)] items-stretch gap-1">
                        <MatrixBlock 
@@ -1562,7 +1563,7 @@ const App = () => {
                         <span className="rounded bg-white px-1 py-0.5">{t('helixOutProjNode')}</span>
                       </div>
                     )}
-                    
+
                     <div data-testid="kv-footprint-scale" data-attention-type={attentionType} data-footprint-units={attentionArchitecture.kvFootprintUnits} className="mx-auto mt-1 w-full max-w-sm rounded border border-slate-200 bg-slate-50 px-2 py-1.5">
                       <div className="mb-1 flex items-center justify-between gap-2 text-[7px] text-slate-600">
                         <span>{t('perTokenKvFootprint')}</span>
@@ -1773,14 +1774,14 @@ const App = () => {
       <div key={dim} data-testid={`gpu-rank-${dim}`} className="flex min-w-0 items-center gap-1 text-[8px]" title={`${label} ${activeIdx}/${degree}`}>
         {/* Label */}
         <span className={`w-5 shrink-0 text-left font-bold ${textColor}`}>{label}</span>
-        
+
         {/* Progress Bar */}
         <div className="flex h-1 min-w-0 flex-1 gap-px">
           {Array.from({ length: Math.max(1, degree) }).map((_, i) => (
             <div key={i} className={`flex-1 rounded-[1px] transition-colors duration-300 ${i === activeIdx ? activeColor : 'bg-slate-100'}`} />
           ))}
         </div>
-        
+
         {/* Explicit Rank Number */}
         <div className="flex w-4 shrink-0 justify-end">
            <span className="min-w-4 rounded border border-slate-200 bg-slate-50 px-0.5 py-px text-center font-mono text-[7px] leading-none text-slate-500">
@@ -1905,10 +1906,10 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans py-6 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 2xl:px-32 overflow-x-hidden">
-      <div className="max-w-[110rem] mx-auto space-y-6">
-        
-        <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+    <div className="chapter-page min-h-screen bg-slate-50 text-slate-800 font-sans py-6 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 2xl:px-32 overflow-x-hidden">
+      <div className="chapter-layout max-w-[110rem] mx-auto space-y-6">
+
+        <div className="chapter-header bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-slate-900">
               <Network className="text-cyan-500" />
@@ -1921,7 +1922,7 @@ const App = () => {
                <Cpu size={18} className="text-slate-400"/>
                {t('totalGpu')} <span className={`text-lg ml-1 ${totalGpus === MAX_GPUS ? 'text-rose-500' : 'text-cyan-600'}`}>{totalGpus}</span> / {MAX_GPUS}
              </div>
-             <button onClick={() => setLang((prev) => (prev === 'zh' ? 'en' : 'zh'))} className="px-2.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition shadow-sm flex items-center gap-1" title="Language"><Globe size={16}/> {t('langToggle')}</button>
+
              <button onClick={reset} className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition tooltip shadow-sm" title={t('reset')}>
                 <RotateCcw size={18} />
              </button>
@@ -1933,16 +1934,16 @@ const App = () => {
             const currentVal = degrees[strat.id];
             const Icon = strat.icon;
             const active = currentVal > 1;
-            
+
             return (
               <div key={strat.id} className={`p-3 lg:p-4 rounded-xl border transition-all duration-300 flex flex-col shadow-sm
                 ${active ? `${getColorClass(strat.color, 'border')} ${getColorClass(strat.color, 'softBg')}` : 'border-slate-200 bg-white'}`}>
-                
+
                 <div className="flex items-center gap-1.5 lg:gap-2 mb-2">
                   <Icon size={16} className={`shrink-0 ${active ? getColorClass(strat.color, 'text') : 'text-slate-400'}`} />
-                  <h3 className={`font-bold text-[12px] md:text-[13px] whitespace-nowrap tracking-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{t(`${strat.id}Name`)}</h3>
+                  <h3 data-section-anchor="parallelstrategies-2" className={`font-bold text-[12px] md:text-[13px] whitespace-nowrap tracking-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{t(`${strat.id}Name`)}</h3>
                 </div>
-                
+
                 <div className="flex gap-1 mb-2.5 lg:mb-3">
                   {[1, 2, 4].map(val => {
                     const isSelected = currentVal === val;
@@ -1973,7 +1974,7 @@ const App = () => {
               </div>
             )
           })}
-          
+
           <div className="col-span-2 md:col-span-3 xl:col-span-6 flex flex-col items-stretch gap-2 rounded-lg border border-slate-200 bg-white p-2.5 text-[11px] text-slate-500 shadow-sm" data-testid="runtime-control-panel">
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1" role="group" aria-label={t('mappingModel')}>
@@ -2084,20 +2085,20 @@ const App = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-4 pt-2 lg:grid-cols-12 lg:items-stretch xl:gap-5">
-          
+
           <div className="flex flex-col lg:col-span-7 xl:col-span-8" data-testid="logical-canvas-column">
              {renderLogicalView()}
           </div>
 
           <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm lg:col-span-5 xl:col-span-4" data-testid="gpu-map-column">
              <div className="mb-3 flex items-center justify-between gap-2">
-               <h3 className="flex items-center gap-1.5 text-sm font-bold leading-tight text-slate-800 md:text-base">
+               <h3 data-section-anchor="parallelstrategies-3" className="flex items-center gap-1.5 text-sm font-bold leading-tight text-slate-800 md:text-base">
                  <ServerIcon className="text-emerald-500" />
                  {t(servingMode === 'pdDisaggregated' ? 'physGpuMapPd' : mappingModel === 'dcpReuse' ? 'physGpuMapDcp' : 'physGpuMap')} ({totalGpus} {t('cards')})
                </h3>
                {totalGpus === 1 && <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded border border-slate-200">{t('singleCard')}</span>}
              </div>
-             
+
              <div className="grid grid-cols-[repeat(auto-fit,minmax(96px,1fr))] place-content-start gap-2 align-top" data-testid="gpu-card-grid">
                {servingMode === 'pdDisaggregated' ? (
                  <>
@@ -2114,7 +2115,7 @@ const App = () => {
                  Array.from({ length: totalGpus }).map((_, i) => renderGpuCard(i))
                )}
              </div>
-             
+
              {totalGpus < MAX_GPUS && (
                <p className="mt-3 border-t border-dashed border-slate-200 pt-2 text-center text-[9px] text-slate-400">
                  {t('expand')} {totalGpus}/{MAX_GPUS})

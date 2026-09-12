@@ -1,5 +1,7 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Play, Pause, SkipForward, RotateCcw, Database, Zap, Code, Layers, Info, Globe, AlertTriangle, Network, Scissors, ArrowDown, Cpu, GripHorizontal } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Database, Zap, Code, Layers, Info, AlertTriangle, Network, Scissors, ArrowDown, Cpu, GripHorizontal } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveDpAttentionSnapshot, getMaxStep } from './dp-attention/model';
 
@@ -29,7 +31,7 @@ const i18n = {
     mlaLayer: 'MLA 层',
     moeLayer: 'MoE 层',
     empty: '尚未生成',
-    
+
     // 状态机提示
     statusIdle: '系统初始化完成，等待请求入列...',
     statusTpAttn: 'MLA 层：标准 TP 计算 (显存冗余报警)',
@@ -53,7 +55,7 @@ const i18n = {
     kvWaste: 'KV Cache 全局显存消耗',
     wasteAlert: '灾难性冗余 (4x 浪费)',
     wasteOptimal: '完美分割 (1x 零冗余)',
-    
+
     dimLegend: '全局张量维度说明',
     dimB: '批次',
     dimS: '序列',
@@ -159,7 +161,7 @@ const i18n = {
     mlaLayer: 'MLA Layer',
     moeLayer: 'MoE Layer',
     empty: 'Not materialized',
-    
+
     statusIdle: 'System Initialized. Awaiting Requests...',
     statusTpAttn: 'MLA Layer: TP Compute (Memory Alert)',
     statusTpMoe: 'MoE Layer: Standard TP Compute',
@@ -262,7 +264,6 @@ const i18n = {
   }
 };
 
-const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 const bColors = [
   'bg-rose-500', 
@@ -291,14 +292,14 @@ const WeightBlock = ({ title, dims, splitDir, label, rankIndex = 0 }) => {
   const baseClass = "bg-indigo-50/40 border-indigo-100 shadow-sm";
   const innerClass = "bg-slate-200";
   const highlightClass = "bg-indigo-400 border border-indigo-300 shadow-sm";
-  
+
   return (
     <div className={`rounded-md border p-1.5 flex flex-col items-center justify-between w-full min-w-0 transition-all duration-500 ${baseClass}`}>
       <div className="mb-1 flex min-h-[27px] w-full flex-col items-center justify-center text-center">
         <div className="max-w-full text-[10px] font-bold leading-[1.15] text-indigo-800 break-words">{title}</div>
         <div className="text-[9px] text-indigo-500/90"><MathFormula>{dims}</MathFormula></div>
       </div>
-      
+
       <div className="flex-1 w-full flex items-center justify-center py-1">
         {splitDir === 'col' && (
           <div className="flex gap-[1px] w-[80%] h-[20px]">
@@ -343,7 +344,7 @@ const DataBlock = ({ title, dims, mode, label, emptyLabel = '—', isEmpty = fal
   }
 
   const baseClass = "bg-white border-slate-300 shadow-sm";
-  
+
   return (
     <div className={`rounded-md border p-1.5 flex flex-col items-center justify-between w-full min-w-0 min-h-[70px] transition-all duration-300 ${baseClass} ${isAlert ? 'ring-2 ring-rose-500 border-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.5)] scale-[1.02]' : ''}`}>
       <div className="mb-1 flex min-h-[27px] w-full flex-col items-center justify-center text-center">
@@ -352,7 +353,7 @@ const DataBlock = ({ title, dims, mode, label, emptyLabel = '—', isEmpty = fal
       </div>
 
       <div className="flex-1 w-full flex items-center justify-center py-1">
-        
+
         {mode === 'full' && (
           <div className="flex flex-col w-[70%] h-[24px] rounded-[2px] border border-slate-300 overflow-hidden shadow-sm">
             {bColors.map((bg, i) => <div key={i} className={`flex-1 w-full ${bg} border-b border-black/10`} />)}
@@ -397,11 +398,11 @@ const DataBlock = ({ title, dims, mode, label, emptyLabel = '—', isEmpty = fal
 
 // --- 主应用组件 ---
 const DpAttentionVisualizer = () => {
-  const [modelType, setModelType] = useState('dp'); 
-  const [moeTopology, setMoeTopology] = useState('tp');
+  const [modelType, setModelType] = useExperimentState('DpAttention.modelType', 'dp');
+  const [moeTopology, setMoeTopology] = useExperimentState('DpAttention.moeTopology', 'tp');
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [lang, setLang] = useState(getInitialLang());
+  const [lang] = useLanguage();
   const t = (k) => i18n[lang][k] ?? k;
   const snapshot = useMemo(
     () => deriveDpAttentionSnapshot({ mode: modelType, moeTopology, step }),
@@ -469,12 +470,12 @@ const DpAttentionVisualizer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4 md:p-6 lg:p-8 selection:bg-indigo-100">
+    <div className="chapter-page min-h-screen bg-slate-50 text-slate-800 font-sans p-4 md:p-6 lg:p-8 selection:bg-indigo-100">
       <FlowStyle />
-      <div className="max-w-[100rem] mx-auto space-y-4 md:space-y-6">
-        
+      <div className="chapter-layout max-w-[100rem] mx-auto space-y-4 md:space-y-6">
+
         {/* Top Control Bar */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col xl:flex-row items-center justify-between gap-4">
+        <div className="chapter-header bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col xl:flex-row items-center justify-between gap-4">
           <div className="flex flex-col text-center xl:text-left">
             <h1 className="text-xl md:text-2xl font-bold flex items-center justify-center xl:justify-start gap-2 text-indigo-900">
               <GridHorizontalIcon />
@@ -482,7 +483,7 @@ const DpAttentionVisualizer = () => {
             </h1>
             <p className="text-slate-500 text-[12px] md:text-sm mt-1">{t('subtitle')}</p>
           </div>
-          
+
           <div className="flex max-w-4xl flex-wrap items-center justify-center gap-2.5">
             <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 shadow-inner">
               <button aria-pressed={modelType === 'tp'} onClick={() => handleModelTypeChange('tp')} className={`flex items-center gap-1.5 px-3 md:px-4 py-1.5 text-[11px] md:text-sm font-semibold rounded-md transition-all ${modelType === 'tp' ? 'bg-white shadow-sm text-rose-700 ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700'}`}>
@@ -508,26 +509,23 @@ const DpAttentionVisualizer = () => {
                 ))}
               </div>
             )}
-            <button aria-label={lang === 'zh' ? 'Switch to English' : '切换到中文'} onClick={() => setLang(l => l === 'zh' ? 'en' : 'zh')} className="p-2 px-3 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
-              <Globe size={16} />
-              <span className="text-[11px] font-bold">{lang === 'zh' ? 'EN' : '中文'}</span>
-            </button>
-            <button type="button" aria-label={t('reset')} title={t('reset')} onClick={reset} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50"><RotateCcw size={18} /></button>
+
+            <div className="chapter-playback"><button type="button" aria-label={t('reset')} title={t('reset')} onClick={reset} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50"><RotateCcw size={18} /></button>
             <button type="button" aria-label={isPlaying ? t('pause') : phase === 'done' ? t('replay') : t('play')} title={isPlaying ? t('pause') : phase === 'done' ? t('replay') : t('play')} onClick={togglePlay} className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white shadow-md transition ${isPlaying ? 'bg-amber-500 hover:bg-amber-600' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
               {isPlaying ? <Pause size={18} /> : <Play size={18} />}
             </button>
             <button type="button" aria-label={phase === 'done' ? t('completed') : t('next')} title={phase === 'done' ? t('completed') : t('next')} onClick={() => { setIsPlaying(false); handleNextStep(); }} disabled={isPlaying || phase === 'done'} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
               <SkipForward size={18} />
-            </button>
+            </button></div>
           </div>
         </div>
 
         {/* Main Workspace: 2-Column Grid (Flow vs Pseudocode) */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch w-full">
-          
+
           {/* Left Column: Flow Diagram (Tensor view) */}
           <div className="xl:col-span-7 bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col relative overflow-hidden h-full">
-            
+
             {/* Status Bar inside the Viz */}
             <div className="relative z-20 mb-4 grid gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)]">
               <div className="flex min-w-0 flex-col items-start gap-2">
@@ -558,12 +556,12 @@ const DpAttentionVisualizer = () => {
                <div className="mb-2 flex w-full items-center justify-end gap-1 text-[10px] font-semibold text-slate-400 xl:hidden">
                  <GripHorizontal size={13} /> {t('scrollHint')}
                </div>
-               
+
                <div className="mb-4 grid w-full min-w-[520px] grid-cols-[minmax(150px,1fr)_auto] items-center gap-2 px-1">
                  <div className="flex min-w-0 items-center gap-1.5 rounded border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500 shadow-sm">
                    <Layers size={14} /> {t('modelView')}
                  </div>
-                 
+
                  <div className="grid shrink-0 grid-cols-4 gap-1">
                    {[
                      [String.raw`B`, 'dimB'],
@@ -625,11 +623,11 @@ const DpAttentionVisualizer = () => {
                       {[0, 1, 2, 3].map(i => (
                         <div key={i} className={`border rounded-xl p-2 flex min-w-0 flex-col gap-2 transition-all duration-500 shadow-sm
                           ${snapshot.views.inputVisible ? (modelType === 'tp' ? 'border-rose-300 bg-rose-50/30' : 'border-indigo-300 bg-indigo-50/40') : 'border-slate-200 bg-slate-50/50'}`}>
-                          
+
                           <div className="text-[10px] font-bold text-center text-slate-500 mb-0.5 border-b border-slate-200 pb-1">{t('mlaLayer')}</div>
-                          
+
                           <WeightBlock title={t('tLatent')} dims={String.raw`H\times d_c`} splitDir="full_square" label={t('lblSharedFull')} rankIndex={i} />
-                          
+
                           <WeightBlock 
                              title={t('tWQ')} 
                              dims={modelType === 'tp' ? String.raw`H\to d_q\to \frac{H_qd_h}{4}` : String.raw`H\to d_q\to H_qd_h`}
@@ -637,7 +635,7 @@ const DpAttentionVisualizer = () => {
                              label={modelType === 'tp' ? t('lblColShardHead') : t('lblSharedNone')} 
                              rankIndex={i} 
                           />
-                          
+
                           <div className="relative my-1">
                              {modelType === 'tp' && snapshot.cache.visible && <div className="absolute inset-0 bg-rose-500/10 animate-pulse rounded-lg border border-rose-300 z-0"></div>}
                              <DataBlock 
@@ -647,7 +645,7 @@ const DpAttentionVisualizer = () => {
                                 emptyLabel={t('empty')} isEmpty={!snapshot.cache.visible} isAlert={modelType === 'tp' && snapshot.cache.visible} rankIndex={i}
                              />
                           </div>
-                          
+
                           <DataBlock 
                              title={t('tAttnOut')} dims={snapshot.tensors.attentionOutputShapeLatex}
                              mode={modelType === 'dp' ? 'subset' : 'full'} 
@@ -710,13 +708,13 @@ const DpAttentionVisualizer = () => {
                       {[0, 1, 2, 3].map(i => {
                         const isMoEInActive = snapshot.views.moeVisible;
                         const isExpertParallel = snapshot.isDp && snapshot.moeTopology === 'ep';
-                        
+
                         return (
                           <div key={i} className={`border rounded-xl p-2 flex min-w-0 flex-col gap-2 transition-all duration-500 shadow-sm
                             ${isMoEInActive ? 'border-indigo-300 bg-indigo-50/40' : 'border-slate-200 bg-slate-50/50'}`}>
-                            
+
                             <div className="text-[10px] font-bold text-center text-slate-500 mb-0.5 border-b border-slate-200 pb-1">{t('moeLayer')}</div>
-                            
+
                             <DataBlock
                               title={isExpertParallel ? t('tRouter') : t('tMoEIn')}
                               dims={snapshot.tensors.moeInputShapeLatex}
@@ -726,7 +724,7 @@ const DpAttentionVisualizer = () => {
                               isEmpty={!isMoEInActive}
                               rankIndex={i}
                             />
-                            
+
                             <WeightBlock title={isExpertParallel ? t('tExperts') : t('tMoEUp')} dims={isExpertParallel ? String.raw`\frac{E}{4}\times(H\to H_E)` : String.raw`H\times\frac{EH}{4}`} splitDir={isExpertParallel ? 'full_col' : 'col'} label={isExpertParallel ? t('lblExpertShard') : t('lblColShard')} rankIndex={i} />
                             <WeightBlock title={t('tMoEDown')} dims={isExpertParallel ? String.raw`\frac{E}{4}\times(H_E\to H)` : String.raw`\frac{EH}{4}\times H`} splitDir={isExpertParallel ? 'full_col' : 'row'} label={isExpertParallel ? t('lblExpertShard') : t('lblRowShard')} rankIndex={i} />
                           </div>
@@ -804,7 +802,7 @@ const DpAttentionVisualizer = () => {
           {/* Right Column: Pseudocode Panel */}
           <div className="xl:col-span-5 bg-slate-900 rounded-2xl p-4 md:p-6 shadow-lg border border-slate-800 text-slate-300 flex flex-col relative overflow-hidden h-full">
              <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none"><Code size={120}/></div>
-             <h2 className="text-base font-bold mb-4 text-white border-b border-slate-700 pb-2 flex items-center justify-between z-10 shrink-0">
+             <h2 data-section-anchor="dpattention-1" className="text-base font-bold mb-4 text-white border-b border-slate-700 pb-2 flex items-center justify-between z-10 shrink-0">
                <div className="flex items-center gap-2"><Code className="text-emerald-400" size={18} /> {t('pyTitle')}</div>
                <span className="text-[10px] text-slate-400 font-mono border border-slate-700 px-2 py-0.5 rounded bg-slate-800 shadow-sm">Python</span>
              </h2>

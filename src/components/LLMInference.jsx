@@ -1,5 +1,7 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, CornerDownRight, Network, SlidersHorizontal, Orbit, Globe } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, CornerDownRight, Network, SlidersHorizontal, Orbit, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveInferenceTensorSnapshot, deriveSamplingDistribution, MODULE, TOTAL_LAYERS } from './llm-inference/model';
 import { LayerKvOverview, TensorWorkbench } from './llm-inference/TensorWorkbench';
@@ -318,21 +320,20 @@ const i18n = {
   }
 };
 
-const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 const App = () => {
-  const [modelType, setModelType] = useState('moe');
-  const [temperature, setTemperature] = useState(0.7);
-  const [topK, setTopK] = useState(3);
-  const [topP, setTopP] = useState(0.9);
+  const [modelType, setModelType] = useExperimentState('LLMInference.modelType', 'moe');
+  const [temperature, setTemperature] = useExperimentState('LLMInference.temperature', 0.7);
+  const [topK, setTopK] = useExperimentState('LLMInference.topK', 3);
+  const [topP, setTopP] = useExperimentState('LLMInference.topP', 0.9);
   const [currentLayer, setCurrentLayer] = useState(1);
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
-  
+
   // Embedding 只运行一次；随后每层依次执行 Attention（含 RoPE）与 FFN/MoE。
   const [activeModule, setActiveModule] = useState(MODULE.idle);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [lang, setLang] = useState(getInitialLang());
+  const [lang] = useLanguage();
   const t = (k) => i18n[lang][k] ?? k;
 
   // 根据语言动态提供 Token 与 Prompt 数据
@@ -520,11 +521,11 @@ const App = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4 lg:p-6 selection:bg-indigo-100">
-      <div className="max-w-[90rem] mx-auto space-y-6">
-        
+    <div className="chapter-page min-h-screen bg-slate-50 text-slate-800 font-sans p-4 lg:p-6 selection:bg-indigo-100">
+      <div className="chapter-layout max-w-[90rem] mx-auto space-y-6">
+
         {/* Header & Controls */}
-        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="chapter-header bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900">
               <Zap className="text-amber-500" />
@@ -532,7 +533,7 @@ const App = () => {
             </h1>
             <p className="text-slate-500 text-sm mt-1">{t('subtitle')}</p>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-3">
             {/* Sampling controls */}
             <div data-testid="sampling-controls" className="grid gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-2 sm:grid-cols-3">
@@ -564,14 +565,14 @@ const App = () => {
               </button>
             </div>
 
-            <button aria-label={t('language')} onClick={() => setLang((prev) => (prev === 'zh' ? 'en' : 'zh'))} className="px-2 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition flex items-center gap-1"><Globe size={16} /> {t('langToggle')}</button>
-            <button type="button" aria-label={t('reset')} title={t('reset')} onClick={reset} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200"><RotateCcw size={18} /></button>
+
+            <div className="chapter-playback"><button type="button" aria-label={t('reset')} title={t('reset')} onClick={reset} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200"><RotateCcw size={18} /></button>
             <button type="button" aria-label={t(isPlaying ? 'pause' : 'play')} title={t(isPlaying ? 'pause' : 'play')} onClick={togglePlay} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm transition hover:bg-blue-700">
               {isPlaying ? <Pause size={18} /> : <Play size={18} />}
             </button>
             <button type="button" aria-label={t('next')} title={t('next')} onClick={() => { setIsPlaying(false); handleNextStep(); }} disabled={isPlaying || phase === 'done'} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
               <SkipForward size={18} />
-            </button>
+            </button></div>
           </div>
         </div>
 
@@ -581,7 +582,7 @@ const App = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
               {/* 左侧：Sequence */}
               <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <h2 data-section-anchor="llminference-1" className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <AlignLeft className="text-indigo-500" size={20} />
                   {t('sequenceTitle')}
                 </h2>
@@ -595,7 +596,7 @@ const App = () => {
 
               {/* 右侧：KV Cache */}
               <div className="border-t lg:border-t-0 lg:border-l border-slate-100 pt-6 lg:pt-0 lg:pl-12">
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <h2 data-section-anchor="llminference-2" className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Database className="text-indigo-500" size={20} /> {t('kvCacheTitle')}
                 </h2>
                 <LayerKvOverview
@@ -613,7 +614,7 @@ const App = () => {
           <div className="grid grid-cols-1 gap-6 items-start xl:grid-cols-[minmax(0,3fr)_minmax(360px,2fr)]">
             {/* 左侧：模型内部流水线 */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 h-full flex flex-col min-w-0">
-               <h2 className="text-lg font-semibold mb-6 flex items-center justify-between shrink-0">
+               <h2 data-section-anchor="llminference-3" className="text-lg font-semibold mb-6 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <Cpu className="text-indigo-500" size={20} /> {t('modelPipeline')}
                 </div>
@@ -633,7 +634,7 @@ const App = () => {
 
             {/* 右侧：代码级原理解析 (Pseudocode) */}
             <div className="bg-slate-900 rounded-2xl p-6 shadow-lg border border-slate-800 text-slate-300 flex flex-col min-w-0">
-               <h2 className="text-lg font-semibold mb-4 flex items-center justify-between text-white shrink-0">
+               <h2 data-section-anchor="llminference-4" className="text-lg font-semibold mb-4 flex items-center justify-between text-white shrink-0">
                  <div className="flex items-center gap-2">
                    <Code className="text-emerald-400" size={20} /> {t('codeTitle')} <span className="text-xs text-slate-400 font-normal ml-2">{t('pyCode')}</span>
                  </div>
@@ -642,7 +643,7 @@ const App = () => {
               <div className="font-mono text-[10px] md:text-xs xl:text-sm overflow-x-auto bg-[#0d1117] p-4 rounded-lg border border-slate-800 flex-1 leading-relaxed">
                 <div className={`transition-all duration-500 whitespace-pre block`}>
                   <div><span className="text-emerald-400">def</span> <span className="text-blue-400">{phase === 'prefill' ? 'prefill' : 'decode_step'}</span>(request_ids, input_tokens, kv_cache, temp={temperature.toFixed(1)}, top_k={topK}, top_p={topP.toFixed(1)}):</div>
-                  
+
                   {/* Emb 高亮 */}
                   <div className={activeModule === MODULE.embedding ? "bg-indigo-900/60 text-indigo-200 px-1 -mx-1 rounded" : "text-slate-400"}>
                     <div>  <span className="text-slate-500">{t('c_emb1')}</span></div>
@@ -716,12 +717,12 @@ const App = () => {
               <Zap className="text-amber-400" size={24}/>
               {t('stateTitle')}
             </h3>
-            
+
             <div className="space-y-4 text-sm md:text-base leading-relaxed max-w-5xl">
               {activeModule === MODULE.idle && (
                 <p className="opacity-90">{t('waitStartMsg1')}<strong className="text-amber-300">{modelType === 'moe' ? t('moeSparse') : t('denseDense')}</strong>{t('waitStartMsg2')}</p>
               )}
-              
+
               {activeModule === MODULE.embedding && (
                 <div className="animate-fade-in">
                   <h4 className="font-bold text-indigo-300 text-base mb-2">{t('stateEmbTitle')}</h4>

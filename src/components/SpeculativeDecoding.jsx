@@ -1,12 +1,13 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, ArrowRight, BrainCircuit, Cpu, Database, Globe, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
+import { ArrowDown, ArrowRight, BrainCircuit, Cpu, Database, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveSpeculativeSnapshot, deriveCorrectnessExample, getNextLifecycle, PREFIX, STREAM } from './speculative-decoding/model';
 import './speculative-decoding/style.css';
 import './module-header.css';
 
-const getInitialLang = () => navigator.language?.toLowerCase().includes('zh') ? 'zh' : 'en';
 const i18n = {
   zh: {
     title:'推测解码原理可视化', subtitle:'调整候选配置，观察验证后实际接受的 Token、KV 和输出速度',
@@ -274,7 +275,7 @@ function AcceptanceSummary({s,t,cumulative=false}) {
 function Race({s,t,playing,onPlay,onNext,onReset,onInspect,config,setConfig}) {
   const r=s.race;
   return <section className="spec-card space-y-3" data-testid="speculative-race">
-    <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-lg font-bold">{t('raceTitle')}</h2><p className="mt-1 max-w-4xl text-xs leading-relaxed text-slate-500">{t('raceHint')}</p></div><Controls t={t} label="raceControls" playing={playing} done={r.isDone} onPlay={onPlay} onNext={onNext} onReset={onReset}/></div>
+    <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 data-section-anchor="speculativedecoding-1" className="text-lg font-bold">{t('raceTitle')}</h2><p className="mt-1 max-w-4xl text-xs leading-relaxed text-slate-500">{t('raceHint')}</p></div><Controls t={t} label="raceControls" playing={playing} done={r.isDone} onPlay={onPlay} onNext={onNext} onReset={onReset}/></div>
     <Settings s={s} config={config} setConfig={setConfig} t={t}/>
     <AcceptanceSummary s={s} t={t} cumulative/>
     <div className="flex flex-wrap justify-between gap-2 text-xs"><span>{t('seed')}: <strong>{[...PREFIX,STREAM[0]].join(' ')}</strong></span><span className="font-semibold tabular-nums">{r.elapsed.toFixed(1)} / {r.timeBudget} · {t('seconds')}</span></div>
@@ -416,7 +417,7 @@ function Verification({s,t}) {
 }
 function Workbench({s,t,playing,onPlay,onNext,onReset,onRound,onSeek,selectedNode,setSelectedNode}) {
   return <section className="spec-card" data-testid="speculative-architecture">
-    <h2 className="text-lg font-bold">{t('architecture')}</h2><p className="mb-4 mt-1 text-xs leading-relaxed text-slate-500">{t('architectureHint')}</p>
+    <h2 data-section-anchor="speculativedecoding-2" className="text-lg font-bold">{t('architecture')}</h2><p className="mb-4 mt-1 text-xs leading-relaxed text-slate-500">{t('architectureHint')}</p>
     <div className="grid min-w-0 items-start gap-3 xl:grid-cols-[310px_minmax(0,1fr)]">
       <Relation s={s} t={t}/>
       <div className="spec-workbench min-w-0 space-y-3" data-testid="algorithm-workbench">
@@ -475,7 +476,7 @@ function Principles({t}) {
   const {greedy:g,sampling:m}=deriveCorrectnessExample(verified,corrected,draw,proposal);
   const percent=value=>`${Math.round(value*100)}%`;
   return <section className="spec-card" data-testid="correctness-principles">
-    <h2 className="text-lg font-bold">{t('correctness')}</h2><p className="mb-4 mt-1 text-xs leading-relaxed text-slate-500">{t('correctnessHint')}</p>
+    <h2 data-section-anchor="speculativedecoding-3" className="text-lg font-bold">{t('correctness')}</h2><p className="mb-4 mt-1 text-xs leading-relaxed text-slate-500">{t('correctnessHint')}</p>
     <div className="grid min-w-0 items-start gap-4 lg:grid-cols-2">
       <section className="min-w-0 space-y-3" data-testid="greedy-example">
         <h3 className="text-sm font-bold">{t('simpleGreedy')}</h3><p className="text-xs leading-relaxed text-slate-600">{t('simpleGreedyHint')}</p>
@@ -519,7 +520,7 @@ function Principles({t}) {
   </section>;
 }
 export default function SpeculativeDecoding() {
-  const [config,setConfigState]=useState({algorithm:'eagle2',depth:3,width:2,budget:8,blockSize:4});
+  const [config,setConfigState]=useExperimentState('SpeculativeDecoding.config', {algorithm:'eagle2',depth:3,width:2,budget:8,blockSize:4});
   const [phase,setPhase]=useState('idle');
   const [step,setStep]=useState(0);
   const [roundIndex,setRoundIndex]=useState(0);
@@ -527,7 +528,7 @@ export default function SpeculativeDecoding() {
   const [raceStep,setRaceStep]=useState(0);
   const [racePlaying,setRacePlaying]=useState(false);
   const [selectedNode,setSelectedNode]=useState(null);
-  const [lang,setLang]=useState(getInitialLang);
+  const [lang] = useLanguage();
   const s=useMemo(()=>deriveSpeculativeSnapshot({...config,phase,step,roundIndex,raceStep}),[config,phase,step,roundIndex,raceStep]);
   const t=key=>i18n[lang][key]??key;
   const resetTrace=()=>{setPhase('idle');setStep(0);setIsPlaying(false);setSelectedNode(null);};
@@ -557,13 +558,13 @@ export default function SpeculativeDecoding() {
     const timer=setTimeout(()=>setRaceStep(value=>Math.min(s.race.maxStep,value+1)),150);
     return ()=>clearTimeout(timer);
   },[racePlaying,raceStep,s.race.isDone]);
-  return <div className="spec-page min-h-full bg-slate-50 text-slate-800">
-    <header className="module-header-card"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold">{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div><button onClick={()=>setLang(value=>value==='zh'?'en':'zh')} aria-label={t('language')} className="spec-icon !w-auto gap-1 !px-2 text-xs"><Globe size={15}/>{t('langToggle')}</button></div></div></header>
-    <main className="mx-auto max-w-[1600px] space-y-3 p-3 lg:p-4">
+  return <div className="chapter-page spec-page min-h-full bg-slate-50 text-slate-800">
+    <header className="module-header-card chapter-header"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold">{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div></div></div></header>
+    <div className="chapter-body mx-auto max-w-[1600px] space-y-3 p-3 lg:p-4">
       <Race s={s} t={t} config={config} setConfig={setConfig} playing={racePlaying} onPlay={racePlay} onNext={raceNext} onReset={resetRace} onInspect={inspect}/>
       <Principles t={t}/>
       <Workbench s={s} t={t} playing={isPlaying} onPlay={togglePlay} onNext={()=>{setIsPlaying(false);handleNextStep();}} onReset={resetTrace} onRound={inspect} onSeek={seek} selectedNode={selectedNode} setSelectedNode={setSelectedNode}/>
       <References s={s} t={t}/>
-    </main>
+    </div>
   </div>;
 }

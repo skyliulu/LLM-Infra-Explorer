@@ -1,0 +1,635 @@
+{
+  "dimensions": {
+    "chapter": [
+      "llm",
+      "parallel",
+      "flash",
+      "sparseattn",
+      "cachearch",
+      "flashdecode",
+      "speculative",
+      "quantization",
+      "engram",
+      "radixcache",
+      "dpattention",
+      "linearattn"
+    ],
+    "language": [
+      "en",
+      "zh"
+    ],
+    "viewport": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "chapter",
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "llm en desktop",
+      "state": {
+        "chapter": "llm",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "parallel en desktop",
+      "state": {
+        "chapter": "parallel",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "flash en desktop",
+      "state": {
+        "chapter": "flash",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "sparseattn en desktop",
+      "state": {
+        "chapter": "sparseattn",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "cachearch en desktop",
+      "state": {
+        "chapter": "cachearch",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "flashdecode en desktop",
+      "state": {
+        "chapter": "flashdecode",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "speculative en desktop",
+      "state": {
+        "chapter": "speculative",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "quantization en desktop",
+      "state": {
+        "chapter": "quantization",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "engram en desktop",
+      "state": {
+        "chapter": "engram",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "radixcache en desktop",
+      "state": {
+        "chapter": "radixcache",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "dpattention en desktop",
+      "state": {
+        "chapter": "dpattention",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "linearattn en desktop",
+      "state": {
+        "chapter": "linearattn",
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "llm zh mobile",
+      "state": {
+        "chapter": "llm",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "parallel zh mobile",
+      "state": {
+        "chapter": "parallel",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "flash zh mobile",
+      "state": {
+        "chapter": "flash",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "sparseattn zh mobile",
+      "state": {
+        "chapter": "sparseattn",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "cachearch zh mobile",
+      "state": {
+        "chapter": "cachearch",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "flashdecode zh mobile",
+      "state": {
+        "chapter": "flashdecode",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "speculative zh mobile",
+      "state": {
+        "chapter": "speculative",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "quantization zh mobile",
+      "state": {
+        "chapter": "quantization",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "engram zh mobile",
+      "state": {
+        "chapter": "engram",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "radixcache zh mobile",
+      "state": {
+        "chapter": "radixcache",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "dpattention zh mobile",
+      "state": {
+        "chapter": "dpattention",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "linearattn zh mobile",
+      "state": {
+        "chapter": "linearattn",
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "single chapter header and utility bar",
+        "consistent outer gutter and card padding",
+        "no page horizontal overflow"
+      ]
+    },
+    {
+      "name": "llm en mobile",
+      "state": {
+        "chapter": "llm",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "parallel en mobile",
+      "state": {
+        "chapter": "parallel",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "flash en mobile",
+      "state": {
+        "chapter": "flash",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "sparseattn en mobile",
+      "state": {
+        "chapter": "sparseattn",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "cachearch en mobile",
+      "state": {
+        "chapter": "cachearch",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "flashdecode en mobile",
+      "state": {
+        "chapter": "flashdecode",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "speculative en mobile",
+      "state": {
+        "chapter": "speculative",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "quantization en mobile",
+      "state": {
+        "chapter": "quantization",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "engram en mobile",
+      "state": {
+        "chapter": "engram",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "radixcache en mobile",
+      "state": {
+        "chapter": "radixcache",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "dpattention en mobile",
+      "state": {
+        "chapter": "dpattention",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "linearattn en mobile",
+      "state": {
+        "chapter": "linearattn",
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "llm zh desktop",
+      "state": {
+        "chapter": "llm",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "parallel zh desktop",
+      "state": {
+        "chapter": "parallel",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "flash zh desktop",
+      "state": {
+        "chapter": "flash",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "sparseattn zh desktop",
+      "state": {
+        "chapter": "sparseattn",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "cachearch zh desktop",
+      "state": {
+        "chapter": "cachearch",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "flashdecode zh desktop",
+      "state": {
+        "chapter": "flashdecode",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "speculative zh desktop",
+      "state": {
+        "chapter": "speculative",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "quantization zh desktop",
+      "state": {
+        "chapter": "quantization",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "engram zh desktop",
+      "state": {
+        "chapter": "engram",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "radixcache zh desktop",
+      "state": {
+        "chapter": "radixcache",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "dpattention zh desktop",
+      "state": {
+        "chapter": "dpattention",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    },
+    {
+      "name": "linearattn zh desktop",
+      "state": {
+        "chapter": "linearattn",
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "no page horizontal overflow",
+        "no header overflow"
+      ]
+    }
+  ]
+}

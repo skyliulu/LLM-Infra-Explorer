@@ -1,7 +1,9 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Gauge, Globe, Pause, Play, RotateCcw, Sigma, SkipForward, Workflow } from 'lucide-react';
-import { getInitialLang, i18n } from './linear-attention/content';
+import { Gauge, Pause, Play, RotateCcw, Sigma, SkipForward, Workflow } from 'lucide-react';
+import { i18n } from './linear-attention/content';
 import { getAttentionState, TRACKS } from './linear-attention/model';
 import { ArchitectureComparison } from './linear-attention/ArchitectureComparison';
 import { Inspector } from './linear-attention/Inspector';
@@ -12,18 +14,18 @@ const D_OPTIONS = [16, 32, 64, 128];
 const DEMO_N = 8;
 
 function LinearAttention() {
-  const [lang, setLang] = useState(getInitialLang);
-  const [targetMode, setTargetMode] = useState('linear');
-  const [detailMode, setDetailMode] = useState('linear');
-  const [contextMode, setContextMode] = useState('decode');
+  const [lang] = useLanguage();
+  const [targetMode, setTargetMode] = useExperimentState('LinearAttention.targetMode', 'linear');
+  const [detailMode, setDetailMode] = useExperimentState('LinearAttention.detailMode', 'linear');
+  const [contextMode, setContextMode] = useExperimentState('LinearAttention.contextMode', 'decode');
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [contextLength, setContextLength] = useState(1024);
-  const [dk, setDk] = useState(32);
-  const [dv, setDv] = useState(32);
+  const [contextLength, setContextLength] = useExperimentState('LinearAttention.contextLength', 1024);
+  const [dk, setDk] = useExperimentState('LinearAttention.dk', 32);
+  const [dv, setDv] = useExperimentState('LinearAttention.dv', 32);
   const [tokenIndex, setTokenIndex] = useState(0);
-  const [gateStrength, setGateStrength] = useState(0.45);
+  const [gateStrength, setGateStrength] = useExperimentState('LinearAttention.gateStrength', 0.45);
   const t = (key) => i18n[lang][key] ?? key;
   const detailTrack = TRACKS[detailMode];
   const isDone = phase === 'done';
@@ -132,10 +134,10 @@ function LinearAttention() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-3 text-slate-800 sm:p-4 lg:p-5">
+    <div className="chapter-page min-h-screen bg-slate-50 p-3 text-slate-800 sm:p-4 lg:p-5">
       <style>{'.linear-focus:focus-visible{outline:3px solid rgba(99,102,241,.35);outline-offset:2px}@media(prefers-reduced-motion:reduce){.linear-lab *,.linear-lab *::before,.linear-lab *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}'}</style>
-      <div className="linear-lab mx-auto max-w-[1560px] space-y-4">
-        <header className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="chapter-layout linear-lab mx-auto max-w-[1560px] space-y-4">
+        <header className="chapter-header rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm"><Sigma size={20} /></div>
@@ -160,21 +162,12 @@ function LinearAttention() {
                 ))}
               </div>
 
-              <button
-                type="button"
-                onClick={() => setLang((current) => current === 'zh' ? 'en' : 'zh')}
-                aria-label={t('language')}
-                title={t('language')}
-                className="linear-focus flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
-              >
-                <Globe size={16} />
-                {t('langToggle')}
-              </button>
+
 
               <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1">
-                <button type="button" onClick={reset} title={t('reset')} aria-label={t('reset')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><RotateCcw size={18} /></button>
+                <div className="chapter-playback"><button type="button" onClick={reset} title={t('reset')} aria-label={t('reset')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><RotateCcw size={18} /></button>
                 <button type="button" onClick={togglePlay} title={isPlaying ? t('pause') : t('play')} aria-label={isPlaying ? t('pause') : t('play')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white transition hover:bg-indigo-700">{isPlaying ? <Pause size={18} /> : <Play size={18} />}</button>
-                <button type="button" onClick={handleNextStep} title={t('next')} aria-label={t('next')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><SkipForward size={18} /></button>
+                <button type="button" onClick={handleNextStep} title={t('next')} aria-label={t('next')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><SkipForward size={18} /></button></div>
               </div>
             </div>
           </div>
@@ -248,7 +241,7 @@ function LinearAttention() {
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><Workflow size={16} /></div>
                 <div className="min-w-0">
                   <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-indigo-600">{t('executionLevel')}</div>
-                  <h2 className="mt-1 text-base font-bold text-slate-950">{t('implementationDetailTitle')}</h2>
+                  <h2 data-section-anchor="linearattention-1" className="mt-1 text-base font-bold text-slate-950">{t('implementationDetailTitle')}</h2>
                   <p className="mt-1 max-w-3xl text-[11px] leading-5 text-slate-500">{t('implementationDetailLead')}</p>
                 </div>
               </div>
@@ -271,9 +264,9 @@ function LinearAttention() {
             </div>
 
             <div className="mt-4 grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-              <main className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5" aria-live="polite">
+              <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5" aria-live="polite">
                 <StageCanvas mode={detailMode} step={step} state={detailState} t={t} gateStrength={gateStrength} setGateStrength={setGateStrength} onSelectStep={selectStep} isPlaying={isPlaying} phase={phase} />
-              </main>
+              </section>
               <Inspector mode={detailMode} step={step} state={detailState} t={t} />
             </div>
           </section>

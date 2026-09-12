@@ -1,5 +1,7 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, ArrowDown, ArrowUp, SplitSquareHorizontal, Combine, Braces, Calculator, HardDrive, MemoryStick, Info, Globe } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, ArrowDown, ArrowUp, SplitSquareHorizontal, Combine, Braces, Calculator, HardDrive, MemoryStick, Info, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { NUM_WORK_UNITS, deriveFlashDecodeSnapshot } from './flash-decode/model';
 
@@ -236,14 +238,13 @@ const i18n = {
   }
 };
 
-const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 const App = () => {
-  const [algorithm, setAlgorithm] = useState('optimized'); // 'simple' | 'optimized'
-  const [execution, setExecution] = useState('split');
-  const [kvLayout, setKvLayout] = useState('contiguous');
-  const [headMode, setHeadMode] = useState('gqa');
-  const [splitSetting, setSplitSetting] = useState('auto');
+  const [algorithm, setAlgorithm] = useExperimentState('FlashDecode.algorithm', 'optimized'); // 'simple' | 'optimized'
+  const [execution, setExecution] = useExperimentState('FlashDecode.execution', 'split');
+  const [kvLayout, setKvLayout] = useExperimentState('FlashDecode.kvLayout', 'contiguous');
+  const [headMode, setHeadMode] = useExperimentState('FlashDecode.headMode', 'gqa');
+  const [splitSetting, setSplitSetting] = useExperimentState('FlashDecode.splitSetting', 'auto');
   const [step, setStep] = useState(0); 
   /* Steps:
    0: Idle (等待开始)
@@ -256,7 +257,7 @@ const App = () => {
   */
   const [phase, setPhase] = useState('idle');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [lang, setLang] = useState(getInitialLang());
+  const [lang] = useLanguage();
   const t = (k) => i18n[lang][k] ?? k;
   const snapshot = useMemo(() => deriveFlashDecodeSnapshot({
     algorithm,
@@ -340,13 +341,13 @@ const App = () => {
             <div>  kv_head = q_head // q_per_kv_head <span className="text-slate-500">{t('pyHeadMap')}</span></div>
             <div>  k, v = resolve_kv(k, v, block_table) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
           </div>
-          
+
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
             <div className="text-indigo-400 font-bold text-[10px] mb-1">{t('py1Step1')}</div>
             <div>  num_blocks = seq_len_kv // block_size</div>
             <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(num_blocks):</div>
           </div>
-          
+
           <div className={`mt-2 ${isLocalCompute ? "bg-amber-900/40 text-amber-200 px-2 py-1 -mx-2 rounded border-l-2 border-amber-400" : ""}`}>
             <div className="text-amber-400 font-bold text-[10px] mb-1">{t('py1Step2')}</div>
             <div>      k_b, v_b = k[i], v[i] <span className="text-slate-500">{t('py1DynamicLoad')}</span></div>
@@ -373,7 +374,7 @@ const App = () => {
             <div>      final_out += block_out[i] * weight</div>
             <div>  final_out = final_out / total_sum_exp</div>
           </div>
-          
+
           <div className={snapshot.outputReady ? "text-emerald-400 font-bold mt-2" : "mt-2"}>  <span className="text-emerald-400">return</span> final_out <span className="text-slate-500">{t('py1Return')}</span></div>
         </div>
       );
@@ -385,13 +386,13 @@ const App = () => {
             <div>  kv_head = q_head // q_per_kv_head <span className="text-slate-500">{t('pyHeadMap')}</span></div>
             <div>  k, v = resolve_kv(k, v, block_table) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
           </div>
-          
+
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
             <div className="text-indigo-400 font-bold text-[10px] mb-1">{t('py2Step1')}</div>
             <div>  partials = []</div>
             <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(num_splits):</div>
           </div>
-          
+
           <div className={`mt-2 ${isLocalCompute ? "bg-amber-900/40 text-amber-200 px-2 py-1 -mx-2 rounded border-l-2 border-amber-400" : ""}`}>
             <div className="text-amber-400 font-bold text-[10px] mb-1">{t('py2Step2')}</div>
             <div>      scores = (q @ k[i].T) / sqrt(d)</div>
@@ -418,7 +419,7 @@ const App = () => {
             <div>      weight = exp(L_i - L_global) <span className="text-slate-500">{t('py2WeightAlign')}</span></div>
             <div>      O_global += O_i * weight</div>
           </div>
-          
+
           <div className={snapshot.outputReady ? "text-emerald-400 font-bold mt-2" : "mt-2"}>  <span className="text-emerald-400">return</span> O_global <span className="text-slate-500">{t('py2Return')}</span></div>
         </div>
       );
@@ -426,7 +427,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4 lg:p-6 selection:bg-indigo-100">
+    <div className="chapter-page min-h-screen bg-slate-50 text-slate-800 font-sans p-4 lg:p-6 selection:bg-indigo-100">
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(4px); }
@@ -436,11 +437,11 @@ const App = () => {
           animation: fadeIn 0.4s ease-out forwards;
         }
       `}</style>
-      
-      <div className="max-w-[90rem] mx-auto space-y-6">
-        
+
+      <div className="chapter-layout max-w-[90rem] mx-auto space-y-6">
+
         {/* 顶部控制栏 */}
-        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row md:flex-wrap items-center justify-between gap-4">
+        <div className="chapter-header bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row md:flex-wrap items-center justify-between gap-4">
           <div className="min-w-0 flex-1">
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900">
               <Zap className="text-amber-500" />
@@ -448,7 +449,7 @@ const App = () => {
             </h1>
             <p className="text-slate-500 text-sm mt-1">{t('subtitle')}</p>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-3">
             <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 mr-2">
               <button disabled={!snapshot.isSplit} title={!snapshot.isSplit ? t('splitControlsDisabled') : undefined} onClick={() => handleAlgChange('simple')} className={`flex items-center gap-1.5 px-3 py-1.5 text-xs lg:text-sm font-semibold rounded-md transition-all disabled:cursor-not-allowed disabled:opacity-45 ${algorithm === 'simple' ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}>
@@ -459,14 +460,14 @@ const App = () => {
               </button>
             </div>
 
-            <button onClick={() => setLang((prev) => (prev === 'zh' ? 'en' : 'zh'))} className="px-2 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition flex items-center gap-1" title="Language"><Globe size={16} /> {t('langToggle')}</button>
-            <button type="button" onClick={reset} aria-label={t('reset')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200" title={t('reset')}><RotateCcw size={18} /></button>
+
+            <div className="chapter-playback"><button type="button" onClick={reset} aria-label={t('reset')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200" title={t('reset')}><RotateCcw size={18} /></button>
             <button type="button" onClick={togglePlay} aria-label={isPlaying ? t('pause') : snapshot.outputReady ? t('replay') : t('play')} title={isPlaying ? t('pause') : snapshot.outputReady ? t('replay') : t('play')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm transition hover:bg-blue-700">
                {isPlaying ? <Pause size={18} /> : <Play size={18} />}
             </button>
              <button type="button" onClick={() => { setIsPlaying(false); handleNextStep(); }} disabled={isPlaying || snapshot.outputReady} aria-label={t('next')} title={t('next')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
               <SkipForward size={18} />
-            </button>
+            </button></div>
           </div>
 
           <div className="w-full border-t border-slate-100 pt-3 flex flex-wrap items-center gap-2 text-[11px]" data-testid="flashdecode-technical-controls">
@@ -511,7 +512,7 @@ const App = () => {
           <div className="absolute top-[-20px] right-[-10px] p-4 text-indigo-200/40">
             <Database size={120} />
           </div>
-          <h2 className="text-base md:text-lg font-bold mb-2 flex items-center gap-2 text-indigo-900">
+          <h2 data-section-anchor="flashdecode-1" className="text-base md:text-lg font-bold mb-2 flex items-center gap-2 text-indigo-900">
             <HardDrive size={18} className="text-indigo-500"/> {t('challenge')}
           </h2>
           <ul className="list-disc pl-5 text-sm leading-relaxed max-w-5xl space-y-1 relative z-10 text-slate-600">
@@ -521,17 +522,17 @@ const App = () => {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
-          
+
           <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col min-w-0 overflow-hidden relative xl:col-span-7">
              <div className="flex items-center justify-between shrink-0 mb-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
+              <h2 data-section-anchor="flashdecode-2" className="text-lg font-semibold flex items-center gap-2">
                 <Cpu className="text-indigo-500" size={20} /> {t('dataFlow')}
               </h2>
               <span className={`text-xs px-2 py-1 rounded-full font-mono bg-blue-50 text-blue-700 border border-blue-200`}>
                 Decoding Phase
               </span>
             </div>
-            
+
             <div className="mb-2 flex flex-wrap gap-1.5 text-[10px] md:text-[11px]" data-testid="flashdecode-derived-metrics">
               <span className="flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-slate-600">
                 <strong>{t('dimensions')}</strong><MathFormula>{String.raw`N=${snapshot.sequenceLength},\ d=${snapshot.headDim}`}</MathFormula>
@@ -551,7 +552,7 @@ const App = () => {
             </div>
 
             <div className="flex-1 flex flex-col gap-2 overflow-x-auto pb-4 pt-2">
-              
+
               <div className={`relative border-2 rounded-xl p-4 mt-2 transition-all duration-500
                 ${['splitViews', 'resolveKv', 'localBatch2', 'writeOutput'].includes(snapshot.operation) ? 'border-indigo-400 bg-indigo-50/30 ring-4 ring-indigo-50' : 'border-slate-200 bg-slate-50/50'}
               `}>
@@ -758,7 +759,7 @@ const App = () => {
           </div>
 
           <div className="bg-slate-900 rounded-2xl p-5 md:p-6 shadow-lg border border-slate-800 text-slate-300 h-full flex flex-col min-w-0 xl:col-span-5">
-             <h2 className="text-lg font-semibold mb-4 flex items-center justify-between text-white shrink-0">
+             <h2 data-section-anchor="flashdecode-3" className="text-lg font-semibold mb-4 flex items-center justify-between text-white shrink-0">
                <div className="flex items-center gap-2">
                  <Code className="text-emerald-400" size={20} /> {t('pythonCode')}
                </div>
@@ -778,12 +779,12 @@ const App = () => {
             <Braces className="text-amber-400" size={24}/>
             {t('mathPrinciple')}
           </h3>
-          
+
           <div className="space-y-4 text-sm md:text-base leading-relaxed max-w-5xl min-h-[160px] relative z-10">
             {snapshot.operation === 'idle' && (
               <p className="opacity-90">{t('waitStart')}<br/><span className="text-indigo-300 text-sm italic flex items-center gap-2 mt-2"><Info size={14}/> {t('clickPlay')}</span></p>
             )}
-            
+
             {snapshot.operation === 'splitViews' && (
               <div className="animate-fade-in">
                 <h4 className="font-bold text-indigo-300 text-base mb-2 flex items-center gap-2">

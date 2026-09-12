@@ -1,3 +1,4 @@
+import {useExperimentState} from '../../lib/ExperimentContext';
 import React, { useState } from 'react';
 import { ChevronDown, Microscope, RotateCcw } from 'lucide-react';
 import { MathFormula } from '../linear-attention/MathFormula';
@@ -57,7 +58,7 @@ const i18n = {
 
 export default function KvRepresentation({ lang }) {
   const t = key => i18n[lang][key] ?? key;
-  const [input, setInput] = useState(KV_DEFAULTS);
+  const [input, setInput] = useExperimentState('llm-inference/KvRepresentation.input', KV_DEFAULTS);
   const model = deriveKvRepresentationModel(input);
   const update = patch => setInput(prev => {
     const next = deriveKvRepresentationModel({ ...prev, ...patch });

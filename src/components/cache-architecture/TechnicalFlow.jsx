@@ -36,7 +36,7 @@ export default function TechnicalFlow({m,lang,ShapeTensor,t:shared}) {
   selected==='projection'?`C\\in\\mathbb{R}^{${v.projectionRows}\\times${m.mainDim}},\\quad K_{\\mathrm{index}}\\in\\mathbb{R}^{${v.projectionRows}\\times${m.indexDim}}`:
   selected==='window'?String.raw`KV^{\mathrm{SWA}}_{21},\ldots,KV^{\mathrm{SWA}}_{40}`:String.raw`O_{21},\ldots,O_{40}\ \longrightarrow\ \mathrm{logits}`;
  const node=(id,children)=> <button className={`ct-node ${id} ct-${status(id)}`} data-state={status(id)} aria-label={t(id)} aria-pressed={selected===id} onClick={()=>setSelected(id)}>{stateBadge(id)}{children}</button>;
- return <section className="ca-ced ct-section"><div className="ca-heading"><div><h2>{t('title')}</h2><p>{t('hint')}</p></div><strong className="ct-phase">{shared(m.phase)}</strong></div>
+ return <section className="ca-ced ct-section"><div className="ca-heading"><div><h2 data-section-anchor="technicalflow-1">{t('title')}</h2><p>{t('hint')}</p></div><strong className="ct-phase">{shared(m.phase)}</strong></div>
   <div className="ct-playback" data-testid="ced-playback">
    <div className="ct-playback-top"><strong>{et('title')}</strong><div className="ct-playback-controls">
     <button onClick={reset} aria-label={et('reset')} title={et('reset')}><RotateCcw size={16}/></button>

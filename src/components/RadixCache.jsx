@@ -1,3 +1,5 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Play, Pause, SkipForward, RotateCcw, Database, Network, Trash2, Code, Activity, Lock, Unlock, ArrowDownToLine, Grid2X2, SplitSquareHorizontal, Info } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
@@ -22,7 +24,7 @@ const i18n = {
     replay: '重播',
     play: '播放',
     next: '下一步',
-    
+
     standardStep0: '等待请求接入...',
     standardStep1: '1. 请求 A 分配独立 KV 槽位',
     standardStep2: '2. 请求 A 完成，缓存保留且解除锁定',
@@ -44,7 +46,7 @@ const i18n = {
     radixStep10: '10. 淘汰未锁定的 LRU 叶子 A，空闲槽位增至 5',
     radixStep11: '11. 为请求 D 分配 5 个空闲槽位并锁定路径',
     radixStep12: '12. 请求 D 完成，所有缓存节点均可参与后续 LRU',
-    
+
     // UI Elements
     memUsage: '显存池占用 (物理块)',
     lockRef: '引用锁',
@@ -112,7 +114,7 @@ const i18n = {
     pyComment9: '# SGLang不主动合并，仅当父节点变为空叶子时入堆',
     pyCommentFinish: '# 请求完成时递减最后节点及其祖先的 lock_ref',
     pyCommentCapacity: '# 分配前计算缺口，而不是等待池占用达到 100%',
-    
+
     // Deep Dive
     memWallTitle: '传统 KV Cache 的显存黑洞',
     memWallDesc: '本页用“每个请求独立持有 KV 槽位”作为对照基线。并发请求共享 System Prompt 或长文档时，这种基线会重复保存相同前缀；真实引擎是否连续分配取决于其分页与分配器实现。',
@@ -136,7 +138,7 @@ const i18n = {
     replay: 'Replay',
     play: 'Play',
     next: 'Next',
-    
+
     standardStep0: 'Waiting for requests...',
     standardStep1: '1. Allocate independent KV slots for Request A',
     standardStep2: '2. Request A finishes; keep its cache and release locks',
@@ -158,7 +160,7 @@ const i18n = {
     radixStep10: '10. Evict unlocked LRU leaf A; free capacity becomes 5',
     radixStep11: '11. Allocate 5 free slots for Request D and lock its path',
     radixStep12: '12. Request D finishes; all nodes become LRU-eligible',
-    
+
     memUsage: 'Memory Pool (Blocks)',
     lockRef: 'Lock Ref',
     hitRate: 'Cumulative Prefix Reuse',
@@ -225,7 +227,7 @@ const i18n = {
     pyComment9: '# SGLang skips merge, pushes parent to heap if childless',
     pyCommentFinish: '# On completion, decrement lock_ref on the last node and ancestors',
     pyCommentCapacity: '# Compute the deficit before allocation; the pool need not be 100% full',
-    
+
     memWallTitle: 'The Memory Black Hole of Traditional KV Cache',
     memWallDesc: 'This page uses per-request KV ownership as a comparison baseline. Shared system prompts or documents duplicate prefix KV under that policy; whether blocks are contiguous depends on the real engine allocator and paging design.',
     radixTreeTitle: '1. Radix Tree Logical Sharing',
@@ -239,14 +241,13 @@ const i18n = {
   }
 };
 
-const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 const App = () => {
-  const [modelType, setModelType] = useState('radix');
+  const [modelType, setModelType] = useExperimentState('RadixCache.modelType', 'radix');
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [lang, setLang] = useState(getInitialLang());
+  const [lang] = useLanguage();
   const t = (k) => i18n[lang][k] ?? k;
   const snapshot = useMemo(
     () => deriveRadixCacheState({ mode: modelType, step, phase }),
@@ -326,12 +327,12 @@ const App = () => {
       rose: 'bg-rose-50 border-rose-300 text-rose-800',
       sky: 'bg-sky-50 border-sky-300 text-sky-800',
     };
-    
+
     return (
       <div className="flex flex-col items-center relative group animate-radix-fade-in-fast">
         {/* Vertical line from horizontal branch to this node */}
         {!isRoot(node) && <div className="w-px h-6 bg-slate-300 absolute -top-6 left-1/2 -translate-x-1/2 z-0"></div>}
-        
+
         {/* Horizontal branch lines handling dynamic widths perfectly */}
         {hasSiblings && isFirst && (
           <div className="absolute h-px bg-slate-300 -top-6 left-1/2 z-0" style={{ width: 'calc(50% + 1rem)' }}></div>
@@ -372,7 +373,7 @@ const App = () => {
             </span>
             {node.evictWarning && <span className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-rose-200 text-rose-800 font-bold border border-rose-400 absolute -top-3 right-2 shadow-sm z-20"><Trash2 size={10}/> {t('target')}</span>}
           </div>
-          
+
           <div className="flex justify-between items-end mt-1 pt-1.5 border-t border-black/10">
              <div className="flex flex-col">
                <span className="text-[10px] font-bold opacity-70 uppercase tracking-widest">{t(node.labelKey)}</span>
@@ -392,7 +393,7 @@ const App = () => {
           <div className="flex flex-col items-center w-full mt-0">
             {/* Vertical line going down to horizontal fork */}
             <div className="w-px h-6 bg-slate-300 relative z-0"></div>
-            
+
             <div className="flex flex-row justify-center gap-8 relative pt-6 w-full items-start">
               {node.children.map((child, idx) => (
                 <TreeNode 
@@ -415,11 +416,11 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4 lg:p-6 selection:bg-indigo-100">
-      <div className="max-w-[90rem] mx-auto space-y-4 md:space-y-6">
-        
+    <div className="chapter-page min-h-screen bg-slate-50 text-slate-800 font-sans p-4 lg:p-6 selection:bg-indigo-100">
+      <div className="chapter-layout max-w-[90rem] mx-auto space-y-4 md:space-y-6">
+
         {/* Top Control Bar */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col xl:flex-row items-center justify-between gap-4">
+        <div className="chapter-header bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col xl:flex-row items-center justify-between gap-4">
           <div className="flex flex-col text-center xl:text-left">
             <h1 className="text-xl md:text-2xl font-bold flex items-center justify-center xl:justify-start gap-2 text-indigo-900">
               <Network className="text-indigo-500" />
@@ -432,7 +433,7 @@ const App = () => {
               {t('simplifiedScope')}
             </span>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-3">
             <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
               <button aria-pressed={modelType === 'standard'} onClick={() => handleModelTypeChange('standard')} className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] md:text-sm font-semibold rounded-md transition-all ${modelType === 'standard' ? 'bg-white shadow-sm text-slate-700' : 'text-slate-500 hover:text-slate-700'}`}>
@@ -442,14 +443,14 @@ const App = () => {
                 <Network size={14} /> {t('radix')}
               </button>
             </div>
-            <button aria-label={t('langToggle')} onClick={() => setLang((prev) => (prev === 'zh' ? 'en' : 'zh'))} className="min-w-10 whitespace-nowrap rounded-lg bg-slate-100 px-2 py-2 text-center text-sm font-bold text-slate-600 transition hover:bg-slate-200">{t('langToggle')}</button>
-            <button type="button" aria-label={t('reset')} onClick={reset} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200" title={t('reset')}><RotateCcw size={18} /></button>
+
+            <div className="chapter-playback"><button type="button" aria-label={t('reset')} onClick={reset} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200" title={t('reset')}><RotateCcw size={18} /></button>
             <button type="button" aria-label={isPlaying ? t('pause') : phase === 'done' ? t('replay') : t('play')} title={isPlaying ? t('pause') : phase === 'done' ? t('replay') : t('play')} onClick={togglePlay} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm transition hover:bg-indigo-700">
               {isPlaying ? <Pause size={18} /> : <Play size={18} />}
             </button>
             <button type="button" aria-label={t('next')} title={t('next')} onClick={() => { setIsPlaying(false); handleNextStep(); }} disabled={isPlaying || phase === 'done'} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
               <SkipForward size={18} />
-            </button>
+            </button></div>
           </div>
         </div>
 
@@ -474,11 +475,11 @@ const App = () => {
 
         {/* Side-by-Side: Memory Layout + Physical Pool (Left) and Python Pseudocode (Right) */}
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-          
+
           {/* Left: Main Visualization Area (Tree/Linear View + Physical Pool) - spans 3 columns */}
           <div className="xl:col-span-3 flex flex-col">
             <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 relative flex flex-col flex-1">
-              
+
               {/* Header & Metrics */}
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
                 <div className="flex flex-col gap-1 w-full">
@@ -506,7 +507,7 @@ const App = () => {
                       <div className={`h-full rounded-full transition-all duration-500 ${pState.shortage > 0 ? 'bg-rose-500' : 'bg-indigo-500'}`} style={{width: `${Math.min(100, (pState.usedCount / TOTAL_KV_SLOTS) * 100)}%`}}></div>
                     </div>
                   </div>
-                  
+
                   {modelType === 'radix' && (
                     <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex flex-col items-end min-w-[120px] transition-all">
                       <span className="text-[10px] text-emerald-700 font-bold uppercase">{t('hitRate')}</span>
@@ -530,7 +531,7 @@ const App = () => {
 
               {/* The Tree / Linear View Container */}
               <div className="bg-slate-50/50 rounded-xl border-2 border-dashed border-slate-200 p-6 overflow-x-auto flex items-start justify-center relative min-h-[350px] scrollbar-thin">
-                
+
                 {step === 0 && (
                   <div className="absolute inset-0 flex items-center justify-center opacity-30 flex-col gap-4 text-slate-500">
                     <Database size={48} className="animate-bounce" />
@@ -545,7 +546,7 @@ const App = () => {
                        R
                      </div>
                      <div className="w-px h-6 bg-slate-300 relative z-0"></div>
-                     
+
                      <div className="flex flex-row justify-center relative pt-6 gap-8 w-full items-start">
                        {treeData.root.map((node, idx) => (
                          <TreeNode 
@@ -575,7 +576,7 @@ const App = () => {
                         <span className="font-bold">{RADIX_SUFFIX_A_TOKENS}</span>
                       </div>
                     </div>
-                    
+
                     {step >= 3 && (
                       <div className="flex flex-col gap-2 w-full bg-white p-4 rounded-xl border shadow-sm animate-radix-fade-in-fast relative">
                         {/* Redundancy Warning */}
@@ -631,13 +632,13 @@ const App = () => {
 
               {/* Divider between Layout and Physical Pool */}
               <div className="border-t border-slate-200 mt-6 pt-4">
-                <h2 className="text-sm font-semibold mb-4 text-slate-800 flex items-center justify-between border-b border-slate-100 pb-2">
+                <h2 data-section-anchor="radixcache-1" className="text-sm font-semibold mb-4 text-slate-800 flex items-center justify-between border-b border-slate-100 pb-2">
                   <div className="flex items-center gap-2">
                     <Grid2X2 className="text-indigo-500" size={16} /> {t('physicalPool')}
                   </div>
                   <span className="text-[10px] text-slate-500 font-mono bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{t('capacity')}: {TOTAL_KV_SLOTS} {t('pairedSlots')}</span>
                 </h2>
-                
+
                 <div className="flex flex-col justify-center items-center w-full">
                     <div className="mb-3 w-full rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-2 text-center text-[10px] font-medium text-indigo-700">{t('slotPairNote')}</div>
                     <div className="flex flex-col gap-4 w-full">
@@ -660,7 +661,7 @@ const App = () => {
                                } else if (b.status === 'targeted') {
                                   colorClasses = 'bg-rose-50 border-rose-400 text-rose-800 border-dashed animate-pulse ring-2 ring-rose-300 ring-offset-1';
                                }
-        
+
                                return (
                                  <div key={idx} className={`w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 shrink-0 rounded-lg border-2 transition-all duration-500 flex flex-col items-center justify-center relative group
                                    ${colorClasses}
@@ -673,7 +674,7 @@ const App = () => {
                                        <Lock size={12} />
                                      </div>
                                    )}
-                                   
+
                                    {/* Label */}
                                    {b.status !== 'empty' && (
                                       <span className="text-xs lg:text-sm font-black font-mono text-center leading-none mt-3">
@@ -687,7 +688,7 @@ const App = () => {
                         </div>
                       ))}
                     </div>
-                  
+
                   {/* Legend */}
                   {step > 0 && (
                     <div className="flex flex-wrap gap-3 mt-4 justify-center items-center text-[10px] text-slate-600 font-mono w-full px-2">
@@ -714,8 +715,8 @@ const App = () => {
                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
                </div>
-               
-               <h2 className="text-sm font-semibold mb-4 text-white border-b border-slate-700 pb-2 flex items-center justify-between mt-6">
+
+               <h2 data-section-anchor="radixcache-2" className="text-sm font-semibold mb-4 text-white border-b border-slate-700 pb-2 flex items-center justify-between mt-6">
                  <div className="flex items-center gap-2">
                    <Code className="text-emerald-400" size={16} /> {t('underlyingCode')}
                  </div>
@@ -813,11 +814,11 @@ const App = () => {
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -mr-10 -mt-20 opacity-60 pointer-events-none"></div>
-            
+
             <h3 className="text-lg font-bold mb-6 text-indigo-950 pb-3 flex items-center gap-2 border-b border-indigo-100 w-fit pr-10">
               <Info size={20} className="text-indigo-500"/> {t('principleAnalysis')}
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 relative z-10">
               <div className="flex flex-col gap-2">
                 <div className="font-bold text-rose-600 text-sm flex items-center gap-1.5 pb-1"><Database size={16}/> {t('memWallTitle')}</div>

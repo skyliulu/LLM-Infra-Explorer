@@ -51,6 +51,13 @@ Each file is a self-contained, interactive visualization:
 - `clsx` + `tailwind-merge` for conditional class composition
 - Responsive breakpoints: `md:` for sidebar/layout changes
 
+### Shared workbench conventions
+
+- Use `src/lib/chapter-registry.js` for routes, chapter descriptions, search aliases, and related chapters. Sidebar labels remain English; translated content uses the shared language provider.
+- Use `chapter-page`, `chapter-layout`, `chapter-header`, and `chapter-body` with `src/components/workbench.css` for outer spacing and surfaces. Keep algorithm geometry, density, semantic colors, and split ratios module-owned. Group reset/play/step so the group wraps together.
+- Use `useExperimentState` only for genuine experiment configuration. Configuration survives chapter navigation, including visits to Home; lifecycle/playing state stays local and unmounts on departure. Reload persistence is explicit through a share link, not implicit autosave.
+- Shareable primary settings need validators in `experiment-sharing.js`; never serialize timers, DOM geometry, derived snapshots, or arbitrary component state. Add a stable `data-section-anchor` to major headings for bilingual section links. Run `npm run check:workbench` when changing sharing or routing.
+
 ### Visualization component conventions
 
 Every visualization component (`src/components/*.jsx`) follows the durable project conventions below. Page structure and stage count remain concept-dependent; do not force a module into a layout that misrepresents the underlying algorithm.
@@ -59,7 +66,7 @@ Every visualization component (`src/components/*.jsx`) follows the durable proje
 
 **Top control bar structure (default):** Keep title + subtitle, primary comparison mode, reset/play/step controls, and language switching together when they affect the whole module. Place controls that affect only one lower canvas beside that canvas instead of in the global header.
 
-**i18n pattern:** All text goes through `t(key)`. Every component has a top-level `i18n = { zh: {...}, en: {...} }` object where `zh` and `en` keys are identical. Language is initialized via `getInitialLang()` (`navigator.language` check). Never hardcode display strings in JSX.
+**i18n pattern:** All text goes through `t(key)`. Every component has a top-level `i18n = { zh: {...}, en: {...} }` object where `zh` and `en` keys are identical. Language comes from shared `useLanguage()` in `src/lib/LanguageContext.jsx`. The site header owns the only language control; saved preference takes precedence over browser language, and sidebar labels remain English. Do not add chapter-local language state or buttons. Never hardcode display strings in JSX.
 
 **Mathematical notation:** All mathematical expressions must be authored as LaTeX and rendered through the shared KaTeX-backed math component (`MathFormula`). Do not imitate formulas with plain strings, Unicode subscripts/superscripts, or `font-mono`. Keep language-dependent prose in i18n, but keep language-independent LaTeX source outside the translation dictionaries. Complex equations must be paired with a variable explanation or a visualization that makes their role clear.
 

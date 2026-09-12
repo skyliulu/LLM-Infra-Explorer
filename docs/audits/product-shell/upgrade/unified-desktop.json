@@ -1,0 +1,122 @@
+[
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "llm",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 5,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "parallel",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 4,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "flash",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 5,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "sparseattn",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 1,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "cachearch",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 5,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "flashdecode",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 4,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "speculative",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 4,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "quantization",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 7,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "engram",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 5,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "radixcache",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 3,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "dpattention",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 2,
+    "tools": 1
+  },
+  {
+    "gutter": 20,
+    "headers": 1,
+    "id": "linearattn",
+    "overflow": false,
+    "padding": "18px",
+    "radius": "12px",
+    "sections": 2,
+    "tools": 1
+  }
+]

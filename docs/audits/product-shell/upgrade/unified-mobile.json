@@ -1,0 +1,86 @@
+[
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "llm",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "parallel",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "flash",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "sparseattn",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "cachearch",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "flashdecode",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "speculative",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "quantization",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "engram",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "radixcache",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "dpattention",
+    "overflow": false,
+    "padding": "14px"
+  },
+  {
+    "gutter": 12,
+    "headerOverflow": false,
+    "id": "linearattn",
+    "overflow": false,
+    "padding": "14px"
+  }
+]

@@ -1,6 +1,8 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Globe, Layers, RotateCcw } from 'lucide-react';
-import { getInitialLang, i18n } from './sparse-attention/content';
+import { ArrowLeft, ArrowRight, Layers, RotateCcw } from 'lucide-react';
+import { i18n } from './sparse-attention/content';
 import { canvasI18n } from './sparse-attention/canvas-content';
 import { CANVAS_DEFAULTS, deriveCanvasModel } from './sparse-attention/canvas-model';
 import { NodeMicroscope } from './sparse-attention/AttentionCanvas';
@@ -18,10 +20,10 @@ import {ExecutionControls,executionCopy} from './sparse-attention/ExecutionContr
 import './sparse-attention/execution.css';
 
 export default function SparseAttention() {
-  const [lang, setLang] = useState(getInitialLang);
-  const [input, setInput] = useState(CANVAS_DEFAULTS);
+  const [lang] = useLanguage();
+  const [input, setInput] = useExperimentState('SparseAttention.input', CANVAS_DEFAULTS);
   const [focus, setFocus] = useState('overview');
-  const [stepDelay,setStepDelay]=useState(2000);
+  const [stepDelay,setStepDelay]=useExperimentState('SparseAttention.stepDelay', 2000);
   const [progress,setProgress]=useState(null),[isPlaying,setIsPlaying]=useState(false);
   const model = useMemo(() => deriveCanvasModel(input, focus), [input, focus]);
   const execution=deriveExecution(model,progress),graphModel=executionView(model,execution);
@@ -46,10 +48,10 @@ export default function SparseAttention() {
       requestAnimationFrame(()=>{ pathRef.current?.scrollIntoView({block:'start'}); pathRef.current?.focus({preventScroll:true}); });
     }
   };
-  return <div className="sparse-module sc-module bg-slate-50 text-slate-800" data-testid="sparse-module" data-mode={model.mode} data-focus={model.focus} lang={lang}>
-    <header className="sa-card sa-header">
+  return <div className="chapter-page sparse-module sc-module bg-slate-50 text-slate-800" data-testid="sparse-module" data-mode={model.mode} data-focus={model.focus} lang={lang}>
+    <header className="sa-card sa-header chapter-header">
       <div className="sa-heading"><Layers size={25} className="text-indigo-600 shrink-0"/><div><h1>{t('title')}</h1><p>{t('canvasSubtitle')}</p></div></div>
-      <div className="sa-header-controls"><div className="sa-segment" role="group" aria-label={t('strategy')}>{['dsa','csa','hca'].map(mode => <button key={mode} aria-pressed={model.mode === mode} onClick={() => { update({ mode }); setFocus('overview'); }}>{t(`strategy_${mode}`)}</button>)}</div><div className="sa-actions"><button className="sa-language" onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')} aria-label={t('language')}><Globe size={16}/>{lang === 'zh' ? 'EN' : '中文'}</button><button className="sa-icon" aria-label={t('reset')} title={t('reset')} onClick={() => { setInput(CANVAS_DEFAULTS); setFocus('overview'); setProgress(null); setIsPlaying(false); }}><RotateCcw size={18}/></button></div></div>
+      <div className="sa-header-controls"><div className="sa-segment" role="group" aria-label={t('strategy')}>{['dsa','csa','hca'].map(mode => <button key={mode} aria-pressed={model.mode === mode} onClick={() => { update({ mode }); setFocus('overview'); }}>{t(`strategy_${mode}`)}</button>)}</div><div className="sa-actions"><button className="sa-icon" aria-label={t('reset')} title={t('reset')} onClick={() => { setInput(CANVAS_DEFAULTS); setFocus('overview'); setProgress(null); setIsPlaying(false); }}><RotateCcw size={18}/></button></div></div>
     </header>
     <section className="sc-canvas" aria-label={t('overview')} data-testid="attention-canvas">
       <div className="sc-experiment"><div><strong>{t('why')}</strong><small>{t('experiment')}</small></div><label className="sc-length"><span>{t('tokens')} <b>{model.tokens}</b></span><input aria-label={t('tokens')} type="range" min="1" max="64" value={model.tokens} onChange={e => update({tokens:+e.target.value})}/></label></div>
@@ -59,7 +61,7 @@ export default function SparseAttention() {
       <div className={`sc-workspace ${model.focus !== 'overview' ? 'sc-zoomed' : ''}`} data-testid="canvas-workspace">
         <MatrixSystemGraph model={graphModel} execution={execution} playing={isPlaying} t={t} onFocus={onFocus} chooseRecord={chooseRecord} compact={model.focus !== 'overview'}/>
         {model.focus !== 'overview' && <section className="sc-microscope" aria-label={t(`focus_${model.focus}`)} key={model.focus}>
-          <div className="sc-detail-heading"><h2>{t(`focus_${model.focus}`)}</h2><button onClick={() => onFocus('overview')} aria-label={t('back')}><ArrowLeft size={16}/></button></div>
+          <div className="sc-detail-heading"><h2 data-section-anchor="sparseattention-1">{t(`focus_${model.focus}`)}</h2><button onClick={() => onFocus('overview')} aria-label={t('back')}><ArrowLeft size={16}/></button></div>
           <div className="sc-io"><span><small>{t('incoming')}</small>{t(`in_${model.focus}`)}</span><ArrowRight size={16}/><span><small>{t('outgoing')}</small>{t(model.focus === 'query' && !model.indexed ? 'routeQuery' : `out_${model.focus}`)}</span>{model.next && <button onClick={() => onFocus(model.next)}>{t('follow')}<ArrowRight size={14}/></button>}</div>
           <div className="sc-detail-scroll" tabIndex={0}>{execution.enabled&&<p className="se-reference">{t('runReference')}</p>}<LocalImpact m={model} t={t}/><RecordTrace m={model} t={t} onFocus={onFocus}/><p className="sc-detail-desc">{t(`desc_${model.focus}`)}</p><NodeMicroscope model={model} t={t} update={update} chooseRecord={chooseRecord} onFocus={onFocus}/></div>
         </section>}

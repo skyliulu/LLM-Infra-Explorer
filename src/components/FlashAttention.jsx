@@ -1,3 +1,5 @@
+import {useExperimentState} from '../lib/ExperimentContext';
+import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
@@ -7,7 +9,6 @@ import {
   Cpu,
   Database,
   EyeOff,
-  Globe,
   Info,
   Layers,
   Pause,
@@ -585,7 +586,6 @@ const CODE_BY_OPERATION = {
   recomputeTranspose: 'umma_async(K, Q.T, tmem.S_T)', storeTmem: 'tmem.alias(S_T, P_T, dP_T, dS_T)', softmaxTile: 'cuda_core.compute(P_T, dS_T)', gradPrevious: 'umma_async(dK_prev, dQ_prev)', twoCtaMma: 'cluster.umma_2cta(operand_A, operand_B)', dsmemExchange: 'cluster.dsmem_exchange(dS_shard)', reduceGrad: 'tmem.reduce_and_store(gradients)',
 };
 
-const getInitialLang = () => (typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().includes('zh') ? 'zh' : 'en');
 
 const formatBytes = (bytes) => {
   if (bytes === 0) return '0 B';
@@ -975,11 +975,11 @@ function FlashOnChipFlow({ snapshot, config, onChipKeys, t }) {
 }
 
 function FlashAttention() {
-  const [config, setConfig] = useState(DEFAULT_FLASH_CONFIG);
+  const [config, setConfig] = useExperimentState('FlashAttention.config', DEFAULT_FLASH_CONFIG);
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [lang, setLang] = useState(getInitialLang());
+  const [lang] = useLanguage();
   const t = (key) => i18n[lang][key] ?? key;
   const snapshot = useMemo(() => deriveFlashSnapshot(config, { phase, step }), [config, phase, step]);
 
@@ -1071,9 +1071,9 @@ function FlashAttention() {
   const selectedTraffic = config.modelType === 'standard' ? trafficMax : snapshot.resources.flashTrafficBytes;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-3 font-sans text-slate-800 selection:bg-indigo-100 md:p-5">
-      <div className="mx-auto max-w-[96rem] space-y-5">
-        <header className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+    <div className="chapter-page min-h-screen bg-slate-50 p-3 font-sans text-slate-800 selection:bg-indigo-100 md:p-5">
+      <div className="chapter-layout mx-auto max-w-[96rem] space-y-5">
+        <header className="chapter-header rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm"><Zap size={20} /></div>
@@ -1110,16 +1110,14 @@ function FlashAttention() {
               <button type="button" aria-pressed={config.causal} onClick={() => changeConfig({ causal: !config.causal })} className={`rounded-lg border px-3 py-2 text-xs font-bold transition ${config.causal ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-slate-200 bg-white text-slate-600'}`}>
                 {config.causal ? t('causal') : t('nonCausal')}
               </button>
-              <button type="button" onClick={() => setLang((current) => current === 'zh' ? 'en' : 'zh')} className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50" title={t('language')}>
-                <Globe size={15} /> {t('language')}
-              </button>
-              <button type="button" onClick={reset} aria-label={t('reset')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50" title={t('reset')}><RotateCcw size={18} /></button>
+
+              <div className="chapter-playback"><button type="button" onClick={reset} aria-label={t('reset')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50" title={t('reset')}><RotateCcw size={18} /></button>
               <button type="button" onClick={togglePlay} aria-label={isPlaying ? t('pause') : phase === 'done' ? t('replay') : t('play')} title={isPlaying ? t('pause') : phase === 'done' ? t('replay') : t('play')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm transition hover:bg-blue-700">
                 {isPlaying ? <Pause size={18} /> : <Play size={18} />}
               </button>
               <button type="button" onClick={() => { setIsPlaying(false); handleNextStep(); }} disabled={isPlaying || phase === 'done'} aria-label={t('next')} title={t('next')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 transition hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40">
                 <SkipForward size={18} />
-              </button>
+              </button></div>
             </div>
           </div>
 
@@ -1128,7 +1126,7 @@ function FlashAttention() {
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-3 border-b border-slate-100 pb-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="flex items-center gap-2 text-base font-bold text-slate-800 md:text-lg"><Database className="text-indigo-500" size={20} /> {t('canvasTitle')}</h2>
+              <h2 data-section-anchor="flashattention-1" className="flex items-center gap-2 text-base font-bold text-slate-800 md:text-lg"><Database className="text-indigo-500" size={20} /> {t('canvasTitle')}</h2>
               <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500">
                 <span><strong>{t('hardware')}:</strong> {config.modelType === 'standard' ? 'generic GPU' : snapshot.profile.hardware}</span>
                 <span><strong>{t('architecture')}:</strong> {config.modelType === 'standard' ? 'separate GEMM / Softmax kernels' : snapshot.profile.architecture}</span>
@@ -1295,7 +1293,7 @@ function FlashAttention() {
         <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1.35fr_1fr]">
           <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-2 border-b border-slate-100 pb-3">
-              <div><h2 className="flex items-center gap-2 text-base font-bold text-slate-800"><Layers className="text-fuchsia-500" size={19} /> {t('pipelineTitle')}</h2><p className="mt-1 max-w-2xl text-[10px] leading-relaxed text-slate-500">{t('pipelineHint')}</p></div>
+              <div><h2 data-section-anchor="flashattention-2" className="flex items-center gap-2 text-base font-bold text-slate-800"><Layers className="text-fuchsia-500" size={19} /> {t('pipelineTitle')}</h2><p className="mt-1 max-w-2xl text-[10px] leading-relaxed text-slate-500">{t('pipelineHint')}</p></div>
               <span className="rounded-full bg-slate-100 px-2 py-1 text-[9px] font-black text-slate-500">{step} / {snapshot.maxStep}</span>
             </div>
             <div className="space-y-2 overflow-x-auto pb-2">
@@ -1320,7 +1318,7 @@ function FlashAttention() {
 
           <div className="min-w-0 rounded-2xl border border-slate-800 bg-[#0d1117] p-4 text-slate-300 shadow-lg md:p-5">
             <div className="mb-4 flex items-center justify-between gap-2 border-b border-slate-700 pb-3">
-              <h2 className="flex items-center gap-2 text-base font-bold text-white"><Code className="text-emerald-400" size={19} /> {t('implementationTitle')}</h2>
+              <h2 data-section-anchor="flashattention-3" className="flex items-center gap-2 text-base font-bold text-white"><Code className="text-emerald-400" size={19} /> {t('implementationTitle')}</h2>
               <span className="rounded border border-slate-700 bg-slate-900 px-2 py-1 text-[8px] font-bold text-slate-400">{t('implementationTag')}</span>
             </div>
             <div className="overflow-x-auto rounded-xl border border-slate-800 bg-[#080c12] p-3 font-mono text-[10px] leading-relaxed md:p-4">
@@ -1335,7 +1333,7 @@ function FlashAttention() {
         </section>
 
         <section className="rounded-2xl border border-indigo-700 bg-indigo-900 p-5 text-indigo-50 shadow-xl">
-          <h2 className="flex items-center gap-2 border-b border-indigo-800 pb-3 text-sm font-black uppercase tracking-widest text-white"><Info className="text-indigo-300" size={18} /> {t('inspectorTitle')}</h2>
+          <h2 data-section-anchor="flashattention-4" className="flex items-center gap-2 border-b border-indigo-800 pb-3 text-sm font-black uppercase tracking-widest text-white"><Info className="text-indigo-300" size={18} /> {t('inspectorTitle')}</h2>
           <div className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_1fr_1fr]">
             <div className="rounded-xl border border-indigo-700 bg-indigo-900/70 p-4">
               <h3 className="flex items-center gap-2 text-sm font-bold text-emerald-300"><Sparkles size={15} /> {config.modelType === 'standard' ? t('standard') : config.version.toUpperCase()}</h3>

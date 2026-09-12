@@ -1,3 +1,4 @@
+import {useExperimentState} from '../../lib/ExperimentContext';
 import React, { useMemo, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { MathFormula } from '../linear-attention/MathFormula';
@@ -72,8 +73,8 @@ function Reconstruction({m,t}) {
 }
 
 export default function Numeric({mode,outliers,setOutliers,t}) {
-  const [group,setGroup]=useState('8'),[clip,setClip]=useState(100),[affine,setAffine]=useState(false),[selected,setSelected]=useState(2);
-  const [floatSource,setFloatSource]=useState('example'),[floatFormat,setFloatFormat]=useState('bf16');
+  const [group,setGroup]=useExperimentState('quantization/NumericWorkbench.group', '8'),[clip,setClip]=useExperimentState('quantization/NumericWorkbench.clip', 100),[affine,setAffine]=useExperimentState('quantization/NumericWorkbench.affine', false),[selected,setSelected]=useState(2);
+  const [floatSource,setFloatSource]=useExperimentState('quantization/NumericWorkbench.floatSource', 'example'),[floatFormat,setFloatFormat]=useExperimentState('quantization/NumericWorkbench.floatFormat', 'bf16');
   const m=useMemo(()=>deriveNumericModel({mode,group:group==='tensor'?group:Number(group),clip:clip/100,affine,outliers,selected,floatSource,floatFormat}),[mode,group,clip,affine,outliers,selected,floatSource,floatFormat]);
   return <Card id="quant-numeric" number="02" title="numeric" hint="numericHint" t={t}>
     <div className="q-controls"><Choice label="floatCompare" value={floatFormat} options={[['bf16','formatBF16'],['fp16','formatFP16']]} onChange={setFloatFormat} t={t}/></div><div className="qn-main"><Storage m={m} onSelect={setSelected} floatSource={floatSource} onFloatSource={setFloatSource} t={t}/><Reconstruction m={m} t={t}/></div>
