@@ -1604,3 +1604,34 @@ Replaced separate token-group cards with one continuous matrix: token rows, inte
 - Compact transposed shape diagrams distinguish hidden feature width 4 → key width 2 from historical record count N → floor(N/r). The W_K shape is a teaching projection, not a numerically instantiated checkpoint or a claim to expose the complete compressor. Tokens run horizontally, group boundaries remain visible.
 - Split the combined KV join into parallel K and V lanes. Each lane displays compressed records + local records → actual concatenated result, with positions along columns and explicit transpose labels. Query selection and downstream tensor selection remain shared.
 - check:sparse and build pass. Browser: CSA K cell counts 4+16=20, V 6+24=30; HCA K 6+16=22, V 9+24=33. Zero KaTeX errors. Desktop scroll area fits exactly (1181px). Existing main execution and resource accounting preserved.
+
+## 2026-09-13 — Linear Attention compute comparison
+
+- Scope: extend the existing architecture comparison, preserving the detail canvas/inspector and experiment dimensions. Decode and causal Prefill now compare actual matrix operations; local comparison playback is independent of detail inspection. Header playback is explicitly labeled for details and omitted in Prefill where that detail canvas is absent.
+- Model: `comparison-model.js` derives independent Full and recurrent event streams. Full scans keys, normalizes, and accumulates weighted values. Kernel Linear updates S and z then reads and normalizes; GLA decays S before the outer-product update. End states remain visible without looping.
+- Claim basis: kernel association/recurrent state follows Katharopoulos et al., https://proceedings.mlr.press/v119/katharopoulos20a.html. GLA uses the existing chapter's educational factored-gate model. Neither branch is presented as equal to Softmax output.
+- Boundaries: rendered matrices use four synthetic dimensions and eight token positions. Metrics scale to experiment N/dk/dv, assume two bytes per element, and count main multiply/MAC terms and logical state/cache reads. Projections, feature maps, gate generation, additions, division, nonlinear Softmax, writes, and physical caching optimizations are excluded. Prefill is a causal recurrence illustration with mapped prefix accounting, not a parallel training kernel schedule or timing benchmark.
+- Validation: production build passed; `node scripts/check-linear-comparison.mjs` passed across both algorithms, both contexts, two context lengths and unequal key/value dimensions. Checks cover analytical terminal operation counts, fixed state storage, monotonic cumulative counters, and independent completion.
+- Rendered QA: inspected Decode Linear and GLA, English Prefill GLA, and Chinese/English controls in the local browser. Manual stepping confirmed Full remains in QK scoring when Linear reaches Done. No KaTeX error nodes. Fixed malformed dimension escapes found during review. Screenshot: `docs/audits/linear-comparison-independent.png`.
+- Responsive handling: a contained horizontal scroller preserves matrix relations at narrow widths; narrow-device visual review remains unverified. Dark theme inspected; existing shared theme conventions retained.
+
+## 2026-09-13 — Linear controls and paired Decode follow-up
+
+- User-authorized layout repair: moved detail reset/play/step from chapter header into Decode section; moved its token slider/sequence below that section heading. The macro comparison keeps its own local timeline. Detail reset no longer changes gate configuration (and thus no longer resets macro playback).
+- Replaced the exclusive detail algorithm switch with persistent, vertically stacked Softmax and selected Linear/GLA lanes in one canvas. Each uses its existing genuine four-stage teaching pipeline on the shared current token. These are conceptual stages, not equal runtime units. Clicking a stage chooses the inspector without changing lifecycle state or removing the other lane.
+- Preserved matrix/pseudocode inspectors and comparison configuration. Token advance occurs after both displayed four-stage paths finish. Inspection selection clears on a new token or reset.
+- QA: production build and linear-comparison regression passed. Browser verified header now has only algorithm switches; both GLA and Linear paired views render; selecting T3 shows T3 in both lanes; clicking a GLA step during playback leaves Pause available. Macro counters remained at their prior completed state while detail playback ran. No KaTeX error nodes. Evidence: `docs/audits/linear-paired-decode.png`. Desktop dark theme inspected; narrow viewport not rechecked in this repair.
+
+## 2026-09-13 — Compact paired Decode layout
+
+- Scoped compact presentation to paired StageCanvas instances: omit duplicated pipeline introductions, per-lane token progress and redundant GLA overview; retain stage formulas, values and click targets. The shared token controls and existing inspector supply these relationships.
+- Reduced stage padding, vector/matrix cell heights, formula spacing and causal-grid footprint. GLA's two matrices within decay/update steps sit side by side on desktop; input/output vectors retain full row width. Inspector has an independent desktop scroll area so long explanations do not stretch the canvas.
+- Rendered Chinese dark-theme Linear at T8 and GLA at T1 in the current ~1450×900 browser viewport. Both complete lanes now fit below the local control bar on one screen. Linear pair measured ~620px; GLA ~561px. Inspected formulas and cell values after correcting an overly broad GLA grid selector. Screenshot: docs/audits/linear-compact-decode.png. Production build passed. Algorithm and playback models unchanged; narrow layouts retain stacked stages.
+
+## 2026-09-13 — Compact principle inspector
+
+- Replaced repeated problem/difference/watch cards with a direct stage explanation, core formula, variable explanations, engine pseudocode and capability boundary. Removed redundant live dimension badges already represented by the canvas/controls. No collapsed content or fixed-height internal scrolling.
+- Removed 680px panel and 240px code minimum heights; compact padding, wrapped code lines, and multiline GLA gate formula preserve readable content without horizontal formula overflow in that stage.
+- Build passed. Browser checked all eight Softmax/GLA stage selections: panels measured 371–423px, with clientHeight equal to scrollHeight and zero KaTeX errors. Screenshot: docs/audits/linear-compact-inspector.png. Chinese desktop dark mode verified; remaining language/viewport combinations not separately checked.
+
+- Follow-up: reordered paired Decode lanes to selected Linear/GLA first, Softmax second as requested; browser DOM verified GLA then Softmax. No algorithm or control changes.

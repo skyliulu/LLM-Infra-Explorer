@@ -1,3 +1,4 @@
+import {ComputeComparison} from './ComputeComparison';
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Boxes, Database, Merge, Repeat2, ScanLine, Search, Zap } from 'lucide-react';
@@ -404,7 +405,7 @@ export function ArchitectureComparison({ contextMode, onSelectContext, targetMod
           {['decode', 'prefill'].map((value) => <button key={value} type="button" onClick={() => onSelectContext(value)} aria-pressed={contextMode === value} className={`linear-focus rounded-lg px-4 py-2 text-[11px] font-bold transition ${contextMode === value ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}>{t(value)}</button>)}
         </div>
       </div>
-      {contextMode === 'decode' ? <DecodeBoard {...sharedProps} /> : <PrefillBoard {...sharedProps} />}
+      <ComputeComparison key={`${targetMode}-${contextMode}-${contextLength}-${dk}-${dv}-${gateStrength}`} {...sharedProps}/><AddressabilityStrip {...sharedProps}/>{targetMode==='gla'&&<label className="mt-3 flex items-center gap-3 text-xs">{t('gateStrength')}<input aria-label={t('gateStrength')} type="range" min="0" max="0.9" step="0.05" value={gateStrength} onChange={event=>setGateStrength(Number(event.target.value))} className="w-40 accent-cyan-700"/>{Math.round(gateStrength*100)}%</label>}
     </section>
   );
 }

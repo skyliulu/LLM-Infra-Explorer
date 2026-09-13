@@ -88,7 +88,7 @@ function SmallMatrix({ matrix, label, tone = 'indigo', active = false, retention
   return (
     <div>
       <div className="mb-1.5 text-center text-[10px] font-bold text-slate-600">{label}</div>
-      <div className="mx-auto grid w-full max-w-[142px] grid-cols-4 gap-1">
+      <div className="decode-small-matrix mx-auto grid w-full max-w-[142px] grid-cols-4 gap-1">
         {matrix.slice(0, 4).flatMap((row, rowIndex) => row.slice(0, 4).map((value, columnIndex) => {
           const retained = retention ? Array.isArray(retention[0]) ? retention[rowIndex][columnIndex] : retention[rowIndex] : 1;
           return (
@@ -108,7 +108,7 @@ function SmallMatrix({ matrix, label, tone = 'indigo', active = false, retention
 }
 
 function FormulaLine({ formula }) {
-  return <div className="flex min-h-[42px] items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white/80 px-1.5 py-2 text-center text-[11px] text-slate-900"><MathFormula className="whitespace-nowrap">{formula}</MathFormula></div>;
+  return <div className="decode-formula flex min-h-[42px] items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white/80 px-1.5 py-2 text-center text-[11px] text-slate-900"><MathFormula className="whitespace-nowrap">{formula}</MathFormula></div>;
 }
 
 function StageNode({ mode, index, step, phase, state, label, formula, onSelect, t, children }) {
@@ -137,7 +137,7 @@ function StageNode({ mode, index, step, phase, state, label, formula, onSelect, 
           {sequenceDone ? t('stageComplete') : passed ? t('stagePassed') : active ? `${t('tokenPrefix')}${state.tokenIndex + 1} · ${index + 1}/${TRACKS[mode].length}` : t('stagePending')}
         </div>
       </button>
-      <div className="mt-3 space-y-3">
+      <div className="decode-stage-body mt-3 space-y-3">
         <FormulaLine formula={formula} />
         {children(active)}
       </div>
@@ -177,7 +177,7 @@ function ScoreBars({ values, active, tone = 'indigo' }) {
 
 function CausalGrid({ size = 6, activeRow = 0, active }) {
   return (
-    <div className="mx-auto grid w-full max-w-[132px] gap-1" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
+    <div className="decode-causal-grid mx-auto grid w-full max-w-[132px] gap-1" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
       {Array.from({ length: size }, (_, row) => Array.from({ length: size }, (_, column) => {
         const allowed = column <= row;
         const highlighted = row === activeRow && allowed;
@@ -234,14 +234,14 @@ function GlaRelation({ gateStrength, setGateStrength, t }) {
   );
 }
 
-export function StageCanvas({ mode, step, state, t, gateStrength, setGateStrength, onSelectStep, isPlaying, phase }) {
+export function StageCanvas({ mode, step, state, t, gateStrength, setGateStrength, onSelectStep, isPlaying, phase, compact = false }) {
   const track = TRACKS[mode];
   const formulas = canvasFormulas[mode];
   const renderStage = mode === 'exact' ? ExactStages : mode === 'linear' ? LinearStages : GlaStages;
 
   return (
-    <div className="space-y-4" role="group" aria-label={t('pipelineTitle')}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className={compact ? "decode-compact" : "space-y-4"} role="group" aria-label={t('pipelineTitle')}>
+      {!compact && <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-sm font-bold text-slate-950">{t('pipelineTitle')}</div>
           <p className="mt-1 text-[11px] text-slate-500">{t('pipelineRule')}</p>
@@ -251,9 +251,9 @@ export function StageCanvas({ mode, step, state, t, gateStrength, setGateStrengt
           <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-slate-500" />{t('stagePassed')}</span>
           <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-slate-300" />{t('stagePending')}</span>
         </div>
-      </div>
+      </div>}
 
-      {mode === 'gla' && <GlaRelation gateStrength={gateStrength} setGateStrength={setGateStrength} t={t} />}
+      {!compact && mode === 'gla' && <GlaRelation gateStrength={gateStrength} setGateStrength={setGateStrength} t={t} />}
 
       <div className="grid items-stretch gap-2 lg:grid-cols-[minmax(0,1fr)_22px_minmax(0,1fr)_22px_minmax(0,1fr)_22px_minmax(0,1fr)]">
         {track.map((key, index) => (
@@ -266,7 +266,7 @@ export function StageCanvas({ mode, step, state, t, gateStrength, setGateStrengt
         ))}
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+      {!compact && <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
         <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-bold text-slate-600"><span>{isPlaying ? t('pipelineRunning') : t('pipelinePaused')}</span><span className="text-right"><span className="font-mono">{t('tokenPrefix')}{state.tokenIndex + 1} / {state.n}</span> · {t(track[step])} {step + 1}/{track.length}</span></div>
         <div className="grid grid-cols-8 gap-1">
           {Array.from({ length: 8 }, (_, index) => {
@@ -276,7 +276,7 @@ export function StageCanvas({ mode, step, state, t, gateStrength, setGateStrengt
             return <div key={index} className={`h-2 rounded-full transition ${current ? modeTone[mode].bar : completed ? 'bg-emerald-300' : 'bg-slate-200'}`} />;
           })}
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

@@ -4,7 +4,7 @@ export const getInitialLang = () => (typeof navigator !== 'undefined' && navigat
 
 export const i18n = {
   zh: {
-    softmax: 'Softmax', architectureShortTitle: '历史表示与状态规模', stageProgress: '整块算子阶段',
+    softmax: 'Softmax', detailPlayback: '详情动画', architectureShortTitle: '计算路径与历史状态', stageProgress: '整块算子阶段',
     title: 'Linear Attention 原理与推理可视化',
     subtitle: 'Softmax 对照 × 固定状态递归 × GLA 选择性门控',
     exact: '精确 Softmax', linear: '朴素 Linear', gla: 'GLA', softmaxVs: 'Softmax 对照',
@@ -19,7 +19,7 @@ export const i18n = {
     currentMemoryRatio: '按当前 N 估算，Softmax Decode 的 KV 元素约为固定状态的', breakEvenAt: '理论交叉点约在', notYetSaving: '当前短上下文下固定状态尚未体现显存优势', prefillFlashNote: '这里比较的是逻辑计算面；FlashAttention 可避免完整物化 N² 分数矩阵，但不会消除精确注意力的两两计算。',
     compressionCostTitle: '压缩不是免费午餐：可寻址历史变成有限状态', compressionCostLead: '相似 key 对应不同 value 时，Softmax 仍能分别选择；Linear 把它们合并进同一状态，可能出现碰撞、混合与细节丢失。', separateSlots: 'Softmax：槽位保持分离', querySelectsB: 'query 精确选择 B', softmaxRecallResult: '结果：B 仍可被直接定位，其他历史不会被永久混入它的槽位。', mergedState: '固定状态：A/B/C 合并', noTokenAddress: '没有 token 地址', linearCollisionResult: '结果：只能从混合状态读取，有限维度中可能出现状态碰撞。', glaCollisionResult: '结果：门控可压低旧碰撞，但也可能把仍有用的历史一起遗忘。',
     prefillFlowTitle: 'Prefill 一次性算子流：阶段处理整块矩阵或 chunk，不逐 token 扫描', prefillSoftmax0: '并行生成 Q/K/V', prefillSoftmax1: '构造因果分数面', prefillSoftmax2: '遮罩与 Softmax', prefillSoftmax3: '矩阵聚合 V', prefillLinear0: '并行特征映射', prefillLinear1: '生成 chunk 摘要', prefillLinear2: '前缀/分块扫描', prefillLinear3: '并行读取输出', prefillGla0: '投影 Q/K/V 与 α/β', prefillGla1: 'chunk 内并行', prefillGla2: '门控状态跨 chunk', prefillGla3: '直接读取 qS',
-    executionLevel: '执行视角', implementationDetailTitle: '单步 Decode 的状态更新', implementationDetailLead: '展开当前 token 的投影、历史写入、状态更新与输出读取过程。', detailAlgorithm: '实现细节算法', demoSequence: '8-token 缩略演示', prefillHint: 'Prefill 播放按整块算子阶段推进，不模拟逐 token 串行执行。',
+    executionLevel: '执行视角', implementationDetailTitle: '单步 Decode 的状态更新', pairedStages: '两条流程各自推进', implementationDetailLead: '上下两条流程处理同一个 Token；每条按自己的步骤推进，步数不表示耗时。点击步骤查看右侧说明，不打断播放。', detailAlgorithm: '实现细节算法', demoSequence: '8-token 缩略演示', prefillHint: 'Prefill 播放按整块算子阶段推进，不模拟逐 token 串行执行。',
     currentToken: '当前 token', tokenPrefix: 't', tokenHint: '拖动或点击 token 会从该 token 的第一阶段开始检查完整 Decode 路径。',
     exactScores: 'Q/K/V 输入', exactMask: '相关性计算', exactAggregate: '遮罩与 Softmax', exactBottleneck: '加权聚合',
     linearMap: '特征映射', linearReorder: '外积写入', linearRecurrence: '状态累积', linearOutput: '归一化输出',
@@ -131,7 +131,7 @@ export const i18n = {
     glaCode3: ['content = batched_state_read(q, final_s)', 'out = head_norm(content)', 'out = output_gate(hidden_states) * out', 'return output_proj(out)'],
   },
   en: {
-    softmax: 'Softmax', architectureShortTitle: 'History representation and state size', stageProgress: 'Block operator stages',
+    softmax: 'Softmax', detailPlayback: 'Detail playback', architectureShortTitle: 'Compute paths and history state', stageProgress: 'Block operator stages',
     title: 'Linear Attention: Principles and Inference',
     subtitle: 'Softmax comparison × fixed-state recurrence × selective GLA gating',
     exact: 'Exact Softmax', linear: 'Naive Linear', gla: 'GLA', softmaxVs: 'Softmax vs',
@@ -146,7 +146,7 @@ export const i18n = {
     currentMemoryRatio: 'At the current N, Softmax Decode KV elements are about', breakEvenAt: 'Estimated crossover near', notYetSaving: 'At this short context, fixed state has not yet produced a memory advantage', prefillFlashNote: 'This compares the logical compute surface. FlashAttention can avoid materializing the full N² score matrix, but does not remove exact attention pairwise work.',
     compressionCostTitle: 'Compression is not free: addressable history becomes finite state', compressionCostLead: 'When similar keys map to different values, Softmax can still select them separately. Linear merges them into one state and may introduce collision, mixing, and lost detail.', separateSlots: 'Softmax: slots stay separate', querySelectsB: 'query selects B', softmaxRecallResult: 'Result: B remains directly addressable and other history is not permanently merged into its slot.', mergedState: 'Fixed state: A/B/C merge', noTokenAddress: 'No token address', linearCollisionResult: 'Result: reads come from a mixed state, so finite dimensions can create state collisions.', glaCollisionResult: 'Result: gating can suppress old collisions, but may also forget history that is still useful.',
     prefillFlowTitle: 'One-shot Prefill operator flow: each stage handles a matrix or chunk, not a serial token sweep', prefillSoftmax0: 'Project Q/K/V in parallel', prefillSoftmax1: 'Build causal score surface', prefillSoftmax2: 'Mask and Softmax', prefillSoftmax3: 'Matrix aggregation over V', prefillLinear0: 'Parallel feature map', prefillLinear1: 'Build chunk summaries', prefillLinear2: 'Prefix/chunk scan', prefillLinear3: 'Read outputs in parallel', prefillGla0: 'Project Q/K/V and alpha/beta gates', prefillGla1: 'Parallel recurrence inside chunks', prefillGla2: 'Compose gated states across chunks', prefillGla3: 'Read qS outputs in parallel',
-    executionLevel: 'Execution view', implementationDetailTitle: 'Single-step Decode state update', implementationDetailLead: 'Expand the current token’s projection, history write, state update, and output read.', detailAlgorithm: 'Detail algorithm', demoSequence: '8-token miniature', prefillHint: 'Prefill playback advances by whole-matrix operator stages and does not simulate a serial token sweep.',
+    executionLevel: 'Execution view', implementationDetailTitle: 'Single-step Decode state update', pairedStages: 'Each lane follows its own stages', implementationDetailLead: 'Both lanes process the same token along their own stages; steps are not elapsed time. Click a stage to inspect it without stopping playback.', detailAlgorithm: 'Detail algorithm', demoSequence: '8-token miniature', prefillHint: 'Prefill playback advances by whole-matrix operator stages and does not simulate a serial token sweep.',
     currentToken: 'Current token', tokenPrefix: 't', tokenHint: 'Selecting a token restarts at its first stage so you can inspect the full Decode path.',
     exactScores: 'Q/K/V input', exactMask: 'Pairwise scores', exactAggregate: 'Mask & Softmax', exactBottleneck: 'Value aggregation',
     linearMap: 'Feature map', linearReorder: 'Outer-product write', linearRecurrence: 'State accumulation', linearOutput: 'Normalized read',

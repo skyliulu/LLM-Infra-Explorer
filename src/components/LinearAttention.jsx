@@ -21,6 +21,7 @@ function LinearAttention() {
   const [contextMode, setContextMode] = useExperimentState('LinearAttention.contextMode', 'decode');
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
+  const [inspectionStep, setInspectionStep] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [contextLength, setContextLength] = useExperimentState('LinearAttention.contextLength', 1024);
   const [dk, setDk] = useExperimentState('LinearAttention.dk', 32);
@@ -28,12 +29,8 @@ function LinearAttention() {
   const [tokenIndex, setTokenIndex] = useState(0);
   const [gateStrength, setGateStrength] = useExperimentState('LinearAttention.gateStrength', 0.45);
   const t = (key) => i18n[lang][key] ?? key;
-  const detailTrack = TRACKS[detailMode];
+  const detailTrack = TRACKS[targetMode];
   const isDone = phase === 'done';
-
-  const detailState = useMemo(() => getAttentionState({
-    mode: detailMode, step, tokenIndex, n: DEMO_N, dk, dv, gateStrength,
-  }), [detailMode, step, tokenIndex, dk, dv, gateStrength]);
 
   const comparisonState = useMemo(() => getAttentionState({
     mode: targetMode,
@@ -64,6 +61,7 @@ function LinearAttention() {
     if (tokenIndex < DEMO_N - 1) {
       setTokenIndex((current) => current + 1);
       setStep(0);
+    setInspectionStep(null);
       return;
     }
     setPhase('done');
@@ -73,9 +71,9 @@ function LinearAttention() {
   const reset = () => {
     setPhase('idle');
     setStep(0);
+    setInspectionStep(null);
     setTokenIndex(0);
     setIsPlaying(false);
-    setGateStrength(0.45);
   };
 
   const togglePlay = () => {
@@ -90,7 +88,7 @@ function LinearAttention() {
 
   useEffect(() => {
     if (!isPlaying || isDone) return undefined;
-    const delay = contextMode === 'prefill' ? 720 : step === detailTrack.length - 1 ? 280 : 170;
+    const delay = 700;
     const timer = setTimeout(handleNextStep, delay);
     return () => clearTimeout(timer);
   }, [isPlaying, isDone, contextMode, tokenIndex, step, detailMode, detailTrack.length]);
@@ -99,6 +97,7 @@ function LinearAttention() {
     setTargetMode(nextMode);
     setDetailMode(nextMode);
     setStep(0);
+    setInspectionStep(null);
     setTokenIndex(0);
     setPhase('idle');
     setIsPlaying(false);
@@ -108,28 +107,16 @@ function LinearAttention() {
     setContextMode(nextContext);
     setDetailMode(targetMode);
     setStep(0);
+    setInspectionStep(null);
     setTokenIndex(0);
     setPhase('idle');
-    setIsPlaying(false);
-  };
-
-  const selectDetailMode = (nextMode) => {
-    setDetailMode(nextMode);
-    setStep(0);
-    setTokenIndex(0);
-    setPhase('idle');
-    setIsPlaying(false);
-  };
-
-  const selectStep = (nextStep) => {
-    setStep(nextStep);
-    setPhase('running');
     setIsPlaying(false);
   };
 
   const selectToken = (nextToken) => {
     setTokenIndex(nextToken);
     setStep(0);
+    setInspectionStep(null);
     setPhase('running');
     setIsPlaying(false);
   };
@@ -165,11 +152,7 @@ function LinearAttention() {
 
 
 
-              <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1">
-                <div className="chapter-playback"><button type="button" onClick={reset} title={t('reset')} aria-label={t('reset')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><RotateCcw size={18} /></button>
-                <button type="button" onClick={togglePlay} title={isPlaying ? t('pause') : t('play')} aria-label={isPlaying ? t('pause') : t('play')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white transition hover:bg-indigo-700">{isPlaying ? <Pause size={18} /> : <Play size={18} />}</button>
-                <button type="button" onClick={handleNextStep} title={t('next')} aria-label={t('next')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><SkipForward size={18} /></button></div>
-              </div>
+
             </div>
           </div>
         </header>
@@ -192,32 +175,6 @@ function LinearAttention() {
           </div>
         </section>
 
-        {contextMode === 'decode' && (
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" data-shared-timeline>
-            <div className="grid gap-4 xl:grid-cols-[minmax(300px,1fr)_minmax(340px,1.2fr)] xl:items-end">
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-                    <motion.span key={`${detailMode}-${tokenIndex}`} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className={`h-2.5 w-2.5 rounded-full ${detailMode === 'gla' ? 'bg-cyan-700' : detailMode === 'exact' ? 'bg-rose-500' : 'bg-indigo-600'} shadow-[0_0_12px_currentColor]`} />
-                    {t('currentToken')}
-                  </div>
-                  <div className="font-mono text-xs font-bold text-indigo-700">{t('tokenPrefix')}{tokenIndex + 1} / {DEMO_N}</div>
-                </div>
-                <input type="range" min="0" max={DEMO_N - 1} step="1" value={tokenIndex} aria-label={t('currentToken')} onChange={(event) => selectToken(Number(event.target.value))} className="h-2 w-full cursor-pointer accent-indigo-600" />
-              </div>
-
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-bold text-slate-500">
-                  <span>{t(detailTrack[step])}</span>
-                  <span className="font-mono">{step + 1} / {detailTrack.length}</span>
-                </div>
-                <div className="grid grid-cols-8 gap-1">
-                  {Array.from({ length: DEMO_N }, (_, index) => <button key={index} type="button" onClick={() => selectToken(index)} className={`linear-focus rounded-md px-1 py-1.5 font-mono text-[9px] font-bold transition ${tokenIndex === index ? detailMode === 'gla' ? 'bg-cyan-700 text-white' : detailMode === 'exact' ? 'bg-rose-500 text-white' : 'bg-indigo-600 text-white' : index < tokenIndex ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>{t('tokenPrefix')}{index + 1}</button>)}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         <ArchitectureComparison
           contextMode={contextMode}
@@ -246,29 +203,48 @@ function LinearAttention() {
                   <p className="mt-1 max-w-3xl text-[11px] leading-5 text-slate-500">{t('implementationDetailLead')}</p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex rounded-xl bg-slate-100 p-1" role="group" aria-label={t('detailAlgorithm')}>
-                  {['exact', targetMode].map((value) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => selectDetailMode(value)}
-                      aria-pressed={detailMode === value}
-                      className={`linear-focus rounded-lg px-4 py-2 text-[10px] font-bold transition ${detailMode === value ? value === 'gla' ? 'bg-cyan-700 text-white shadow-sm' : value === 'exact' ? 'bg-rose-500 text-white shadow-sm' : 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
-                    >
-                      {t(value)}
-                    </button>
-                  ))}
-                </div>
-                <div className="text-[10px] font-semibold text-slate-500">· {t('demoSequence')}</div>
+              <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1"><span className="px-2 text-[10px] text-slate-500">{t('detailPlayback')}</span>
+                <div className="chapter-playback"><button type="button" onClick={reset} title={t('reset')} aria-label={t('reset')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><RotateCcw size={18} /></button>
+                <button type="button" onClick={togglePlay} title={isPlaying ? t('pause') : t('play')} aria-label={isPlaying ? t('pause') : t('play')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white transition hover:bg-indigo-700">{isPlaying ? <Pause size={18} /> : <Play size={18} />}</button>
+                <button type="button" onClick={handleNextStep} title={t('next')} aria-label={t('next')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><SkipForward size={18} /></button></div>
               </div>
             </div>
+            <section className="my-4 rounded-xl border border-slate-200 bg-slate-50 p-3" data-shared-timeline>
+            <div className="grid gap-4 xl:grid-cols-[minmax(300px,1fr)_minmax(340px,1.2fr)] xl:items-end">
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+                    <motion.span key={`${detailMode}-${tokenIndex}`} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className={`h-2.5 w-2.5 rounded-full ${detailMode === 'gla' ? 'bg-cyan-700' : detailMode === 'exact' ? 'bg-rose-500' : 'bg-indigo-600'} shadow-[0_0_12px_currentColor]`} />
+                    {t('currentToken')}
+                  </div>
+                  <div className="font-mono text-xs font-bold text-indigo-700">{t('tokenPrefix')}{tokenIndex + 1} / {DEMO_N}</div>
+                </div>
+                <input type="range" min="0" max={DEMO_N - 1} step="1" value={tokenIndex} aria-label={t('currentToken')} onChange={(event) => selectToken(Number(event.target.value))} className="h-2 w-full cursor-pointer accent-indigo-600" />
+              </div>
 
-            <div className="mt-4 grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-              <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5" aria-live="polite">
-                <StageCanvas mode={detailMode} step={step} state={detailState} t={t} gateStrength={gateStrength} setGateStrength={setGateStrength} onSelectStep={selectStep} isPlaying={isPlaying} phase={phase} />
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-bold text-slate-500">
+                  <span>{t('pairedStages')}</span>
+                  <span className="font-mono">{step + 1} / {detailTrack.length}</span>
+                </div>
+                <div className="grid grid-cols-8 gap-1">
+                  {Array.from({ length: DEMO_N }, (_, index) => <button key={index} type="button" onClick={() => selectToken(index)} className={`linear-focus rounded-md px-1 py-1.5 font-mono text-[9px] font-bold transition ${tokenIndex === index ? detailMode === 'gla' ? 'bg-cyan-700 text-white' : detailMode === 'exact' ? 'bg-rose-500 text-white' : 'bg-indigo-600 text-white' : index < tokenIndex ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>{t('tokenPrefix')}{index + 1}</button>)}
+                </div>
+              </div>
+            </div>
+          </section>
+
+            <div className="linear-detail-layout mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+              <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-2 space-y-2" data-decode-pair>
+                {[targetMode, 'exact'].map((mode) => {
+                  const state = getAttentionState({mode, step, tokenIndex, n: DEMO_N, dk, dv, gateStrength});
+                  return <div key={mode} className="min-w-0 rounded-xl border border-slate-200 p-2" data-decode-lane={mode}>
+                    <h3 className="mb-2 text-xs font-bold text-slate-800">{t(mode)}</h3>
+                    <StageCanvas compact mode={mode} step={step} state={state} t={t} gateStrength={gateStrength} setGateStrength={setGateStrength} onSelectStep={(index) => {setDetailMode(mode); setInspectionStep(index);}} isPlaying={isPlaying} phase={phase} />
+                  </div>;
+                })}
               </section>
-              <Inspector mode={detailMode} step={step} state={detailState} t={t} />
+              <Inspector mode={detailMode === 'exact' ? 'exact' : targetMode} step={inspectionStep ?? step} state={getAttentionState({mode: detailMode === 'exact' ? 'exact' : targetMode, step: inspectionStep ?? step, tokenIndex, n: DEMO_N, dk, dv, gateStrength})} t={t} />
             </div>
           </section>
         )}
