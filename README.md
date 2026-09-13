@@ -12,23 +12,36 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## Choose a question, then explore
 
+12 workbenches, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
+
 | Area | Workbench | What you can investigate |
 | :--- | :--- | :--- |
-| Inference | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/decode, per-layer KV, Dense/MoE, temperature and sampling. |
-| Distributed | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP, tensor shards, GPU ranks and runtime topology. |
+| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/decode, per-layer KV, Dense/MoE, temperature and sampling. |
 | Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard vs V1–V4; tiles, SRAM/HBM and IO traffic. |
-| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA, CSA, HCA, local windows, record provenance and query execution. |
 | Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K, paged KV, head sharing and parallel reduction. |
-| Generation | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target verification, rejection correction, EAGLE-2 and DSpark. |
-| Low precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16, INT4/INT8, FP8/FP4; offline algorithms and engine execution. |
-| Memory | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram retrieval, context-aware gates and memory movement. |
-| Memory | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | Prefix sharing, tiered KV storage, prefetch, write-back and eviction. |
-| Distributed | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV ownership and the communication paths into FFN/MoE. |
+| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA, CSA, HCA, local windows, record provenance and query execution. |
 | Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax, kernelization, recurrent state and GLA gates. |
+| Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16, INT4/INT8, FP8/FP4; offline algorithms and engine execution. |
+| Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | One prefix tree across GPU, host and external storage; prefetch, backup, eviction and KV layouts. |
+| Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP, tensor shards, GPU ranks and runtime topology. |
+| Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV ownership and the communication paths into FFN/MoE. |
+| Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target verification, rejection correction, EAGLE-2 and DSpark. |
+| Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram retrieval, context-aware gates and memory movement. |
+| Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | Causal Encoder-Decoder, CSA2 sharing, FP4 byte budgets, hierarchical indexing, continuous generation and session recovery. |
+
+### A path into DeepSeek CED
+
+Start with [sparse selection and compressed history](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn?section=sparse-overview), [number formats and quantization error](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization?section=quant-numeric), and [prefix reuse and tiered caches](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache?section=radix-hicache). These are helpful foundations, not a requirement to finish every earlier chapter.
+
+CED unfolds as **serving benefits → architecture → CSA2 ownership → byte budgets → hierarchical indexing → session lifecycle**. Benefit cards lead directly to their mechanisms. Follow continuous generation, short-gap recovery, expired checkpoints and bounded decoder replay in one animated session, with approximation and runtime boundaries made explicit.
+
+### One shared workbench
+
+Language, light/dark/system appearance, section navigation and sharing live in the site header. Experiment settings survive chapter navigation; playback stays local. Share links restore the chapter, section and primary parameters.
 
 ## Inside the workbench
 
-Explore the current **English workbenches in motion**: start with the overview, see connected views respond, then move into the details. Click a demo to open its chapter, or use the native-resolution video and full-workbench overview below it.
+Explore selected **English workbenches in motion**: start with the overview, see connected views respond, then move into the details. Click a demo to open its chapter, or use the native-resolution video and full-workbench overview below it.
 
 ### 01 / Inference — tokens, cache and the execution pipeline
 
@@ -38,15 +51,7 @@ Start with the token sequence, layer KV cache, tensor pipeline and engine code t
 
 [Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) · [HD video](./media/previews/llm-inference.mp4) · [Full workbench overview](./media/previews/llm-inference.png)
 
-### 02 / Parallel strategies — from tensor shards to GPU topology
-
-Compose parallel dimensions and watch tensor ownership, layer partitioning and the physical GPU map change together.
-
-[![Parallel Strategy full workbench: controls, logical tensor layout and physical GPUs](./media/previews/parallel-strategies.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel)
-
-[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) · [HD video](./media/previews/parallel-strategies.mp4) · [Full workbench overview](./media/previews/parallel-strategies.png)
-
-### 03 / Sparse Attention — tradeoffs, architecture and query execution
+### 02 / Sparse Attention — tradeoffs, architecture and query execution
 
 Compare memory and traffic first, follow one Query through the connected architecture, then drill into a component without losing the system view.
 
@@ -54,13 +59,21 @@ Compare memory and traffic first, follow one Query through the connected archite
 
 [Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) · [HD video](./media/previews/sparse-attention.mp4) · [Full workbench overview](./media/previews/sparse-attention.png)
 
-### 04 / Quantization — precision, storage and runtime
+### 03 / Quantization — precision, storage and runtime
 
 Tour precision controls, storage and reconstruction, offline preparation and the inference engine—not just one bit field.
 
 [![Quantization full workbench: precision controls, storage, offline preparation and inference](./media/previews/quantization.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization)
 
 [Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) · [HD video](./media/previews/quantization.mp4) · [Full workbench overview](./media/previews/quantization.png)
+
+### 04 / Parallel strategies — from tensor shards to GPU topology
+
+Compose parallel dimensions and watch tensor ownership, layer partitioning and the physical GPU map change together.
+
+[![Parallel Strategy full workbench: controls, logical tensor layout and physical GPUs](./media/previews/parallel-strategies.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel)
+
+[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) · [HD video](./media/previews/parallel-strategies.mp4) · [Full workbench overview](./media/previews/parallel-strategies.png)
 
 ### 05 / Engram — architecture, retrieval and system dataflow
 
@@ -100,7 +113,7 @@ npm run preview
 
 ## What comes next
 
-- **Serving:** continuous batching, request scheduling and multi-tier KV memory.
+- **Serving:** continuous batching, request scheduling and cache-aware admission.
 - **Distributed execution:** expert load balancing, interconnects and collective communication.
 - **Measured performance:** hardware-backed profiles, TTFT/TPOT and end-to-end tradeoffs.
 
@@ -115,8 +128,6 @@ node scripts/capture-readme-motion.cjs
 ```
 
 `PREVIEW_URL` selects another local server. Capture states and runtime errors are recorded in `media/previews/motion-capture.json`. GIFs are encoded up to 1600 pixels wide; videos and stills retain the original capture resolution.
-
-
 
 For a local browser preview with relative images and GIF playback, run `node scripts/preview-readme.cjs` with `marked` available, then open the address printed in the terminal. This preview uses GFM parsing; GitHub controls its own surrounding styling.
 

@@ -12,23 +12,36 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## 带着问题选择章节
 
+12 个工作台按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
+
 | 方向 | 工作台 | 可以探索什么 |
 | :--- | :--- | :--- |
-| 推理 | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/Decode、逐层 KV、Dense/MoE、温度与采样。 |
-| 分布式 | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank 与运行时拓扑。 |
+| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/Decode、逐层 KV、Dense/MoE、温度与采样。 |
 | Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard 与 V1–V4、分块、SRAM/HBM 与 IO。 |
-| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA、CSA、HCA、局部窗口、记录来源和单次 Query 执行。 |
 | Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K、分页 KV、Head 共享与并行归约。 |
-| 生成 | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、拒绝修正、EAGLE-2 与 DSpark。 |
-| 低精度 | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16、INT4/INT8、FP8/FP4、离线算法与引擎执行。 |
-| 存储 | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram 检索、上下文门控和数据移动。 |
-| 存储 | [**Radix Cache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | 前缀共享、引用锁、驱逐和 KV 分配。 |
-| 分布式 | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权，以及连接 FFN/MoE 的通信路径。 |
+| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA、CSA、HCA、局部窗口、记录来源和单次 Query 执行。 |
 | Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax、核函数、递归状态与 GLA 门控。 |
+| Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16、INT4/INT8、FP8/FP4、离线算法与引擎执行。 |
+| Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | 同一棵前缀树上的 GPU／主机／外部存储，预取、备份、驱逐与 KV layout。 |
+| Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank 与运行时拓扑。 |
+| Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权，以及连接 FFN/MoE 的通信路径。 |
+| Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、拒绝修正、EAGLE-2 与 DSpark。 |
+| Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram 检索、上下文门控和数据移动。 |
+| Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | 因果编码器—解码器、CSA2 共享、FP4 字节账本、分层索引、连续生成与会话恢复。 |
+
+### 深入 DeepSeek CED
+
+先了解 [稀疏选择与压缩历史](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn?section=sparse-overview)、[数值表示与量化误差](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization?section=quant-numeric) 和 [前缀复用与分层缓存](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache?section=radix-hicache)，再进入 CED。它们是相关基础，不要求先读完所有章节。
+
+CED 按 **业务收益 → 整体架构 → CSA2 所有权 → 字节预算 → 分层索引器 → 会话生命周期** 展开。收益卡直达原理；在同一条动态会话里观察连续生成、短间隔恢复、TTL 到期后的状态重建与有界 Decoder replay，并明确展示近似与运行时边界。
+
+### 统一的工作台
+
+全站共享语言、浅色／深色／跟随系统外观、章内定位和分享入口。切换章节保留实验配置；播放进度独立。分享链接可还原章节、内容位置与主要参数。
 
 ## 工作台预览
 
-以下为当前**英文完整工作台的动态导览**：从总览开始，展示组件之间的联动，再进入细节。点击动画可打开对应章节；每组还提供高清原始视频与工作台全景图。
+以下是精选章节的**英文完整工作台动态导览**：从总览开始，展示组件之间的联动，再进入细节。点击动画可打开对应章节；每组还提供高清原始视频与工作台全景图。
 
 ### 01 / Inference — tokens, cache and the execution pipeline
 
@@ -38,15 +51,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 [Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) · [HD video](./media/previews/llm-inference.mp4) · [Full workbench overview](./media/previews/llm-inference.png)
 
-### 02 / Parallel strategies — from tensor shards to GPU topology
-
-组合不同并行维度，同时观察张量所有权、层划分与物理 GPU 映射的变化。
-
-[![Parallel Strategy full workbench: controls, logical tensor layout and physical GPUs](./media/previews/parallel-strategies.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel)
-
-[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) · [HD video](./media/previews/parallel-strategies.mp4) · [Full workbench overview](./media/previews/parallel-strategies.png)
-
-### 03 / Sparse Attention — tradeoffs, architecture and query execution
+### 02 / Sparse Attention — tradeoffs, architecture and query execution
 
 先看显存与读取量的对比，再沿整体架构执行一次 Query，最后保留系统视图下钻具体组件。
 
@@ -54,13 +59,21 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 [Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) · [HD video](./media/previews/sparse-attention.mp4) · [Full workbench overview](./media/previews/sparse-attention.png)
 
-### 04 / Quantization — precision, storage and runtime
+### 03 / Quantization — precision, storage and runtime
 
 从精度控制、存储与重建，继续查看离线准备和推理引擎的完整工作台。
 
 [![Quantization full workbench: precision controls, storage, offline preparation and inference](./media/previews/quantization.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization)
 
 [Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) · [HD video](./media/previews/quantization.mp4) · [Full workbench overview](./media/previews/quantization.png)
+
+### 04 / Parallel strategies — from tensor shards to GPU topology
+
+组合不同并行维度，同时观察张量所有权、层划分与物理 GPU 映射的变化。
+
+[![Parallel Strategy full workbench: controls, logical tensor layout and physical GPUs](./media/previews/parallel-strategies.gif)](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel)
+
+[Open chapter ↗](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) · [HD video](./media/previews/parallel-strategies.mp4) · [Full workbench overview](./media/previews/parallel-strategies.png)
 
 ### 05 / Engram — architecture, retrieval and system dataflow
 
@@ -100,7 +113,7 @@ npm run preview
 
 ## 后续方向
 
-- **Serving：** 连续批处理、请求调度与多级 KV 存储。
+- **Serving：** 连续批处理、请求调度与缓存感知的准入策略。
 - **分布式执行：** Expert 负载均衡、互联与集合通信。
 - **实测性能：** 硬件配置、TTFT/TPOT 与端到端权衡。
 
@@ -115,8 +128,6 @@ node scripts/capture-readme-motion.cjs
 ```
 
 通过 `PREVIEW_URL` 指定其他本地服务地址。采集状态与运行时错误记录在 `media/previews/motion-capture.json`。GIF 最大宽度为 1600 像素，视频和静态图保留原始采集分辨率。
-
-
 
 本地需要查看图片与 GIF 的完整渲染时，在环境中已有 `marked` 的情况下运行 `node scripts/preview-readme.cjs`，打开终端输出的浏览器地址。该预览使用 GFM 解析，GitHub 自身的外围样式由 GitHub 控制。
 
