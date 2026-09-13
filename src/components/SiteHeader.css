@@ -48,3 +48,4 @@
 }
 
 @media(min-width:1400px){.site-foundation-links a{max-width:150px;overflow:hidden;text-overflow:ellipsis}}
+.site-github .site-github-stars{display:inline-flex;align-items:center;gap:5px;padding-left:9px;border-left:1px solid #334155;font-size:12px;font-variant-numeric:tabular-nums;min-width:40px}.site-github-stars>svg{color:#fbbf24}.site-github .site-github-stars>span{display:inline}

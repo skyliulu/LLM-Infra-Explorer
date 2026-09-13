@@ -1454,3 +1454,14 @@ Evidence: `docs/audits/ced-session/qa-matrix.json`, `browser-results.json`, desk
 - Desktop (1400px+) shows distinct topic names with full-label tooltips; smaller widths use an accessible toggle and link panel; mobile uses a book icon. Outside click/Escape close the panel, Escape restores trigger focus. Chapters without prerequisites render no control.
 - Rendered desktop Chinese and English plus 390px English menu. Verified KV cache lifecycle links to llminference-2 with heading focus; no prerequisite control on LLM Inference. Mobile document width 375px within 390px viewport. Screenshot: docs/audits/reading-order/header-foundations-zh.png (desktop English capture).
 - check:workbench and production build pass (1988 modules). No model changes, commit or push.
+
+### 2026-09-13 — Homepage GitHub Stars
+
+- Add a star icon and count to the existing homepage GitHub link. Preserve workbench header density; count appears on Home only, including mobile.
+- Public GitHub repository API supplies stargazers_count. Validate a nonnegative safe integer, use a 15-minute session cache and deduplicate pending requests; requests time out after eight seconds. Loading/failed states show ellipsis/dash rather than a fabricated zero.
+- Desktop and 390px English browser checks show 11 stars from the live API. Mobile document width is 375px within the 390px viewport. Existing repository destination is unchanged. Production build passes; no commit or push.
+
+### 2026-09-13 — Keep GitHub Stars throughout the workbench
+
+- Follow-up: render the same Stars component on Home and all chapter headers; remove the chapter-only visibility condition. Cache and request behavior remain unchanged.
+- Browser verified CED at 390px shows 11 stars alongside navigation, share, appearance and language controls. Existing breadcrumb truncation handles constrained width; no control overlap. Production build passed. Not committed or pushed.

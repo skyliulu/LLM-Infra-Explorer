@@ -1,4 +1,5 @@
 import ThemeControl from './ThemeControl';
+import GitHubStars from './GitHubStars';
 import React from 'react';
 import {Github, Menu} from 'lucide-react';
 import {useLanguage} from '../lib/LanguageContext';
@@ -21,7 +22,7 @@ export default function SiteHeader({onMenu, menuOpen=false, chapter}) {
         <button onClick={()=>setLang('zh')} aria-pressed={lang==='zh'} lang="zh-CN">中文</button>
         <button onClick={()=>setLang('en')} aria-pressed={lang==='en'} lang="en">EN</button>
       </div>
-      <a href="https://github.com/skyliulu/LLM-Infra-Explorer" className="site-github" aria-label={t('source')} title={t('source')} target="_blank" rel="noreferrer"><Github size={19}/><span>GitHub</span></a>
+      <a href="https://github.com/skyliulu/LLM-Infra-Explorer" className="site-github" title={t('source')} target="_blank" rel="noreferrer"><Github size={19}/><span>GitHub</span><GitHubStars/></a>
     </div>
   </header>;
 }
