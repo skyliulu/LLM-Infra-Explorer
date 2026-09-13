@@ -1465,3 +1465,142 @@ Evidence: `docs/audits/ced-session/qa-matrix.json`, `browser-results.json`, desk
 
 - Follow-up: render the same Stars component on Home and all chapter headers; remove the chapter-only visibility condition. Cache and request behavior remain unchanged.
 - Browser verified CED at 390px shows 11 stars alongside navigation, share, appearance and language controls. Existing breadcrumb truncation handles constrained width; no control overlap. Production build passed. Not committed or pushed.
+
+### 2026-09-13 — Sparse Attention symbols and one-second playback
+
+- Repair/extension under develop-interactive-module: preserve architecture topology, zoomed drill-down, record identity, numerical model, resource accounting and playback stages. Affected dimensions: DSA/CSA/HCA, query/record selection, language, viewport and playback speed.
+- Label main Query and index heads at the vectors; define T IDs as token positions and C IDs as compressed records. Explain lowercase index key versus the key matrix and distinguish index scores from final attention weights. Query detail explains projection, intermediate representation, vector dimensions and illustrative head count.
+- Index inspector traces the selected record to source token positions, shows its index key, each head’s dot product, ReLU and weighted contribution, then the total and its downstream role. All numbers derive from the existing model. HCA hides index heads and uses non-indexed copy. Long numerical products wrap into aligned equations on mobile.
+- Basis: existing sparse-attention/model.js and official DeepSeek V3.2 reference https://huggingface.co/deepseek-ai/DeepSeek-V3.2/blob/main/inference/model.py . Educational vectors, two heads and fixed weights are explicitly distinguished from trained query-dependent projections/weights. Numerical model unchanged.
+- Add 1000 ms playback alongside existing 1500/2000/6000 ms settings, retaining the 2000 ms default. Browser selected 1000 and completed the DSA seven-operation trace.
+- Validation: check:sparse passes 12288 snapshots, 168 navigation, 108 resource, 192 explorer and 338 matrix cases; convention checks 9/9, no warnings; final production build passes. Browser inspected DSA Chinese desktop, CSA English 390px (C7 sources T21–T28), and HCA English desktop (zero index-query paths). No KaTeX errors or page horizontal overflow in the mobile case. Screenshot docs/audits/sparse-symbols/index-en-mobile.png. No commit/push.
+
+### 2026-09-13 — Keep symbol explanations in the inspector
+
+- User correction: remove the four newly added explanatory paragraphs from history, query, index and cache graph nodes. Retain concise main-query/index-head labels, numerical vectors and connections. All symbol definitions and per-head calculations remain in the appropriate right-hand inspector; add token-position explanation to the local-window inspector too.
+- Rendered Chinese DSA query view confirms zero symbol-note paragraphs in the graph and the complete explanation on the right. Topology, record navigation, speed settings and domain calculations unchanged. Production build passes. No commit/push.
+
+### 2026-09-13 — Explain the query latent and its projections
+
+- User-authorized extension of the existing query node/inspector: add current hidden state → down-projection and RMSNorm → query latent, then separate main/index projection matrices to the existing output vectors. No graph-wide topology replacement or numeric model changes.
+- Inspector now defines the latent, its origin at the current position, learned matrices and dimensions, separate branch outputs, and their destinations. Symbols in the new prose use MathFormula. Explain that the latent is not a compressed history record or KV cache. Detailed text stays outside the interactive graph.
+- Verified official DeepSeek V3.2 reference: q_norm(wq_a(x)) supplies qr to wq_b and to the indexer. Equations use the normalized latent convention; later RoPE/numeric transformations are omitted explicitly. Existing output fixtures are not claimed to have been computed from unavailable hidden states or model weights. Official source link appears beside this boundary.
+- check:sparse and convention checks (9/9) pass; production build passes. Rendered Chinese desktop and English 390px show the latent in both graph and explanation. Mobile has zero KaTeX errors and no document horizontal overflow (375px within 390px). Evidence: docs/audits/sparse-symbols/query-latent-zh.png and query-latent-en-mobile.png. No commit/push.
+
+### 2026-09-13 — Projection parameter origins and relationships
+
+- Expand the right query inspector only: distinguish trained/checkpoint-loaded fixed matrices from token-dependent activations; define down/main and the two index-head blocks in a compact table. Explain serial down-projection then branching, independent learned parameters, and stacked index projection followed by reshape (not sequential heads). Superscript I is a label, distinct from a score and per-head scoring coefficients.
+- Official DeepSeek V3.2 inference/model.py confirms indexer.wq_b maps the query latent into all heads then reshapes, while the main path has its own wq_b. Existing source link retained. The two-head decomposition remains explicitly illustrative; no model calculations or graph geometry changed.
+- check:sparse and production build passed. Rendered Chinese desktop and English 390px: clear fixed/dynamic distinction, no KaTeX errors and no document overflow. Evidence docs/audits/sparse-symbols/query-weights-en-mobile.png. No commit/push.
+
+### 2026-09-13 — Visual projection dependency graph
+
+- User-authorized structural change inside the Query region: replace symbolic inline arrows with a connected computation graph. Dashed parameter nodes supply matrix operations; solid current-data nodes show hidden state, shared latent and outputs. Shared latent branches into main/index projections; a separate hidden-state path supplies scoring coefficients. Main/index downstream ports retain existing navigation.
+- Six node families select targeted inspector content and highlight their parameter/operation/output group. Full derivation becomes an optional reference below the selected explanation. Existing global architecture, scaled overview/detail topology, numerical model, execution timing and resource calculations remain intact.
+- Exact limitations remain visible: query outputs and scoring coefficients are teaching fixtures; no hidden-state or parameter values are invented. Hidden state and latent are symbolic provenance, not fabricated numeric computation. Scores use the existing fixed two-head coefficients. Output values are withheld until the project event passes.
+- Browser checks: all six English node families open the correct inspector; Chinese desktop graph screenshot saved as docs/audits/sparse-symbols/projection-graph-zh.png. Switching query changes main/index vectors while static parameter nodes remain unchanged. CSA retains the graph; HCA has zero projection subnodes. English 390px index detail has zero KaTeX errors and document width 375px within 390px. Existing original-size graph zoom remains available.
+- check:sparse, convention checks (9/9, no warnings) and production build (1990 modules) pass. No commit or push.
+
+### 2026-09-13 — Compact fixed parameters and independent history provenance
+
+- User correction supersedes the preceding large projection graph: list fixed query matrices in a compact bank above execution, group down/main/index parameters, show the two index heads as blocks of one index matrix, and keep the score coefficient branch separate. Execution references those matrices and shows the shared latent branching into main/index queries. Detailed definitions remain in the inspector.
+- Full projection reference is expanded by default. History now has an independent focus and source explanation rather than incorrectly opening the global cache inspector. It distinguishes hidden states from projected KV and explicitly avoids implying persistent storage of all historical hidden states.
+- Preserve output fixtures, numerical calculations, playback and the rest of the architecture. Regression verifies history focus and its downstream cache target for all five modes; check:sparse and production build pass.
+- Latest rendered Chinese desktop inspection verifies compact parameter bank and execution rows, parameter-reference click selecting the matching inspector, default-open reference, and zero KaTeX errors. History has its own title, input/output and projection explanation. Evidence: docs/audits/sparse-symbols/compact-parameters-zh.png. No commit or push.
+
+- Follow-up: simplify the parameter-bank title to 模型权重 / Model weights. Confirmed the updated Chinese title in the rendered local page; text-only change, calculations unchanged.
+
+### 2026-09-13 — Macro Full Attention versus DSA comparison
+
+- Authorized extension before resource estimates and detailed architecture, visible in DSA mode. Existing downstream graph, inspector, controls and resource accounting retained. Capabilities: structural comparison, timeline, dense layout, math; dimensions: history, query, Top-K, language, theme, viewport, playback.
+- Uses the existing canonical model's global records and read flags. Same-position grids show all main Q–K scores and V contributions on the full side, selected-only work on DSA, with a separate all-history index scan. Hatched skipped positions remain present to distinguish omitted computation from cache deletion. Counts explicitly represent positions, not measured FLOPs or speed. Selection is not guaranteed numerically identical to dense attention.
+- Claim basis: official DeepSeek-V3.2 inference/model.py indexer scans cached index keys and returns Top-K IDs; main sparse attention uses selected positions. Index stages are not invented for Full Attention. Animation is a conceptual phase comparison, explicitly not a wall-time comparison.
+- Macro playback advances at 1 second per phase, supports pause/reset/step, and defaults to the complete result. Query/Top-K/history changes remount macro playback into the new complete model; trace clicks highlight the same token across both columns and downstream graph. No persisted timer state.
+- Rendered QA: Chinese desktop in dark and English desktop in light; English 390px tested at 64 positions with document width 375px and no KaTeX errors. 29 positions / Top-K 2 gives 54 skipped cells across two main operations and 29 index cells; Top-K 4 gives four active positions in each DSA main row; 1 position yields zero skipped work and one extra index position. Playback completes and stops. Query change visibly changes selected IDs. Desktop restored to Chinese/system theme, 29 positions and Top-K 2.
+- Evidence: docs/audits/sparse-symbols/macro-zh-desktop.png and macro-en-mobile.png. check:sparse passes; convention checker passes 9/9 with its pre-existing/manual Unicode review warning; mathematical expressions use MathFormula. Production build passes. No commit/push.
+
+### 2026-09-13 — Replace macro cards with compact matrix algebra
+
+- User rejected the preceding card/cell comparison. Replace only that region with two continuous matrix paths: full query × transposed keys → scaled Softmax → weighted values, and index queries × index keys → weighted ReLU reduction → Top-K → gathered main keys/values → main attention. Remove step paragraphs, position tiles, separate result summaries and large card headings.
+- Actual matrix cells use the canonical model's query, keys, index keys, weights and outputs. Full path uses the existing dense baseline; DSA uses selected reads. Matrix dimensions and per-position scale are shared, so selected matrices shrink with Top-K. No invented checkpoint weights or claimed equal outputs. Index-head aggregation remains explicit, distinct from main Softmax.
+- Retain one-second playback/reset/step, with active matrices and scanning overlays directly on matrix operands. Reduced-motion disables animated sweeps. Local horizontal scrolling preserves equations on narrow screens instead of reflowing operands into an invalid order.
+- Rendered Chinese desktop: about 427px total comparison height at the inspected 29-position state, complete formula chains visible, zero KaTeX errors. Single stepping reveals index selection and gathered matrices. English 390px: 375px document width, 900px local scroll canvas, no page overflow or formula errors. Screenshot: docs/audits/sparse-symbols/matrix-comparison-zh.png. Chinese desktop restored. check:sparse and production build pass. No commit/push.
+
+### 2026-09-13 — Expose work reduction through matrix execution
+
+- Refine the accepted compact matrix layout without adding step cards. New pure comparison execution derives 8-position batches for index scan, gather, main scoring, normalization, V accumulation and completion. Uncomputed score cells stay blank; active operand positions and generated results highlight together. Softmax is deferred until all scores exist. Outputs show actual partial weighted sums, then the model's final values.
+- Full and sparse main-work bars share the full-history scale. Sparse work stops at selected count while full work continues. Index scan progress is accounted separately; saved positions are explicitly not total FLOPs or benchmark speed. Full matrices outline the source positions selected by DSA, relating them to gathered matrices. Timeline stages align concepts rather than represent simultaneous real kernels or elapsed-time ratios.
+- Added 600 regression snapshots over 1/2/8/9/29/64 positions, 1/2/4/8 Top-K and both queries; verify scan/gather prerequisites, score-before-normalization, bounded work and exact final weighted sums. Included in check:sparse, which passes. Production build passes.
+- Rendered 29-position Top-K 4 first score batch shows Full 8/29 vs DSA 4/4, with subsequent full work continuing. Autoplay completes and stops, both numeric outputs visible, zero KaTeX errors. English 390px document remains 375px wide with local matrix scrolling. Chinese desktop restored. Evidence: docs/audits/sparse-symbols/matrix-work-playback-zh.png. No commit or push.
+
+### 2026-09-13 — Independent algorithm timelines and live per-lane metrics
+
+- Replace globally synchronized phases with separately derived Full and DSA event sequences under one playback clock. Full begins QK work immediately; DSA begins index scan. Each independently scores, normalizes, accumulates values and stops. Tick count is explicitly not wall-clock performance; no manufactured speedup ratio.
+- Align per-lane main QK/V work, cumulative bytes and resident cache bars in the same trailing column with shared scales. Bytes use existing teaching assumptions: 1 KiB main KV split equally K/V, 128 B index per position. Resident cache is constant; cumulative reads grow and final values exactly match the existing resource comparison below.
+- Expand the previously unexplained a to Softmax attention weights and rendered softmax(logits). Weighted-value events highlight matching weight positions and V rows simultaneously. Rendered 29-position/Top-K 4 event: Full highlights 8 weights and 8 V rows (16 feature cells), sparse highlights 4 weights and 4 V rows (8 cells). No formula errors.
+- Updated 472 timeline snapshots verify independent initial phases, each lane's normalization dependency, final outputs and exact cache/read reconciliation to the resource model. check:sparse and production build pass. Chinese desktop evidence: docs/audits/sparse-symbols/independent-matrix-lanes-zh.png. 390px viewport retains 375px document width with local matrix scrolling. No commit or push.
+
+### 2026-09-13 — Top-right metrics and two-query, three-channel output
+
+- User clarified that 2×3 means the final output: two independent queries, each with three output channels. Macro comparison now derives both existing query fixtures against the same cached history, with a deterministic synthetic third value channel. Full weights are 2×N; sparse weights are 2×k and each query retains its own Top-K set, gathered K/V tensors and weighted sum. Output is computed as 2×3, not a reshaped single-query vector. Downstream single-query experiment is unchanged.
+- Batched gathered tensors display their leading query axis and group boundaries. Per-query multiplication has a b subscript; each score row normalizes independently. Both index queries are represented with their query/head/feature axes. Output values are finite, and original K/Q scoring is retained.
+- Rename the comparison lane to Sparse Attention; both three-metric groups now sit outside equations at their lane's top-right edge, with identical x coordinates in desktop QA. Main-work and read counters aggregate two queries; cache remains shared. The visible note distinguishes summed reads from the single-query panel below and explicitly labels synthetic V dimensions and independent reads.
+- Updated 472 execution regression cases verify 2×3 final outputs, three-channel values and independently normalized rows. Complete check:sparse and build pass. Chinese 24-position / Top-K 4 rendered value step: full has 16 active weights across two queries and 8 shared V rows (24 cells); sparse has 8 active weights and 8 gathered V rows (24 cells). No KaTeX errors or NaN cell values. Desktop metric x positions match. English 390px has 375px document width with contained horizontal canvas scrolling. Evidence: docs/audits/sparse-symbols/two-query-output-zh.png. Chinese desktop restored; no commit/push.
+
+### 2026-09-13 — Remove query swapping, stack tensors and clarify reading order
+
+- Remove the macro query-order button and fix its query batch order to 0/1. Changing the lower single-query experiment no longer resets or swaps the macro pair. Top-K/history remain shared.
+- Render actual rank-three tensors as two offset matrix sheets instead of flattening batch rows into one plane. Query-index heads, gathered keys and gathered values each retain their correct three-axis shape label; b=1/b=2 controls raise the chosen slice, with values, tooltips and timeline highlights tied to that slice. Rank-two weights/output remain ordinary matrices.
+- Preserve the main reading order and existing detailed graph: shared experiment settings, calculation comparison, benefits/costs, then cache provenance and query structure. Shared history scope replaces the misleading cost-specific wrapper heading. Add bilingual benefit and structure headings with stable section anchors; clarify two-query macro versus single-query detail accounting. The structure bridge is mechanism-neutral so it remains correct for HCA.
+- Rendered Chinese desktop: three stacks/six sheets, slice 2 can be brought forward, no formula errors, swap control absent. English 390px retains 375px document width and the expected reading headings. Evidence: docs/audits/sparse-symbols/stacked-query-tensors-zh.png. check:sparse, check:workbench and production build pass. No commit/push.
+
+- Title refinement: use 稀疏注意力省掉了哪些计算？ / Which computations does sparse attention skip? for the macro section, retaining Full Attention / Sparse Attention lane identities. Verified the rendered Chinese heading. Reading order remains observable computation differences → benefits/costs → implementation. Text-only change.
+
+### 2026-09-13 — Continuous causal position playback with independent inspection
+
+- Extend only the lower detail execution: traverse positions 1 through the configured history limit, advance only after output is complete, then loop. Default 500 ms/operation with an additional 250 ms option. Position buttons allow seeking; play/pause, restart and step remain available. Parameter changes restart the sequence without silently pausing; inspector/record clicks neither stop playback nor reset its clock.
+- Separate the full-history overview model from the current-prefix detail model. Macro/benefit values remain stable while lower caches, causal candidates, query, Top-K and attention output follow the current position. Position queries use deterministic synthetic vectors distinct at every position; no trained hidden-state projection or actual generated text is claimed. Cache creation kernels are omitted explicitly; each position begins with its then-visible cache. Prior published cache entries keep identical values.
+- New advanceSequence transition and 812 regression steps cover DSA/CSA/HCA, lengths 1/8/24, causal source bounds, every position visited, distinct queries, output-before-advance and wraparound. check:sparse and check:workbench pass; production build passes.
+- Rendered 250 ms playback advances while index/history inspectors remain open, reaches T24 and loops into another pass. Manual pause stays at T20 and the same operation across observations. Upper history limit remains 24. Chinese desktop and English 390px have zero KaTeX errors; document width 375px within 390px. Default 500 ms restored and the inspected frame left paused for review. Evidence: docs/audits/sparse-symbols/sequence-inspector-zh.png. No commit/push.
+
+### 2026-09-13 — Stop at final position and follow latest source
+
+- User correction supersedes sequence looping: preserve the final position/output, stop autoplay and disable next-step at the configured limit. Explicit play/restart can begin another run.
+- Fix stale T3 provenance: active sequence snapshots default to the latest visible record (latest local record for windowed modes, latest global otherwise). Manual record inspection is scoped to its current token position; advancing restores automatic latest-source tracking. Replay/seek clears stale manual selection.
+- Updated sequence regression covers latest tracking despite an input T3 pin and an idempotent final transition. check:sparse and build pass. Rendered T24 completes 7/7, autoplay is false, and history source reads T24, with zero KaTeX errors. No commit/push.
+
+### 2026-09-13 — Eliminate final-output layout jump
+
+- Reserve the output formula's layout while pending, overlaying the pending label without exposing the hidden value to accessibility. Keep the complete-result control mounted during playback (disabled), avoiding insertion when autoplay stops.
+- Rendered T24 output→done regression: output remains 128.51×17.23px, Attention block 398.67×167.19px, scene height 1093.27px, controls height 227.14px; all measured y positions unchanged. Zero KaTeX errors. Production build passes. Numeric/timeline behavior unchanged; no commit/push.
+
+- Default-entry refinement: CANVAS_DEFAULTS and missing/invalid mode fallback now select DSA. Existing CSA-specific regression fixtures are explicitly named CSA_FIXTURE; new assertions verify the actual default. check:sparse passes; rendered reset selects dsa. CSA/HCA macro comparisons remain pending discussion, not implemented in this change.
+
+
+## 2026-09-13 — CSA/HCA macro comparisons
+- Extended the accepted compact matrix comparison to CSA and HCA; DSA remains the default. Preserved comparison → resource tradeoffs → detailed architecture reading order.
+- CSA indexes compressed global records and gathers per-query selections alongside the raw local window. HCA has no index scan or Top-K and attends all compressed global records plus the local window. Joint normalization includes both representations, including overlapping source information.
+- Independent baseline/alternative execution, exact two-query 2×3 outputs, shared resident cache and cumulative two-query reads remain model-derived. Scales accommodate short-history overhead. History compression is shown as resident provenance; compression kernel cost is explicitly excluded. Synthetic channels and illustrative byte sizes remain disclosed.
+- Validation: build passed; check:sparse passed including 1,416 macro snapshots across DSA/CSA/HCA and short-history boundaries, plus 812 sequence steps. Browser: CSA playback and completed matrices, HCA no-index path, English mobile document width 375 at viewport 390, zero KaTeX errors.
+- Rendered evidence: docs/audits/sparse-symbols/csa-macro-zh.png and hca-macro-zh.png. No unrelated layout changes; no commit or push.
+
+
+## 2026-09-13 — Compression grouping and local provenance repair
+- Replaced ambiguous history bars with individually labeled tokens, publication groups and compressed record IDs. Explicitly separates record-count reduction, the synthetic key dimension (2), and matrix transposition. Incomplete groups remain unpublished; CSA previous-group contributions are disclosed with the existing compression inspector as drill-down.
+- Persistent purple/teal source markers now follow compressed/local records through gathered K columns, attention-weight columns and V rows, including both query tensor sheets. A shared count legend shows their concatenation; local-window source positions and K/V dimensions are explicit. Numerical intensity and transient operation highlights are retained.
+- Validation: check:sparse and production build pass. Rendered Chinese CSA and English HCA; HCA DOM confirms 24 token labels, 3 groups, K/weights split 3+8 and V split 3+8, no KaTeX errors; playback exercised. Evidence: docs/audits/sparse-symbols/compression-provenance-zh.png. This repairs provenance within the existing comparison, without changing algorithm or resource accounting.
+
+## 2026-09-13 — Continuous hidden-state matrix
+Replaced separate token-group cards with one continuous matrix: token rows, internal publication-group boundaries, and aligned compressed-record IDs. Removed the abstract H: N by d label here; feature columns are explicitly schematic. Retained transpose mapping and downstream source markers. Row height is bounded for up to 64 tokens. check:sparse and build passed; rendered Chinese CSA inspected. Evidence: docs/audits/sparse-symbols/hidden-block-matrix-zh.png.
+
+
+## 2026-09-13 — Compact history and materialized KV concatenation
+- Reduced history grid to four concrete illustrative feature columns and a 96px height cap (24-token grid measured 98px including border). Published group mapping and transpose remain secondary to attention computation. The 4D history is a dimension illustration, not a claimed checkpoint projection or numerical input to the existing fixture.
+- Replaced formula-only join with actual compressed KV, local KV, and concatenated KV matrices. Each record has two K and three V channels separated visually. Both join inputs and output derive from the selected query's canonical read records. The query selector also controls downstream K/V tensor sheets.
+- Validation: check:sparse and production build pass. Browser CSA 2+8=10 (10/40/50 cells) and HCA 3+8=11 (15/40/55 cells), zero KaTeX errors. Query b=2 switches join and downstream tensor fronts to C2 consistently. Chinese screenshot: docs/audits/sparse-symbols/compact-concat-zh.png. Restored stopped local Vite service. No commit/push.
+
+
+## 2026-09-13 — Separate feature projection from history compression
+- Compact transposed shape diagrams distinguish hidden feature width 4 → key width 2 from historical record count N → floor(N/r). The W_K shape is a teaching projection, not a numerically instantiated checkpoint or a claim to expose the complete compressor. Tokens run horizontally, group boundaries remain visible.
+- Split the combined KV join into parallel K and V lanes. Each lane displays compressed records + local records → actual concatenated result, with positions along columns and explicit transpose labels. Query selection and downstream tensor selection remain shared.
+- check:sparse and build pass. Browser: CSA K cell counts 4+16=20, V 6+24=30; HCA K 6+16=22, V 9+24=33. Zero KaTeX errors. Desktop scroll area fits exactly (1181px). Existing main execution and resource accounting preserved.

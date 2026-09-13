@@ -1,7 +1,7 @@
 import { DEFAULTS, deriveSparseModel, deriveTradeoff } from './model.js';
 import { deriveMatrixModel } from './matrix-model.js';
 
-export const CANVAS_DEFAULTS = { ...DEFAULTS, mode: 'csa', budgetKiB: 64 };
+export const CANVAS_DEFAULTS = { ...DEFAULTS, mode: 'dsa', budgetKiB: 64 };
 
 export function deriveTrends(m) {
   const history = Array.from({length:64}, (_,i) => {
@@ -55,14 +55,14 @@ export function deriveResourceEstimate(m, budgetKiB = 64) {
   };
 }
 export function deriveCanvasModel(input = {}, selectedFocus = 'overview') {
-  const mode = ['dsa', 'csa', 'hca'].includes(input.mode) ? input.mode : 'csa';
+  const mode = ['dsa', 'csa', 'hca'].includes(input.mode) ? input.mode : 'dsa';
   const m = deriveSparseModel({ ...input, mode });
   const baseline = deriveSparseModel({ ...input, mode: 'dense' });
-  const nodes = ['query', 'cache', ...(m.indexed ? ['index'] : []), ...(m.hasWindow ? ['local'] : []), 'attention'];
+  const nodes = ['history', 'query', 'cache', ...(m.indexed ? ['index'] : []), ...(m.hasWindow ? ['local'] : []), 'attention'];
   const focus = nodes.includes(selectedFocus) ? selectedFocus : 'overview';
   const budgetKiB = [32,64,128].includes(+input.budgetKiB) ? +input.budgetKiB : 64;
   const resources = deriveResourceEstimate(m,budgetKiB);
-  const tracedRecord = [...m.global, ...m.local].find(e=>e.id===input.traceId) ?? m.entry ?? m.local.at(-1) ?? null;
+  const tracedRecord = input.followLatest ? (m.local.at(-1) ?? m.global.at(-1) ?? null) : ([...m.global, ...m.local].find(e=>e.id===input.traceId) ?? m.entry ?? m.local.at(-1) ?? null);
   const traceSources = tracedRecord?.sources ?? (tracedRecord ? [tracedRecord.position] : []);
   const scoreOrder = input.scoreOrder==='score'?'score':'position';
   const scoreEntries = scoreOrder==='score'?[...m.global].sort((a,b)=>a.rank-b.rank):m.global;
@@ -70,5 +70,5 @@ export function deriveCanvasModel(input = {}, selectedFocus = 'overview') {
   const edges = [['history','cache'], ['query','attention'], ['cache','attention'], ...(m.indexed ? [['history','index'],['query','index'],['index','attention']] : []), ...(m.hasWindow ? [['history','local'],['local','attention']] : [])];
   return { ...m, baseline, nodes, edges, focus, budgetKiB, resources, benefits:deriveBenefitModel(resources),
     tracedRecord, traceSources, scoreOrder, scoreEntries, tradeoff, trends:deriveTrends(m), matrices:deriveMatrixModel(m,tracedRecord),
-    next: { query: m.indexed ? 'index' : 'attention', cache: m.indexed ? 'index' : 'attention', index:'attention', local:'attention' }[focus] };
+    next: { history:'cache', query: m.indexed ? 'index' : 'attention', cache: m.indexed ? 'index' : 'attention', index:'attention', local:'attention' }[focus] };
 }

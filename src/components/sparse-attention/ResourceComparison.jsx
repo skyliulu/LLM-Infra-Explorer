@@ -9,7 +9,7 @@ export function ResourceComparison({ model: m, t, update, onFocus }) {
   const [trendsOpen, setTrendsOpen] = useState(true);
   const keys=['globalLabel','localLabel','indexKey'], nodes=['cache','local','index'], colors=['sc-global-byte','sc-teal','sc-index-byte'];
   return <section className="sc-benefits sc-benefits-together" data-testid="resource-comparison">
-    <div className="sc-benefit-header"><strong>{t('benefitsTogether')}</strong><span className="sc-estimate-badge">{t('byteExperiment')}</span></div>
+    <div className="sc-benefit-header"><h2 data-section-anchor="sparse-benefits">{t('benefitQuestion')}</h2><span className="sc-estimate-badge">{t('byteExperiment')}</span></div>
     <div className="sc-benefit-columns">
       {m.benefits.map(item => {
         const context = item.id==='context';

@@ -65,9 +65,10 @@ export function deriveSparseModel(input = {}) {
   const hasWindow = mode === 'swa' || compressed;
   const ratio = compressed ? (mode === 'csa' ? csaRatio : hcaRatio) : 1;
   const count = mode === 'swa' ? 0 : compressed ? Math.floor(tokens / ratio) : tokens;
-  const queryHeads = query === 0 ? [[1.2, -0.3], [0.6, 0.4]] : [[-0.5, 1.1], [-0.8, 0.3]];
+  const positionQuery = Number.isInteger(input.queryPosition) ? clamp(input.queryPosition,0,0,tokens-1) : null;
+  const queryHeads = positionQuery!==null ? [vector(positionQuery,1.3),vector(positionQuery,2.9)] : query === 0 ? [[1.2, -0.3], [0.6, 0.4]] : [[-0.5, 1.1], [-0.8, 0.3]];
   const headWeights = [0.7, 0.3];
-  const mainQuery = query === 0 ? [1.1, -0.4] : [-0.6, 1.2];
+  const mainQuery = positionQuery!==null ? vector(positionQuery,0.21) : query === 0 ? [1.1, -0.4] : [-0.6, 1.2];
   const global = positions(0, count).map(i => {
     const main = compressed ? compress(i * ratio, ratio, mode === 'csa', 0) : null;
     const index = indexed && compressed ? compress(i * ratio, ratio, true, 2.4) : null;

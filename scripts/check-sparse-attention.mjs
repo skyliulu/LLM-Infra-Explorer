@@ -3,6 +3,9 @@ import katex from 'katex';
 import { DEFAULTS, MODES, deriveSparseModel } from '../src/components/sparse-attention/model.js';
 import { i18n } from '../src/components/sparse-attention/content.js';
 import { CANVAS_DEFAULTS, deriveCanvasModel } from '../src/components/sparse-attention/canvas-model.js';
+const CSA_FIXTURE={...CANVAS_DEFAULTS,mode:'csa'};
+assert.equal(CANVAS_DEFAULTS.mode,'dsa');
+assert.equal(deriveCanvasModel().mode,'dsa');
 import { canvasI18n } from '../src/components/sparse-attention/canvas-content.js';
 import { explorerI18n } from '../src/components/sparse-attention/explorer-content.js';
 import { matrixI18n } from '../src/components/sparse-attention/matrix-content.js';
@@ -93,7 +96,7 @@ console.log(`PASS ${cases} sparse-attention snapshots; causal publication, resid
 assert.deepEqual(Object.keys(canvasI18n.zh).sort(),Object.keys(canvasI18n.en).sort());
 let navigationCases=0;
 for (const mode of ['dsa','csa','hca']) for (const tokens of [1,3,4,7,8,24,25,64]) for (const focus of ['overview','query','cache','index','local','attention','invalid']) {
-  const m=deriveCanvasModel({...CANVAS_DEFAULTS, mode, tokens},focus);
+  const m=deriveCanvasModel({...CSA_FIXTURE, mode, tokens},focus);
   assert.equal(m.baseline.tokens,m.tokens);
   assert.equal(m.baseline.query,m.query);
   assert.equal(m.baseline.mainReads,tokens);
@@ -109,15 +112,15 @@ for (const mode of ['dsa','csa','hca']) for (const tokens of [1,3,4,7,8,24,25,64
   if(mode==='dsa') assert.deepEqual(m.global.map(e=>e.key),m.baseline.global.map(e=>e.key));
   navigationCases++;
 }
-const short=deriveCanvasModel({...CANVAS_DEFAULTS,tokens:4});
+const short=deriveCanvasModel({...CSA_FIXTURE,tokens:4});
 assert.ok(short.mainReads>short.baseline.mainReads); // Do not invent a gain on short history.
-assert.equal(deriveCanvasModel({...CANVAS_DEFAULTS,mode:'hca'},'index').focus,'overview');
+assert.equal(deriveCanvasModel({...CSA_FIXTURE,mode:'hca'},'index').focus,'overview');
 console.log('PASS '+navigationCases+' canvas navigation / shared baseline cases; focus isolation, connected branches, short-history overhead, bilingual content.');
 
 // Resource estimates use declared byte assumptions, never treat heterogeneous records as equal bytes.
 let resourceCases = 0;
 for (const mode of ['dsa','csa','hca']) for (const window of [4,8,16]) for (const budgetKiB of [32,64,128]) for (const tokens of [1,4,24,64]) {
-  const m = deriveCanvasModel({...CANVAS_DEFAULTS,mode,window,budgetKiB,tokens});
+  const m = deriveCanvasModel({...CSA_FIXTURE,mode,window,budgetKiB,tokens});
   const r = m.resources;
   assert.deepEqual(m.benefits.map(b=>b.id),['memory','traffic','context']);
   assert.equal(r.baselineBytes,tokens*1024);
@@ -137,23 +140,23 @@ for (const mode of ['dsa','csa','hca']) for (const window of [4,8,16]) for (cons
   assert.ok(biggerBudget.resources.capacity>=r.capacity);
   resourceCases++;
 }
-const resourceDefault=deriveCanvasModel(CANVAS_DEFAULTS).resources;
+const resourceDefault=deriveCanvasModel(CSA_FIXTURE).resources;
 assert.equal(resourceDefault.storedBytes,14.75*1024);
 assert.equal(resourceDefault.readBytes,10.75*1024);
 assert.equal(resourceDefault.capacity,199);
 assert.equal(resourceDefault.nextCapacityBytes,64.25*1024);
-assert.equal(deriveCanvasModel({...CANVAS_DEFAULTS,budgetKiB:Infinity}).budgetKiB,64);
+assert.equal(deriveCanvasModel({...CSA_FIXTURE,budgetKiB:Infinity}).budgetKiB,64);
 console.log('PASS '+resourceCases+' resource estimates; cache/read accounting, capacity inversion, budget monotonicity, Top-K isolation and DSA index overhead.');
 
-const dsaBenefits=deriveCanvasModel({...CANVAS_DEFAULTS,mode:'dsa'}).benefits;
+const dsaBenefits=deriveCanvasModel({...CSA_FIXTURE,mode:'dsa'}).benefits;
 assert.deepEqual(dsaBenefits.map(b=>b.outcome),['worse','better','worse']);
 assert.deepEqual(dsaBenefits.map(b=>b.direction),['up','down','down']);
-const equalBenefits=deriveCanvasModel({...CANVAS_DEFAULTS,mode:'hca',tokens:1}).benefits;
+const equalBenefits=deriveCanvasModel({...CSA_FIXTURE,mode:'hca',tokens:1}).benefits;
 assert.deepEqual(equalBenefits.slice(0,2).map(b=>b.outcome),['same','same']);
-const shortBenefits=deriveCanvasModel({...CANVAS_DEFAULTS,tokens:4}).benefits;
+const shortBenefits=deriveCanvasModel({...CSA_FIXTURE,tokens:4}).benefits;
 assert.deepEqual(shortBenefits.slice(0,2).map(b=>b.outcome),['worse','worse']);
-const budgetA=deriveCanvasModel({...CANVAS_DEFAULTS,budgetKiB:32}).benefits;
-const budgetB=deriveCanvasModel({...CANVAS_DEFAULTS,budgetKiB:128}).benefits;
+const budgetA=deriveCanvasModel({...CSA_FIXTURE,budgetKiB:32}).benefits;
+const budgetB=deriveCanvasModel({...CSA_FIXTURE,budgetKiB:128}).benefits;
 assert.deepEqual(budgetA.slice(0,2),budgetB.slice(0,2));
 assert.ok(budgetB[2].after>budgetA[2].after);
 console.log('PASS simultaneous benefit direction, good/bad/unchanged semantics, short-history costs and capacity-only budget changes.');
@@ -162,7 +165,7 @@ assert.deepEqual(Object.keys(explorerI18n.zh).sort(),Object.keys(explorerI18n.en
 let explorerCases=0;
 for(const variant of [{mode:'dsa'},...[2,4,8].map(csaRatio=>({mode:'csa',csaRatio})),...[8,16].map(hcaRatio=>({mode:'hca',hcaRatio}))]) for(const tokens of [1,3,4,7,8,24,25,64]) for(const query of [0,1]) for(const topK of [1,8]) {
   const {mode}=variant;
-  const m=deriveCanvasModel({...CANVAS_DEFAULTS,...variant,tokens,query,topK});
+  const m=deriveCanvasModel({...CSA_FIXTURE,...variant,tokens,query,topK});
   const trade=m.tradeoff;
   assert.equal(Object.values(trade.counts).reduce((a,b)=>a+b,0),tokens);
   assert.ok([...trade.fullOutput,...trade.residentOutput].every(Number.isFinite));
@@ -187,20 +190,20 @@ for(const variant of [{mode:'dsa'},...[2,4,8].map(csaRatio=>({mode:'csa',csaRati
   assert.ok(m.tradeoff.counts.direct>=m.local.length);
   explorerCases++;
 }
-const traced=deriveCanvasModel({...CANVAS_DEFAULTS,inspect:3,traceId:'C4'},'cache');
+const traced=deriveCanvasModel({...CSA_FIXTURE,inspect:3,traceId:'C4'},'cache');
 for(const focus of ['cache','index','attention']) {
-  const m=deriveCanvasModel({...CANVAS_DEFAULTS,inspect:3,traceId:'C4'},focus);
+  const m=deriveCanvasModel({...CSA_FIXTURE,inspect:3,traceId:'C4'},focus);
   assert.equal(m.tracedRecord.id,'C4');
   assert.deepEqual(m.traceSources,traced.traceSources);
 }
-const localTrace=deriveCanvasModel({...CANVAS_DEFAULTS,traceId:'L24'},'attention');
+const localTrace=deriveCanvasModel({...CSA_FIXTURE,traceId:'L24'},'attention');
 assert.equal(localTrace.tracedRecord.id,'L24');
 assert.deepEqual(localTrace.traceSources,[23]);
-assert.equal(deriveCanvasModel({...CANVAS_DEFAULTS,tokens:1,traceId:'C99'}).tracedRecord.id,'L1');
-const sorted=deriveCanvasModel({...CANVAS_DEFAULTS,scoreOrder:'score',traceId:'C4',inspect:3},'index');
+assert.equal(deriveCanvasModel({...CSA_FIXTURE,tokens:1,traceId:'C99'}).tracedRecord.id,'L1');
+const sorted=deriveCanvasModel({...CSA_FIXTURE,scoreOrder:'score',traceId:'C4',inspect:3},'index');
 assert.deepEqual(sorted.scoreEntries.map(e=>e.rank),[1,2,3,4,5,6]);
 assert.equal(sorted.tracedRecord.id,'C4');
-const beforeK=deriveCanvasModel({...CANVAS_DEFAULTS,topK:1}), afterK=deriveCanvasModel({...CANVAS_DEFAULTS,topK:8});
+const beforeK=deriveCanvasModel({...CSA_FIXTURE,topK:1}), afterK=deriveCanvasModel({...CSA_FIXTURE,topK:8});
 assert.deepEqual(beforeK.trends.history.map(p=>p.memory),afterK.trends.history.map(p=>p.memory));
 assert.deepEqual(beforeK.trends.capacity,afterK.trends.capacity);
 assert.deepEqual(beforeK.tradeoff.fullOutput,afterK.tradeoff.fullOutput);
@@ -210,9 +213,9 @@ console.log(`PASS ${explorerCases} explorer cases: full/resident reference, cove
 assert.deepEqual(Object.keys(matrixI18n.zh).sort(), Object.keys(matrixI18n.en).sort());
 let matrixCases = 0;
 for (const mode of ['dsa','csa','hca']) for (const tokens of [1,4,24,64]) for (const query of [0,1]) {
-  const initial = deriveCanvasModel({...CANVAS_DEFAULTS, mode, tokens, query});
+  const initial = deriveCanvasModel({...CSA_FIXTURE, mode, tokens, query});
   for (const record of [...initial.global, ...initial.local]) {
-    const m = deriveCanvasModel({...CANVAS_DEFAULTS, mode, tokens, query, traceId:record.id, ...(record.index !== undefined ? {inspect:record.index} : {})});
+    const m = deriveCanvasModel({...CSA_FIXTURE, mode, tokens, query, traceId:record.id, ...(record.index !== undefined ? {inspect:record.index} : {})});
     const matrix = m.matrices;
     assert.deepEqual(matrix.selection.globalIds, m.reads.filter(row=>row.branch==='global').map(row=>row.id));
     assert.equal(matrix.selection.total, matrix.selection.globalIds.length + m.local.length);
@@ -241,8 +244,19 @@ for (const mode of ['dsa','csa','hca']) for (const tokens of [1,4,24,64]) for (c
     }
     matrixCases++;
   }
-  const changed = deriveCanvasModel({...CANVAS_DEFAULTS, mode, tokens, query:1-query});
+  const changed = deriveCanvasModel({...CSA_FIXTURE, mode, tokens, query:1-query});
   assert.deepEqual(initial.matrices.global.map(row=>row.cells), changed.matrices.global.map(row=>row.cells));
   assert.notDeepEqual(initial.matrices.query, changed.matrices.query);
 }
 console.log(`PASS ${matrixCases} matrix traces: full shapes, source identity, exact gathered values/weights, omission accounting and query/cache independence.`);
+
+// History is a distinct provenance view, never a cache alias.
+for (const mode of ['dense','dsa','swa','csa','hca']) {
+  const historyView=deriveCanvasModel({...CSA_FIXTURE,mode},'history');
+  assert.equal(historyView.focus,'history');
+  assert.equal(historyView.next,'cache');
+  assert.ok(historyView.nodes.includes('history'));
+}
+console.log('PASS independent history provenance focus in all five modes');
+import './check-sparse-macro.mjs';
+import './check-sparse-sequence.mjs';

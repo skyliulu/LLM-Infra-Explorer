@@ -30,3 +30,11 @@ export function executionView(m,e) {
   matrices:{...m.matrices,global:mark(m.matrices.global),local:mark(m.matrices.local),reads,
    selection:{...m.matrices.selection,globalIds:e.selectionReady?m.matrices.selection.globalIds:[],localRange:e.localReads?[m.local.filter(r=>read.has(r.id))[0].id,m.local.filter(r=>read.has(r.id)).at(-1).id]:[]}}};
 }
+
+// Advance only after this position has produced its output; stop at the end of the teaching sequence.
+export function advanceSequence(sequence, limit, total) {
+ if(sequence.position===null||sequence.progress===null) return {position:1,progress:0};
+ if(sequence.progress<total) return {...sequence,progress:sequence.progress+1};
+ if(sequence.position>=limit)return sequence;
+ return {position:sequence.position+1,progress:0};
+}

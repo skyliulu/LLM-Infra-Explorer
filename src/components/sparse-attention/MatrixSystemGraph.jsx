@@ -1,3 +1,4 @@
+import {QueryProjection,ProjectionParameters} from './QueryProjection';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { MathFormula } from '../linear-attention/MathFormula';
@@ -109,7 +110,7 @@ function StorageScale({ m, t, onFocus }) {
   </div>;
 }
 
-export function MatrixSystemGraph({ model: m, t, onFocus, chooseRecord, compact, execution:e, playing }) {
+export function MatrixSystemGraph({ model: m, t, onFocus, chooseRecord, compact, execution:e, playing, projection, onProjection }) {
   const title = (id, shape) => <NodeTitle id={id} shape={shape} m={m} t={t} onFocus={onFocus}/>;
   const output = (branch, count, detail) => <div className={`sr-short-edge sr-edge-${branch}`}>
     <button className="sr-flow-output" data-flow={`${branch}-attention`} onClick={() => onFocus('attention')}>
@@ -119,16 +120,15 @@ export function MatrixSystemGraph({ model: m, t, onFocus, chooseRecord, compact,
   </div>;
   return <ScaledGraph compact={compact} t={t} onFocus={onFocus}><div className={`sm-graph sr-graph sr-fixed ${e?.enabled&&!e.queryReady?'se-query-pending':''}`} data-exec-phase={e?.enabled?e.phase:'overview'} data-playing={playing} data-active-global={e?.activeGlobal} data-active-local={e?.activeLocal} aria-label={t('overview')}>
     <div className="sm-guide"><span>{t('matrixAction')}</span><small>{t('matrixLegend')}</small></div>
+    {m.indexed&&<ProjectionParameters t={t} selected={m.focus==='query'?projection:null} onSelect={onProjection}/>}
     <div className="sm-history sm-block" data-matrix-node="history" title={t('matrixSourceHint')}>
-      <BlockHit id="history" target="cache" m={m} t={t} onFocus={onFocus}/><div><strong>{t('historyNode')}</strong><MathFormula>{`N=${m.tokens}`}</MathFormula><span>{t('matrixSource')}{m.tracedRecord && ` · ${m.tracedRecord.id}`}</span></div>
+      <BlockHit id="history" target="history" m={m} t={t} onFocus={onFocus}/><div><strong>{t('historyNode')}</strong><MathFormula>{`N=${m.tokens}`}</MathFormula><span>{t('matrixSource')}{m.tracedRecord && ` · ${m.tracedRecord.id}`}</span></div>
       <div className="sm-token-strip">{m.matrices.history.map(row => <span key={row.position} className={`${row.traced ? 'sm-source' : ''} ${row.traced && row.previous ? 'sm-previous' : ''} ${row.local ? 'sm-window' : ''}`} title={`T${row.position + 1}`} data-source-token={row.position + 1} data-traced={row.traced}>{row.position + 1}</span>)}</div>
     </div>
     <section className="sr-query sm-block" data-matrix-node="query"><BlockHit id="query" m={m} t={t} onFocus={onFocus}/>
       {title('query')}
-      <div className="sr-query-vectors">
-        <div className="sr-query-vector"><MathFormula>{'q'}</MathFormula><MatrixCells values={m.mainQuery}/><button className="sr-query-port" data-flow="query-attention" onClick={() => onFocus('attention')}><ArrowRight size={14}/>{t('alignedToAttention')}<ArrowUpRight size={12}/></button></div>
-        {m.indexed && <div className="sr-index-query" data-testid="index-query-path">{m.queryHeads.map((values,i) => <div key={i} className="sr-query-vector"><MathFormula>{`q^I_{${i+1}}`}</MathFormula><MatrixCells values={values}/></div>)}<button className="sr-query-port" data-flow="query-index" onClick={() => onFocus('index')}><ArrowRight size={14}/>{t('alignedToIndex')}<ArrowUpRight size={12}/></button></div>}
-      </div>
+      {m.indexed?<QueryProjection m={m} t={t} selected={m.focus==='query'?projection:null} onSelect={onProjection} ready={!e?.enabled||e.queryReady} onFocus={onFocus}/>:<div className="sr-query-vectors"><div className="sr-query-vector"><b>{t('mainQueryLabel')}</b><MathFormula>{'q'}</MathFormula><MatrixCells values={m.mainQuery}/><button className="sr-query-port" data-flow="query-attention" onClick={()=>onFocus('attention')}>{t('alignedToAttention')}</button></div></div>}
+
     </section>
     <StorageScale m={m} t={t} onFocus={onFocus}/><div className="sr-input-note">{t(m.hasWindow ? 'flowParallel' : 'flowSingle')}</div>
     <div className={`sr-branches ${m.hasWindow ? '' : 'sr-single'}`}>
@@ -141,7 +141,7 @@ export function MatrixSystemGraph({ model: m, t, onFocus, chooseRecord, compact,
       {title('attention',`K_{\\mathcal R},V_{\\mathcal R}:${m.mainReads}\\times2`)}
       <div className="sr-attention-body">
         <Matrix rows={m.matrices.reads} kind="reads" traceId={m.matrices.traceId} compact={compact} t={t} onSelect={row=>chooseRecord(row,'attention')}/>
-        <div className="sr-attention-result"><span>{t('alignedToAttention')} <MathFormula>{'q'}</MathFormula></span><div className="sr-query-vector"><MatrixCells values={e?.enabled&&!e.queryReady?[null,null]:m.mainQuery}/></div><MathFormula>{'\\ell=K_{\\mathcal R}q^T/\\sqrt2'}</MathFormula><MathFormula>{'a=\\operatorname{softmax}(\\ell)'}</MathFormula><MathFormula>{'o=a^TV_{\\mathcal R}'}</MathFormula><div className="sm-output" data-output-ready={!e?.enabled||e.outputReady}><span>{t('matrixOutput')}</span>{e?.enabled&&!e.outputReady?<span>{t('runPending')}</span>:<MathFormula>{`o=\\begin{bmatrix}${m.output.map(v=>v.toFixed(3)).join('&')}\\end{bmatrix}`}</MathFormula>}</div></div>
+        <div className="sr-attention-result"><span>{t('alignedToAttention')} <MathFormula>{'q'}</MathFormula></span><div className="sr-query-vector"><MatrixCells values={e?.enabled&&!e.queryReady?[null,null]:m.mainQuery}/></div><MathFormula>{'\\ell=K_{\\mathcal R}q^T/\\sqrt2'}</MathFormula><MathFormula>{'a=\\operatorname{softmax}(\\ell)'}</MathFormula><MathFormula>{'o=a^TV_{\\mathcal R}'}</MathFormula><div className="sm-output" data-output-ready={!e?.enabled||e.outputReady}><span>{t('matrixOutput')}</span><span className="sm-output-value"><span className="sm-output-formula" style={{visibility:e?.enabled&&!e.outputReady?'hidden':'visible'}} aria-hidden={e?.enabled&&!e.outputReady}><MathFormula>{`o=\\begin{bmatrix}${m.output.map(v=>v.toFixed(3)).join('&')}\\end{bmatrix}`}</MathFormula></span>{e?.enabled&&!e.outputReady&&<span className="sm-output-pending">{t('runPending')}</span>}</span></div></div>
       </div>
       <small className="sr-independent">{t('matrixAllWeights')}</small>
     </section>
