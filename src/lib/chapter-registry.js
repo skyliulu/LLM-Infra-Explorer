@@ -1,3 +1,4 @@
+import {READING_ORDER, LEARNING_PATHS} from './chapter-learning';
 import {lazy} from 'react';
 import {CHAPTER_ICONS} from './chapter-icons';
 import {getModuleLabel} from './module-titles';
@@ -125,6 +126,6 @@ const descriptions = [
   },
 ];
 const aliases={llm:'推理 预填充 生成 token moe dense kv',parallel:'并行 dp tp pp cp ep etp gpu helix',flash:'fa fa2 fa3 fa4 分块 注意力 sram hbm',sparseattn:'dsa csa hca swa 稀疏 压缩 注意力',cachearch:'ced csa2 deepseek 缓存 共享 编码 解码',flashdecode:'解码 split 分块 reduction',speculative:'投机解码 draft target eagle dspark',quantization:'量化 精度 int4 fp4 fp8 bf16 awq gptq smoothquant',engram:'记忆 ngram 预取',radixcache:'前缀缓存 基数树 sglang lru hicache 分层存储 预取 host gpu',linearattn:'线性注意力 gla 递归 状态',dpattention:'dp tp mla attention 数据并行'};
-const related={llm:['quantization','speculative'],parallel:['dpattention','flashdecode'],flash:['sparseattn','flashdecode'],sparseattn:['flash','cachearch'],cachearch:['sparseattn','quantization'],flashdecode:['flash','dpattention'],speculative:['llm','radixcache'],quantization:['llm','cachearch'],engram:['llm','radixcache'],radixcache:['llm','cachearch'],dpattention:['parallel','flashdecode'],linearattn:['flash','sparseattn']};
-export const CHAPTERS=routes.map(route=>({...descriptions.find(item=>item.id===route.id),...route,title:getModuleLabel(route.id),aliases:aliases[route.id],related:related[route.id]}));
+const related={llm:['quantization','speculative'],parallel:['dpattention','flashdecode'],flash:['sparseattn','flashdecode'],sparseattn:['flash','cachearch'],cachearch:['sparseattn','quantization','radixcache'],flashdecode:['flash','dpattention'],speculative:['llm','radixcache'],quantization:['llm','cachearch'],engram:['llm','radixcache'],radixcache:['llm','cachearch'],dpattention:['parallel','flashdecode'],linearattn:['flash','sparseattn']};
+export const CHAPTERS=READING_ORDER.map(id=>routes.find(route=>route.id===id)).map(route=>({...descriptions.find(item=>item.id===route.id),...route,title:getModuleLabel(route.id),aliases:aliases[route.id],related:related[route.id],learning:LEARNING_PATHS[route.id]}));
 export function matchesChapter(chapter, query){return query.trim().toLowerCase().split(/\s+/).every(word=>[chapter.title,chapter.id,chapter.aliases,...Object.values(chapter.description)].join(' ').toLowerCase().includes(word));}

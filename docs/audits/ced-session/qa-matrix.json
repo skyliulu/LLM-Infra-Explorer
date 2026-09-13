@@ -1,0 +1,129 @@
+{
+  "dimensions": {
+    "language": [
+      "zh",
+      "en"
+    ],
+    "theme": [
+      "light",
+      "dark"
+    ],
+    "viewport": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "language",
+      "theme",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "zh-light-desktop",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "rendered readability and local overflow",
+        "theme/language preserve lifecycle",
+        "prefix hit and local-state availability"
+      ]
+    },
+    {
+      "name": "zh-light-mobile",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "rendered readability and local overflow",
+        "theme/language preserve lifecycle",
+        "prefix hit and local-state availability"
+      ]
+    },
+    {
+      "name": "zh-dark-desktop",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "rendered readability and local overflow",
+        "theme/language preserve lifecycle",
+        "prefix hit and local-state availability"
+      ]
+    },
+    {
+      "name": "zh-dark-mobile",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "rendered readability and local overflow",
+        "theme/language preserve lifecycle",
+        "prefix hit and local-state availability"
+      ]
+    },
+    {
+      "name": "en-light-desktop",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "rendered readability and local overflow",
+        "theme/language preserve lifecycle",
+        "prefix hit and local-state availability"
+      ]
+    },
+    {
+      "name": "en-light-mobile",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "rendered readability and local overflow",
+        "theme/language preserve lifecycle",
+        "prefix hit and local-state availability"
+      ]
+    },
+    {
+      "name": "en-dark-desktop",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "rendered readability and local overflow",
+        "theme/language preserve lifecycle",
+        "prefix hit and local-state availability"
+      ]
+    },
+    {
+      "name": "en-dark-mobile",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "rendered readability and local overflow",
+        "theme/language preserve lifecycle",
+        "prefix hit and local-state availability"
+      ]
+    }
+  ]
+}

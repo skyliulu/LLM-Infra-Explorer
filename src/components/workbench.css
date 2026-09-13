@@ -51,3 +51,5 @@
 /* Chapter identity is shared with the navigation registry. */
 .chapter-header h1{display:flex;align-items:center;gap:10px}
 .chapter-header .chapter-title-icon{width:24px;height:24px;flex-shrink:0;color:#4f46e5}
+
+.chapter-related>div{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.chapter-related{flex-wrap:wrap;gap:12px 28px}.chapter-related a:focus-visible{outline:2px solid #6366f1;outline-offset:3px}

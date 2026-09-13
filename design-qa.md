@@ -1,5 +1,15 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-09-13 — Reading order and CED section hierarchy
+
+- Authorized structural reordering: shared Home/sidebar learning groups and CED major sections. Preserve diagram geometry, model accounting, section IDs, selection and playback; phase controls move beside the single-forward canvas, while token count remains shared.
+- Order: Foundations → Attention → Memory & Precision → Parallelism → Advanced Inference. Helpful-foundation links target specific sections; footer separates continuation from related branches. CED prerequisites are sparse attention, quantization and Radix HiCache, not every earlier chapter.
+- CED order: serving benefits → single-forward architecture → CSA2 ownership → byte budgets → hierarchical indexer → session generation/retention/recovery. Three compact benefit cards navigate directly to relevant mechanisms; detailed metric boundaries remain available in a disclosure.
+- Validation: check:workbench and check:cachearch passed, production build passed (1988 modules), diff whitespace check passed. Learning-path checks cover all 12 unique routes, earlier prerequisites, forward continuations and section URL round trips.
+- Rendered QA: desktop Chinese/light overview and indexer; 390px English/dark overview and local phase controls; desktop English/dark Home. Home card order and five filter counts match sidebar metadata. All three CED foundation links focus their intended section. All three benefit cards focus the corresponding mechanism. Indexer layer selection updates the inspected layer; changing single-forward phase preserves the session progress. Existing section IDs appear in the intended six-section order. Mobile document width does not exceed viewport width.
+- Evidence: docs/audits/reading-order/ced-overview-zh.png, ced-indexer-zh.png, ced-mobile-en-dark.png. Existing React 18 Home fetchPriority warning and outdated Browserslist dataset notice remain unrelated to this change. No new technical performance claims or runtime model changes. No commit/push in this iteration.
+
+
 ### 2026-09-11 — Sparse Attention：默认展开趋势并提交
 
 - 用户要求三项趋势默认展开，并提交当前版本。仅将趋势展示初值改为true，保留手动收起/展开；数值模型及既有布局不变。
@@ -1419,3 +1429,28 @@ User-authorized presentation redesign: reduce request-row height, remove the che
 - Browser checks: dark preference survives opening a fresh local tab; route changes retain theme; system selection agrees with matchMedia; returning to light restores white chapter headers; a Radix next-step snapshot is unchanged by theme switching. English menu at 390px has 375px client/scroll width, no page overflow. Mobile evidence: `docs/audits/night-mode/mobile-menu-en.png`.
 - Validation: `node scripts/check-theme.mjs` and production build passed. CSS color regression includes representative contrast, transparency, semantic tints, native Tailwind opacity variables, media rules and idempotence. Console was not independently audited. Existing Chromium preview was restarted to load the new PostCSS configuration.
 - Final home-page QA caught background-clipped gradient text being treated as a surface; fixed role detection and excluded the intentionally dark HomeLanding palette. Added regressions for gradient text and branded home colors. Final rendered evidence: `home-dark.png` and `layout-dark-en.png`.
+# 2026-09-13 — CED continuous generation and session recovery
+
+User-authorized extension of both remaining CED items. Used `develop-interactive-module`. Preserved the accepted business overview, single-forward microscope, byte ledger, ownership topology and hierarchical indexer. Captured the local pre-change overview and technical canvas in the browser; added one connected session canvas after the technical microscope. The existing prefill/decode controls remain independent of this multi-turn trace; the trace explicitly inherits only the existing initial-token setting.
+
+- One canonical model drives 33 checkpoints across initial prefill and continuous decode, a short-gap tool continuation, checkpoint expiry, global reload, Encoder bounded repair, Decoder tail construction and resumed generation. Whole cache blocks are inspectable; request markers and a scrubber jump within the same history. Play/pause/step/reset use 2-second checkpoints. Inspection pauses playback; completion stops it. Reduced-motion preference suppresses layout motion and animated connectors.
+- Four source lanes show persistent record identities, pair completion and partial-pair staging. A token is marked processed only after Decoder completion. Per-layer 128-slot windows use circular-slot placement with a labeled latest position and evicted range. Stored global records survive local eviction, and replay has zero incremental global-record bytes.
+- Explicit boundaries: a global hit differs from local readiness; warm checkpoint hits do not make old-tail feature evaluation free; partial compressor state is not a complete FP4 record. Byte accounting excludes SWA/partial pairs/activations/alignment. Recovery counters are completed positions, not FLOPs, TTFT or speedups. The approximate reconstruction boundary is visible by default. Report 20+20 grouping versus SGLang L1–L21 / L22–L40 per-chunk scheduling is explained in provenance. See `docs/ced-session-design.md` for the claim ledger.
+
+Validation completed:
+
+- `npm run check:cachearch`: existing 480 ownership/budget, 132 execution and 400 hierarchical snapshots pass; new 363 session snapshots pass across 11 lengths, including 127/128/129, odd pairs and one million positions.
+- `npm run check:workbench` passes; the new section has a stable `ced-session` anchor and no new share-state fields.
+- Session convention check: 9/9 required, zero warnings. QA matrix: eight language × appearance × viewport cases covered. Final production build passes (existing Browserslist data-age advisory only).
+- Browser paths: short-gap restore; cold return reload → repair → suffix → Decoder build; 129→130 pair publication before token completion; one-token initial input gives a 10-token prefix repair rather than a fabricated 128; million-position long labels; scrub to end and disabled next; replay from penultimate checkpoint auto-stops; inspect pauses; language/theme switches preserve cursor; visiting Home retains the 129-token experiment setting but resets lifecycle to step zero on return.
+- Rendered Chinese/English in light/dark at desktop 1280 and mobile 390, plus tablet 768. No page overflow or unintended session-component overflow; visually-hidden KaTeX MathML is excluded. Fixed the discovered mobile English control-group wrapping and rechecked all three buttons share the same vertical coordinate. Fixed initial empty range `1–0`, premature “ready” labels, and unavailable partial-state labeling; the model tests cover the related lifetime and empty-state invariants.
+- Fresh CED tab has no module errors. Visiting the existing Home page emits the pre-existing React 18 `fetchPriority` prop warning from `HomeLanding`; unrelated and left unchanged (P3).
+
+Evidence: `docs/audits/ced-session/qa-matrix.json`, `browser-results.json`, desktop/mobile bilingual theme screenshots and tablet paired-publication screenshot. Final local view is Chinese, system appearance, 4,096 initial tokens, paused at the old-session Encoder repair. No outstanding P0/P1/P2 findings within this extension. No real checkpoint inference, task-quality benchmark, transport scheduler or end-to-end latency claim is included.
+
+### 2026-09-13 — Foundations links in the site header
+
+- User-authorized placement change: remove the body prerequisite strip and render it through a dedicated header portal beside section navigation. Preserve all section targets and chapter state semantics.
+- Desktop (1400px+) shows distinct topic names with full-label tooltips; smaller widths use an accessible toggle and link panel; mobile uses a book icon. Outside click/Escape close the panel, Escape restores trigger focus. Chapters without prerequisites render no control.
+- Rendered desktop Chinese and English plus 390px English menu. Verified KV cache lifecycle links to llminference-2 with heading focus; no prerequisite control on LLM Inference. Mobile document width 375px within 390px viewport. Screenshot: docs/audits/reading-order/header-foundations-zh.png (desktop English capture).
+- check:workbench and production build pass (1988 modules). No model changes, commit or push.

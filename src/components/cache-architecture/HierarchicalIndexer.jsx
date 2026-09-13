@@ -14,7 +14,7 @@ export default function HierarchicalIndexer({m,lang,onSelect}){
  const displayedSource=visible<2?20:v.source;
  const r=v.rows[Math.min(record,v.rows.length-1)],number=n=>n.toLocaleString('en-US');
  const note=visible<2?`${stages[visible]}Note`:visible===2?(v.reuse?'reuseNote':v.restricted?'reindexNote':'fullNote'):'gatherNote';
- return <div className="ci-panel"><div className="ci-heading"><div><h3 data-section-anchor="cachearchitecture-indexer">{t('title')} · L{m.layer+1}</h3><p>{t('why')}</p></div></div>
+ return <div className="ci-panel"><div className="ci-heading"><div><h2 data-section-anchor="cachearchitecture-indexer">{t('title')} · L{m.layer+1}</h2><p>{t('why')}</p></div><label className="ci-layer-choice">{t('layerChoice')}<select aria-label={t('layerChoice')} value={m.layer} onChange={e=>onSelect(Number(e.target.value))}>{Array.from({length:40},(_,id)=><option key={id} value={id}>L{id+1}</option>)}</select></label></div>
  {!v.enabled?<div className="ci-empty"><p>{t('other')}</p><button onClick={()=>onSelect(20)}>{t('open')}</button></div>:<>
  <div className="ci-detail-grid"><div className="ci-demo">
  <div className="ci-example-heading"><strong>{t('example')}</strong><div className="ci-controls"><button aria-label={t('reset')} title={t('reset')} onClick={()=>{setPlaying(false);setStep(null);setRecord(0);}}><RotateCcw size={15}/></button><button aria-label={t(playing?'pause':'play')} title={t(playing?'pause':'play')} onClick={()=>{if(step===null||done)setStep(0);setPlaying(p=>!p);}}>{playing?<Pause size={15}/>:<Play size={15}/>}</button><button aria-label={t('next')} title={t('next')} disabled={done} onClick={()=>{setPlaying(false);setStep(s=>s===null?0:Math.min(4,s+1));}}><SkipForward size={15}/></button></div></div>

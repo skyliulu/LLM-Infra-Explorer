@@ -14,6 +14,7 @@ export default function SiteHeader({onMenu, menuOpen=false, chapter}) {
     {onMenu && <button id="site-menu" className="site-menu" onClick={onMenu} aria-label={t('menu')} aria-expanded={menuOpen} aria-controls="chapter-sidebar"><Menu size={20}/></button>}
     <a href="#home" className="site-brand" aria-label={t('home')}><img src={`${import.meta.env.BASE_URL}favicon.svg`} width="30" height="30" alt=""/><span>LLM Infra Explorer</span></a>
     {chapter && <div className="site-context"><div id="site-location" className="site-location"/></div>}
+    {chapter && <div id="site-foundations" className="site-foundations"/>}
     <div className="site-tools">
       {chapter && <div id="site-share" className="site-share"/>}
       <ThemeControl/><div className="site-language" role="group" aria-label={t('language')}>

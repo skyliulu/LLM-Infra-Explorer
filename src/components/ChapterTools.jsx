@@ -1,13 +1,14 @@
 import {createPortal} from 'react-dom';
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {Share2} from 'lucide-react';
+import {Share2, BookOpen, ChevronDown} from 'lucide-react';
 import {useLanguage} from '../lib/LanguageContext';
 import {createShareHash} from '../lib/experiment-sharing';
 import {getModuleLabel} from '../lib/module-titles';
+import {learningHref} from '../lib/chapter-learning';
 
 const copy = {
-  en: {jump:'On this page', top:'Overview', share:'Share setup', copy:'Copy link', copied:'Copied', manual:'Select the link and copy it', close:'Close', related:'Explore next', note:'Settings kept · playback restarts on return', retention:'Configuration is kept while navigating this page. Use a share link to save it across reloads.', hint:'Shares this chapter, section and primary settings. Playback and inspector selections are not included.', link:'Share link'},
-  zh: {jump:'本章定位', top:'概览', share:'分享配置', copy:'复制链接', copied:'已复制', manual:'请选中链接手动复制', close:'关闭', related:'相关章节', note:'配置保留 · 返回时播放从头开始', retention:'本次浏览中切换章节会保留配置；需要刷新后恢复时，请使用分享链接。', hint:'分享当前章节、位置和主要配置，不包含播放进度与检查器选择。', link:'分享链接'},
+  en: {before:'Helpful foundations',continue:'Continue learning',branches:'Related branches',jump:'On this page', top:'Overview', share:'Share setup', copy:'Copy link', copied:'Copied', manual:'Select the link and copy it', close:'Close', related:'Explore next', note:'Settings kept · playback restarts on return', retention:'Configuration is kept while navigating this page. Use a share link to save it across reloads.', hint:'Shares this chapter, section and primary settings. Playback and inspector selections are not included.', link:'Share link'},
+  zh: {before:'建议先了解',continue:'继续学习',branches:'相关分支',jump:'本章定位', top:'概览', share:'分享配置', copy:'复制链接', copied:'已复制', manual:'请选中链接手动复制', close:'关闭', related:'相关章节', note:'配置保留 · 返回时播放从头开始', retention:'本次浏览中切换章节会保留配置；需要刷新后恢复时，请使用分享链接。', hint:'分享当前章节、位置和主要配置，不包含播放进度与检查器选择。', link:'分享链接'},
 };
 const headingsIn = content => [...(content?.querySelectorAll('[data-section-anchor]') || [])].filter(el => el.getClientRects().length);
 
@@ -20,7 +21,7 @@ export default function ChapterTools({chapter, session}) {
   const root = useRef(null);
   const shareTrigger = useRef(null);
   const [hosts,setHosts] = useState(null);
-  useLayoutEffect(()=>{setHosts({location:document.getElementById('site-location'),share:document.getElementById('site-share')});},[]);
+  useLayoutEffect(()=>{setHosts({location:document.getElementById('site-location'),share:document.getElementById('site-share'),foundations:document.getElementById('site-foundations')});},[]);
   useEffect(()=>{
     if(!share)return;
     const close=event=>{if(event.key==='Escape'){setShare('');shareTrigger.current?.focus();}};
@@ -83,6 +84,7 @@ export default function ChapterTools({chapter, session}) {
 
   if(!hosts?.location||!hosts?.share)return null;
   return <>
+    {hosts.foundations && createPortal(<ChapterPrerequisites chapter={chapter}/>,hosts.foundations)}
     {createPortal(<div className="site-breadcrumb">
       <a className="site-chapter-link" href={`#${chapter.id}`} onClick={event=>{event.preventDefault();jump('');}}>{chapter.title}</a>
       <span className="site-breadcrumb-divider" aria-hidden="true">/</span>
@@ -109,8 +111,31 @@ export default function ChapterTools({chapter, session}) {
 
 export function RelatedChapters({chapter}) {
   const [lang] = useLanguage(), t = key => copy[lang][key];
+  const next=chapter.learning?.next;
+  const branches=chapter.related.filter(id=>id!==next);
   return <nav className="chapter-related" aria-label={t('related')}>
-    <span>{t('related')}</span>
-    {chapter.related.map(id => <a key={id} href={`#${id}`}>{getModuleLabel(id)}</a>)}
+    {next&&<div><span>{t('continue')}</span><a href={`#${next}`}>{getModuleLabel(next)} →</a></div>}
+    <div><span>{t('branches')}</span>{branches.map(id => <a key={id} href={`#${id}`}>{getModuleLabel(id)}</a>)}</div>
+  </nav>;
+}
+
+export function ChapterPrerequisites({chapter}) {
+  const [lang]=useLanguage(), t=key=>copy[lang][key], topics=chapter.learning?.before||[];
+  const [open,setOpen]=useState(false);
+  const root=useRef(null), trigger=useRef(null);
+  useEffect(()=>{
+    if(!open)return;
+    const outside=event=>{if(!root.current?.contains(event.target))setOpen(false);};
+    const escape=event=>{if(event.key==='Escape'){setOpen(false);trigger.current?.focus();}};
+    document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape);
+    return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape);};
+  },[open]);
+  if(!topics.length)return null;
+  return <nav ref={root} className="site-foundation-nav" aria-label={t('before')}>
+    <span className="site-foundation-caption">{t('before')}</span>
+    <button ref={trigger} className="site-foundation-trigger" aria-label={t('before')} title={t('before')} aria-expanded={open} onClick={()=>setOpen(!open)}><BookOpen size={16}/><span>{t('before')}</span><ChevronDown size={12}/></button>
+    <div className={`site-foundation-links${open?' is-open':''}`}>
+      {topics.map(topic=><a key={`${topic.chapter}-${topic.section}`} href={learningHref(topic)} title={topic.label[lang]} onClick={()=>setOpen(false)}><span>{topic.label[lang]}</span><small>{getModuleLabel(topic.chapter)}</small></a>)}
+    </div>
   </nav>;
 }

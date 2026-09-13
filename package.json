@@ -10,7 +10,7 @@
     "check:parallel": "node scripts/check-parallel-strategies.mjs",
     "check:flash": "node scripts/check-flash-attention.mjs",
     "check:sparse": "node scripts/check-sparse-attention.mjs",
-    "check:cachearch": "node scripts/check-cache-architecture.mjs && node scripts/check-ced-execution.mjs && node scripts/check-hierarchical-indexer.mjs",
+    "check:cachearch": "node scripts/check-cache-architecture.mjs && node scripts/check-ced-execution.mjs && node scripts/check-hierarchical-indexer.mjs && node scripts/check-ced-session.mjs",
     "check:flashdecode": "node scripts/check-flash-decode.mjs",
     "check:engram": "node scripts/check-engram.mjs",
     "check:radix": "node scripts/check-radix-cache.mjs && node scripts/check-hicache.mjs && node scripts/check-hicache-story.mjs && node scripts/check-hicache-engine.mjs",
@@ -20,7 +20,7 @@
     "check:quantization": "node scripts/check-quantization.mjs && node scripts/check-sglang-quantization.mjs && node scripts/check-fp4-cache.mjs",
     "check:visual": "node scripts/visual-check.js",
     "check:visual:module": "node scripts/visual-check.js --module",
-    "check:workbench": "node scripts/check-workbench-sharing.mjs"
+    "check:workbench": "node scripts/check-workbench-sharing.mjs && node scripts/check-learning-paths.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

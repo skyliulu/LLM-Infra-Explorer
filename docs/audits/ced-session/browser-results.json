@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-13",
+  "desktopWidth": 1280,
+  "mobileWidth": 390,
+  "tabletWidth": 768,
+  "languages": [
+    "zh",
+    "en"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "sessionComponentOverflow": false,
+  "mobileControlButtonsAligned": true,
+  "verifiedPaths": [
+    "warm restore",
+    "global load before bounded repair",
+    "immutable cached records during repair",
+    "129 to 130 pair publication before Decoder completion",
+    "one-token initial prefix repair = 10 positions",
+    "one-million-position labels",
+    "scrub and disabled next at end",
+    "autoplay stops at final save",
+    "inspection pauses playback",
+    "language and appearance preserve cursor",
+    "Home retains configuration and resets lifecycle"
+  ],
+  "console": {
+    "cedErrors": [],
+    "existingHomeWarning": "React 18 fetchPriority prop warning in HomeLanding"
+  },
+  "evidence": [
+    "desktop-zh-light.png",
+    "desktop-zh-dark.png",
+    "desktop-en-light.png",
+    "desktop-en-dark.png",
+    "mobile-zh-light.png",
+    "mobile-zh-dark.png",
+    "mobile-en-light.png",
+    "mobile-en-dark.png",
+    "tablet-en-dark.png"
+  ]
+}
