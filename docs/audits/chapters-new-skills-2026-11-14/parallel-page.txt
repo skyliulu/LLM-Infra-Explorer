@@ -1,0 +1,230 @@
+LLM 6D 并行策略交互式解析
+
+调整参数并悬浮在物理卡上，观察六维正交示意中的张量切片与 GPU 槽位映射。
+
+示意 GPU:
+1
+/ 32
+数据并行(DP · 副本)
+1x
+2x
+4x
+
+复制完整模型或模型分片组，把不同请求/批次分配给不同外层副本；它会与 TP 等组内切分相乘。
+
+张量并行(TP)
+1x
+2x
+4x
+
+切分层内权重与 Attention Head；每层需要 All-Reduce 或 Reduce-Scatter 等集合通信。
+
+流水线并行(PP)
+1x
+2x
+4x
+
+按模型深度切分层，相邻 Stage 通过 P2P 传递激活；Microbatch 用于填充流水线。
+
+上下文并行(CP)
+1x
+2x
+4x
+
+沿上下文长度切分激活或 KV；Prefill 与 Decode 的切分及通信方式不同于 SP。
+
+专家并行(EP)
+1x
+2x
+4x
+
+MoE Router 将 Top-K Token 通过 All-to-All 分发到持有目标专家的 Rank。
+
+专家张量并行(ETP)
+1x
+2x
+4x
+
+切分单个专家内部权重；通常与 TP/EP 共享或重组 Rank Mesh，并非普遍独立维度。
+
+Rank 映射
+正交沙盒
+DCP 复用 TP
+组件模板
+通用 6D
+Wide-EP
+Helix
+Attention 运行
+标准 TP Attention
+DP Attention
+服务拓扑
+统一实例
+P/D 分离
+Runtime 设计
+Token All-to-All
+DWDP 权重拉取
+点击右侧 GPU 卡片可将其固定锁定，方便对比观察。
+映射假设: 为保持六个维度独立可调，本页采用不复用 rank 的正交示意，总槽位 = DP × PP × CP × TP × EP × ETP。真实运行时可能复用或重组 TP、EP、ETP 进程组，因此该数值不是通用 world size 恒等式。 点击右侧 GPU 卡片可将其固定锁定，方便对比观察。
+LLM 数学架构与动态张量切片
+B=Batch(32)
+S=Seq(128)
+H=Hidden(16)
+V=Vocab(64)
+E=Experts(4)
+Attention 类型
+MHA
+GQA
+MLA
+推理阶段
+Prefill
+Decode
+Input Tokens Data
+[B, S_new]
+完整数据 (无切分)
+Embedding Matrix
+[V, H]
+完整权重
+L × Transformer Layers
+未开启流水线并行
+Attention Block
+𝐻
+𝑞
+=
+16
+H
+q
+	​
+
+=16
+𝐶
+𝐾
+𝑉
+=
+4
+C
+KV
+	​
+
+=4
+
+MLA：KV 压缩成单个潜变量缓存；标准 TP 会在 Rank 间复制这份 KV，DP Attention 的收益最明显。
+
+RMSNorm
+[H]
+全量复制
+MLA 投影权重：Q / KV 压缩 / K、V 恢复
+𝑊
+𝑄
+W
+Q
+	​
+
+𝑊
+𝐷
+𝐾
+𝑉
+W
+DKV
+	​
+
+𝑊
+𝑈
+𝐾
+,
+𝑊
+𝑈
+𝑉
+W
+UK
+	​
+
+,W
+UV
+	​
+
+完整权重
+本地 Attention
+Out Proj
+[H, H]
+完整权重
+同一请求 · TP Head/权重切分
+KV Head 随 TP 切分
+单 Token KV 相对容量（同一标尺）
+𝐶
+𝐾
+𝑉
+=
+4
+C
+KV
+	​
+
+=4
+KV Cache & Activations
+[B, S_new, C_KV]
+无切分
+
+MLA 每个 Token 只保存压缩 KV 潜变量；标准 TP 会复制该潜变量缓存，DP Attention 则按请求 Worker 独占。
+
+MoE Layer (以 4 专家架构为例)
+Token All-to-All
+RMSNorm
+[H]
+全量复制
+Router
+[H, E]
+全量复制
+Router 计算 Top-K，再把 Token 分发到目标 Expert
+Expert 0
+w1,w3 (Up)
+[H, 4H]
+整块计算
+w2 (Down)
+[4H, H]
+整块计算
+Expert 1
+w1,w3 (Up)
+[H, 4H]
+整块计算
+w2 (Down)
+[4H, H]
+整块计算
+Expert 2
+w1,w3 (Up)
+[H, 4H]
+整块计算
+w2 (Down)
+[4H, H]
+整块计算
+Expert 3
+w1,w3 (Up)
+[H, 4H]
+整块计算
+w2 (Down)
+[4H, H]
+整块计算
+LM Head
+[H, V]
+完整权重
+GPU 集群分片映射（正交示意） (1 张卡)
+单卡计算 (无切分)
+GPU 0
+DP
+0
+CP
+0
+PP
+0
+TP
+0
+EP
+0
+ETP
+0
+
+调整上方并行策略以扩展集群使用量 (当前 1/32)
+
+继续学习
+DP Attention →
+相关分支
+Flash Decode

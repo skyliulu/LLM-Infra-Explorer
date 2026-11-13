@@ -287,13 +287,13 @@ function AddressabilityStrip({ targetMode, gateStrength, t }) {
   const tone = targetMode === 'gla' ? 'cyan' : 'indigo';
   const colors = toneClasses[tone];
   return (
-    <div className="grid items-center gap-3 border-t border-slate-200 px-3 py-3 md:grid-cols-[1fr_32px_1fr]" role="img" aria-label={t('compressionCostLead')}>
+    <div className="grid items-center gap-3 border-t border-slate-200 px-3 py-3 xl:grid-cols-[1fr_32px_1fr]" role="img" aria-label={t('compressionCostLead')}>
       <div className="flex items-center justify-center gap-2">
         <Search size={15} className="text-rose-600" />
         {['A', 'B', 'C'].map((label) => <div key={label} className={`flex h-10 w-16 items-center justify-center rounded-lg border font-mono text-[10px] font-bold ${label === 'B' ? 'border-rose-400 bg-rose-100 ring-2 ring-rose-100 text-rose-950' : 'border-slate-200 bg-slate-50 text-slate-500'}`}>KV-{label}</div>)}
         <span className="text-[9px] font-bold text-rose-700">{t('addressable')}</span>
       </div>
-      <ArrowRight size={17} className="mx-auto rotate-90 text-slate-400 md:rotate-0" />
+      <ArrowRight size={17} className="mx-auto rotate-90 text-slate-400 xl:rotate-0" />
       <div className="flex items-center justify-center gap-2">
         <div className="relative h-12 w-40">
           {['A', 'B', 'C'].map((label, index) => (
@@ -406,6 +406,11 @@ export function ArchitectureComparison({ contextMode, onSelectContext, targetMod
         </div>
       </div>
       <ComputeComparison key={`${targetMode}-${contextMode}-${contextLength}-${dk}-${dv}-${gateStrength}`} {...sharedProps}/><AddressabilityStrip {...sharedProps}/>{targetMode==='gla'&&<label className="mt-3 flex items-center gap-3 text-xs">{t('gateStrength')}<input aria-label={t('gateStrength')} type="range" min="0" max="0.9" step="0.05" value={gateStrength} onChange={event=>setGateStrength(Number(event.target.value))} className="w-40 accent-cyan-700"/>{Math.round(gateStrength*100)}%</label>}
+      {targetMode === 'gla' && <aside className="mt-3 rounded-lg border border-cyan-200 bg-cyan-50 p-3 text-[11px] leading-relaxed text-cyan-950" data-testid="gla-paper-parameterization">
+        <strong>{t('glaRelationTitle')}</strong><p className="mt-1 font-semibold">{t('glaPaperTitle')}</p><p>{t('glaPaperNote')}</p>
+        <div className="my-1 overflow-x-auto"><MathFormula>{String.raw`\beta_t=\mathbf1\quad\Longrightarrow\quad (G_t)_{ij}=(\alpha_t)_i`}</MathFormula></div>
+        <a className="underline" href="https://arxiv.org/html/2312.06635v2#S3.SS4" target="_blank" rel="noreferrer">{t('glaPaperSource')}</a>
+      </aside>}
     </section>
   );
 }

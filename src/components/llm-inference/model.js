@@ -1,3 +1,4 @@
+import {runNumericInference} from './numeric-model.js';
 export const TOTAL_LAYERS = 32;
 export const EXPERT_COUNT = 8;
 
@@ -22,26 +23,6 @@ export const getStageStatus = (stage, activeModule) => {
   const order = stageOrder[stage];
   if (activeModule === order) return 'active';
   return activeModule > order ? 'passed' : 'pending';
-};
-
-const round = (value) => Math.round(value * 100) / 100;
-
-const deterministicValue = (seed, row, col) => {
-  const raw = Math.sin((seed + 1) * 1.73 + row * 2.11 + col * 0.97);
-  return round(raw);
-};
-
-const makeValues = (seed, rows, cols) => Array.from(
-  { length: rows },
-  (_, row) => Array.from({ length: cols }, (_, col) => deterministicValue(seed, row, col)),
-);
-
-const softmax = (values) => {
-  const finite = values.filter(Number.isFinite);
-  const max = Math.max(...finite);
-  const exps = values.map((value) => Number.isFinite(value) ? Math.exp(value - max) : 0);
-  const sum = exps.reduce((total, value) => total + value, 0);
-  return exps.map((value) => round(value / sum));
 };
 
 const normalizeWeights = (values) => {
@@ -97,38 +78,6 @@ export const deriveSamplingDistribution = ({ candidates, temperature, topK, topP
   };
 };
 
-const makeAttention = ({ queryRows, keyRows, displayRows, displayCols, isPrefill, seed }) => {
-  const scores = makeValues(seed, displayRows, displayCols);
-  const mask = scores.map((row, rowIndex) => row.map((_, colIndex) => (
-    isPrefill && colIndex > rowIndex
-  )));
-  const probabilities = scores.map((row, rowIndex) => softmax(
-    row.map((value, colIndex) => mask[rowIndex][colIndex] ? Number.NEGATIVE_INFINITY : value),
-  ));
-
-  return {
-    queryRows,
-    keyRows,
-    displayRows,
-    displayCols,
-    scores,
-    probabilities,
-    mask,
-  };
-};
-
-const makeRoutes = ({ rows, expertCount, seed }) => Array.from({ length: rows }, (_, row) => {
-  const first = (seed + row * 3 + 2) % expertCount;
-  let second = (seed + row * 5 + 5) % expertCount;
-  if (second === first) second = (second + 1) % expertCount;
-  const firstWeight = round(0.58 + ((row + seed) % 4) * 0.07);
-  return {
-    row,
-    topK: [first, second],
-    weights: [firstWeight, round(1 - firstWeight)],
-  };
-});
-
 const getLayerCacheTokens = ({
   phase,
   activeModule,
@@ -156,12 +105,13 @@ export const deriveInferenceTensorSnapshot = ({
   modelType,
   totalLayers = TOTAL_LAYERS,
   expertCount = EXPERT_COUNT,
+  tokenIds,
 }) => {
   const isPrefill = phase === 'idle' || phase === 'prefill';
   const sequenceRows = isPrefill ? promptLength : 1;
   const keyRows = isPrefill ? promptLength : promptLength + step;
   const displaySequenceRows = Math.max(1, Math.min(sequenceRows, 6));
-  const displayKeyRows = Math.max(1, Math.min(keyRows, 8));
+  const displayKeyRows = Math.max(1, keyRows);
   const layerCacheTokens = Array.from({ length: totalLayers }, (_, index) => getLayerCacheTokens({
     phase,
     activeModule,
@@ -179,20 +129,14 @@ export const deriveInferenceTensorSnapshot = ({
     ffn: getStageStatus('ffn', activeModule),
     lmHead: getStageStatus('lmHead', activeModule),
   };
-  const seed = currentLayer * 7 + step * 11 + (isPrefill ? 3 : 19);
-  const attention = makeAttention({
-    queryRows: sequenceRows,
-    keyRows,
-    displayRows: displaySequenceRows,
-    displayCols: displayKeyRows,
-    isPrefill,
-    seed,
-  });
-  const routes = makeRoutes({ rows: displaySequenceRows, expertCount, seed: step + currentLayer });
-  const expertLoads = Array.from({ length: expertCount }, (_, expert) => routes.reduce(
-    (count, route) => count + (route.topK.includes(expert) ? 1 : 0),
-    0,
-  ));
+  const ids=Array.from({length:keyRows},(_,i)=>tokenIds?.[i]??i%6);
+  const numeric=runNumericInference({tokenIds:ids,layer:currentLayer,totalLayers,modelType,expertCount});
+  const visibleRows=matrix=>isPrefill?matrix.slice(0,displaySequenceRows):matrix.slice(-1);
+  const attention={queryRows:sequenceRows,keyRows,displayRows:displaySequenceRows,displayCols:displayKeyRows,
+    scores:visibleRows(numeric.scores),probabilities:visibleRows(numeric.probabilities),mask:visibleRows(numeric.mask)};
+  const routes=visibleRows(numeric.routes).map((route,row)=>({...route,row}));
+  const selectedExpert=routes[0].topK[0],selected=numeric.experts[selectedExpert];
+  const expertLoads=Array.from({length:expertCount},(_,e)=>routes.filter(r=>r.topK.includes(e)).length);
 
   return {
     phase,
@@ -218,35 +162,20 @@ export const deriveInferenceTensorSnapshot = ({
       writeActive: activeModule === MODULE.attention,
       writeIndex: Math.max(0, cacheTargetTokens - 1),
     },
+    numeric,
+    numericShape: {d:4,ffn:6,vocab:6},
+    tokenIds:isPrefill?ids:ids.slice(-1),
     tensors: {
-      embeddingTable: makeValues(seed + 1, 4, 4),
-      residual: makeValues(seed + 2, displaySequenceRows, 4),
-      q: makeValues(seed + 3, displaySequenceRows, 4),
-      k: makeValues(seed + 4, displaySequenceRows, 4),
-      v: makeValues(seed + 5, displaySequenceRows, 4),
-      attentionOutput: makeValues(seed + 6, displaySequenceRows, 4),
-      ffnHidden: makeValues(seed + 7, displaySequenceRows, 6),
-      ffnOutput: makeValues(seed + 8, displaySequenceRows, 4),
-      lastHidden: makeValues(seed + 9, 1, 4),
-      vocabWeight: makeValues(seed + 10, 4, 6),
-      logits: makeValues(seed + 11, 1, 6),
-      ffnUpWeight: makeValues(seed + 12, 4, 6),
-      ffnDownWeight: makeValues(seed + 13, 6, 4),
-      routerWeight: makeValues(seed + 14, 4, expertCount),
-      expertUpWeight: makeValues(seed + 15 + routes[0].topK[0], 4, 6),
-      expertDownWeight: makeValues(seed + 23 + routes[0].topK[0], 6, 4),
+      embeddingTable:numeric.embeddingTable,embedding:visibleRows(numeric.embedding),
+      residual:visibleRows(numeric.input),q:visibleRows(numeric.q),k:numeric.k,v:numeric.v,
+      attentionOutput:visibleRows(numeric.attentionOutput),ffnInput:visibleRows(numeric.ffnInput),
+      ffnHidden:visibleRows(numeric.denseHidden),ffnOutput:visibleRows(numeric.ffnOutput),
+      lastHidden:numeric.lastHidden,vocabWeight:numeric.vocabWeight,logits:numeric.logits,
+      ffnUpWeight:numeric.ffnUpWeight,ffnDownWeight:numeric.ffnDownWeight,routerWeight:numeric.routerWeight,
+      expertUpWeight:selected.up,expertDownWeight:selected.down,expertHidden:visibleRows(selected.hidden),
     },
     attention,
-    moe: {
-      expertCount,
-      selectedExpert: routes[0].topK[0],
-      routes,
-      expertLoads,
-      routerValues: routes.map((route) => Array.from({ length: expertCount }, (_, expert) => {
-        const selectedIndex = route.topK.indexOf(expert);
-        return selectedIndex >= 0 ? route.weights[selectedIndex] : round(0.01 + ((expert + route.row) % 3) * 0.01);
-      })),
-    },
+    moe:{expertCount,selectedExpert,routes,expertLoads,routerValues:visibleRows(numeric.routerValues)},
     lmHead: {
       inputRows: 1,
       logitsRows: 1,

@@ -59,7 +59,7 @@ const i18n = {
 
     dimLegend: '全局张量维度说明',
     dimB: '批次',
-    dimS: '序列',
+    dimS: 'KV 历史长度',dimQuery:'本轮输入长度',decodeLengths:'普通逐 Token Decode：每个请求本轮只投影一个新位置，Attention 读取累计历史；Gather 和 MoE 处理本轮激活，不重算整段历史。',sourceLengths:'当前输入与缓存区间的源码对应',
     dimH: '隐藏维',
     dimDc: 'KV 压缩维',
     rank: 'Rank',
@@ -188,7 +188,7 @@ const i18n = {
 
     dimLegend: 'Global Tensor Dimensions Legend',
     dimB: 'Batch',
-    dimS: 'Sequence',
+    dimS: 'KV history length',dimQuery:'Current input length',decodeLengths:'Ordinary token-by-token Decode projects one new position per request and reads accumulated KV. Gather and MoE process current activations, not the whole history.',sourceLengths:'Source: current input versus cached interval',
     dimH: 'Hidden',
     dimDc: 'KV latent',
     rank: 'Rank',
@@ -553,6 +553,7 @@ const DpAttentionVisualizer = () => {
               </div>
             </div>
 
+            <p className="mb-3 text-xs leading-relaxed text-slate-600" data-testid="decode-length-scope">{t('decodeLengths')} <a className="underline" href="https://github.com/deepseek-ai/DeepSeek-V3/blob/9b4e9788e4a3a731f7567338ed15d3ec549ce03b/inference/model.py#L446-L493" target="_blank" rel="noreferrer">{t('sourceLengths')}</a></p>
             <div className="relative pb-4 flex flex-col items-start justify-start flex-1 overflow-x-auto overflow-y-hidden">
                <div className="mb-2 flex w-full items-center justify-end gap-1 text-[10px] font-semibold text-slate-400 xl:hidden">
                  <GripHorizontal size={13} /> {t('scrollHint')}
@@ -563,10 +564,11 @@ const DpAttentionVisualizer = () => {
                    <Layers size={14} /> {t('modelView')}
                  </div>
 
-                 <div className="grid shrink-0 grid-cols-4 gap-1">
+                 <div className="grid shrink-0 grid-cols-3 gap-1">
                    {[
                      [String.raw`B`, 'dimB'],
-                     [String.raw`S`, 'dimS'],
+                     [String.raw`T_q=1`, 'dimQuery'],
+                     [String.raw`T_{\mathrm{KV}}`, 'dimS'],
                      [String.raw`H`, 'dimH'],
                      [String.raw`d_c`, 'dimDc'],
                    ].map(([symbol, labelKey]) => (
@@ -695,7 +697,7 @@ const DpAttentionVisualizer = () => {
                             <div className="text-[10px] font-bold text-amber-800 flex items-center gap-1.5 mb-1 whitespace-nowrap">
                               <Network size={14} className={snapshot.communicationOperation ? "animate-spin-slow" : ""} /> {t(snapshot.moeTopology === 'ep' ? 'tDispatch' : 'tGather')}
                             </div>
-                            <div className="text-[9px] text-amber-700 mb-1"><MathFormula>{snapshot.moeTopology === 'ep' ? String.raw`T_{local}\to T_{expert}` : String.raw`[B,S,H]`}</MathFormula></div>
+                            <div className="text-[9px] text-amber-700 mb-1"><MathFormula>{snapshot.moeTopology === 'ep' ? String.raw`T_{local}\to T_{expert}` : String.raw`[B,1,H]`}</MathFormula></div>
                             <div className="w-[70%] max-w-[80px] h-[24px] flex flex-col rounded-[2px] border border-amber-400 overflow-hidden shadow-inner">
                               {bColors.map((bg, j) => <div key={j} className={`flex-1 w-full ${bg} border-b border-black/10 last:border-0`} />)}
                             </div>

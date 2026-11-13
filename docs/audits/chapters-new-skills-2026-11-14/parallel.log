@@ -1,0 +1,5 @@
+
+> ai-infra-viz@0.1.0 check:parallel
+> node scripts/check-parallel-strategies.mjs
+
+PASS parallel topology regression: 721/2916 legal topologies, 14884 GPU cards checked, cap=32

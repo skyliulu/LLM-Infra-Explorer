@@ -1,0 +1,345 @@
+Radix HiCache
+
+用前缀树找到可复用历史，再追踪同一份 KV 在 GPU、主机内存和外部存储之间的流动。
+
+连续请求 · 一棵树，三层存储
+
+从空缓存开始，四个请求依次进入。沿分叉找到共享前缀，再看同一页在哪里命中、怎样回到 GPU。点击请求可回放到它进入的时刻。
+
+引擎策略
+预取等待
+等预取完成
+限时等待
+不阻塞计算
+备份时机
+及时备份
+只备份热点
+淘汰时写回
+运行条件
+正常运行
+预取主机配额耗尽
+加载配额不足
+远端只读回半页
+另一 Rank 尚未完成
+请求 Token 序列
+01 · 建立历史
+You
+are
+a
+helpful
+coding
+assistant
+0 Token
+02 · 同前缀，换问题
+You
+are
+a
+helpful
+writing
+assistant
+4 Token
+03 · 新分支挤出旧缓存
+You
+are
+an
+expert
+travel
+planner
+for
+families
+2 Token
+04 · 回访旧问题并续写
+You
+are
+a
+helpful
+coding
+assistant
+Explain
+caching
+6 Token
+示意分词：每个词作为一个 Token，每 2 个 Token 一页；实际 tokenizer 的切分可能不同。相同单词只有前面的整个前缀也相同时，才能复用 KV。
+建立历史
+等待第一个请求
+GPU 已就绪连续前缀: 0 Token
+逻辑索引 · 共享前缀只存一条路径
+连线表示前缀延续；同一父节点的不同分支表示不同后缀。节点内各页可驻留在不同层。
+前缀根
+
+尚未建立缓存；播放后观察第一条路径生长。
+
+L3 徽标仅表示本次演示已确认的写入；再次取数仍需查询后端。
+L1 · GPU HBM
+实例私有 · 计算直接读取
+0/4
+·
+·
+·
+·
+L1 ⇄ L2 · 加载到 GPU
+L2 · CPU DRAM
+实例私有 · 需加载到 GPU
+0/5
+·
+·
+·
+·
+·
+L2 ⇄ L3 · 预取到主机
+L3 · 外部存储
+后端查询 · 配置决定共享范围
+0/12
+·
+·
+·
+·
+·
+·
+·
+·
+·
+·
+·
+·
+匹配结果 · 沿请求顺序
+P0
+等待匹配
+P1
+等待匹配
+A
+等待匹配
+计划避免重算 ↑ 0 Token
+计划重新计算 0 Token
+累计跨层搬运 ↑ 0 B
+追踪页 · You are · P0
+
+没有副本
+
+点击树节点或物理页，关联高亮各层副本；蓝 / 紫 / 绿分别对应 L1 / L2 / L3。
+本步运行时操作
+
+教学池：3 层，每页 2 个示意 Token；MHA 的 K/V 向量各 32 B，MLA 单向量 32 B。GPU 4 页、主机 5 页；引用、页粒度与完成确认按模型驱动。时序为串行教学检查点，逐层重叠见下方 Layout。
+
+同一份 KV，为什么需要不同 Layout？
+
+GPU 按层消费 KV，后端按页存取 KV。切换主机布局，观察同一批数据的地址连续性，以及恢复一层与写出整页各需要哪些片段。
+
+树中选中的页: P0
+You are
+384 B / P0 · 1152 B
+KV 数据结构
+MHA · K 与 V
+MLA · 潜在向量
+主机内存布局
+Layer first
+Page first
+Page first direct
+访问操作
+恢复一层到 GPU
+写出选中整页
+GPU ↔ 主机传输
+GPU 辅助 kernel
+直接拷贝
+外部后端接口
+散布聚集 / RDMA
+连续缓冲区文件接口
+要求 4 KiB 对齐的直接文件 I/O
+计算层
+层 1
+层 2
+层 3
+主机内存已注册 / 固定
+
+按层组织：当前层的多个 Token 在同一数据段；整页的不同层位于不同段。主机也可以选择此布局，并不由介质名称决定。
+
+逻辑向量 → 物理地址
+每格 32 B
+
+点击任意向量，连线追踪同一份数据。紫色为本次访问范围，绿色为已完成搬运。
+
+逻辑坐标 · 层 × Token
+内存地址 · 每行从左到右连续，接下一行
+K
+V
+You
+P0 · 层 1
+are
+P0 · 层 1
+a
+P1 · 层 1
+helpful
+P1 · 层 1
+coding
+A · 层 1
+assistant
+A · 层 1
+You
+P0 · 层 2
+are
+P0 · 层 2
+a
+P1 · 层 2
+helpful
+P1 · 层 2
+coding
+A · 层 2
+assistant
+A · 层 2
+You
+P0 · 层 3
+are
+P0 · 层 3
+a
+P1 · 层 3
+helpful
+P1 · 层 3
+coding
+A · 层 3
+assistant
+A · 层 3
+You
+P0 · 层 1
+are
+P0 · 层 1
+a
+P1 · 层 1
+helpful
+P1 · 层 1
+coding
+A · 层 1
+assistant
+A · 层 1
+You
+P0 · 层 2
+are
+P0 · 层 2
+a
+P1 · 层 2
+helpful
+P1 · 层 2
+coding
+A · 层 2
+assistant
+A · 层 2
+You
+P0 · 层 3
+are
+P0 · 层 3
+a
+P1 · 层 3
+helpful
+P1 · 层 3
+coding
+A · 层 3
+assistant
+A · 层 3
+K
+V
+You
+0 B
+are
+32 B
+a
+64 B
+helpful
+96 B
+coding
+128 B
+assistant
+160 B
+You
+192 B
+are
+224 B
+a
+256 B
+helpful
+288 B
+coding
+320 B
+assistant
+352 B
+You
+384 B
+are
+416 B
+a
+448 B
+helpful
+480 B
+coding
+512 B
+assistant
+544 B
+You
+576 B
+are
+608 B
+a
+640 B
+helpful
+672 B
+coding
+704 B
+assistant
+736 B
+You
+768 B
+are
+800 B
+a
+832 B
+helpful
+864 B
+coding
+896 B
+assistant
+928 B
+You
+960 B
+are
+992 B
+a
+1024 B
+helpful
+1056 B
+coding
+1088 B
+assistant
+1120 B
+当前向量
+K · P0 · You · 层 2
+→
+字节偏移 192–223 B
+连续地址片段
+2
+本次请求字节
+384 B
+已搬运字节
+0 B
+额外拼装字节
+0 B
+
+片段数是地址连续性的度量，不等于系统调用数；同一 kernel 或后端请求可处理多个片段。
+
+逐层加载与计算能重叠多少？
+每层搬运耗时 · 3
+每层计算耗时 · 4
+层 1
+搬运
+计算
+层 2
+搬运
+计算
+层 3
+搬运
+计算
+
+串行耗时: 21 → 重叠后耗时: 15
+
+时间单位为用户设定的教学刻度，非实测性能。只有本层搬运完成后才能计算；首层等待和搬运慢于计算的等待不会消失。
+实现边界与选择依据
+继续学习
+DeepSeek CED →
+相关分支
+LLM Inference

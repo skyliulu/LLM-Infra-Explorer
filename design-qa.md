@@ -1,5 +1,13 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-14 — Six focused chapter repairs after source-fidelity review
+
+- Kept existing chapter regions and learning order. LLM Inference now computes one coherent synthetic model through attention, Dense/Top-2 MoE, LM Head and seeded sampling feedback. Flash V1 backward preserves dP → dS → dQ/dK; V3 has separate K/V readiness, rescaling, final PV and wait/commit while retaining valid overlap. DPA separates current Decode length 1 from KV history. Engram adds an actual reduced lookup/gate example; GLA distinguishes the general dual-axis form from the paper's beta=1/rank-16-alpha parameterization. Speculative only repairs the stale reading-order selector.
+- Independent source/model review closed dependency metadata leaking into Standard, collision-window query labels and score/gradient scaling mismatches. No GPU or trained-weight certification is claimed.
+- Owner personally read actual rendered pages from opening content to footer, explored significant modes and reconstructed their answers. This caught an invisible GLA note, wrong backward stage formulas, an Engram example trapped in the old 700px canvas, squeezed LLM numeric cells and an English tablet overflow; repaired and reread the affected views.
+- Final focused matrix covers 5 changed pages × 3 widths × 2 languages × 2 themes = 60 captured cases, with zero page-level overflow or KaTeX errors. Owner inspected representative pixel views and interaction paths; System resolved OS Dark while preserving the paused GLA token/gate. Existing dense diagrams retain local scrolling. Full reader path, actual coverage, console/build caveats and simplification boundaries are recorded in `docs/audits/chapter-repairs-2026-11-14/qa.md`.
+- Affected model checks, new numerical/Linear checks, sharing/learning checks, theme checks, required conventions, build and diff whitespace checks passed. Scope is local delivery; no commit, push or deployment in this repair pass.
+
 ### 2026-10-28 — Automatic owner reader gate added to the Skills
 
 - User requested that holistic reader review happen automatically before delivery. The previous workflow had outcome questions but allowed the owner to substitute local checks and independent review for a continuous reading experience.

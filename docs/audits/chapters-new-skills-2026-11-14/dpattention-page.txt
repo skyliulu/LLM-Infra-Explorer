@@ -1,0 +1,721 @@
+DP Attention 推理并行解析
+
+Decode 视角：MLA KV 归属与 MoE 通信桥接
+
+标准 TP (Standard TP)
+DP Attention (混合并行)
+MOE 拓扑
+TP-FFN
+EP-MoE
+系统初始化完成，等待请求入列...
+代表性配置：TP=4 · DP=4 · Attention TP=1 · MoE TP
+单 Rank KV
+0%
+集群总 KV
+0%
+复制因子
+—
+横向滚动查看全部 4 个 Rank
+TRANSFORMER 张量流水线
+𝐵
+B
+批次
+𝑆
+S
+序列
+𝐻
+H
+隐藏维
+𝑑
+𝑐
+d
+c
+	​
+
+KV 压缩维
+全局输入请求队列 (Global Request Queue)
+Rank 0
+Rank 1
+Rank 2
+Rank 3
+输入激活
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+输入激活
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+输入激活
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+输入激活
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+MLA 层
+KV 压缩投影
+𝐻
+×
+𝑑
+𝑐
+H×d
+c
+	​
+
+全量权重
+Q / 吸收投影
+𝐻
+→
+𝑑
+𝑞
+→
+𝐻
+𝑞
+𝑑
+ℎ
+H→d
+q
+	​
+
+→H
+q
+	​
+
+d
+h
+	​
+
+完整权重
+MLA KV Cache
+[
+𝐵
+4
+,
+
+𝑆
+,
+
+𝑑
+𝑐
++
+𝑑
+ℎ
+𝑅
+]
+[
+4
+B
+	​
+
+,S,d
+c
+	​
+
++d
+h
+R
+	​
+
+]
+尚未生成
+-
+Attention 输出
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+MLA 层
+KV 压缩投影
+𝐻
+×
+𝑑
+𝑐
+H×d
+c
+	​
+
+全量权重
+Q / 吸收投影
+𝐻
+→
+𝑑
+𝑞
+→
+𝐻
+𝑞
+𝑑
+ℎ
+H→d
+q
+	​
+
+→H
+q
+	​
+
+d
+h
+	​
+
+完整权重
+MLA KV Cache
+[
+𝐵
+4
+,
+
+𝑆
+,
+
+𝑑
+𝑐
++
+𝑑
+ℎ
+𝑅
+]
+[
+4
+B
+	​
+
+,S,d
+c
+	​
+
++d
+h
+R
+	​
+
+]
+尚未生成
+-
+Attention 输出
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+MLA 层
+KV 压缩投影
+𝐻
+×
+𝑑
+𝑐
+H×d
+c
+	​
+
+全量权重
+Q / 吸收投影
+𝐻
+→
+𝑑
+𝑞
+→
+𝐻
+𝑞
+𝑑
+ℎ
+H→d
+q
+	​
+
+→H
+q
+	​
+
+d
+h
+	​
+
+完整权重
+MLA KV Cache
+[
+𝐵
+4
+,
+
+𝑆
+,
+
+𝑑
+𝑐
++
+𝑑
+ℎ
+𝑅
+]
+[
+4
+B
+	​
+
+,S,d
+c
+	​
+
++d
+h
+R
+	​
+
+]
+尚未生成
+-
+Attention 输出
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+MLA 层
+KV 压缩投影
+𝐻
+×
+𝑑
+𝑐
+H×d
+c
+	​
+
+全量权重
+Q / 吸收投影
+𝐻
+→
+𝑑
+𝑞
+→
+𝐻
+𝑞
+𝑑
+ℎ
+H→d
+q
+	​
+
+→H
+q
+	​
+
+d
+h
+	​
+
+完整权重
+MLA KV Cache
+[
+𝐵
+4
+,
+
+𝑆
+,
+
+𝑑
+𝑐
++
+𝑑
+ℎ
+𝑅
+]
+[
+4
+B
+	​
+
+,S,d
+c
+	​
+
++d
+h
+R
+	​
+
+]
+尚未生成
+-
+Attention 输出
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+All-Gather (跨卡聚合)
+[
+𝐵
+,
+𝑆
+,
+𝐻
+]
+[B,S,H]
+MoE 层
+MoE 输入
+[
+𝐵
+,
+𝑆
+,
+𝐻
+]
+[B,S,H]
+尚未生成
+-
+专家 Up 投影
+𝐻
+×
+𝐸
+𝐻
+4
+H×
+4
+EH
+	​
+
+列切分
+专家 Down 投影
+𝐸
+𝐻
+4
+×
+𝐻
+4
+EH
+	​
+
+×H
+行切分
+MoE 层
+MoE 输入
+[
+𝐵
+,
+𝑆
+,
+𝐻
+]
+[B,S,H]
+尚未生成
+-
+专家 Up 投影
+𝐻
+×
+𝐸
+𝐻
+4
+H×
+4
+EH
+	​
+
+列切分
+专家 Down 投影
+𝐸
+𝐻
+4
+×
+𝐻
+4
+EH
+	​
+
+×H
+行切分
+MoE 层
+MoE 输入
+[
+𝐵
+,
+𝑆
+,
+𝐻
+]
+[B,S,H]
+尚未生成
+-
+专家 Up 投影
+𝐻
+×
+𝐸
+𝐻
+4
+H×
+4
+EH
+	​
+
+列切分
+专家 Down 投影
+𝐸
+𝐻
+4
+×
+𝐻
+4
+EH
+	​
+
+×H
+行切分
+MoE 层
+MoE 输入
+[
+𝐵
+,
+𝑆
+,
+𝐻
+]
+[B,S,H]
+尚未生成
+-
+专家 Up 投影
+𝐻
+×
+𝐸
+𝐻
+4
+H×
+4
+EH
+	​
+
+列切分
+专家 Down 投影
+𝐸
+𝐻
+4
+×
+𝐻
+4
+EH
+	​
+
+×H
+行切分
+Reduce-Scatter
+每个 Rank 取回
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+返回本地矩阵
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+返回本地矩阵
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+返回本地矩阵
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+返回本地矩阵
+[
+𝐵
+4
+,
+𝑆
+,
+𝐻
+]
+[
+4
+B
+	​
+
+,S,H]
+尚未生成
+-
+Python伪代码
+Python
+def forward_layer(x, request_meta):
+
+
+  # DP模式: 仅接收属于当前 Rank 的局部子批次 (B/4)
+  x_owned = select_owned_requests(x, request_meta)
+
+
+  # Q 来自隐藏状态；不能从 KV latent 生成
+  q = q_proj(x_owned)
+  c_kv, k_rope = kv_proj(x_owned)
+  # 每个 Token 持久化压缩 KV latent 与 RoPE Key
+  kv_cache.write(request_meta.slots, c_kv, k_rope)
+  attn_local = mla_decode(q, kv_cache.local_view(request_meta))
+
+
+  # 非 EP 路径：DP 请求分片聚合为 TP-FFN 输入
+  x_global = dp_gather(attn_local, request_meta.dp_sizes)
+
+
+  # TP-FFN：每个 Rank 持有参数分片
+  expert_out = local_experts(x_global)
+
+
+  # 归约 TP 局部结果，并直接返回请求所属 DP Rank
+  x_local = dp_reduce_scatter(expert_out)
+
+
+  # 提交本地请求的层输出
+  return x_local
+深度张量解析
+
+请点击播放，观察矩阵和张量在 4 个独立物理 Rank 中是如何被切块（Row/Col Shard）和合并分发的。初始化阶段仅预加载了模型权重。
+
+继续学习
+Spec Decode →
+相关分支
+Parallel Strategy
+Flash Decode

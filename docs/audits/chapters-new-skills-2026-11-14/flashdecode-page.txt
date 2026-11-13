@@ -1,0 +1,814 @@
+Flash Decoding 原理可视化
+
+打破长序列 Decoding 的显存墙：逻辑切分 KV Cache，增加并行工作量，再做精确归约
+
+累加器工作区
+O + LSE 工作区
+执行
+Unsplit
+Split-K
+KV 布局
+连续
+Paged
+注意力头
+MHA
+GQA
+MQA
+Split 数
+Auto
+2
+4
+6
+8
+Auto 为教学启发式：目标约 2K tokens/split，真实后端会按形状与硬件选择。
+核心挑战：打破 Memory Wall (显存墙)
+痛点：Decode 阶段 Query 长度仅为 1，却需搬运历史成千上万 Token 的 KV Cache，严重受限于主存带宽。
+解法：沿 KV 序列建立逻辑 Split，由多个 CTA 并行计算局部 Attention，再通过独立归约 Kernel 精确合并。
+数据流与计算图
+Decoding Phase
+维度：
+𝑁
+=
+12288
+,
+
+𝑑
+=
+128
+N=12288, d=128
+Q/KV 头
+𝐻
+𝑞
+=
+8
+,
+
+𝐻
+𝑘
+𝑣
+=
+2
+H
+q
+	​
+
+=8, H
+kv
+	​
+
+=2
+每 KV 头复用：4
+有效 Split：6
+每 Split tokens：
+𝑏
+=
+2048
+b=2048
+CTA 批次：2
+Workspace 条目：6
+KV 读取元素：6.3M
+GPU HBM (主显存)
+Query
+𝑄
+
+[
+1
+,
+𝐻
+𝑞
+,
+𝑑
+]
+Q[1,H
+q
+	​
+
+,d]
+𝑄
+0
+Q
+0
+	​
+
+𝐾
+𝑉
+0
+KV
+0
+	​
+
+𝑄
+1
+Q
+1
+	​
+
+𝐾
+𝑉
+0
+KV
+0
+	​
+
+𝑄
+2
+Q
+2
+	​
+
+𝐾
+𝑉
+0
+KV
+0
+	​
+
+𝑄
+3
+Q
+3
+	​
+
+𝐾
+𝑉
+0
+KV
+0
+	​
+
+𝑄
+4
+Q
+4
+	​
+
+𝐾
+𝑉
+1
+KV
+1
+	​
+
+𝑄
+5
+Q
+5
+	​
+
+𝐾
+𝑉
+1
+KV
+1
+	​
+
+𝑄
+6
+Q
+6
+	​
+
+𝐾
+𝑉
+1
+KV
+1
+	​
+
+𝑄
+7
+Q
+7
+	​
+
+𝐾
+𝑉
+1
+KV
+1
+	​
+
+Key
+𝐾
+
+C
+a
+c
+h
+e
+
+[
+𝑁
+,
+𝐻
+𝑘
+𝑣
+,
+𝑑
+]
+K Cache[N,H
+kv
+	​
+
+,d]
+Value
+𝑉
+
+C
+a
+c
+h
+e
+
+[
+𝑁
+,
+𝐻
+𝑘
+𝑣
+,
+𝑑
+]
+V Cache[N,H
+kv
+	​
+
+,d]
+KV 寻址
+连续基址 + token 偏移
+𝐿
+0
+→
+𝑃
+0
+L
+0
+	​
+
+→P
+0
+	​
+
+𝐿
+1
+→
+𝑃
+1
+L
+1
+	​
+
+→P
+1
+	​
+
+𝐿
+2
+→
+𝑃
+2
+L
+2
+	​
+
+→P
+2
+	​
+
+𝐿
+3
+→
+𝑃
+3
+L
+3
+	​
+
+→P
+3
+	​
+
+𝐿
+4
+→
+𝑃
+4
+L
+4
+	​
+
+→P
+4
+	​
+
+𝐿
+5
+→
+𝑃
+5
+L
+5
+	​
+
+→P
+5
+	​
+
+HBM Workspace (中间态暂存)
+𝑂
+0
+,
+𝐿
+0
+O
+0
+	​
+
+,L
+0
+	​
+
+𝑂
+1
+,
+𝐿
+1
+O
+1
+	​
+
+,L
+1
+	​
+
+𝑂
+2
+,
+𝐿
+2
+O
+2
+	​
+
+,L
+2
+	​
+
+𝑂
+3
+,
+𝐿
+3
+O
+3
+	​
+
+,L
+3
+	​
+
+𝑂
+4
+,
+𝐿
+4
+O
+4
+	​
+
+,L
+4
+	​
+
+𝑂
+5
+,
+𝐿
+5
+O
+5
+	​
+
+,L
+5
+	​
+
+Kernel 1 代表性 CTA 工作单元
+CTA 0
+空闲 / 待命
+𝐴
+𝑖
+=
+𝑄
+𝐾
+𝑖
+⊤
+/
+𝑑
+A
+i
+	​
+
+=QK
+i
+⊤
+	​
+
+/
+d
+	​
+
+𝑚
+𝑖
+=
+max
+⁡
+(
+𝐴
+)
+,
+ℓ
+𝑖
+=
+∑
+𝑒
+𝐴
+−
+𝑚
+m
+i
+	​
+
+=max(A),ℓ
+i
+	​
+
+=∑e
+A−m
+𝐿
+𝑖
+=
+𝑚
+𝑖
++
+log
+⁡
+ℓ
+𝑖
+L
+i
+	​
+
+=m
+i
+	​
+
++logℓ
+i
+	​
+
+𝑂
+𝑖
+=
+𝑂
+~
+𝑖
+/
+ℓ
+𝑖
+O
+i
+	​
+
+=
+O
+i
+	​
+
+/ℓ
+i
+	​
+
+CTA 1
+空闲 / 待命
+𝐴
+𝑖
+=
+𝑄
+𝐾
+𝑖
+⊤
+/
+𝑑
+A
+i
+	​
+
+=QK
+i
+⊤
+	​
+
+/
+d
+	​
+
+𝑚
+𝑖
+=
+max
+⁡
+(
+𝐴
+)
+,
+ℓ
+𝑖
+=
+∑
+𝑒
+𝐴
+−
+𝑚
+m
+i
+	​
+
+=max(A),ℓ
+i
+	​
+
+=∑e
+A−m
+𝐿
+𝑖
+=
+𝑚
+𝑖
++
+log
+⁡
+ℓ
+𝑖
+L
+i
+	​
+
+=m
+i
+	​
+
++logℓ
+i
+	​
+
+𝑂
+𝑖
+=
+𝑂
+~
+𝑖
+/
+ℓ
+𝑖
+O
+i
+	​
+
+=
+O
+i
+	​
+
+/ℓ
+i
+	​
+
+CTA 2
+空闲 / 待命
+𝐴
+𝑖
+=
+𝑄
+𝐾
+𝑖
+⊤
+/
+𝑑
+A
+i
+	​
+
+=QK
+i
+⊤
+	​
+
+/
+d
+	​
+
+𝑚
+𝑖
+=
+max
+⁡
+(
+𝐴
+)
+,
+ℓ
+𝑖
+=
+∑
+𝑒
+𝐴
+−
+𝑚
+m
+i
+	​
+
+=max(A),ℓ
+i
+	​
+
+=∑e
+A−m
+𝐿
+𝑖
+=
+𝑚
+𝑖
++
+log
+⁡
+ℓ
+𝑖
+L
+i
+	​
+
+=m
+i
+	​
+
++logℓ
+i
+	​
+
+𝑂
+𝑖
+=
+𝑂
+~
+𝑖
+/
+ℓ
+𝑖
+O
+i
+	​
+
+=
+O
+i
+	​
+
+/ℓ
+i
+	​
+
+CTA 3
+空闲 / 待命
+𝐴
+𝑖
+=
+𝑄
+𝐾
+𝑖
+⊤
+/
+𝑑
+A
+i
+	​
+
+=QK
+i
+⊤
+	​
+
+/
+d
+	​
+
+𝑚
+𝑖
+=
+max
+⁡
+(
+𝐴
+)
+,
+ℓ
+𝑖
+=
+∑
+𝑒
+𝐴
+−
+𝑚
+m
+i
+	​
+
+=max(A),ℓ
+i
+	​
+
+=∑e
+A−m
+𝐿
+𝑖
+=
+𝑚
+𝑖
++
+log
+⁡
+ℓ
+𝑖
+L
+i
+	​
+
+=m
+i
+	​
+
++logℓ
+i
+	​
+
+𝑂
+𝑖
+=
+𝑂
+~
+𝑖
+/
+ℓ
+𝑖
+O
+i
+	​
+
+=
+O
+i
+	​
+
+/ℓ
+i
+	​
+
+底层代码 (Python 伪代码)
+O + LSE 工作区
+def flash_decoding_lse(q, k, v, num_splits):
+  kv_head = q_head // q_per_kv_head # Q head 映射到共享 KV head
+  k, v = resolve_kv(k, v, block_table) # 连续 KV：基址 + token 偏移
+# [步骤 1] 建立逻辑 Split 并分配 CTA 工作
+  partials = []
+  for i in range(num_splits):
+# [步骤 2] Kernel 1: 分块局部计算 LSE
+      scores = (q @ k[i].T) / sqrt(d)
+      m_i = max(scores)
+      l_i = sum(exp(scores - m_i))
+      O_i = (exp(scores - m_i) @ v[i]) / l_i
+      L_i = m_i + log(l_i) # 关键：Log-Sum-Exp
+      partials.append((O_i, L_i)) # 写入 HBM Workspace
+# [步骤 3] Kernel 2 (归约): 迭代求全局 LSE
+  L_global = partials[0].L
+  for i in range(1, num_splits):
+      L_max = max(L_global, partials[i].L)
+      L_min = min(L_global, partials[i].L)
+      L_global = L_max + log1p(exp(L_min - L_max))
+# [步骤 4] 利用 L_global 合并各 Split
+  O_global = 0
+  for O_i, L_i in partials:
+      weight = exp(L_i - L_global) # 权重对齐
+      O_global += O_i * weight
+  return O_global # 写回结果
+核心数学原理与执行解析
+
+等待开始。
+
+请点击顶部的“播放”按钮观察动态调度过程。
+
+继续学习
+Sparse Attention →
+相关分支
+Flash Attention
+DP Attention

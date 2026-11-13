@@ -1,0 +1,5 @@
+
+> ai-infra-viz@0.1.0 check:flash
+> node scripts/check-flash-attention.mjs
+
+FlashAttention model checks passed.

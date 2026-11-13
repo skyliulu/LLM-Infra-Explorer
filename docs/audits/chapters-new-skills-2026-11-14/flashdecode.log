@@ -1,0 +1,5 @@
+
+> ai-infra-viz@0.1.0 check:flashdecode
+> node scripts/check-flash-decode.mjs
+
+FlashDecode checks passed (636 legal lifecycle states; 113 aligned i18n keys).

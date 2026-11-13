@@ -1,0 +1,9 @@
+
+> ai-infra-viz@0.1.0 check:radix
+> node scripts/check-radix-cache.mjs && node scripts/check-hicache.mjs && node scripts/check-hicache-story.mjs && node scripts/check-hicache-engine.mjs
+
+Radix Cache model checks passed.
+HiCache: 748 snapshots passed: prefix continuity, sources, capacities, protection, acknowledgments and policies.
+HiCache request stream: 57 snapshots; continuity, branching, mixed hits, transfer sources, protected eviction passed.
+HiCache engine: 360 configurations / 42912 snapshots; 576 layout configurations passed.
+Presentation playback: 89 visible actions; transfer and publication evidence preserved.

@@ -1,0 +1,5 @@
+
+> ai-infra-viz@0.1.0 check:dpa
+> node scripts/check-dp-attention.mjs
+
+DP Attention model checks passed.

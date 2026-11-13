@@ -1,0 +1,435 @@
+FlashAttention
+
+从标准 Softmax 到 V1–V4：观察显存流量、片上分块与内核流水线
+
+标准 Softmax
+FlashAttention
+V1
+V2
+V3
+V4
+前向
+反向
+因果掩码
+内存层级与分块执行
+目标硬件: A100
+执行架构: Ampere / mma.sync
+序列长度
+512
+2048
+8192
+头维度
+64
+128
+数据类型
+BF16
+HBM 中的二次方中间量
+0 B
+不在 HBM 物化
+代表性片上 LIVE SET
+161.0 KB
+128
+×
+64
+128×64
+执行 / 跳过 TILE 对
+272 / 240
+因果掩码
+这一代的主要矛盾
+占用率与非矩阵计算
+前向 HBM 流量模型
+当前累计: 0 B / 9.5 MB
+标准 Softmax
+66.0 MB
+当前实现 · V2
+9.5 MB
+
+模型假设：单个 batch/head，Q/K/V/O 为 2 字节；未融合标准实现的 S/P 以 FP32 物化。数值为算法级估算，不冒充特定 kernel profiler 结果。
+
+HBM · 全局显存
+完整张量
+完整输入张量
+BF16
+
+同色与相同编号表示同一个代表性 HBM tile；发光边框表示当前片上副本。
+
+𝑄
+Q
+2048
+×
+128
+2048×128
+t0
+t1
+t2
+t3
+完整驻留
+𝐾
+K
+2048
+×
+128
+2048×128
+t0
+t1
+t2
+t3
+完整驻留
+𝑉
+V
+2048
+×
+128
+2048×128
+t0
+t1
+t2
+t3
+完整驻留
+输出与在线统计量
+𝑂
+O
+2048
+×
+128
+2048×128
+t0
+t1
+t2
+t3
+尚未生成
+L
+S
+E
+LSE
+2048
+2048
+t0
+t1
+t2
+t3
+尚未生成
+没有完整的二次方中间工作区
+
+Score 与 probability 只作为当前 tile 在片上生成、使用并释放，不占用全局显存地址。
+
+HBM 分配：0 B
+𝑆
+,
+𝑃
+∉
+H
+B
+M
+S,P∈
+/
+HBM
+读取 tile
+等待执行
+写回结果
+片上工作区与计算单元
+等待执行
+当前片上 tile 对
+V2 · A100
+𝑄
+𝑖
+Q
+i
+	​
+
+t0
+0:128
+𝐾
+𝑗
+K
+j
+	​
+
+t0
+0:64
+𝑉
+𝑗
+V
+j
+	​
+
+t0
+0:64
+1
+CTA 持有 Q 行
+C
+T
+A
+𝑖
+
+∋
+
+(
+𝑄
+𝑖
+,
+𝑂
+𝑖
+)
+CTA
+i
+	​
+
+ ∋ (Q
+i
+	​
+
+,O
+i
+	​
+
+)
+2
+KV tile 流式进入 CTA
+𝑄
+𝑖
+,
+
+𝐾
+𝑗
+,
+
+𝑉
+𝑗
+
+⟶
+
+S
+M
+E
+M
+Q
+i
+	​
+
+, K
+j
+	​
+
+, V
+j
+	​
+
+ ⟶ SMEM
+3
+Split-Q warp 计算 score
+𝑆
+𝑖
+𝑗
+=
+𝑄
+𝑖
+𝐾
+𝑗
+⊤
+/
+𝑑
++
+𝑀
+𝑖
+𝑗
+S
+ij
+	​
+
+=Q
+i
+	​
+
+K
+j
+⊤
+	​
+
+/
+d
+	​
+
++M
+ij
+	​
+
+4
+各 warp 独立更新 O 行
+(
+𝑚
+𝑖
+,
+ℓ
+𝑖
+,
+𝑂
+𝑖
+)
+←
+online_update
+⁡
+(
+𝑆
+𝑖
+𝑗
+,
+𝑉
+𝑗
+)
+(m
+i
+	​
+
+,ℓ
+i
+	​
+
+,O
+i
+	​
+
+)←online_update(S
+ij
+	​
+
+,V
+j
+	​
+
+)
+5
+提交 O / LSE
+store
+⁡
+H
+B
+M
+(
+𝑂
+,
+L
+S
+E
+)
+store
+HBM
+	​
+
+(O,LSE)
+该版本的片上资源
+共享内存 tile
+Split-Q warp slices
+寄存器累加器
+外循环
+
+Q tile / CTA：Q 与 O 在片上保持
+
+内循环
+
+KV tile：K/V 依次流入
+
+𝑂
+=
+softmax
+⁡
+ ⁣
+(
+𝑄
+𝐾
+⊤
+𝑑
++
+𝑀
+)
+𝑉
+O=softmax(
+d
+	​
+
+QK
+⊤
+	​
+
++M)V
+真实计算流水线
+
+横向位置代表时间；不同泳道的重叠表示并行执行。当前步骤只高亮一个可检查操作。
+
+0 / 7
+CTA 调度
+分配 Q-row CTA
+HBM / 搬运
+加载当前 K / V tile
+流入下一个 KV tile
+写回 O 与 LSE
+TENSOR CORE
+Split-Q：各 warp 计算 score
+各 warp 独立更新 O 行
+CUDA / SOFTMAX
+少重缩放的在线 Softmax
+内核级执行证据
+engine pseudocode
+kernel v2_forward(metadata, Q, K, V):
+1cta = grid[batch, head, q_tile]
+2smem.stage(K[j], V[j])
+3warp_rows = mma(Q_warp, K.T)
+4O_tilde, LSE = online_update_unscaled(...)
+5O_warp += mma(P_warp, V)
+6pipeline.advance(kv_stage)
+7hbm.store(O, LSE)
+当前版本的设计差异
+V2
+
+V2：重排循环与 GPU 工作划分，让长序列也能产生足够 CTA，并以 split-Q 避免 warp 间归约。
+
+𝑆
+=
+𝑄
+𝐾
+⊤
+,
+𝑃
+=
+softmax
+⁡
+(
+𝑆
+)
+,
+𝑂
+=
+𝑃
+𝑉
+S=QK
+⊤
+,P=softmax(S),O=PV
+画布观察点
+
+Q tile 由 CTA 持有，K/V 逐块流入；每个 warp 拥有不同 Q 行和对应 O 行，不再合并 split-K 的部分输出。
+
+当前阶段: 等待执行
+能力边界
+
+核心优化面向 A100 级执行模型；流量接近 V1 并不意味着吞吐相同。V2 的主要收益来自占用率、非矩阵 FLOPs 与通信。
+
+𝑄
+,
+𝐾
+,
+𝑉
+,
+𝑂
+∈
+𝑅
+2048
+×
+128
+Q,K,V,O∈R
+2048×128
+因果掩码
+共同数学骨架: V1–V4 都计算精确 Attention。版本升级没有改变输出定义，改变的是循环顺序、工作划分、片上驻留和流水线调度。
+继续学习
+Flash Decode →
+相关分支
+Sparse Attention

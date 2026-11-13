@@ -1,0 +1,68 @@
+[
+  {
+    "name": "llm",
+    "command": "npm run check:llm",
+    "startedAt": "2026-11-13T16:02:47.3011023Z",
+    "exitCode": 0
+  },
+  {
+    "name": "parallel",
+    "command": "npm run check:parallel",
+    "startedAt": "2026-11-13T16:02:47.7667854Z",
+    "exitCode": 0
+  },
+  {
+    "name": "flash",
+    "command": "npm run check:flash",
+    "startedAt": "2026-11-13T16:02:48.1037960Z",
+    "exitCode": 0
+  },
+  {
+    "name": "sparse",
+    "command": "npm run check:sparse",
+    "startedAt": "2026-11-13T16:02:48.4131620Z",
+    "exitCode": 0
+  },
+  {
+    "name": "cachearch",
+    "command": "npm run check:cachearch",
+    "startedAt": "2026-11-13T16:02:50.0743855Z",
+    "exitCode": 0
+  },
+  {
+    "name": "flashdecode",
+    "command": "npm run check:flashdecode",
+    "startedAt": "2026-11-13T16:02:50.4895800Z",
+    "exitCode": 0
+  },
+  {
+    "name": "speculative",
+    "command": "npm run check:speculative",
+    "startedAt": "2026-11-13T16:02:50.7748340Z",
+    "exitCode": 1
+  },
+  {
+    "name": "quantization",
+    "command": "npm run check:quantization",
+    "startedAt": "2026-11-13T16:02:51.1445096Z",
+    "exitCode": 0
+  },
+  {
+    "name": "engram",
+    "command": "npm run check:engram",
+    "startedAt": "2026-11-13T16:02:51.8956413Z",
+    "exitCode": 0
+  },
+  {
+    "name": "radix",
+    "command": "npm run check:radix",
+    "startedAt": "2026-11-13T16:02:52.1840132Z",
+    "exitCode": 0
+  },
+  {
+    "name": "dpa",
+    "command": "npm run check:dpa",
+    "startedAt": "2026-11-13T16:02:53.1727272Z",
+    "exitCode": 0
+  }
+]

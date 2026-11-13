@@ -1,0 +1,532 @@
+LLM 推理全景可视化
+
+从 Prefill 到 Decode：观察逐层注意力、KV Cache、稀疏路由与采样
+
+温度
+0.7
+Top-K
+3
+Top-P
+0.9
+Dense (稠密)
+MoE (稀疏)
+序列 (Sequence) - 观察自回归回路
+Prompt (输入提示词):
+人工
+智能
+的
+发展
+将
+会
+Generation (模型生成):
+KV Cache (显存)
+当前层 KV
+0 / 11
+层 1 · K/V
+层写入进度
+0 / 32
+整段 Prompt 批量写入
+K
+V
+每层独立 KV 堆栈
+L1
+0
+L2
+0
+L31
+0
+L32
+0
+KV 表示显微镜
+MHA → GQA → MLA：一个 token 到底存了什么？
+模型内部流水线
+稠密架构 (Dense Architecture)
+PREFILL
+代表性张量切片
+Layer 1 / 32
+Token ID、Embedding 与 Residual Stream
+
+从词表查表得到连续向量；只展示少量维度，标签保留真实形状。
+
+执行中
+Token ID 行
+t1
+t2
+t3
+t4
+t5
+t6
+Embedding Table
+∣
+𝑉
+∣
+×
+𝑑
+∣V∣×d
+4 by 4 representative cells
+按行查表
+Residual Stream X
+𝐿
+×
+𝑑
+L×d
+-0.5
+-1.0
+-0.7
+0.3
+-0.5
+0.4
+1.0
+0.7
+1.0
+0.6
+-0.4
+-1.0
+-0.5
+-1.0
+-0.6
+0.3
+-0.5
+0.5
+1.0
+0.7
+1.0
+0.5
+-0.4
+-1.0
+6 by 4 representative cells
+RMSNorm、Q/K/V、Attention 与 Residual
+
+多行 Prompt 并行计算，Score 矩阵显式显示因果遮罩。
+
+待执行
+RMSNorm
+当前层并行投影 Q/K/V；Q/K 再应用 RoPE
+𝑝
+=
+0
+,
+…
+,
+5
+p=0,…,5
+Q · RoPE
+𝐿
+×
+𝑑
+ℎ
+L×d
+h
+	​
+
+-0.8
+0.1
+0.9
+0.9
+0.9
+0.8
+0.0
+-0.8
+-0.2
+-0.9
+-0.9
+-0.1
+-0.8
+0.1
+0.9
+0.9
+0.9
+0.8
+-0.0
+-0.8
+-0.2
+-0.9
+-0.8
+-0.0
+6 by 4 representative cells
+K · RoPE
+𝐿
+×
+𝑑
+ℎ
+L×d
+h
+	​
+
+0.7
+1.0
+0.4
+-0.6
+0.2
+-0.7
+-1.0
+-0.4
+-0.9
+-0.3
+0.6
+1.0
+0.8
+1.0
+0.3
+-0.6
+0.2
+-0.7
+-1.0
+-0.4
+-0.9
+-0.2
+0.7
+1.0
+写入当前层 K Cache
+6 by 4 representative cells
+V
+𝐿
+×
+𝑑
+ℎ
+L×d
+h
+	​
+
+0.6
+-0.4
+-1.0
+-0.7
+-1.0
+-0.6
+0.3
+1.0
+0.5
+1.0
+0.7
+-0.3
+0.5
+-0.4
+-1.0
+-0.7
+-1.0
+-0.6
+0.3
+1.0
+0.5
+1.0
+0.6
+-0.3
+写入当前层 V Cache
+6 by 4 representative cells
+Score = QKᵀ
+𝐿
+×
+𝐿
+L×L
+0.2
+0.8
+-0.1
+-0.9
+-0.8
+0.1
+0.2
+0.9
+0.8
+0.0
+0.7
+-0.2
+-0.9
+-0.9
+-0.1
+-1.0
+-0.8
+0.1
+0.9
+0.9
+0.1
+上三角位置不可见
+6 by 6 representative cells
+逐行 Softmax
+Attention Probability
+𝐿
+×
+𝐿
+L×L
+1.0
+0.7
+0.3
+0.2
+0.2
+0.6
+0.2
+0.4
+0.3
+0.1
+0.4
+0.2
+0.1
+0.1
+0.2
+0.1
+0.1
+0.1
+0.3
+0.3
+0.1
+6 by 6 representative cells
+×
+𝑉
+×V
+Context = PV
+𝐿
+×
+𝑑
+L×d
+-0.9
+-0.9
+-0.1
+0.8
+0.1
+0.9
+0.9
+0.1
+0.8
+-0.0
+-0.8
+-0.9
+-0.9
+-0.8
+-0.0
+0.8
+0.1
+0.9
+0.9
+0.1
+0.8
+-0.1
+-0.9
+-0.9
+6 by 4 representative cells
+Attention 输出投影后与 Residual Stream 相加
+Dense MLP：所有 Token 经过同一组权重
+
+隐藏维度扩张后再压回 d；矩阵宽度表达中间激活规模。
+
+待执行
+Norm(X)
+𝐿
+×
+𝑑
+L×d
+-0.5
+-1.0
+-0.7
+0.3
+-0.5
+0.4
+1.0
+0.7
+1.0
+0.6
+-0.4
+-1.0
+-0.5
+-1.0
+-0.6
+0.3
+-0.5
+0.5
+1.0
+0.7
+1.0
+0.5
+-0.4
+-1.0
+6 by 4 representative cells
+×
+×
+W_up
+𝑑
+×
+4
+𝑑
+d×4d
+4 by 6 representative cells
+GELU
+Expanded Hidden
+𝐿
+×
+4
+𝑑
+L×4d
+-0.3
+0.6
+1.0
+0.5
+-0.5
+-1.0
+1.0
+0.3
+-0.6
+-1.0
+-0.5
+0.4
+-0.7
+-1.0
+-0.4
+0.5
+1.0
+0.6
+-0.2
+0.7
+1.0
+0.4
+-0.5
+-1.0
+0.9
+0.3
+-0.6
+-1.0
+-0.5
+0.4
+-0.8
+-1.0
+-0.3
+0.6
+1.0
+0.6
+6 by 6 representative cells
+复用 Expanded Hidden
+×
+×
+W_down
+4
+𝑑
+×
+𝑑
+4d×d
+6 by 4 representative cells
+MLP Output
+𝐿
+×
+𝑑
+L×d
+1.0
+0.7
+-0.3
+-0.9
+-0.4
+-1.0
+-0.7
+0.2
+-0.6
+0.3
+1.0
+0.8
+1.0
+0.6
+-0.3
+-0.9
+-0.5
+-1.0
+-0.7
+0.2
+-0.5
+0.4
+1.0
+0.7
+6 by 4 representative cells
+FFN/MoE 输出与 Residual Stream 相加后进入下一层
+最后一行 Hidden State 到 LM Head 与采样
+
+生成下一个 Token 时只读取最后一个位置，而不是把全部 L 行都送去采样。
+
+待执行
+最后一行 Hidden State
+1
+×
+𝑑
+1×d
+-0.0
+-0.8
+-0.9
+-0.2
+1 by 4 representative cells
+×
+×
+W_vocab
+𝑑
+×
+∣
+𝑉
+∣
+d×∣V∣
+4 by 6 representative cells
+Vocabulary Logits
+1
+×
+∣
+𝑉
+∣
+1×∣V∣
+0.3
+1.0
+0.8
+-0.1
+-0.9
+-0.9
+1 by 6 representative cells
+𝑇
+=
+0.7
+T=0.7
+𝐾
+=
+3
+K=3
+𝑃
+=
+0.9
+P=0.9
+等待计算...
+等待采样
+采样 Token 回到 Embedding，成为下一次 Decode 输入
+底层代码
+(Python 伪代码)
+def prefill(request_ids, input_tokens, kv_cache, temp=0.7, top_k=3, top_p=0.9):
+  # Embedding
+  meta = scheduler.inference_meta(request_ids)
+  x = embedding(input_tokens) # [L, d]
+
+
+for layer_id in range(32): # 层循环堆叠
+      # 注意力与 KV Cache
+      layer_cache = kv_cache.layer(layer_id)
+      q, k, v = qkv_proj[layer_id](norm(x))
+      q, k = apply_rope(q, k, meta.positions) # RoPE 在每层 Attention 内旋转 Q/K
+      slots = layer_cache.reserve(meta.slot_mapping)
+      layer_cache.write_(slots, k, v)
+      backend = select_attention_backend(meta, q.dtype)
+      attn_out = backend.prefill(q, layer_cache, meta)
+      x = x + o_proj[layer_id](attn_out)
+
+
+      # Dense FFN
+      ffn_in = norm(x)
+      hidden = gelu(ffn_in @ W_up[layer_id])
+      x = x + (hidden @ W_down) # 残差连接并进入下一层
+
+
+  # LM Head & 温度采样
+  logits = x[-1] @ W_vocab # 映射到词表
+  logits = logits / temp   # 温度调整缩放
+  probs = softmax(logits)
+  probs = top_k_filter(probs, top_k)
+  probs = top_p_filter(probs, top_p)
+  return sample(renormalize(probs))
+当前微观执行状态
+Embedding 阶段
+
+并行读取整个 Prompt。
+
+继续学习
+Flash Attention →
+相关分支
+Quantization
+Spec Decode

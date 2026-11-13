@@ -1,0 +1,891 @@
+DeepSeek Engram 架构可视化
+
+条件记忆检索、微观张量流与系统级数据移动过程演示
+
+网络拓扑结构
+BOS
+Only
+Alexander
+the
+Great
+could
+tame
+词表嵌入
+Block 0（标准）
+Attention
+MoE
+Block 1（含 Engram）
+Engram 模块
+嵌入表
+共享 W_V 投影
+分支 W_K 投影
+短卷积权重
+RMSNorm 参数
+Attention
+MoE
+Block 2（标准）
+Attention
+MoE
+⋮
+Block 15（含 Engram）
+官方 Demo 示例：第 1 / 15 层
+Engram微观张量流图
+等待输入
+左右滑动查看完整张量流
+B
+Batch Size
+L
+Seq Len
+D
+Hidden Dim
+HC
+Hyper-Conn
+E_D
+Engram Dim
+D_h
+Head Dim
+Vocab
+Hash Size
+Tokenizer Compression & N-Gram Sliding Window
+原始形式
+" Alexander"
+"ALEXANDER"
+规范化 ID
+alexander
+
+示意：NFKC、去重音、转小写与空白归一化会把等价 token 折叠到同一规范形式。
+
+[BOS]
+3-Context
+Only
+Alexander
+t
+2-Gram
+the
+Great
+could
+tame
+[B, L]
+[B, L]
+Multi-Head Hash Retrieval
+2-Gram Channel
+H1
+H2
+H3
+H4
+H5
+H6
+H7
+H8
+ℎ
+𝑛
+,
+𝑘
+=
+(
+⨁
+𝑖
+=
+0
+𝑛
+−
+1
+𝑥
+𝑡
+−
+𝑖
+′
+𝑀
+𝑖
+)
+
+mod
+
+𝑃
+𝑛
+,
+𝑘
+h
+n,k
+	​
+
+=(⨁
+i=0
+n−1
+	​
+
+x
+t−i
+′
+	​
+
+M
+i
+	​
+
+)modP
+n,k
+	​
+
+T1
+[Vocab,D_h]
+T2
+T3
+T4
+T5
+T6
+T7
+T8
+[B,L,D_h]
+Flatten / Concat
+[B, L, E_D]
+𝐸
+𝑡
+,
+2
+E
+t,2
+	​
+
+3-Gram Channel
+H1
+H2
+H3
+H4
+H5
+H6
+H7
+H8
+ℎ
+𝑛
+,
+𝑘
+=
+(
+⨁
+𝑖
+=
+0
+𝑛
+−
+1
+𝑥
+𝑡
+−
+𝑖
+′
+𝑀
+𝑖
+)
+
+mod
+
+𝑃
+𝑛
+,
+𝑘
+h
+n,k
+	​
+
+=(⨁
+i=0
+n−1
+	​
+
+x
+t−i
+′
+	​
+
+M
+i
+	​
+
+)modP
+n,k
+	​
+
+T1
+[Vocab,D_h]
+T2
+T3
+T4
+T5
+T6
+T7
+T8
+[B,L,D_h]
+Flatten / Concat
+[B, L, E_D]
+𝐸
+𝑡
+,
+3
+E
+t,3
+	​
+
+多尺度记忆汇聚
+𝐸
+𝑡
+=
+Concat
+⁡
+(
+𝐸
+𝑡
+,
+2
+,
+𝐸
+𝑡
+,
+3
+)
+E
+t
+	​
+
+=Concat(E
+t,2
+	​
+
+,E
+t,3
+	​
+
+)
+Context-aware Gating
+分支 / 共享投影
+依赖门控
+卷积融合与残差
+sgn
+⁡
+(
+𝑥
+)
+∣
+𝑥
+∣
+
+→
+
+𝜎
+sgn(x)
+∣x∣
+	​
+
+→σ
+𝐻
+i
+n
+H
+in
+	​
+
+[B, L, HC, D]
+𝐸
+𝑡
+E
+t
+	​
+
+[B, L, E_D]
+𝑊
+𝐾
+W
+K
+	​
+
+[HC, E_D, D]
+⊗
+⊗
+MatMul
+⊗
+⊗
+MatMul
+𝑊
+𝑉
+W
+V
+	​
+
+[E_D, D]
+𝐾
+𝑡
+K
+t
+	​
+
+[B, L, HC, D]
+𝑉
+𝑡
+V
+t
+	​
+
+[B, L, D]
+RMSNorm
+∑
+∑
+RMSNorm
+𝛼
+𝑡
+α
+t
+	​
+
+[B, L, HC, 1]
+×
+×
+Broadcast
+𝑉
+~
+𝑡
+V
+t
+	​
+
+[B, L, HC, D]
+RMSNorm
+SiLU
+Conv1D
+Engram 增量
+[B, L, HC, D]
++
+Residual
+𝐻
+b
+l
+o
+c
+k
+H
+block
+	​
+
+[B, L, HC, D]
+Block 状态
+engram_forward.py
+Demo 对齐
+1
+def forward(self, hidden_states, input_ids):
+2
+# 1. 滑动窗口提取多尺度 N-Gram 上下文
+3
+input_ids = self.compressed_tokenizer(input_ids)
+4
+g_t = dict()
+5
+for n in range(2, max_n + 1):
+6
+g_t[n] = extract_ngram_window(input_ids, n)
+7
+# 2. 深度展开: 多头异或哈希计算
+8
+hash_idx = torch.zeros(B, L, max_n - 1, num_heads, dtype=torch.long)
+9
+for n in range(2, max_n + 1):
+10
+ngram_idx = n - 2
+11
+mix = g_t[n][0] * M[0]
+12
+for i in range(1, n):
+13
+mix = torch.bitwise_xor(mix, g_t[n][i] * M[i])
+14
+# 多头并行素数取模
+15
+for k in range(num_heads):
+16
+hash_idx[:,:,ngram_idx,k] = mix % primes[ngram_idx][k]
+17
+18
+# 3~4. 并行查表提取头向量
+19
+embeddings = []
+20
+for n in range(2, max_n + 1):
+21
+for k in range(num_heads):
+22
+tab = self.embed_tables[n][k]
+23
+embeddings.append(tab(hash_idx[...,n - 2,k]))
+24
+25
+# 5. 维度展平汇聚
+26
+E_t = torch.cat(embeddings, dim=-1)
+27
+28
+# 6~7. 依赖建模与动态门控
+29
+V_t = self.W_V(E_t)
+30
+gates = []
+31
+for hc in range(self.hc_mult):
+32
+K_t = self.W_K[hc](E_t)
+33
+norm_K = self.norm1[hc](K_t)
+34
+norm_Q = self.norm2[hc](hidden[:,:,hc,:])
+35
+gt = (norm_K * norm_Q).sum(-1) / sqrt(D)
+36
+gt = gt.abs().clamp_min(1e-6).sqrt() * gt.sign()
+37
+gates.append(gt.sigmoid().unsqueeze(-1))
+38
+gates = torch.stack(gates, dim=2)
+39
+V_tilde = gates * V_t.unsqueeze(2)
+40
+# 8. 跨时间步平滑与残差相加
+41
+Y = V_tilde + self.short_conv(V_tilde)
+42
+43
+# 9. 返回 Engram 增量，由 Block 完成外层残差
+44
+return Y
+45
+H_block = hidden_states + Y
+逻辑等价于官方 demo；分表查找在实现中可打包为带 offsets 的 MultiHeadEmbedding。
+系统级内存访问与通信时间轴
+推理
+训练
+T0 序列输入
+T1 异步并行预取
+T2 通信与同步
+T3 特征融合
+CPU / Host
+数据准备
+计算 Hash 与并行查表 (T1)
+PCIe 异步传输
+GPU / Device
+Block 0（标准）
+前置 Transformer Block 计算窗口
+Engram 门控融合
+后续计算
+预取与前置计算重叠；仅当查表与 PCIe 延迟不超过计算窗口时，GPU 才无需等待。
+Engram 数学原理与维度推导
+阶段 1
+记忆路由与特征检索
+
+获取后缀 N-Gram，并通过多头乘法异或定位内存槽位，直接展平无需线性层。
+
+𝑔
+𝑡
+,
+𝑛
+=
+(
+𝑥
+𝑡
+−
+𝑛
++
+1
+′
+,
+…
+,
+𝑥
+𝑡
+′
+)
+g
+t,n
+	​
+
+=(x
+t−n+1
+′
+	​
+
+,…,x
+t
+′
+	​
+
+)
+ℎ
+𝑛
+,
+𝑘
+=
+(
+⨁
+𝑖
+=
+0
+𝑛
+−
+1
+𝑥
+𝑡
+−
+𝑖
+′
+𝑀
+𝑖
+)
+
+mod
+
+𝑃
+𝑛
+,
+𝑘
+h
+n,k
+	​
+
+=(
+i=0
+⨁
+n−1
+	​
+
+x
+t−i
+′
+	​
+
+M
+i
+	​
+
+)modP
+n,k
+	​
+
+𝐸
+𝑡
+=
+Concat
+⁡
+𝑛
+,
+𝑘
+ ⁣
+(
+𝐸
+𝑛
+,
+𝑘
+[
+ℎ
+𝑛
+,
+𝑘
+]
+)
+∈
+𝑅
+𝐵
+×
+𝐿
+×
+𝐸
+𝐷
+E
+t
+	​
+
+=Concat
+n,k
+	​
+
+(E
+n,k
+	​
+
+[h
+n,k
+	​
+
+])∈R
+B×L×E
+D
+	​
+
+阶段 2
+依赖建模与动态门控
+
+按 Hyper-Connection(HC) 切分。引入双侧 RMSNorm 与 sgn(x)√|x| 平方根缩放解决内积数值爆炸。
+
+𝐾
+𝑡
+(
+𝑐
+)
+=
+𝑊
+𝐾
+(
+𝑐
+)
+𝐸
+𝑡
+,
+𝑉
+𝑡
+=
+𝑊
+𝑉
+𝐸
+𝑡
+K
+t
+(c)
+	​
+
+=W
+K
+(c)
+	​
+
+E
+t
+	​
+
+,V
+t
+	​
+
+=W
+V
+	​
+
+E
+t
+	​
+
+其中
+𝑥
+=
+⟨
+RMSNorm
+⁡
+(
+𝐻
+i
+n
+(
+𝑐
+)
+)
+,
+RMSNorm
+⁡
+(
+𝐾
+𝑡
+(
+𝑐
+)
+)
+⟩
+/
+𝐷
+x=⟨RMSNorm(H
+in
+(c)
+	​
+
+),RMSNorm(K
+t
+(c)
+	​
+
+)⟩/
+D
+	​
+
+𝛼
+𝑡
+(
+𝑐
+)
+=
+𝜎
+ ⁣
+(
+sgn
+⁡
+(
+𝑥
+)
+∣
+𝑥
+∣
+)
+α
+t
+(c)
+	​
+
+=σ(sgn(x)
+∣x∣
+	​
+
+)
+𝑉
+~
+𝑡
+(
+𝑐
+)
+=
+𝛼
+𝑡
+(
+𝑐
+)
+𝑉
+𝑡
+∈
+𝑅
+𝐵
+×
+𝐿
+×
+𝐻
+𝐶
+×
+𝐷
+V
+t
+(c)
+	​
+
+=α
+t
+(c)
+	​
+
+V
+t
+	​
+
+∈R
+B×L×HC×D
+阶段 3
+时序平滑与状态融合
+
+门控后的特征序列再经过组内 RMSNorm 后，送入短上下文 1D 卷积进行平滑与残差相加。
+
+𝑉
+~
+=
+[
+𝑉
+~
+1
+,
+…
+,
+𝑉
+~
+𝑇
+]
+V
+=[
+V
+1
+	​
+
+,…,
+V
+T
+	​
+
+]
+𝑌
+e
+n
+g
+r
+a
+m
+=
+𝑉
+~
++
+SiLU
+⁡
+ ⁣
+(
+DWConv1D
+⁡
+(
+RMSNorm
+⁡
+(
+𝑉
+~
+)
+)
+)
+Y
+engram
+	​
+
+=
+V
++SiLU(DWConv1D(RMSNorm(
+V
+)))
+𝐻
+b
+l
+o
+c
+k
+=
+𝐻
+i
+n
++
+𝑌
+e
+n
+g
+r
+a
+m
+∈
+𝑅
+𝐵
+×
+𝐿
+×
+𝐻
+𝐶
+×
+𝐷
+H
+block
+	​
+
+=H
+in
+	​
+
++Y
+engram
+	​
+
+∈R
+B×L×HC×D
+继续学习
+DeepSeek CED →
+相关分支
+LLM Inference
+Radix HiCache

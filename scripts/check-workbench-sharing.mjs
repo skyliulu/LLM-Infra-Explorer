@@ -16,7 +16,7 @@ const examples={
  cachearch:{'CacheArchitecture.tokens':1000000,'CacheArchitecture.phase':'decode','CacheArchitecture.layer':39},
  quantization:{'Quantization.config':{mode:'fp4',batch:8,context:8192,kv:'fp4',prefill:true},'quantization/SGLangWorkbench.preset':'saved-static'},
  speculative:{'SpeculativeDecoding.config':{algorithm:'dspark',depth:3,width:2,budget:8,blockSize:8}},
- engram:{'Engram.systemMode':'training'},radixcache:{},
+ engram:{'Engram.systemMode':'training','Engram.samplePreset':'collision','Engram.sampleQuery':'orthogonal'},radixcache:{},
  deepinfer:lessonSettings,
 };
 assert.deepEqual(Object.keys(examples).sort(),Object.keys(SHARE_SCHEMA).sort());

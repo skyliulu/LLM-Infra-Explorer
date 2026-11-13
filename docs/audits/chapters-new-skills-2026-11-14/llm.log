@@ -1,0 +1,6 @@
+
+> ai-infra-viz@0.1.0 check:llm
+> node scripts/check-llm-inference.mjs && node scripts/check-kv-representation.mjs
+
+LLM Inference model checks passed (96 representative states).
+KV representation: 6144 states passed; payload, head ownership, RoPE, endpoints, and invalid inputs verified.

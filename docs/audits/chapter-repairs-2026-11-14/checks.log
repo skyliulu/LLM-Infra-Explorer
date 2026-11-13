@@ -1,0 +1,72 @@
+> ai-infra-viz@0.1.0 check:llm
+> node scripts/check-llm-inference.mjs && node scripts/check-inference-numerics.mjs && node scripts/check-kv-representation.mjs
+
+LLM Inference model checks passed (96 representative states).
+Inference numerical chain, stable causal cache and seeded CDF sampling checks passed.
+KV representation: 6144 states passed; payload, head ownership, RoPE, endpoints, and invalid inputs verified.
+
+> ai-infra-viz@0.1.0 check:flash
+> node scripts/check-flash-attention.mjs
+
+FlashAttention model checks passed.
+PASS source dependency oracles: V1 dP/dS/gradients; V3 separate K/V readiness, rescaling and final PV drain.
+
+> ai-infra-viz@0.1.0 check:dpa
+> node scripts/check-dp-attention.mjs
+
+DP Attention model and independent Decode query/history checks passed.
+
+> ai-infra-viz@0.1.0 check:engram
+> node scripts/check-engram.mjs
+
+Engram checks passed (100 canonical lifecycle states across inference and training modes).
+PASS Engram numerical sample: XOR/primes/offsets, single-head collision, query-independent lookup, normalized signed-root gates and zero-dot boundary.
+
+> ai-infra-viz@0.1.0 check:linear
+> node scripts/check-linear-attention.mjs && node scripts/check-linear-comparison.mjs
+
+Linear/GLA state-write, decay, first-token and resource checks passed.
+Linear comparison: final cost, fixed storage, monotonic counters and independent completion passed.
+
+> ai-infra-viz@0.1.0 check:speculative
+> node scripts/check-speculative-decoding.mjs
+
+Speculative decoding: 53 parameter configurations, event/round/KV identity invariants, scheduler causality, output equality and exact sampling mass passed.
+
+> ai-infra-viz@0.1.0 check:workbench
+> node scripts/check-workbench-sharing.mjs && node scripts/check-learning-paths.mjs
+
+Sharing schema: all 13 chapters round-trip; malformed, oversized, unknown and out-of-range settings rejected.
+PASS learning order: 13 unique chapters, forward-only prerequisites/continuations, bilingual section links and CED / DeepInfer dependencies
+
+Theme checks passed: alpha, assets, idempotence, role mapping, hue identity, body contrast and media rules.
+PASS  translation route
+PASS  derived model
+PASS  math renderer
+PASS  phase state
+PASS  step state
+PASS  playback state
+PASS  next-step handler
+PASS  reset handler
+PASS  play handler
+PASS  hardcoded JSX prose
+PASS  unicode math lookalikes
+
+Capabilities: timeline, multiple-modes, resource-metrics, dense-layout, math
+9/9 required checks passed; 0 warning(s); 0 failure(s).
+Manual rendered QA required for: multiple-modes, resource-metrics, dense-layout.
+PASS  translation route
+PASS  derived model
+PASS  math renderer
+PASS  phase state
+PASS  step state
+PASS  playback state
+PASS  next-step handler
+PASS  reset handler
+PASS  play handler
+PASS  hardcoded JSX prose
+WARN  unicode math lookalikes: Review Unicode math-like characters and render formulas as LaTeX.
+
+Capabilities: timeline, multiple-modes, resource-metrics, math
+9/9 required checks passed; 1 warning(s); 0 failure(s).
+Manual rendered QA required for: multiple-modes, resource-metrics.

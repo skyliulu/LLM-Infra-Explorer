@@ -80,6 +80,8 @@ export const deriveDpAttentionSnapshot = (input = {}) => {
     operation,
     pipeline,
     config,
+    queryLength:1,
+    historyLength:Math.max(1,Math.trunc(Number(input.historyLength)||128)),
     isDp,
     communicationOperation,
     statusKey: `status.${operation}`,
@@ -93,20 +95,20 @@ export const deriveDpAttentionSnapshot = (input = {}) => {
       replicationFactor,
       localRequestFraction: 1 / config.dpSize,
       shapeLatex: isDp
-        ? String.raw`\left[\frac{B}{4},\,S,\,d_c+d_h^R\right]`
-        : String.raw`\left[B,\,S,\,d_c+d_h^R\right]`,
-      formulaLatex: String.raw`M_{\mathrm{KV}}=B\,S\,(d_c+d_h^R)\,b`,
+        ? String.raw`\left[\frac{B}{4},\,T_{\mathrm{KV}},\,d_c+d_h^R\right]`
+        : String.raw`\left[B,\,T_{\mathrm{KV}},\,d_c+d_h^R\right]`,
+      formulaLatex: String.raw`M_{\mathrm{KV}}=B\,T_{\mathrm{KV}}\,(d_c+d_h^R)\,b`,
       totalFormulaLatex: isDp
         ? String.raw`M_{\mathrm{cluster}}=\frac{p}{d}\,M_{\mathrm{KV}}=1\times M_{\mathrm{KV}}`
         : String.raw`M_{\mathrm{cluster}}=p\,M_{\mathrm{KV}}=4\times M_{\mathrm{KV}}`,
     },
     tensors: {
-      inputShapeLatex: isDp ? String.raw`\left[\frac{B}{4},S,H\right]` : String.raw`[B,S,H]`,
-      attentionOutputShapeLatex: isDp ? String.raw`\left[\frac{B}{4},S,H\right]` : String.raw`[B,S,H]`,
+      inputShapeLatex: isDp ? String.raw`\left[\frac{B}{4},1,H\right]` : String.raw`[B,1,H]`,
+      attentionOutputShapeLatex: isDp ? String.raw`\left[\frac{B}{4},1,H\right]` : String.raw`[B,1,H]`,
       moeInputShapeLatex: isDp && moeTopology === 'ep'
         ? String.raw`[T_{\mathrm{expert}},H]`
-        : String.raw`[B,S,H]`,
-      finalShapeLatex: isDp ? String.raw`\left[\frac{B}{4},S,H\right]` : String.raw`[B,S,H]`,
+        : String.raw`[B,1,H]`,
+      finalShapeLatex: isDp ? String.raw`\left[\frac{B}{4},1,H\right]` : String.raw`[B,1,H]`,
       querySource: 'hidden',
       kvSource: 'hidden',
     },

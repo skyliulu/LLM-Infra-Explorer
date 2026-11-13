@@ -1,0 +1,134 @@
+[
+  {
+    "name": "dpa-light-zh-390",
+    "clientWidth": 375,
+    "documentHeight": 2909,
+    "height": 844,
+    "mathErrors": 0,
+    "pageWidth": 375,
+    "theme": "light",
+    "width": 390,
+    "y": 0
+  },
+  {
+    "name": "dpa-dark-zh-390",
+    "clientWidth": 375,
+    "documentHeight": 2909,
+    "height": 844,
+    "mathErrors": 0,
+    "pageWidth": 375,
+    "theme": "dark",
+    "width": 390,
+    "y": 0
+  },
+  {
+    "name": "dpa-light-en-390",
+    "clientWidth": 375,
+    "documentHeight": 3011,
+    "height": 844,
+    "mathErrors": 0,
+    "pageWidth": 375,
+    "theme": "light",
+    "width": 390,
+    "y": 0
+  },
+  {
+    "name": "dpa-dark-en-390",
+    "clientWidth": 375,
+    "documentHeight": 3011,
+    "height": 844,
+    "mathErrors": 0,
+    "pageWidth": 375,
+    "theme": "dark",
+    "width": 390,
+    "y": 0
+  },
+  {
+    "name": "dpa-light-zh-768",
+    "clientWidth": 753,
+    "documentHeight": 2891,
+    "height": 1024,
+    "mathErrors": 0,
+    "pageWidth": 753,
+    "theme": "light",
+    "width": 768,
+    "y": 0
+  },
+  {
+    "name": "dpa-dark-zh-768",
+    "clientWidth": 753,
+    "documentHeight": 2891,
+    "height": 1024,
+    "mathErrors": 0,
+    "pageWidth": 753,
+    "theme": "dark",
+    "width": 768,
+    "y": 0
+  },
+  {
+    "name": "dpa-light-en-768",
+    "clientWidth": 753,
+    "documentHeight": 2986,
+    "height": 1024,
+    "mathErrors": 0,
+    "pageWidth": 753,
+    "theme": "light",
+    "width": 768,
+    "y": 0
+  },
+  {
+    "name": "dpa-dark-en-768",
+    "clientWidth": 753,
+    "documentHeight": 2986,
+    "height": 1024,
+    "mathErrors": 0,
+    "pageWidth": 753,
+    "theme": "dark",
+    "width": 768,
+    "y": 0
+  },
+  {
+    "name": "dpa-light-zh-1440",
+    "clientWidth": 1425,
+    "documentHeight": 2005,
+    "height": 900,
+    "mathErrors": 0,
+    "pageWidth": 1425,
+    "theme": "light",
+    "width": 1440,
+    "y": 0
+  },
+  {
+    "name": "dpa-dark-zh-1440",
+    "clientWidth": 1425,
+    "documentHeight": 2005,
+    "height": 900,
+    "mathErrors": 0,
+    "pageWidth": 1425,
+    "theme": "dark",
+    "width": 1440,
+    "y": 0
+  },
+  {
+    "name": "dpa-light-en-1440",
+    "clientWidth": 1425,
+    "documentHeight": 2005,
+    "height": 900,
+    "mathErrors": 0,
+    "pageWidth": 1425,
+    "theme": "light",
+    "width": 1440,
+    "y": 0
+  },
+  {
+    "name": "dpa-dark-en-1440",
+    "clientWidth": 1425,
+    "documentHeight": 2005,
+    "height": 900,
+    "mathErrors": 0,
+    "pageWidth": 1425,
+    "theme": "dark",
+    "width": 1440,
+    "y": 0
+  }
+]

@@ -8,6 +8,7 @@ import {
   Activity, SlidersHorizontal, BookOpen, Server, Network,
   Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
+import LookupSample from './engram/LookupSample';
 import {
   ENGRAM_DEMO_CONFIG,
   ENGRAM_MAX_STEP,
@@ -676,8 +677,8 @@ const App = () => {
              <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">Vocab</span> {t('hashSize')}</div>
            </div>
 
+           <LookupSample lang={lang}/>
            <div className="flex-1 flex flex-col items-center relative w-full min-w-[700px]">
-
              {/* ======================================================= */}
              {/* [层层下落] 1：Tokenizer 压缩与滑动窗口 */}
              {/* ======================================================= */}

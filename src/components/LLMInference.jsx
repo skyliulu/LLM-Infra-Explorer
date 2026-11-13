@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, CornerDownRight, Network, SlidersHorizontal, Orbit, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveInferenceTensorSnapshot, deriveSamplingDistribution, MODULE, TOTAL_LAYERS } from './llm-inference/model';
+import {chooseSamplingCandidate,samplingDraw} from './llm-inference/numeric-model';
 import { LayerKvOverview, TensorWorkbench } from './llm-inference/TensorWorkbench';
 import KvRepresentation from './llm-inference/KvRepresentation';
 
@@ -112,9 +113,9 @@ const i18n = {
     batchWrite: '整段 Prompt 批量写入',
     singleAppend: '当前 Token 逐层追加',
     layerStack: '每层独立 KV 堆栈',
-    representativeSlice: '代表性张量切片',
+    representativeSlice: '可复算的小模型',numericNote:'合成权重、6词词表；矩阵、候选分布和输出来自同一次计算，不代表真实模型的语言能力。调节采样参数会重新开始，固定随机数让结果可以复现。数值显示经过四舍五入，计算保留原精度。',selectedExpertRows:'仅显示所选专家接收的行，其余行遮罩。',samplingDraw:'按固定随机数选词',
     embeddingLookupTitle: 'Token ID、Embedding 与 Residual Stream',
-    embeddingLookupDesc: '从词表查表得到连续向量；只展示少量维度，标签保留真实形状。',
+    embeddingLookupDesc: '输入 ID 查同一张嵌入表；后续每层的残差来自上一层输出。',
     tokenIds: 'Token ID 行',
     embeddingTable: 'Embedding Table',
     rowLookup: '按行查表',
@@ -125,7 +126,7 @@ const i18n = {
     qkvProjection: '当前层并行投影 Q/K/V；Q/K 再应用 RoPE',
     writeCurrentLayerK: '写入当前层 K Cache',
     writeCurrentLayerV: '写入当前层 V Cache',
-    scoreMatrix: 'Score = QKᵀ',
+    scoreMatrix: 'Scaled Score',
     causalMaskVisible: '上三角位置不可见',
     queryReadsCache: '一行 Query 读取全部历史位置',
     softmax: '逐行 Softmax',
@@ -267,9 +268,9 @@ const i18n = {
     batchWrite: 'Batch-write the full prompt',
     singleAppend: 'Append the current token per layer',
     layerStack: 'Independent KV stack per layer',
-    representativeSlice: 'Representative tensor slice',
+    representativeSlice: 'Reproducible small model',numericNote:'Synthetic weights and a six-token vocabulary. Matrices, candidate probabilities and output share one computation; this is not a trained language model. Sampling changes restart the run; fixed draws make it reproducible. Displayed values are rounded; computation retains full precision.',selectedExpertRows:'Only rows routed to this expert are shown; others are masked.',samplingDraw:'Sample with a fixed draw',
     embeddingLookupTitle: 'Token IDs, Embedding, and Residual Stream',
-    embeddingLookupDesc: 'Look up continuous vectors from the vocabulary; sampled cells preserve the real shape label.',
+    embeddingLookupDesc: 'Input IDs select rows of one embedding table. Later layers receive the previous layer’s residual output.',
     tokenIds: 'Token ID row',
     embeddingTable: 'Embedding Table',
     rowLookup: 'row lookup',
@@ -280,7 +281,7 @@ const i18n = {
     qkvProjection: 'Project Q/K/V in this layer, then apply RoPE to Q/K',
     writeCurrentLayerK: 'Write this layer K cache',
     writeCurrentLayerV: 'Write this layer V cache',
-    scoreMatrix: 'Score = QKᵀ',
+    scoreMatrix: 'Scaled Score',
     causalMaskVisible: 'Upper-triangle positions are unavailable',
     queryReadsCache: 'One query row reads every historical position',
     softmax: 'row Softmax',
@@ -337,35 +338,9 @@ const App = () => {
   const [lang] = useLanguage();
   const t = (k) => i18n[lang][k] ?? k;
 
-  // 根据语言动态提供 Token 与 Prompt 数据
-  const { promptTokens, generatedTokens } = useMemo(() => {
-    if (lang === 'zh') {
-      return {
-        promptTokens: ["人工", "智能", "的", "发展", "将", "会"],
-        generatedTokens: [
-          { token: "带来", probs: [{t: "带来", p: 0.85}, {t: "导致", p: 0.10}, {t: "让", p: 0.05}] },
-          { token: "深远", probs: [{t: "深远", p: 0.72}, {t: "巨大", p: 0.20}, {t: "很多", p: 0.08}] },
-          { token: "的", probs: [{t: "的", p: 0.99}, {t: "地", p: 0.005}, {t: "得", p: 0.005}] },
-          { token: "变革", probs: [{t: "变革", p: 0.65}, {t: "影响", p: 0.30}, {t: "改变", p: 0.05}] },
-          { token: "。", probs: [{t: "。", p: 0.95}, {t: "！", p: 0.03}, {t: "？", p: 0.02}] },
-          { token: "<EOS>", probs: [{t: "<EOS>", p: 0.99}, {t: "\n", p: 0.01}] }
-        ]
-      };
-    } else {
-      return {
-        promptTokens: ["The", " develop", "ment", " of", " AI", " will"],
-        generatedTokens: [
-          { token: " bring", probs: [{t: " bring", p: 0.85}, {t: " cause", p: 0.10}, {t: " let", p: 0.05}] },
-          { token: " profound", probs: [{t: " profound", p: 0.72}, {t: " massive", p: 0.20}, {t: " many", p: 0.08}] },
-          { token: " changes", probs: [{t: " changes", p: 0.99}, {t: " impacts", p: 0.005}, {t: " shifts", p: 0.005}] },
-          { token: " to", probs: [{t: " to", p: 0.65}, {t: " for", p: 0.30}, {t: " in", p: 0.05}] },
-          { token: " society.", probs: [{t: " society.", p: 0.95}, {t: " world.", p: 0.03}, {t: " us.", p: 0.02}] },
-          { token: "<EOS>", probs: [{t: "<EOS>", p: 0.99}, {t: "\n", p: 0.01}] }
-        ]
-      };
-    }
-  }, [lang]);
-
+  const [sampledIds,setSampledIds]=useState([]);
+  const generationLimit=6;
+  const promptTokens=useMemo(()=>lang==='zh' ? ['人工','智能','的','发展','将','会'] : ['The',' develop','ment',' of',' AI',' will'],[lang]);
   // 1. 自动播放只调用同一个单步状态机；暂停后不会再有独立层计时器推进。
   useEffect(() => {
     if (!isPlaying || phase === 'done') return undefined;
@@ -399,6 +374,7 @@ const App = () => {
         setCurrentLayer((layer) => layer + 1);
         setActiveModule(MODULE.attention);
       } else {
+        setSampledIds(ids=>[...ids.slice(0,step),sampledChoice.sourceIndex]);
         setActiveModule(MODULE.lmHead);
       }
     } else if (activeModule === MODULE.lmHead) {
@@ -409,7 +385,7 @@ const App = () => {
       setActiveModule(MODULE.embedding);
       setCurrentLayer(1);
     } else if (activeModule === MODULE.tokenDone && phase === 'decode') {
-      if (step + 1 < generatedTokens.length) {
+      if (step + 1 < generationLimit) {
         setStep((tokenStep) => tokenStep + 1);
         setActiveModule(MODULE.embedding);
         setCurrentLayer(1);
@@ -423,6 +399,7 @@ const App = () => {
 
   const reset = () => {
     setIsPlaying(false);
+    setSampledIds([]);
     setPhase('idle');
     setStep(0);
     setActiveModule(MODULE.idle);
@@ -431,6 +408,7 @@ const App = () => {
 
   const togglePlay = () => {
     if (phase === 'done') {
+      setSampledIds([]);
       setPhase('idle');
       setStep(0);
       setActiveModule(MODULE.idle);
@@ -450,33 +428,27 @@ const App = () => {
 
   const handleTemperatureChange = (event) => {
     setTemperature(parseFloat(event.target.value));
+    reset();
   };
 
   const handleTopKChange = (event) => {
     setTopK(parseInt(event.target.value, 10));
+    reset();
   };
 
   const handleTopPChange = (event) => {
     setTopP(parseFloat(event.target.value));
+    reset();
   };
 
-  // 2. 动态计算带温度的概率 (Temperature Scaling)
-  const currentProbs = activeModule >= MODULE.lmHead ? generatedTokens[step].probs : null;
-  const samplingState = useMemo(() => deriveSamplingDistribution({
-    candidates: currentProbs,
-    temperature,
-    topK,
-    topP,
-  }), [currentProbs, temperature, topK, topP]);
-
   const inferenceState = useMemo(() => deriveInferenceTensorSnapshot({
-    phase,
-    activeModule,
-    currentLayer,
-    step,
-    promptLength: promptTokens.length,
-    modelType,
-  }), [phase, activeModule, currentLayer, step, promptTokens.length, modelType]);
+    phase,activeModule,currentLayer,step,promptLength:promptTokens.length,modelType,
+    tokenIds:[0,1,2,3,4,5,...sampledIds.slice(0,step)],
+  }), [phase,activeModule,currentLayer,step,promptTokens.length,modelType,sampledIds]);
+  const currentProbs=inferenceState.numeric.vocabularyProbabilities.map((p,id)=>({t:promptTokens[id],p}));
+  const samplingState=deriveSamplingDistribution({candidates:currentProbs,temperature,topK,topP});
+  const draw=samplingDraw(step),sampledChoice=chooseSamplingCandidate(samplingState,draw);
+  const generatedTokens=sampledIds.map(id=>({token:promptTokens[id]}));
   const { stageStatus, isLayerStage, layerProgress, positionFormula } = inferenceState;
 
   const renderTokens = (tokens, isInput) => (
@@ -602,7 +574,7 @@ const App = () => {
                 </h2>
                 <LayerKvOverview
                   snapshot={inferenceState}
-                  maxTokens={promptTokens.length + generatedTokens.length - 1}
+                  maxTokens={promptTokens.length + generationLimit - 1}
                   promptLength={promptTokens.length}
                   t={t}
                 />
@@ -626,7 +598,8 @@ const App = () => {
 
               <TensorWorkbench
                 snapshot={inferenceState}
-                sampling={samplingState}
+                sampling={activeModule>=MODULE.lmHead?samplingState:null}
+                draw={draw}
                 sampledToken={activeModule >= MODULE.lmHead ? generatedTokens[step]?.token : null}
                 t={t}
               />
@@ -700,7 +673,7 @@ const App = () => {
                   {/* LM Head 高亮 */}
                   <div className={activeModule >= MODULE.lmHead ? "bg-purple-900/60 text-purple-200 px-1 -mx-1 rounded" : "text-slate-400"}>
                     <div>  <span className="text-slate-500">{t('c_lm1')}</span></div>
-                    <div>  logits = x[-1] @ W_vocab <span className="text-slate-500">{t('c_lm2')}</span></div>
+                    <div>  logits = norm(x[-1]) @ W_vocab <span className="text-slate-500">{t('c_lm2')}</span></div>
                     <div className={activeModule >= MODULE.lmHead ? "text-purple-300 font-bold" : ""}>  logits = logits / temp   <span className="text-slate-500">{t('c_lm3')}</span></div>
                     <div>  probs = softmax(logits)</div>
                     <div>  probs = top_k_filter(probs, top_k)</div>

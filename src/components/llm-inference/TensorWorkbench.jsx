@@ -16,7 +16,7 @@ const palette = {
 const statusClass = {
   active: 'ring-2 ring-offset-1 shadow-md opacity-100',
   passed: 'border-emerald-200 opacity-90',
-  pending: 'opacity-70',
+  pending: 'opacity-90',
 };
 
 const tensorStatusClass = {
@@ -26,7 +26,7 @@ const tensorStatusClass = {
 };
 
 const cellColor = (value, color) => {
-  const alpha = 0.12 + Math.abs(value ?? 0) * 0.42;
+  const alpha = 0.12 + Math.min(1,Math.abs(value ?? 0)) * 0.42;
   return `rgba(${palette[color].rgb},${alpha})`;
 };
 
@@ -65,7 +65,7 @@ const TensorMatrix = ({
             <div
               key={`${rowIndex}-${colIndex}`}
               aria-label={isMasked ? `${label} masked row ${rowIndex + 1} column ${colIndex + 1}` : `${label} row ${rowIndex + 1} column ${colIndex + 1}`}
-              className={`${compact ? 'h-3.5' : 'h-5'} min-w-0 rounded-[3px] border text-center font-mono text-[7px] leading-5 transition ${isMasked ? 'border-slate-200 bg-[repeating-linear-gradient(135deg,#e2e8f0_0,#e2e8f0_2px,#f8fafc_2px,#f8fafc_5px)] text-transparent' : 'border-white/80 text-slate-700'} ${isSelected ? 'ring-2 ring-amber-400 ring-offset-1' : ''}`}
+              className={`${compact ? 'h-3.5' : 'h-5'} min-w-0 rounded-[3px] border text-center font-mono text-[9px] leading-5 transition ${isMasked ? 'border-slate-200 bg-[repeating-linear-gradient(135deg,#e2e8f0_0,#e2e8f0_2px,#f8fafc_2px,#f8fafc_5px)] text-transparent' : 'border-white/80 text-slate-700'} ${isSelected ? 'ring-2 ring-amber-400 ring-offset-1' : ''}`}
               style={isMasked ? undefined : { backgroundColor: cellColor(value, color) }}
               title={isMasked ? 'masked' : value.toFixed(2)}
             >
@@ -197,12 +197,12 @@ const SamplingCurve = ({ sampling, t }) => {
   );
 };
 
-export const TensorWorkbench = ({ snapshot, sampling, sampledToken, t }) => {
+export const TensorWorkbench = ({ snapshot, sampling, sampledToken, draw, t }) => {
   const { tensors, attention, moe, stageStatus } = snapshot;
   const seqShape = snapshot.isPrefill ? String.raw`L\times d` : String.raw`1\times d`;
   const headShape = snapshot.isPrefill ? String.raw`L\times d_h` : String.raw`1\times d_h`;
   const scoreShape = snapshot.isPrefill ? String.raw`L\times L` : String.raw`1\times L_{\mathrm{cache}}`;
-  const tokenLabels = Array.from({ length: snapshot.displaySequenceRows }, (_, index) => snapshot.isPrefill ? `t${index + 1}` : 't');
+  const tokenLabels = snapshot.tokenIds.map(id=>`ID ${id}`);
 
   return (
     <div data-testid="tensor-workbench" className="relative space-y-3 rounded-xl border-2 border-dashed border-indigo-200 bg-indigo-50/30 p-3">
@@ -214,6 +214,7 @@ export const TensorWorkbench = ({ snapshot, sampling, sampledToken, t }) => {
         <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[9px] font-bold text-amber-700">Layer {snapshot.layerProgress}</span>
       </div>
 
+      <p className="text-[11px] leading-relaxed text-slate-600"><MathFormula>{String.raw`d=d_h=4,\quad d_{\mathrm{ff}}=6,\quad |\mathcal V|=6`}</MathFormula> · {t('numericNote')}</p>
       <StageShell status={stageStatus.embedding} statusLabel={t(`status_${stageStatus.embedding}`)} title={t('embeddingLookupTitle')} subtitle={t('embeddingLookupDesc')} color="indigo" testId="tensor-stage-embedding">
         <div className="grid items-center gap-2 sm:grid-cols-[minmax(80px,.7fr)_auto_minmax(100px,1fr)_auto_minmax(120px,1.1fr)]">
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-2">
@@ -223,7 +224,7 @@ export const TensorWorkbench = ({ snapshot, sampling, sampledToken, t }) => {
           <FlowArrow active={stageStatus.embedding === 'active'} />
           <TensorMatrix id="embedding-table" label={t('embeddingTable')} shape={String.raw`|\mathcal V|\times d`} values={tensors.embeddingTable} color="slate" status={stageStatus.embedding} compact />
           <FlowArrow label={t('rowLookup')} active={stageStatus.embedding === 'active'} />
-          <TensorMatrix id="residual-x" label={t('residualStream')} shape={seqShape} values={tensors.residual} color="indigo" status={stageStatus.embedding} />
+          <TensorMatrix id="residual-x" label={t('residualStream')} shape={seqShape} values={tensors.embedding} color="indigo" status={stageStatus.embedding} />
         </div>
       </StageShell>
 
@@ -238,11 +239,12 @@ export const TensorWorkbench = ({ snapshot, sampling, sampledToken, t }) => {
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
           <TensorMatrix id="tensor-q" label="Q · RoPE" shape={headShape} values={tensors.q} color="blue" status={stageStatus.attention} />
-          <TensorMatrix id="tensor-k" label="K · RoPE" shape={headShape} values={tensors.k} color="cyan" status={stageStatus.attention} note={t('writeCurrentLayerK')} />
-          <TensorMatrix id="tensor-v" label="V" shape={headShape} values={tensors.v} color="emerald" status={stageStatus.attention} note={t('writeCurrentLayerV')} />
+          <TensorMatrix id="tensor-k" label="K · RoPE" shape={snapshot.isPrefill?headShape:String.raw`L_{\mathrm{cache}}\times d_h`} values={tensors.k} color="cyan" status={stageStatus.attention} note={t('writeCurrentLayerK')} />
+          <TensorMatrix id="tensor-v" label="V" shape={snapshot.isPrefill?headShape:String.raw`L_{\mathrm{cache}}\times d_h`} values={tensors.v} color="emerald" status={stageStatus.attention} note={t('writeCurrentLayerV')} />
         </div>
         <div className="my-2 flex items-center justify-center"><ArrowDown size={15} className={stageStatus.attention === 'active' ? 'text-blue-500' : 'text-slate-300'} /></div>
-        <div className="grid items-center gap-2 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
+        <div className="my-2 text-center text-[11px] text-slate-600"><MathFormula>{String.raw`S=QK^{\top}/\sqrt{d_h},\quad P=\mathrm{softmax}(S),\quad C=PV`}</MathFormula></div>
+        <div className="grid items-center gap-2 2xl:grid-cols-[1fr_auto_1fr_auto_1fr]">
           <TensorMatrix id="attention-score" label={t('scoreMatrix')} shape={scoreShape} values={attention.scores} mask={attention.mask} color="amber" status={stageStatus.attention} note={snapshot.isPrefill ? t('causalMaskVisible') : t('queryReadsCache')} />
           <FlowArrow label={t('softmax')} active={stageStatus.attention === 'active'} />
           <TensorMatrix id="attention-probability" label={t('probabilityMatrix')} shape={scoreShape} values={attention.probabilities} mask={attention.mask} color="purple" status={stageStatus.attention} />
@@ -258,16 +260,16 @@ export const TensorWorkbench = ({ snapshot, sampling, sampledToken, t }) => {
         {snapshot.modelType === 'dense' ? (
           <div className="space-y-2">
             <div className="grid items-center gap-2 sm:grid-cols-[1fr_auto_1fr_auto_1.2fr]">
-              <TensorMatrix id="ffn-input" label="Norm(X)" shape={seqShape} values={tensors.residual} color="slate" status={stageStatus.ffn} />
+              <TensorMatrix id="ffn-input" label="Norm(X)" shape={seqShape} values={tensors.ffnInput} color="slate" status={stageStatus.ffn} />
               <FlowArrow label={<MathFormula>{String.raw`\times`}</MathFormula>} active={stageStatus.ffn === 'active'} />
-              <TensorMatrix id="ffn-up-weight" label="W_up" shape={String.raw`d\times 4d`} values={tensors.ffnUpWeight} color="blue" status={stageStatus.ffn} compact />
+              <TensorMatrix id="ffn-up-weight" label="W_up" shape={String.raw`d\times d_{\mathrm{ff}}`} values={tensors.ffnUpWeight} color="blue" status={stageStatus.ffn} compact />
               <FlowArrow label="GELU" active={stageStatus.ffn === 'active'} />
-              <TensorMatrix id="ffn-hidden" label={t('expandedHidden')} shape={snapshot.isPrefill ? String.raw`L\times 4d` : String.raw`1\times 4d`} values={tensors.ffnHidden} color="amber" status={stageStatus.ffn} />
+              <TensorMatrix id="ffn-hidden" label={t('expandedHidden')} shape={snapshot.isPrefill ? String.raw`L\times d_{\mathrm{ff}}` : String.raw`1\times d_{\mathrm{ff}}`} values={tensors.ffnHidden} color="amber" status={stageStatus.ffn} />
             </div>
             <div className="grid items-center gap-2 sm:grid-cols-[1.2fr_auto_1fr_auto_1fr]">
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-center text-[9px] font-bold text-amber-800">{t('reuseExpandedHidden')}</div>
               <FlowArrow label={<MathFormula>{String.raw`\times`}</MathFormula>} active={stageStatus.ffn === 'active'} />
-              <TensorMatrix id="ffn-down-weight" label="W_down" shape={String.raw`4d\times d`} values={tensors.ffnDownWeight} color="blue" status={stageStatus.ffn} compact />
+              <TensorMatrix id="ffn-down-weight" label="W_down" shape={String.raw`d_{\mathrm{ff}}\times d`} values={tensors.ffnDownWeight} color="blue" status={stageStatus.ffn} compact />
               <FlowArrow active={stageStatus.ffn === 'active'} />
               <TensorMatrix id="ffn-output" label={t('ffnOutput')} shape={seqShape} values={tensors.ffnOutput} color="indigo" status={stageStatus.ffn} />
             </div>
@@ -288,11 +290,11 @@ export const TensorWorkbench = ({ snapshot, sampling, sampledToken, t }) => {
             <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-2">
               <div className="mb-2 text-[9px] font-bold text-amber-800">{t('selectedExpertWeights')} E{moe.selectedExpert}</div>
               <div className="grid items-center gap-2 sm:grid-cols-[1fr_auto_1.1fr_auto_1fr]">
-                <TensorMatrix id="expert-up-weight" label={`E${moe.selectedExpert} · W_up`} shape={String.raw`d\times 4d`} values={tensors.expertUpWeight} color="amber" status={stageStatus.ffn} compact />
+                <TensorMatrix id="expert-up-weight" label={`E${moe.selectedExpert} · W_up`} shape={String.raw`d\times d_{\mathrm{ff}}`} values={tensors.expertUpWeight} color="amber" status={stageStatus.ffn} compact />
                 <FlowArrow label={t('expertActivation')} active={stageStatus.ffn === 'active'} />
-                <TensorMatrix id="expert-hidden" label={t('expertHidden')} shape={snapshot.isPrefill ? String.raw`L\times 4d` : String.raw`1\times 4d`} values={tensors.ffnHidden} color="amber" status={stageStatus.ffn} />
+                <TensorMatrix id="expert-hidden" label={t('expertHidden')} shape={snapshot.isPrefill ? String.raw`L\times d_{\mathrm{ff}}` : String.raw`1\times d_{\mathrm{ff}}`} values={tensors.expertHidden} mask={tensors.expertHidden.map((row,r)=>row.map(()=>!moe.routes[r]?.topK.includes(moe.selectedExpert)))} color="amber" status={stageStatus.ffn} note={t('selectedExpertRows')} />
                 <FlowArrow active={stageStatus.ffn === 'active'} />
-                <TensorMatrix id="expert-down-weight" label={`E${moe.selectedExpert} · W_down`} shape={String.raw`4d\times d`} values={tensors.expertDownWeight} color="teal" status={stageStatus.ffn} compact />
+                <TensorMatrix id="expert-down-weight" label={`E${moe.selectedExpert} · W_down`} shape={String.raw`d_{\mathrm{ff}}\times d`} values={tensors.expertDownWeight} color="teal" status={stageStatus.ffn} compact />
               </div>
             </div>
             <div className="flex items-center justify-center gap-1 text-[9px] font-semibold text-teal-700"><GitMerge size={13} />{t('weightedExpertMerge')}<ArrowRight size={12} /><MathFormula>{seqShape}</MathFormula></div>
@@ -318,7 +320,7 @@ export const TensorWorkbench = ({ snapshot, sampling, sampledToken, t }) => {
             <div><MathFormula>{String.raw`P=${(sampling?.topP ?? 0.9).toFixed(1)}`}</MathFormula></div>
           </div>
           <SamplingCurve sampling={sampling} t={t} />
-          <div className="flex items-center justify-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-700"><Sparkles size={12} />{sampledToken ?? t('sampleNext')}</div>
+          <div className="flex items-center justify-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-700"><Sparkles size={12} /><span>{sampledToken ?? t('sampleNext')}<small className="block text-[10px]">{t('samplingDraw')} <MathFormula>{`u=${draw}`}</MathFormula></small></span></div>
         </div>
         <div className="mt-2 flex items-center justify-center gap-1 text-[9px] font-semibold text-indigo-600"><CornerDownRight size={13} />{t('feedbackToDecode')}</div>
       </StageShell>

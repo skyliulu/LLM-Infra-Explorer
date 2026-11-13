@@ -1,0 +1,8 @@
+
+> ai-infra-viz@0.1.0 check:quantization
+> node scripts/check-quantization.mjs && node scripts/check-sglang-quantization.mjs && node scripts/check-fp4-cache.mjs
+
+Quantization: 192 numeric combinations; 1080 lifecycle snapshots; FP8 codebook, rounding, offline algorithms, KV commit/scale identity, capacity and i18n passed.
+BF16: exact code round-trip, ties-to-even, source rounding and independent primer passed.
+SGLang: 462 snapshots passed; versioned deployment paths, load-once weights, activation scales, causal attention, fixed KV scales, reservation/write lifetime and i18n.
+FP4 cache: codebook, ties, packing, zero blocks, group isolation and byte budgets passed.

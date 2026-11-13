@@ -59,4 +59,15 @@ assert.ok(!componentSource.includes('min-w-[760px]'), 'legacy oversized canvas w
 assert.ok(componentSource.includes("mode === 'localMatrix'"), 'returned DP shards use a visible matrix encoding');
 assert.ok(componentSource.includes("tReturnedOutput"), 'returned matrices keep an explicit semantic label');
 
-console.log('DP Attention model checks passed.');
+for (const mode of ['dp', 'tp']) {
+  const short = deriveDpAttentionSnapshot({ mode, step: 2, historyLength: 128 });
+  const long = deriveDpAttentionSnapshot({ mode, step: 2, historyLength: 1024 });
+  assert.equal(short.queryLength, 1);
+  assert.equal(long.queryLength, 1);
+  assert.equal(long.historyLength / short.historyLength, 8);
+  assert.deepEqual(long.tensors, short.tensors, 'longer KV history does not expand current Decode activations');
+  assert.equal(long.cache.replicationFactor, short.cache.replicationFactor);
+  assert.ok(long.cache.shapeLatex.includes('T_{\\mathrm{KV}}'));
+  assert.ok(long.tensors.inputShapeLatex.includes('1,H'));
+}
+console.log('DP Attention model and independent Decode query/history checks passed.');

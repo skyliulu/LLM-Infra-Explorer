@@ -1,0 +1,13 @@
+
+> ai-infra-viz@0.1.0 check:sparse
+> node scripts/check-sparse-attention.mjs
+
+PASS 1416 macro execution snapshots: scan, gather, scores, normalization, partial sums and final outputs.
+PASS 812 sequence steps: all positions, causal cache, varying queries, output-before-advance latest trace and final stop.
+PASS 12288 sparse-attention snapshots; causal publication, residency, independent caches, Top-K, weighted compression, joint attention, i18n and LaTeX.
+PASS 168 canvas navigation / shared baseline cases; focus isolation, connected branches, short-history overhead, bilingual content.
+PASS 108 resource estimates; cache/read accounting, capacity inversion, budget monotonicity, Top-K isolation and DSA index overhead.
+PASS simultaneous benefit direction, good/bad/unchanged semantics, short-history costs and capacity-only budget changes.
+PASS 192 explorer cases: full/resident reference, coverage partition, trends, trace identity, sort isolation and Top-K invariants.
+PASS 338 matrix traces: full shapes, source identity, exact gathered values/weights, omission accounting and query/cache independence.
+PASS independent history provenance focus in all five modes

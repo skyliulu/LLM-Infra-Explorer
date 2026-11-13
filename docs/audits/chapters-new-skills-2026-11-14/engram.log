@@ -1,0 +1,5 @@
+
+> ai-infra-viz@0.1.0 check:engram
+> node scripts/check-engram.mjs
+
+Engram checks passed (100 canonical lifecycle states across inference and training modes).

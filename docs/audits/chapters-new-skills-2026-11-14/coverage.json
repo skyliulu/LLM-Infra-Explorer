@@ -1,0 +1,92 @@
+{
+  "assessmentOnly": true,
+  "reviewedCommit": "455137f46baefc6a06f99ebb82feb15fbbf4498f",
+  "chapters": [
+    "llm",
+    "parallel",
+    "flash",
+    "flashdecode",
+    "sparseattn",
+    "linearattn",
+    "quantization",
+    "radixcache",
+    "speculative",
+    "engram",
+    "cachearch",
+    "dpattention"
+  ],
+  "visualScope": "Chinese/light desktop first screens; targeted LLM, Flash, Engram, DPA; Engram dark spot-check",
+  "modelChecks": [
+    {
+      "name": "llm",
+      "exitCode": 0
+    },
+    {
+      "name": "parallel",
+      "exitCode": 0
+    },
+    {
+      "name": "flash",
+      "exitCode": 0
+    },
+    {
+      "name": "sparse",
+      "exitCode": 0
+    },
+    {
+      "name": "cachearch",
+      "exitCode": 0
+    },
+    {
+      "name": "flashdecode",
+      "exitCode": 0
+    },
+    {
+      "name": "speculative",
+      "exitCode": 1
+    },
+    {
+      "name": "quantization",
+      "exitCode": 0
+    },
+    {
+      "name": "engram",
+      "exitCode": 0
+    },
+    {
+      "name": "radix",
+      "exitCode": 0
+    },
+    {
+      "name": "dpa",
+      "exitCode": 0
+    }
+  ],
+  "noIndependentNpmCheck": [
+    "linearattn"
+  ],
+  "deployment": {
+    "run": "https://github.com/skyliulu/LLM-Infra-Explorer/actions/runs/43458667510",
+    "status": "success",
+    "directPublicBrowserCheck": "timed out; no pixel acceptance claimed"
+  },
+  "screenshots": [
+    "cachearch-light.jpg",
+    "dpattention-light.jpg",
+    "engram-gate-dark.jpg",
+    "engram-gate-light.jpg",
+    "engram-light.jpg",
+    "flash-light.jpg",
+    "flash-v1-backward-light.jpg",
+    "flash-v3-tail-light.jpg",
+    "flashdecode-light.jpg",
+    "linearattn-light.jpg",
+    "llm-context-values-light.jpg",
+    "llm-light.jpg",
+    "parallel-light.jpg",
+    "quantization-light.jpg",
+    "radixcache-light.jpg",
+    "sparseattn-light.jpg",
+    "speculative-light.jpg"
+  ]
+}

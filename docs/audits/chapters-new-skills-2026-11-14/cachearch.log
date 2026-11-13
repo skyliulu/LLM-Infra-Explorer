@@ -1,0 +1,10 @@
+
+> ai-infra-viz@0.1.0 check:cachearch
+> node scripts/check-cache-architecture.mjs && node scripts/check-ced-execution.mjs && node scripts/check-hierarchical-indexer.mjs && node scripts/check-ced-session.mjs
+
+Cache architecture: 480 snapshots; owners, index sources, odd groups, record bounds, budgets and CED work passed.
+Business comparisons: phase, short prompts, replay bounds and resource units passed.
+CED technical flow: global/full versus local/tail positions, no decode bypass, inspector copy parity passed.
+PASS 132 execution snapshots: causality, retained history, single allocation, decoder work and final readiness
+Hierarchical indexer: 400 snapshots + block-selection invariants passed.
+PASS 363 CED session snapshots: pairing, immutable prefix replay, load-before-read, bounded windows, persistence, completion and bilingual coverage

@@ -1,0 +1,397 @@
+推测解码原理可视化
+
+调整候选配置，观察验证后实际接受的 Token、KV 和输出速度
+
+EAGLE-2
+DSpark
+解码效率对比
+
+两条路径都从 Target 已生成的 predict 开始。每个周期按实际接受结果推进；点选周期可查看同一轮的内部过程。
+
+实验参数 · EAGLE-2
+SGLang · 运行时配置
+Draft 展开步数
+3
+--speculative-num-steps
+每轮向前推测多少步
+Top-k 展开宽度
+2
+--speculative-eagle-topk
+每步展开多少个候选分支
+Target 验证容量
+8
+--speculative-num-draft-tokens
+一次最多送入 Target 的节点数（含锚点）
+
+固定教学样例与计时条件；接受率由验证结果统计。
+
+累计接受率
+—
+接受 / 送验 Draft
+— / —
+平均每轮新增
+—
+播放后，完成验证即可看到接受率
+统计口径
+共同起点 · 已有 Target 锚点: Large models can predict
+0.0 / 8 · Target 单 Token 时间单位
+标准自回归
+0 Token
+1
+2
+3
+4
+5
+6
+7
+8
+尚未提交新 Token
+当前推测方案 · EAGLE-2
+0 Token
+轮 1
+轮 2
+轮 3
+轮 4
+Draft
+Target 验证
+接受 / 提交
+尚未提交新 Token
+等待开始 · 输出持平
+正确性原理
+
+为什么猜错也不影响结果？Draft 只提出候选，Target 决定接受或修正。
+
+每次选最可能的词：猜错了就截断
+
+延续同一句话，看一次独立的验证例子。Draft 的猜测还不算最终输出。
+
+Large models can predict …
+Draft 先猜
+the
+future
+many
+different
+让 Target 验证
+
+点一下验证：哪些词能留下？猜错位置和后面的词会怎样？
+
+所以，Draft 猜错只会白做一些工作，不会把错词混进最终输出。这里使用与 Target 相同的贪心选择规则。
+
+Target 的概率从哪里来？
+上下文 + Draft 候选
+↓ Target：Transformer → LM Head → logits
+↓ Softmax → 每个位置的全词表概率
+
+概率由 Target 自己前向算出，不是 Draft 估计。取出候选词那一项，再取对数，就是它的 log probability。
+
+读取此位置的输出	评估下一个候选
+… predict	→ the
+… predict the	→ future
+… predict the future	→ many
+… predict the future many	→ different
+
+这些行属于同一次 Target 前向，不是逐行调用模型。
+
+预测 the 时只能看至 predict；预测 future 时只能看至 the。因果 Mask 禁止偷看正在预测的词和更后面的词。
+
+候选已经给出，所以多个位置能一起打分。省下的是多次串行调用，不是跳过 Target 的计算。
+
+按概率选词：多了减掉，少了补回
+
+只看同一位置的 A、B、C 三个候选。Target 想要的概率，才是最终标准。
+
+Token	Target 想要	Draft 猜测	直接采用
+A	70%	60%
+60%
+
+B	20%	20%
+20%
+
+C	10%	20%
+20%
+看看怎样纠正
+
+Draft 把 C 猜得太多，把 A 猜得太少。直接采用 Draft，输出概率就会偏。
+
+保证的是每个词出现的概率，不是每次抽到同一个词，也不是凑满固定次数的配额。
+
+这个 Token 最后怎么决定接受？
+查看候选概率
+A
+B
+C
+C	概率	log probability
+Target	10%	-2.303
+Draft	20%	-1.609
+
+Draft 概率更高：按 Target / Draft 的概率比接受，不是直接取消。
+
+这个候选被保留的概率: 50%
+
+log probability 是概率的自然对数，不是原始 logits。两个模型的原始 logits 不能直接比大小。
+
+试一次抽样
+想看数学依据？展开接受与补采样公式
+
+两个例子独立于下方算法播放；用于解释共同原理，不是额外的真实模型运行。
+
+协作验证与实现
+
+具体怎样运行？左侧看 Draft–Target 与 KV 的交互，右侧看算法轨迹，下方代码跟随同一轮执行。
+
+模型关系总览
+Target 原模型
+𝜃
+𝑇
+θ
+T
+	​
+
+E
+Transformer 层堆叠
+𝐿
+𝑇
+L
+T
+	​
+
+LM
+
+完整原权重 · 候选带正确位置与 Mask 穿过所有层
+
+特征 / 锚点 → Draft
+候选 + Mask → Target
+EAGLE-2
+𝜃
+𝐷
+θ
+D
+	​
+
+1. Target 特征
+ℎ
+𝑡
+𝑇
+h
+t
+T
+	​
+
+2. Token Embedding
+𝐸
+𝑇
+E
+T
+	​
+
+3. 特征融合 / 投影
+𝑊
+𝑓
+∈
+𝑅
+2
+𝑑
+×
+𝑑
+W
+f
+	​
+
+∈R
+2d×d
+4. 一层自回归 Decoder
+𝐿
+𝐷
+=
+1
+L
+D
+	​
+
+=1
+5. 共享 LM Head
+𝑊
+v
+o
+c
+a
+b
+∈
+𝑅
+𝑑
+×
+𝑉
+W
+vocab
+	​
+
+∈R
+d×V
+6. 选取 / Mask / 调度
+共享冻结权重
+Draft 权重
+Target KV
+未分配
+已有 Prefix · 3 → 3
+1
+predict
+2
+—
+3
+—
+4
+—
+5
+—
+6
+—
+7
+—
+8
+—
+
+按节点 ID 选取接受路径并压紧，其余回收。映射左侧是从 1 起算的本轮输入编号，右侧是从 0 起算的新 Prefix 索引。
+
+本轮锚点的 KV 在此 Target 验证中生成: predict
+Draft 上下文状态 · 3
+
+由 Target 特征建立 Draft 自己的上下文 KV；临时树分支不冒充 Target KV。后续轮按已接受前缀同步。
+
+为什么可能更快
+
+用较少的 Target 串行前向提交多个 Token。改变步数、宽度或块长，对照实际采用的候选与每轮新增输出；更多候选也会增加 Draft 和验证开销。
+
+算法过程 · EAGLE-2
+轮
+1
+2
+3
+4
+predict
+本轮接受率
+—
+接受 / 送验 Draft
+— / —
+本轮新增 Token
+—
+播放后，完成验证即可看到接受率
+统计口径
+教学阶段 0/8 · 准备开始
+
+阶段是教学操作；EAGLE 的展开深度与 DSpark 的顺序位置单独标出。
+
+动态候选树
+𝑣
+𝑖
+=
+∏
+𝑗
+∈
+p
+a
+t
+h
+(
+𝑖
+)
+𝑞
+𝑗
+v
+i
+	​
+
+=∏
+j∈path(i)
+	​
+
+q
+j
+	​
+
+
+点击节点查看祖先路径与 Mask 行；灰色占位尚未生成。每层扩展来自上一层的 Top-k 选择；窄屏可横向滚动查看旁支。
+
+predict
+Target 锚点
+root
+···
+待生成
+n1
+···
+待生成
+n2
+···
+待生成
+n3
+···
+待生成
+n4
+···
+待生成
+n5
+···
+待生成
+n6
+···
+待生成
+n7
+···
+待生成
+n8
+···
+待生成
+n9
+···
+待生成
+n10
+祖先可见 Mask
+
+行是 Query，列是 Key；保留 Prefix 另行全部可见。同层节点位置相同，兄弟分支不可互看。
+
+选取候选后生成 Mask
+
+Target 贪心验证
+
+本轮尚未验证；最终接受率与输出在相应阶段出现。
+
+本轮新增输出
+尚未提交新 Token
+执行步骤与代码 · EAGLE-2
+
+选择步骤，同步查看上方画布。这里是对应操作的简化伪代码，不是可直接运行的程序。
+
+步骤预览 · 尚未执行
+1. Draft 按层展开 · 深度 1
+2. Draft 按层展开 · 深度 2
+3. Draft 按层展开 · 深度 3
+4. 路径分数重排
+5. 预留 KV / 构造 Mask
+6. Target 一次块前向
+7. 按路径判断接受
+8. 提交并压紧 KV
+本轮完成
+
+从上一层选出要继续展开的父节点，调用轻量 Draft 生成子候选。不是一次就生成整棵树。
+
+parents = top_k(frontier, k)
+children = draft.forward(parents)
+tree.add(children)
+本步数据 · 已知锚点
+predict
+展开完整伪代码
+演示边界与参考
+
+固定教学数据与归一化计时，不运行真实模型，也不是性能基准。主轨迹为贪心验证；独立采样实验说明分布一致性。
+
+EAGLE-2 原论文
+动态树与祖先 Mask
+SGLang 参数说明
+配置字段与约束
+严格推测采样论文
+接受规则与残差分布
+更多边界说明
+继续学习
+Engram →
+相关分支
+LLM Inference
+Radix HiCache

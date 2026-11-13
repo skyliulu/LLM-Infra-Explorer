@@ -92,7 +92,7 @@ const i18n = {
     stage_v3Score: 'WGMMA score consumers',
     stage_v3Softmax: 'Softmax warpgroup',
     stage_v3Output: 'WGMMA output consumer',
-    stage_v3Commit: 'TMA 提交 O / LSE',
+    stage_v3Commit: '等待后提交 O / LSE',
     stage_v3ProducerBwd: 'TMA 预取反向 tile',
     stage_v4High: '高位 Q tile 流水线',
     stage_v4Low: '低位 Q tile 流水线',
@@ -179,13 +179,15 @@ const i18n = {
     scheduleV3: 'TMA / WGMMA warp specialization',
     scheduleV4: 'TMEM + 2-CTA MMA + DSMEM',
     pipelineTitle: '真实计算流水线',
-    pipelineHint: '横向位置代表时间；不同泳道的重叠表示并行执行。当前步骤只高亮一个可检查操作。',
+    dependencies:'所需数据已就绪',waitingFor:'等待完成事件',pipelineHint: '横向为示意时间，重叠表示可并行的工作；单步只选择一个操作。V3 展开同一 Q 块的两个 KV 块，K/V 分别就绪，最后 PV 完成后才提交。其他版本展示代表性迭代。',
     implementationTitle: '内核级执行证据',
     implementationTag: 'engine pseudocode',
     inspectorTitle: '当前版本的设计差异',
     commonBackbone: '共同数学骨架',
     commonBackboneDesc: 'V1–V4 都计算精确 Attention。版本升级没有改变输出定义，改变的是循环顺序、工作划分、片上驻留和流水线调度。',
     observe: '画布观察点',
+    standardBackwardObserve:'直接读取前向保存的概率矩阵 P，依次计算 dV、dP、dS 与 dQ/dK，再写回梯度；这一基线保留完整 P。',
+    backwardObserve:'从保存的前向状态恢复概率，再计算 dV、dP、dS 和 dQ/dK。追踪同一组 Q/KV 块，区分片上累积与最终梯度写回。',
     boundary: '能力边界',
     currentStage: '当前阶段',
     variables: '实时维度',
@@ -193,7 +195,7 @@ const i18n = {
     standardBoundary: '这里的 Standard 是教学用未融合三-kernel 基线；现代框架可能自动选择融合 SDPA，因此不能把该流量当成所有标准 API 的实际表现。',
     v1Summary: 'V1：用分块与在线 Softmax 消除完整 S/P 的 HBM 物化。',
     v1Observe: '注意 KV 外循环：每个 K/V tile 只加载一次，但输出与在线统计量会随不同 KV tile 反复从 HBM 取回和写回。',
-    v1Boundary: '展示前向 Algorithm 1 的数据依赖；具体 block size 与寄存器分配取决于 kernel 和 GPU。',
+    v1Boundary: '前向保留在线归一化；反向先重建 P，再生成 dP、dS 和 dQ/dK。这里是代表性 tile 依赖，不是特定 GPU 的计时轨迹。',
     v2Summary: 'V2：重排循环与 GPU 工作划分，让长序列也能产生足够 CTA，并以 split-Q 避免 warp 间归约。',
     v2Observe: 'Q tile 由 CTA 持有，K/V 逐块流入；每个 warp 拥有不同 Q 行和对应 O 行，不再合并 split-K 的部分输出。',
     v2Boundary: '核心优化面向 A100 级执行模型；流量接近 V1 并不意味着吞吐相同。V2 的主要收益来自占用率、非矩阵 FLOPs 与通信。',
@@ -257,7 +259,7 @@ const i18n = {
     op_loadBackward: '加载 Q/K/V/O/dO/LSE',
     op_recomputeS: '重计算 S',
     op_recomputeP: '由 LSE 重建 P',
-    op_dvdk: '计算 dV / dK',
+    op_dvdp: '计算 dV / dP',op_dqdk:'使用 dS 计算 dQ / dK',stage_bwdGradInput:'先生成 dV 与 dP',
     op_atomicGrad: '累加并写回梯度',
     op_assignQ: '分配 Q-row CTA',
     op_splitQQK: 'Split-Q：各 warp 计算 score',
@@ -269,14 +271,14 @@ const i18n = {
     op_gradMma: '五个分块 MMA 链',
     op_atomicDQ: '原子累加 dQ',
     op_writeGrad: '写回 dK / dV',
-    op_tmaKV0: 'TMA 预取 KV tile 0',
+    op_tmaK0:'TMA K0 · 发布可读',op_tmaV0:'TMA V0 · 发布可读',
     op_wgmmaQK0: 'WGMMA score tile 0',
-    op_tmaKV1: 'TMA 预取 KV tile 1',
+    op_tmaK1:'TMA K1 · 发布可读',op_tmaV1:'TMA V1 · 发布可读',
     op_softmax0: 'Softmax tile 0',
     op_wgmmaPV0: 'WGMMA output tile 0',
     op_wgmmaQK1: 'WGMMA score tile 1',
     op_softmax1: 'Softmax tile 1',
-    op_commitO: '提交 O / LSE',
+    op_wgmmaPV1:'WGMMA output tile 1',op_rescaleO:'按新统计量重缩放 O',op_waitPV1:'等待最后 PV 完成',lane_epilogue:'Consumer 等待 / 提交',op_commitO: '提交 O / LSE',
     op_tmaBackward: 'TMA 预取反向输入',
     op_recomputeWgmma: 'WGMMA 重计算 S',
     op_recomputeSoftmax: '重建 P',
@@ -364,7 +366,7 @@ const i18n = {
     stage_v3Score: 'WGMMA score consumers',
     stage_v3Softmax: 'Softmax warpgroup',
     stage_v3Output: 'WGMMA output consumer',
-    stage_v3Commit: 'TMA commit O / LSE',
+    stage_v3Commit: 'Wait, then commit O / LSE',
     stage_v3ProducerBwd: 'TMA prefetch backward tiles',
     stage_v4High: 'High-Q tile pipeline',
     stage_v4Low: 'Low-Q tile pipeline',
@@ -451,13 +453,15 @@ const i18n = {
     scheduleV3: 'TMA / WGMMA warp specialization',
     scheduleV4: 'TMEM + 2-CTA MMA + DSMEM',
     pipelineTitle: 'Real compute pipeline',
-    pipelineHint: 'Horizontal position is time; overlap across lanes means concurrent work. One inspectable operation is highlighted at each step.',
+    dependencies:'Required operands are ready',waitingFor:'Wait for completion',pipelineHint: 'Horizontal position is illustrative time; overlapping lanes can run concurrently. A step selects one operation. V3 unrolls two KV blocks for one Q owner: K/V become ready separately and the last PV finishes before output commit. Other versions show representative iterations.',
     implementationTitle: 'Kernel-level implementation evidence',
     implementationTag: 'engine pseudocode',
     inspectorTitle: 'Design difference in the selected version',
     commonBackbone: 'Shared mathematical backbone',
     commonBackboneDesc: 'V1–V4 all compute exact attention. The output definition is unchanged; loop order, work partitioning, on-chip residency, and pipeline scheduling evolve.',
     observe: 'What to observe',
+    standardBackwardObserve:'Read the full probability matrix P saved by forward, compute dV, dP, dS and dQ/dK, then write gradients back. This baseline retains full P.',
+    backwardObserve:'Recover probabilities from saved forward state, then compute dV, dP, dS and dQ/dK. Follow the same Q/KV tiles and distinguish on-chip accumulation from final gradient write-back.',
     boundary: 'Capability boundary',
     currentStage: 'Current stage',
     variables: 'Live dimensions',
@@ -465,7 +469,7 @@ const i18n = {
     standardBoundary: 'Standard here is an educational unfused three-kernel baseline. Modern frameworks may dispatch fused SDPA, so this traffic must not be read as the behavior of every standard API.',
     v1Summary: 'V1: tiling and online softmax remove full S/P materialization in HBM.',
     v1Observe: 'Notice the KV outer loop: each K/V tile is loaded once, while output and online statistics are repeatedly reloaded and written for different KV tiles.',
-    v1Boundary: 'The canvas follows the forward Algorithm 1 dependency order. Exact block sizes and register allocation depend on the kernel and GPU.',
+    v1Boundary: 'Forward retains online normalization; backward reconstructs P, then produces dP, dS and dQ/dK. This is a representative tile dependency graph, not a measured GPU trace.',
     v2Summary: 'V2: reordered loops and GPU work partitioning create enough CTAs for long sequences and use split-Q to avoid warp reductions.',
     v2Observe: 'A CTA owns a Q tile while K/V stream through it. Each warp owns distinct Q rows and matching O rows, so split-K partial outputs do not need merging.',
     v2Boundary: 'The key design targets an A100-class execution model. Similar HBM bytes do not imply similar throughput: occupancy, non-matmul FLOPs, and communication drive the gain.',
@@ -529,7 +533,7 @@ const i18n = {
     op_loadBackward: 'Load Q/K/V/O/dO/LSE',
     op_recomputeS: 'Recompute S',
     op_recomputeP: 'Rebuild P from LSE',
-    op_dvdk: 'Compute dV / dK',
+    op_dvdp:'Compute dV / dP',op_dqdk:'Use dS for dQ / dK',stage_bwdGradInput:'Produce dV and dP first',
     op_atomicGrad: 'Accumulate and write gradients',
     op_assignQ: 'Assign a Q-row CTA',
     op_splitQQK: 'Split-Q: warps compute scores',
@@ -541,14 +545,14 @@ const i18n = {
     op_gradMma: 'Five tiled MMA chain',
     op_atomicDQ: 'Atomically accumulate dQ',
     op_writeGrad: 'Write dK / dV',
-    op_tmaKV0: 'TMA prefetch KV tile 0',
+    op_tmaK0:'TMA K0 · publish ready',op_tmaV0:'TMA V0 · publish ready',
     op_wgmmaQK0: 'WGMMA score tile 0',
-    op_tmaKV1: 'TMA prefetch KV tile 1',
+    op_tmaK1:'TMA K1 · publish ready',op_tmaV1:'TMA V1 · publish ready',
     op_softmax0: 'Softmax tile 0',
     op_wgmmaPV0: 'WGMMA output tile 0',
     op_wgmmaQK1: 'WGMMA score tile 1',
     op_softmax1: 'Softmax tile 1',
-    op_commitO: 'Commit O / LSE',
+    op_wgmmaPV1:'WGMMA output tile 1',op_rescaleO:'Rescale O with new statistics',op_waitPV1:'Wait for final PV',lane_epilogue:'Consumer wait / commit',op_commitO: 'Commit O / LSE',
     op_tmaBackward: 'TMA prefetch backward inputs',
     op_recomputeWgmma: 'WGMMA recompute S',
     op_recomputeSoftmax: 'Rebuild P',
@@ -575,13 +579,13 @@ const i18n = {
 };
 
 const CODE_BY_OPERATION = {
-  dispatch: 'dispatch(q, k, v)', qk: 'S = gemm(Q, K.T)', writeS: 'hbm.store(S)', readS: 'S_row = hbm.load(S[row])', softmax: 'P_row = row_softmax(S_row)', writeP: 'hbm.store(P_row)', readP: 'P_tile = hbm.load(P[tile])', pv: 'O = gemm(P_tile, V)', writeO: 'hbm.store(O)',
-  loadSaved: 'Q, K, V, P, dO = hbm.load(saved_inputs)', dv: 'dV = gemm(P.T, dO)', dp: 'dP = gemm(dO, V.T)', softmaxBwd: 'dS = softmax_backward(dP, P)', dq: 'dQ = gemm(dS, K)', dk: 'dK = gemm(dS.T, Q)', writeGrads: 'hbm.store(dQ, dK, dV)',
+  dispatch: 'dispatch(q, k, v)', qk: 'S = gemm(Q, K.T) / sqrt(d)', writeS: 'hbm.store(S)', readS: 'S_row = hbm.load(S[row])', softmax: 'P_row = row_softmax(S_row)', writeP: 'hbm.store(P_row)', readP: 'P_tile = hbm.load(P[tile])', pv: 'O = gemm(P_tile, V)', writeO: 'hbm.store(O)',
+  loadSaved: 'Q, K, V, P, dO = hbm.load(saved_inputs)', dv: 'dV = gemm(P.T, dO)', dp: 'dP = gemm(dO, V.T)', softmaxBwd: 'dS = softmax_backward(dP, P)', dq: 'dQ = gemm(dS, K) / sqrt(d)', dk: 'dK = gemm(dS.T, Q) / sqrt(d)', writeGrads: 'hbm.store(dQ, dK, dV)',
   loadKV: 'smem.stage(K[j], V[j])', loadQState: 'Q_i, O_i, m_i, l_i = hbm.load(i)', onlineSoftmax: 'O_i, m_i, l_i = online_softmax_update(...)', writeState: 'hbm.store(O_i, m_i, l_i)', nextQ: 'i = scheduler.next_q_tile()',
-  loadBackward: 'stage(Q, K, V, O, dO, LSE)', recomputeS: 'S = mma(Q, K.T)', recomputeP: 'P = exp(S - LSE)', dvdk: 'dV, dK = tiled_grad_mma(P, dO, dS, Q)', atomicGrad: 'atomic_add(dQ); store(dK, dV)',
+  loadBackward: 'stage(Q, K, V, O, dO, LSE)', recomputeS: 'S = mma(Q, K.T) / sqrt(d)', recomputeP: 'P = exp(S - LSE)', dvdp:'dV = mma(P.T, dO); dP = mma(dO, V.T)', dqdk:'dQ = mma(dS, K) / sqrt(d); dK = mma(dS.T, Q) / sqrt(d)', atomicGrad: 'atomic_add(dQ); store(dK, dV)',
   assignQ: 'cta = grid[batch, head, q_tile]', splitQQK: 'warp_rows = mma(Q_warp, K.T)', leanSoftmax: 'O_tilde, LSE = online_update_unscaled(...)', splitQPV: 'O_warp += mma(P_warp, V)', nextKV: 'pipeline.advance(kv_stage)', writeOLSE: 'hbm.store(O, LSE)',
   assignKV: 'cta = grid[batch, head, kv_tile]', gradMma: 'recompute_QK_then_run_5_mmas()', atomicDQ: 'atomic_add(global_dQ, partial_dQ)', writeGrad: 'hbm.store(dK, dV)',
-  tmaKV0: 'producer.tma_load(kv_stage[0])', wgmmaQK0: 'consumer.wgmma(Q, K0.T)', tmaKV1: 'producer.tma_load(kv_stage[1])', softmax0: 'softmax_wg.update(S0)', wgmmaPV0: 'consumer.wgmma(P0, V0)', wgmmaQK1: 'consumer.wgmma(Q, K1.T)', softmax1: 'softmax_wg.update(S1)', commitO: 'tma_store(O, LSE)',
+  tmaK0:'producer.tma_load(K0); publish_ready(K0)',tmaV0:'producer.tma_load(V0); publish_ready(V0)', wgmmaQK0: 'consumer.wait(K0); S0 = wgmma(Q, K0.T) / sqrt(d)', tmaK1:'producer.tma_load(K1); publish_ready(K1)',tmaV1:'producer.tma_load(V1); publish_ready(V1)', softmax0: 'softmax_wg.update(S0)', wgmmaPV0: 'consumer.wait(P0, V0); wgmma(P0, V0)', wgmmaQK1: 'consumer.wait(K1); S1 = wgmma(Q, K1.T) / sqrt(d)', softmax1: 'softmax_wg.update(S1)', rescaleO:'wait(PV0); rescale(O, old_max, new_max)',wgmmaPV1:'consumer.wgmma(P1, V1); commit()',waitPV1:'consumer.wait_group(PV1)',commitO:'normalize(O); store(O, LSE)',
   tmaBackward: 'producer.tma_load(backward_tiles)', recomputeWgmma: 'wgmma(Q, K.T)  // recompute S', recomputeSoftmax: 'P = exp(S - LSE)', gradWgmma0: 'wgmma_group.run(dV, dP)', gradSoftmax: 'cuda_core.compute(dS)', gradWgmma1: 'wgmma_group.run(dQ, dK)', commitGrad: 'tma_store(dQ, dK, dV)',
   ummaQKH: 'umma_async(Q_high, K.T, tmem.S_high)', softmaxH: 'softmax_wg_high.exp_and_reduce(tmem.S_high)', ummaQKL: 'umma_async(Q_low, K.T, tmem.S_low)', softmaxL: 'softmax_wg_low.exp_and_reduce(tmem.S_low)', ummaPVH: 'umma_async(tmem.P_high, V, tmem.O_high)', correctH: 'correction_wg.conditional_rescale(O_high)', ummaPVL: 'umma_async(tmem.P_low, V, tmem.O_low)', correctL: 'correction_wg.conditional_rescale(O_low)',
   recomputeTranspose: 'umma_async(K, Q.T, tmem.S_T)', storeTmem: 'tmem.alias(S_T, P_T, dP_T, dS_T)', softmaxTile: 'cuda_core.compute(P_T, dS_T)', gradPrevious: 'umma_async(dK_prev, dQ_prev)', twoCtaMma: 'cluster.umma_2cta(operand_A, operand_B)', dsmemExchange: 'cluster.dsmem_exchange(dS_shard)', reduceGrad: 'tmem.reduce_and_store(gradients)',
@@ -720,7 +724,7 @@ function StandardBackwardFlow({ snapshot, t }) {
     { id: 'load', label: t('standardBwdLoad'), operationIds: ['loadSaved'], lastId: 'loadSaved', formula: String.raw`P,Q,K,V,\mathrm{d}O\leftarrow\mathrm{HBM}` },
     { id: 'value', label: t('standardBwdValueGrad'), operationIds: ['dv', 'dp'], lastId: 'dp', formula: String.raw`\mathrm{d}V=P^{\top}\mathrm{d}O,\quad \mathrm{d}P=\mathrm{d}O\,V^{\top}` },
     { id: 'softmax', label: t('standardBwdSoftmax'), operationIds: ['softmaxBwd'], lastId: 'softmaxBwd', formula: String.raw`\mathrm{d}S=P\odot\left(\mathrm{d}P-\operatorname{rowsum}(\mathrm{d}P\odot P)\right)` },
-    { id: 'projection', label: t('standardBwdProjectionGrad'), operationIds: ['dq', 'dk', 'writeGrads'], lastId: 'writeGrads', formula: String.raw`\mathrm{d}Q=\mathrm{d}S K,\quad \mathrm{d}K=\mathrm{d}S^{\top}Q` },
+    { id: 'projection', label: t('standardBwdProjectionGrad'), operationIds: ['dq', 'dk', 'writeGrads'], lastId: 'writeGrads', formula: String.raw`\mathrm{d}Q=\mathrm{d}S K/\sqrt d,\quad \mathrm{d}K=\mathrm{d}S^{\top}Q/\sqrt d` },
   ];
 
   return (
@@ -879,14 +883,14 @@ function BackwardHbmCanvas({ snapshot, config, t }) {
   );
 }
 
-function FlashStageVisual({ visual }) {
+function FlashStageVisual({ visual, operationIds = [], direction }) {
   const formulas = {
     tiles: String.raw`Q_i,\ K_j,\ V_j\ \longrightarrow\ \mathrm{SMEM}`,
     state: String.raw`(O_i,m_i,\ell_i)\ \mathrm{resident}`,
     score: String.raw`S_{ij}=Q_iK_j^{\top}/\sqrt d+M_{ij}`,
-    softmax: String.raw`(m_i,\ell_i,O_i)\leftarrow\operatorname{online\_update}(S_{ij},V_j)`,
+    softmax: direction === 'backward' ? String.raw`\mathrm{d}S=P\odot(\mathrm{d}P-\operatorname{rowsum}(\mathrm{d}P\odot P))` : String.raw`(m_i,\ell_i,O_i)\leftarrow\operatorname{online\_update}(S_{ij},V_j)`,
     output: String.raw`O_i\leftarrow O_i+P_{ij}V_j`,
-    commit: String.raw`\operatorname{store}_{\mathrm{HBM}}(O,\mathrm{LSE})`,
+    commit: direction === 'backward' ? String.raw`\operatorname{accumulate/store}_{\mathrm{HBM}}(\mathrm{d}Q,\mathrm{d}K,\mathrm{d}V)` : String.raw`\operatorname{store}_{\mathrm{HBM}}(O,\mathrm{LSE})`,
     scheduler: String.raw`\mathrm{CTA}_i\ \owns\ (Q_i,O_i)`,
     gradient: String.raw`dQ,\ dK,\ dV\leftarrow\mathrm{MMA}`,
     high: String.raw`Q_H\to S_H\to P_H\to O_H`,
@@ -903,7 +907,7 @@ function FlashStageVisual({ visual }) {
         : 'bg-indigo-400';
   return (
     <>
-      <div className="mt-1.5 overflow-x-auto rounded-md bg-slate-950/65 p-1.5 text-center text-[10px] leading-none text-white"><MathFormula>{formulas[visual] ?? formulas.tiles}</MathFormula></div>
+      <div className="mt-1.5 overflow-x-auto rounded-md bg-slate-950/65 p-1.5 text-center text-[10px] leading-none text-white"><MathFormula>{operationIds.includes('dvdp') ? String.raw`\mathrm{d}V=P^{\top}\mathrm{d}O,\quad\mathrm{d}P=\mathrm{d}O V^{\top}` : operationIds.includes('dqdk') ? String.raw`\mathrm{d}Q=\mathrm{d}S K/\sqrt d,\quad\mathrm{d}K=\mathrm{d}S^{\top}Q/\sqrt d` : formulas[visual] ?? formulas.tiles}</MathFormula></div>
       <div className="mt-1.5 grid grid-cols-6 gap-0.5">{Array.from({ length: 12 }, (_, index) => <div key={index} className={`h-1.5 rounded-sm ${index < 8 ? gridTone : 'bg-indigo-950'}`} />)}</div>
     </>
   );
@@ -964,7 +968,7 @@ function FlashOnChipFlow({ snapshot, config, onChipKeys, t }) {
           return (
             <div key={stage.id} data-flash-stage={stage.id} className={`min-w-0 rounded-lg border p-2 transition ${active ? 'border-amber-300 bg-amber-400/15 shadow-[0_0_12px_rgba(251,191,36,0.25)] ring-1 ring-amber-300' : passed ? 'border-emerald-600 bg-emerald-500/10' : 'border-indigo-700 bg-indigo-900/70'}`}>
               <div className="flex items-start gap-1.5"><span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[7px] font-black ${active ? 'bg-amber-300 text-amber-950' : passed ? 'bg-emerald-500 text-white' : 'bg-indigo-800 text-indigo-300'}`}>{index + 1}</span><div className="min-w-0 text-[8px] font-black leading-tight text-white">{t(`stage_${stage.id}`)}</div></div>
-              <FlashStageVisual visual={stage.visual} />
+              <FlashStageVisual visual={stage.visual} operationIds={stage.operationIds} direction={config.direction} />
             </div>
           );
         })}
@@ -1065,7 +1069,7 @@ function FlashAttention() {
           : ['storage_smem', 'storage_tmem', 'storage_umma', 'storage_correction'];
 
   const summaryKey = config.modelType === 'standard' ? 'standardBoundary' : `${config.version}Summary`;
-  const observeKey = config.modelType === 'standard' ? 'trafficAssumption' : `${config.version}Observe`;
+  const observeKey = config.direction === 'backward' ? config.modelType === 'standard' ? 'standardBackwardObserve' : 'backwardObserve' : config.modelType === 'standard' ? 'trafficAssumption' : `${config.version}Observe`;
   const boundaryKey = config.modelType === 'standard' ? 'standardBoundary' : `${config.version}Boundary`;
   const scheduleKey = config.modelType === 'standard' ? 'scheduleStandard' : `schedule${config.version.toUpperCase()}`;
   const trafficMax = snapshot.resources.standardTrafficBytes;
@@ -1301,7 +1305,7 @@ function FlashAttention() {
               {snapshot.pipeline.lanes.map((lane) => (
                 <div key={lane} className="grid min-w-[34rem] grid-cols-[7rem_1fr] items-center gap-2">
                   <div className="truncate text-right text-[9px] font-black uppercase tracking-wide text-slate-500">{t(`lane_${lane}`)}</div>
-                  <div className="grid h-10 grid-cols-[repeat(13,minmax(0,1fr))] items-center gap-px rounded-lg border border-slate-200 bg-slate-100 px-1">
+                  <div className="grid h-10 items-center gap-px rounded-lg border border-slate-200 bg-slate-100 px-1" style={{gridTemplateColumns:`repeat(${snapshot.pipeline.horizon},minmax(0,1fr))`}}>
                     {snapshot.pipeline.operations.filter((operation) => operation.lane === lane).map((operation) => {
                       const active = snapshot.operation?.id === operation.id;
                       const passed = snapshot.operation && operation.index < snapshot.operation.index || phase === 'done';
@@ -1315,6 +1319,7 @@ function FlashAttention() {
                 </div>
               ))}
             </div>
+            {snapshot.operation && <p className="mt-3 text-xs leading-relaxed text-slate-600" data-testid="flash-dependencies">{snapshot.operation.waitFor ? `${t('waitingFor')}: ${t(`op_${snapshot.operation.waitFor}`)}` : snapshot.operation.dependsOn.length ? `${t('dependencies')}: ${snapshot.operation.dependsOn.map(id=>t(`op_${id}`)).join(' · ')}` : t(`op_${snapshot.operation.id}`)}</p>}
           </div>
 
           <div className="min-w-0 rounded-2xl border border-slate-800 bg-[#0d1117] p-4 text-slate-300 shadow-lg md:p-5">
@@ -1339,7 +1344,7 @@ function FlashAttention() {
             <div className="rounded-xl border border-indigo-700 bg-indigo-900/70 p-4">
               <h3 className="flex items-center gap-2 text-sm font-bold text-emerald-300"><Sparkles size={15} /> {config.modelType === 'standard' ? t('standard') : config.version.toUpperCase()}</h3>
               <p className="mt-2 text-xs leading-relaxed text-indigo-100">{t(summaryKey)}</p>
-              <div className="mt-3 rounded-lg bg-slate-900 p-2 text-center"><MathFormula>{String.raw`S=QK^{\top},\quad P=\operatorname{softmax}(S),\quad O=PV`}</MathFormula></div>
+              <div className="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-2 text-center"><MathFormula>{String.raw`S=QK^{\top}/\sqrt d+M,\quad P=\operatorname{softmax}(S),\quad O=PV`}</MathFormula></div>
             </div>
             <div className="rounded-xl border border-amber-700/70 bg-amber-900/40 p-4">
               <h3 className="flex items-center gap-2 text-sm font-bold text-amber-300"><EyeOff size={15} /> {t('observe')}</h3>

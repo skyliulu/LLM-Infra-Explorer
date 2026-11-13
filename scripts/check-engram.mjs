@@ -81,3 +81,33 @@ assert.deepEqual(
 );
 
 console.log('Engram checks passed (100 canonical lifecycle states across inference and training modes).');
+
+const {deriveEngramSample,engramGate,hashNgram}=await import('../src/components/engram/sample-model.js');
+const sample=deriveEngramSample();
+assert.deepEqual(sample.heads.map(h=>h.address),[4,2,6,2]);
+assert.deepEqual(sample.heads.map(h=>h.row),[4,7,18,25]);
+assert.deepEqual(sample.value,[3,-1]);
+assert.ok(Math.abs(sample.branches[0].gate-.7665991210)<1e-8);
+assert.ok(Math.abs(sample.branches[0].gatedValue[0]-2.2997973630)<1e-8);
+const reversed=deriveEngramSample({query:'opposite'});
+assert.deepEqual(reversed.heads,sample.heads);
+assert.deepEqual(reversed.embedding,sample.embedding);
+assert.deepEqual(reversed.value,sample.value);
+assert.ok(Math.abs(reversed.branches[0].gate-.2334008790)<1e-8);
+assert.equal(engramGate([1,-1],[1,1],[3,-1]).gate,.5);
+assert.equal(engramGate([0,0],[1,1],[3,-1]).gate,.5);
+const collision=deriveEngramSample({preset:'collision'});
+assert.equal(collision.heads[0].address,sample.heads[0].address);
+assert.notEqual(collision.heads[1].address,sample.heads[1].address);
+assert.deepEqual(hashNgram([2,1],[5,7]).addresses,[4,2]);
+assert.equal(deriveEngramSample({query:'invalid'}).query,'aligned');
+console.log('PASS Engram numerical sample: XOR/primes/offsets, single-head collision, query-independent lookup, normalized signed-root gates and zero-dot boundary.');
+for (const preset of ['base', 'collision']) {
+  const aligned = deriveEngramSample({ preset, query: 'aligned' });
+  const opposite = deriveEngramSample({ preset, query: 'opposite' });
+  const orthogonal = deriveEngramSample({ preset, query: 'orthogonal' });
+  assert.ok(aligned.branches[0].gate > 0.5);
+  assert.ok(opposite.branches[0].gate < 0.5);
+  assert.ok(Math.abs(orthogonal.branches[0].gate - 0.5) < 1e-12);
+  assert.deepEqual(aligned.heads, orthogonal.heads);
+}

@@ -102,9 +102,9 @@ const PIPELINES = {
         ['loadBackward', 'hbm', 0, 2],
         ['recomputeS', 'tensor', 2, 2],
         ['recomputeP', 'cuda', 4, 2],
-        ['dvdk', 'tensor', 6, 2],
+        ['dvdp', 'tensor', 6, 2],
         ['softmaxBwd', 'cuda', 8, 2],
-        ['dq', 'tensor', 10, 2],
+        ['dqdk', 'tensor', 10, 2],
         ['atomicGrad', 'hbm', 12, 1],
       ],
     },
@@ -137,16 +137,21 @@ const PIPELINES = {
   },
   v3: {
     forward: {
-      lanes: ['producer', 'wgmmaA', 'softmax', 'wgmmaB'],
+      lanes: ['producer', 'wgmmaA', 'softmax', 'wgmmaB', 'epilogue'],
       operations: [
-        ['tmaKV0', 'producer', 0, 3],
+        ['tmaK0', 'producer', 0, 2],
+        ['tmaV0', 'producer', 2, 2],
         ['wgmmaQK0', 'wgmmaA', 2, 3],
-        ['tmaKV1', 'producer', 4, 3],
+        ['tmaK1', 'producer', 4, 2],
         ['softmax0', 'softmax', 5, 3],
-        ['wgmmaPV0', 'wgmmaB', 7, 3],
-        ['wgmmaQK1', 'wgmmaA', 7, 3],
-        ['softmax1', 'softmax', 10, 2],
-        ['commitO', 'producer', 12, 1],
+        ['tmaV1', 'producer', 6, 2],
+        ['wgmmaQK1', 'wgmmaA', 6, 3],
+        ['wgmmaPV0', 'wgmmaB', 8, 3],
+        ['softmax1', 'softmax', 9, 3],
+        ['rescaleO', 'softmax', 12, 1],
+        ['wgmmaPV1', 'wgmmaB', 13, 3],
+        ['waitPV1', 'epilogue', 13, 3],
+        ['commitO', 'epilogue', 16, 1],
       ],
     },
     backward: {
@@ -203,8 +208,9 @@ const ON_CHIP_STAGE_SPECS = {
     backward: [
       ['bwdLoad', 'tiles', ['loadBackward']],
       ['bwdRecompute', 'score', ['recomputeS', 'recomputeP']],
-      ['bwdGradMma', 'gradient', ['dvdk', 'dq']],
+      ['bwdGradInput', 'gradient', ['dvdp']],
       ['bwdSoftmax', 'softmax', ['softmaxBwd']],
+      ['bwdGradMma', 'gradient', ['dqdk']],
       ['bwdCommit', 'commit', ['atomicGrad']],
     ],
   },
@@ -226,11 +232,11 @@ const ON_CHIP_STAGE_SPECS = {
   },
   v3: {
     forward: [
-      ['v3Producer', 'tiles', ['tmaKV0', 'tmaKV1']],
+      ['v3Producer', 'tiles', ['tmaK0', 'tmaV0', 'tmaK1', 'tmaV1']],
       ['v3Score', 'score', ['wgmmaQK0', 'wgmmaQK1']],
       ['v3Softmax', 'softmax', ['softmax0', 'softmax1']],
-      ['v3Output', 'output', ['wgmmaPV0']],
-      ['v3Commit', 'commit', ['commitO']],
+      ['v3Output', 'output', ['wgmmaPV0', 'rescaleO', 'wgmmaPV1']],
+      ['v3Commit', 'commit', ['waitPV1', 'commitO']],
     ],
     backward: [
       ['v3ProducerBwd', 'tiles', ['tmaBackward']],
@@ -348,13 +354,18 @@ export function estimateForwardResources(configInput) {
   };
 }
 
+export const FLASH_DEPENDENCIES = {
+ 'v1/backward':{recomputeS:['loadBackward'],recomputeP:['recomputeS'],dvdp:['recomputeP'],softmaxBwd:['dvdp'],dqdk:['softmaxBwd'],atomicGrad:['dqdk']},
+ 'v3/forward':{tmaV0:['tmaK0'],wgmmaQK0:['tmaK0'],tmaK1:['tmaV0'],softmax0:['wgmmaQK0'],tmaV1:['tmaK1'],wgmmaQK1:['tmaK1'],wgmmaPV0:['softmax0','tmaV0'],softmax1:['wgmmaQK1'],rescaleO:['wgmmaPV0','softmax1'],wgmmaPV1:['rescaleO','tmaV1'],commitO:['wgmmaPV1','waitPV1']},
+};
+
 export function getPipeline(configInput) {
   const config = normalizeFlashConfig(configInput);
   const key = config.modelType === 'standard' ? 'standard' : config.version;
   const pipeline = PIPELINES[key][config.direction];
   return {
     lanes: [...pipeline.lanes],
-    operations: pipeline.operations.map(([id, lane, start, duration], index) => ({ id, lane, start, duration, index })),
+    operations: pipeline.operations.map(([id, lane, start, duration], index) => ({ id, lane, start, duration, index, dependsOn:FLASH_DEPENDENCIES[`${key}/${config.direction}`]?.[id]??[],waitFor:id==='waitPV1'?'wgmmaPV1':null })),
     horizon: Math.max(...pipeline.operations.map(([, , start, duration]) => start + duration)),
   };
 }
@@ -376,8 +387,8 @@ export function getFlashOnChipStages(configInput) {
 function getFlashForwardHbmState(config, pipeline, operation, phase, visualStage) {
   const operationId = operation?.id;
   const readQ = ['loadQState', 'assignQ', 'splitQQK', 'wgmmaQK0', 'wgmmaQK1', 'ummaQKH', 'ummaQKL'].includes(operationId);
-  const readK = ['loadKV', 'tmaKV0', 'tmaKV1', 'qk', 'splitQQK', 'wgmmaQK0', 'wgmmaQK1', 'ummaQKH', 'ummaQKL'].includes(operationId);
-  const readV = ['loadKV', 'tmaKV0', 'tmaKV1', 'pv', 'splitQPV', 'wgmmaPV0', 'ummaPVH', 'ummaPVL'].includes(operationId);
+  const readK = ['loadKV', 'tmaK0', 'tmaK1', 'qk', 'splitQQK', 'wgmmaQK0', 'wgmmaQK1', 'ummaQKH', 'ummaQKL'].includes(operationId);
+  const readV = ['loadKV', 'tmaV0', 'tmaV1', 'pv', 'splitQPV', 'wgmmaPV0', 'wgmmaPV1', 'ummaPVH', 'ummaPVL'].includes(operationId);
   const commitIds = ['writeState', 'writeOLSE', 'commitO', 'correctL'];
   const isCommit = commitIds.includes(operationId);
   const isProducingOutput = ['output', 'softmax', 'high', 'low', 'correction'].includes(visualStage);
@@ -438,10 +449,15 @@ function getBackwardHbmState(config, pipeline, operation, phase, visualStage) {
   const readsBackwardInputs = loadIds.includes(operationId) || recomputeIds.includes(operationId) || ['tiles', 'score', 'state'].includes(visualStage);
   const commitIds = isStandard ? ['writeGrads'] : ['atomicGrad', 'atomicDQ', 'writeGrad', 'commitGrad', 'reduceGrad'];
   const isCommit = commitIds.includes(operationId);
-  const gradientIds = isStandard ? ['dv', 'dq', 'dk'] : ['dvdk', 'dq', 'gradMma', 'gradWgmma0', 'gradWgmma1', 'gradPrevious', 'twoCtaMma'];
+  const gradientIds = isStandard ? ['dv', 'dq', 'dk'] : ['dvdp', 'dqdk', 'dq', 'gradMma', 'gradWgmma0', 'gradWgmma1', 'gradPrevious', 'twoCtaMma'];
   const isProducingGradient = gradientIds.includes(operationId) || visualStage === 'gradient' || visualStage === 'cluster';
   const gradientState = complete ? ready : isCommit ? writing : isProducingGradient ? producing : pending;
   const inputState = readsBackwardInputs ? reading : ready;
+  const v1Gradient=producer=>{
+    if(complete)return ready;if(isCommit)return writing;
+    const at=pipeline.operations.findIndex(op=>op.id===producer);
+    return operationId===producer?producing:(operation?.index??-1)>at?{status:'buffered',fill:0,access:'idle'}:pending;
+  };
 
   return {
     Q: inputState,
@@ -452,9 +468,9 @@ function getBackwardHbmState(config, pipeline, operation, phase, visualStage) {
     LSE: isStandard ? null : inputState,
     S: isStandard ? ready : null,
     P: isStandard ? inputState : null,
-    dQ: gradientState,
-    dK: gradientState,
-    dV: gradientState,
+    dQ: config.version==='v1'?v1Gradient('dqdk'):gradientState,
+    dK: config.version==='v1'?v1Gradient('dqdk'):gradientState,
+    dV: config.version==='v1'?v1Gradient('dvdp'):gradientState,
     quadraticWorkspaceBytes: isStandard ? estimateForwardResources(config).standardMaterializedBytes : 0,
   };
 }
@@ -502,10 +518,14 @@ export function getStandardForwardHbmState(configInput, lifecycle = {}) {
   };
 }
 
-function getRepresentativeTile(config, operationIndex) {
+function getRepresentativeTile(config, operationIndex, operation) {
   const profile = getVersionProfile(config.version);
-  const qIndex = Math.floor(operationIndex / 3) % 3;
-  const kvIndex = operationIndex % 3;
+  // Keep one Q owner throughout the inspection. V3 explicitly unrolls KV0/1;
+  // other views show a representative tile iteration, not an entire kernel trace.
+  const qIndex = 1;
+  const kvIndex = config.version==='v3'&&config.direction==='forward'&&config.modelType==='flash'
+    ? (operation?.id?.endsWith('0')?0:operation?.id?.endsWith('1')||['rescaleO','commitO'].includes(operation?.id)?1:0)
+    : 0;
   return {
     qIndex,
     kvIndex,
@@ -526,7 +546,7 @@ export function deriveFlashSnapshot(configInput, lifecycle = {}) {
   const requestedStep = Number.isFinite(lifecycle.step) ? lifecycle.step : 0;
   const step = Math.max(0, Math.min(requestedStep, maxStep));
   const operation = phase === 'idle' || phase === 'done' || step === 0 ? null : pipeline.operations[Math.min(step - 1, maxStep - 1)];
-  const tile = getRepresentativeTile(config, operation?.index ?? 0);
+  const tile = getRepresentativeTile(config, operation?.index ?? 0,operation);
   const displayTiles = {
     count: 4,
     q: tile.qIndex % 4,

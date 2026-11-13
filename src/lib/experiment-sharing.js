@@ -15,7 +15,7 @@ export const SHARE_SCHEMA={
  cachearch:{'CacheArchitecture.tokens':one(1,32,129,4096,1000000),'CacheArchitecture.layer':value=>Number.isInteger(value)&&value>=0&&value<40,'CacheArchitecture.phase':one('prefill','decode')},
  quantization:{'Quantization.config':object({mode:one('bf16','w4','fp4','w8','fp8'),batch:range(1,8),context:range(256,8192),kv:one('bf16','fp8','fp4'),prefill:bool}),'quantization/SGLangWorkbench.preset':one('bf16','load-fp8','saved-dynamic','saved-static'),'quantization/SGLangWorkbench.kv':one('auto','fp8-unit','fp8-file'),'Quantization.outliers':bool,'Quantization.algorithm':one('rtn','awq','gptq','smoothquant'),'Quantization.alpha':range(0,1)},
  speculative:{'SpeculativeDecoding.config':object({algorithm:one('eagle2','dspark'),depth:range(1,5),width:range(1,3),budget:range(2,16),blockSize:range(1,8)})},
- engram:{'Engram.systemMode':one('inference','training'),'Engram.slideIdx':one(2,3,4,5)},
+ engram:{'Engram.samplePreset':one('base','collision'),'Engram.sampleQuery':one('aligned','opposite','orthogonal'),'Engram.systemMode':one('inference','training'),'Engram.slideIdx':one(2,3,4,5)},
  radixcache:{},
  deepinfer:{'DeepInfer.routeRequest':one('short','long'),'DeepInfer.lesson':object({history:one(0,3,6),replica:one('A','B'),ep:one(2,8),batch:one(1,4),routing:one('uniform','hot'),balance:bool,split:bool,async:bool})},
 };

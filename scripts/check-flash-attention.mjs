@@ -43,7 +43,7 @@ assert(v1.flashTrafficBytes > v2.flashTrafficBytes);
 assert(v2.onChipLiveBytes > 0);
 
 const v3Pipeline = getPipeline({ version: 'v3', direction: 'forward' });
-const tma1 = v3Pipeline.operations.find((operation) => operation.id === 'tmaKV1');
+const tma1 = v3Pipeline.operations.find((operation) => operation.id === 'tmaV1');
 const softmax0 = v3Pipeline.operations.find((operation) => operation.id === 'softmax0');
 assert(intervalsOverlap(tma1, softmax0), 'V3 must expose TMA / softmax overlap');
 
@@ -151,3 +151,30 @@ assert.equal(standardBackwardWrite.backwardHbm.dK.status, 'writing');
 assert.equal(standardBackwardWrite.backwardHbm.dV.status, 'writing');
 
 console.log('FlashAttention model checks passed.');
+
+// Source-derived producer/consumer oracles, independent of the dependency metadata.
+const v1b=getPipeline({version:'v1',direction:'backward'});
+const byId=(pipeline,id)=>{const op=pipeline.operations.find(o=>o.id===id);assert.ok(op,id);return op;};
+const end=op=>op.start+op.duration;
+assert.ok(end(byId(v1b,'dvdp'))<=byId(v1b,'softmaxBwd').start);
+assert.ok(end(byId(v1b,'softmaxBwd'))<=byId(v1b,'dqdk').start,'dS precedes dK/dQ');
+for(const tile of [0,1]){
+ assert.ok(end(byId(v3Pipeline,`tmaK${tile}`))<=byId(v3Pipeline,`wgmmaQK${tile}`).start);
+ assert.ok(end(byId(v3Pipeline,`wgmmaQK${tile}`))<=byId(v3Pipeline,`softmax${tile}`).start);
+ assert.ok(end(byId(v3Pipeline,`softmax${tile}`))<=byId(v3Pipeline,`wgmmaPV${tile}`).start);
+ assert.ok(end(byId(v3Pipeline,`tmaV${tile}`))<=byId(v3Pipeline,`wgmmaPV${tile}`).start);
+}
+assert.ok(end(byId(v3Pipeline,'wgmmaPV0'))<=byId(v3Pipeline,'rescaleO').start);
+assert.ok(end(byId(v3Pipeline,'wgmmaPV1'))<=byId(v3Pipeline,'commitO').start,'drain the final PV before output');
+assert.ok(end(byId(v3Pipeline,'waitPV1'))<=byId(v3Pipeline,'commitO').start);
+assert.ok(intervalsOverlap(byId(v3Pipeline,'wgmmaPV0'),byId(v3Pipeline,'softmax1')),'retain valid cross-iteration overlap');
+for(const p of [v1b,v3Pipeline])for(const op of p.operations)for(const dep of op.dependsOn)assert.ok(end(byId(p,dep))<=op.start,`${dep} ready for ${op.id}`);
+for (const modelType of ['standard', 'flash']) for (const version of ['v1', 'v2', 'v3', 'v4']) for (const direction of ['forward', 'backward']) {
+  const p = getPipeline({ modelType, version, direction });
+  for (const op of p.operations) for (const dep of op.dependsOn) assert.ok(p.operations.some(candidate => candidate.id === dep), `${modelType}/${version}/${direction}: ${dep} exists`);
+}
+const v1FirstGrad=deriveFlashSnapshot({version:'v1',direction:'backward'},{phase:'running',step:4});
+assert.equal(v1FirstGrad.backwardHbm.dV.status,'producing');
+assert.equal(v1FirstGrad.backwardHbm.dK.status,'pending');
+assert.equal(v1FirstGrad.backwardHbm.dQ.status,'pending');
+console.log('PASS source dependency oracles: V1 dP/dS/gradients; V3 separate K/V readiness, rescaling and final PV drain.');

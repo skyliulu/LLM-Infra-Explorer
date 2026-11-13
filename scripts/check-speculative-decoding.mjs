@@ -124,7 +124,9 @@ assert.ok(jsx.includes('<details')&&!jsx.includes('<details open'),'Long paramet
 assert.ok(jsx.includes("'race-acceptance'")&&jsx.includes("'round-acceptance'"),'Both playback scopes expose a clearly labeled acceptance result');
 assert.ok(jsx.includes('data-testid="execution-guide"')&&jsx.includes('data-testid="code-data"'),'Code has synchronized explanation and concrete data');
 assert.ok(jsx.includes('onSeek')&&jsx.includes("setIsPlaying(false);setRacePlaying(false)"),'Manual code inspection pauses both playbacks');
-const composition=jsx.slice(jsx.indexOf('<main className="mx-auto max-w-[1600px]'));
+const chapterBodyIndex=jsx.indexOf('<div className="chapter-body');
+assert.ok(chapterBodyIndex>=0,'The actual chapter body must be found before checking reading order');
+const composition=jsx.slice(chapterBodyIndex);
 assert.ok(composition.indexOf('<Race ')<composition.indexOf('<Principles ')&&composition.indexOf('<Principles ')<composition.indexOf('<Workbench ')&&composition.indexOf('<Workbench ')<composition.indexOf('<References '),'Reading order is efficiency, correctness, implementation, references');
 const workbench=jsx.slice(jsx.indexOf('function Workbench('),jsx.indexOf('function ExecutionGuide('));
 assert.ok(workbench.includes('<ExecutionGuide ')&&workbench.includes('onSeek={onSeek}'),'Execution guide belongs to the implementation section and keeps shared step control');
