@@ -1,0 +1,6 @@
+
+> ai-infra-viz@0.1.0 check:workbench
+> node scripts/check-workbench-sharing.mjs && node scripts/check-learning-paths.mjs
+
+Sharing schema: all 13 chapters round-trip; malformed, oversized, unknown and out-of-range settings rejected.
+PASS learning order: 13 unique chapters, forward-only prerequisites/continuations, bilingual section links and CED / DeepInfer dependencies

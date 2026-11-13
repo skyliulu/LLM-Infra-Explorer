@@ -1,0 +1,8 @@
+{
+  "matrixStartedAt": "2026-10-28T13:28:19.282Z",
+  "finishedAt": "2026-10-28T13:35:57.327Z",
+  "productionUrl": "http://127.0.0.1:4173/#deepinfer",
+  "matrixCases": 36,
+  "engineCases": 12,
+  "journeys": 11
+}

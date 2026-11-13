@@ -21,6 +21,7 @@ export const LEARNING_PATHS = {
     topic('sparseattn','sparse-overview','SWA、稀疏选择与压缩历史','SWA, sparse selection and compressed history'),
     topic('quantization','quant-numeric','数值表示与量化误差','Number formats and quantization error'),
     topic('radixcache','radix-hicache','前缀复用与分层缓存','Prefix reuse and tiered caches'),
-  ],next:null},
+  ],next:'deepinfer'},
+  deepinfer:{before:[inference,kv],next:null},
 };
 export const learningHref = ({chapter,section}) => `#${chapter}${section?`?section=${encodeURIComponent(section)}`:''}`;

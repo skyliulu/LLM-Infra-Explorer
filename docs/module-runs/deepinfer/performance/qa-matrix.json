@@ -1,0 +1,464 @@
+{
+  "dimensions": {
+    "width": [
+      1440,
+      768,
+      390
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "theme": [
+      "light",
+      "dark"
+    ],
+    "view": [
+      "reuse",
+      "execution",
+      "capacity"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "width",
+      "language",
+      "theme",
+      "view"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "1440-zh-light-reuse",
+      "state": {
+        "width": 1440,
+        "language": "zh",
+        "theme": "light",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-zh-light-execution",
+      "state": {
+        "width": 1440,
+        "language": "zh",
+        "theme": "light",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-zh-light-capacity",
+      "state": {
+        "width": 1440,
+        "language": "zh",
+        "theme": "light",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-zh-dark-reuse",
+      "state": {
+        "width": 1440,
+        "language": "zh",
+        "theme": "dark",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-zh-dark-execution",
+      "state": {
+        "width": 1440,
+        "language": "zh",
+        "theme": "dark",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-zh-dark-capacity",
+      "state": {
+        "width": 1440,
+        "language": "zh",
+        "theme": "dark",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-en-light-reuse",
+      "state": {
+        "width": 1440,
+        "language": "en",
+        "theme": "light",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-en-light-execution",
+      "state": {
+        "width": 1440,
+        "language": "en",
+        "theme": "light",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-en-light-capacity",
+      "state": {
+        "width": 1440,
+        "language": "en",
+        "theme": "light",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-en-dark-reuse",
+      "state": {
+        "width": 1440,
+        "language": "en",
+        "theme": "dark",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-en-dark-execution",
+      "state": {
+        "width": 1440,
+        "language": "en",
+        "theme": "dark",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "1440-en-dark-capacity",
+      "state": {
+        "width": 1440,
+        "language": "en",
+        "theme": "dark",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-zh-light-reuse",
+      "state": {
+        "width": 768,
+        "language": "zh",
+        "theme": "light",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-zh-light-execution",
+      "state": {
+        "width": 768,
+        "language": "zh",
+        "theme": "light",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-zh-light-capacity",
+      "state": {
+        "width": 768,
+        "language": "zh",
+        "theme": "light",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-zh-dark-reuse",
+      "state": {
+        "width": 768,
+        "language": "zh",
+        "theme": "dark",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-zh-dark-execution",
+      "state": {
+        "width": 768,
+        "language": "zh",
+        "theme": "dark",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-zh-dark-capacity",
+      "state": {
+        "width": 768,
+        "language": "zh",
+        "theme": "dark",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-en-light-reuse",
+      "state": {
+        "width": 768,
+        "language": "en",
+        "theme": "light",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-en-light-execution",
+      "state": {
+        "width": 768,
+        "language": "en",
+        "theme": "light",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-en-light-capacity",
+      "state": {
+        "width": 768,
+        "language": "en",
+        "theme": "light",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-en-dark-reuse",
+      "state": {
+        "width": 768,
+        "language": "en",
+        "theme": "dark",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-en-dark-execution",
+      "state": {
+        "width": 768,
+        "language": "en",
+        "theme": "dark",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "768-en-dark-capacity",
+      "state": {
+        "width": 768,
+        "language": "en",
+        "theme": "dark",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-zh-light-reuse",
+      "state": {
+        "width": 390,
+        "language": "zh",
+        "theme": "light",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-zh-light-execution",
+      "state": {
+        "width": 390,
+        "language": "zh",
+        "theme": "light",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-zh-light-capacity",
+      "state": {
+        "width": 390,
+        "language": "zh",
+        "theme": "light",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-zh-dark-reuse",
+      "state": {
+        "width": 390,
+        "language": "zh",
+        "theme": "dark",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-zh-dark-execution",
+      "state": {
+        "width": 390,
+        "language": "zh",
+        "theme": "dark",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-zh-dark-capacity",
+      "state": {
+        "width": 390,
+        "language": "zh",
+        "theme": "dark",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-en-light-reuse",
+      "state": {
+        "width": 390,
+        "language": "en",
+        "theme": "light",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-en-light-execution",
+      "state": {
+        "width": 390,
+        "language": "en",
+        "theme": "light",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-en-light-capacity",
+      "state": {
+        "width": 390,
+        "language": "en",
+        "theme": "light",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-en-dark-reuse",
+      "state": {
+        "width": 390,
+        "language": "en",
+        "theme": "dark",
+        "view": "reuse"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-en-dark-execution",
+      "state": {
+        "width": 390,
+        "language": "en",
+        "theme": "dark",
+        "view": "execution"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    },
+    {
+      "name": "390-en-dark-capacity",
+      "state": {
+        "width": 390,
+        "language": "en",
+        "theme": "dark",
+        "view": "capacity"
+      },
+      "checks": [
+        "Stable rendered surfaces, primary diagram, selected explanation, relevant control and no unintended overflow"
+      ]
+    }
+  ]
+}

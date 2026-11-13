@@ -1,0 +1,680 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "DeepInfer: connected architecture, source-level mechanisms and light/dark acceptance",
+  "kind": "redesign",
+  "status": "complete",
+  "nextAction": "Local delivery complete for documented explanatory scope. Reconcile coverage and invalidate affected gates for later changes; external vendor internals/GPU benchmarks and System light OS branch remain unverified.",
+  "capabilities": [
+    "timeline",
+    "multiple-modes",
+    "resource-metrics",
+    "structural-comparison",
+    "data-movement",
+    "dense-layout",
+    "math"
+  ],
+  "assumptions": [
+    "Official DeepInfer pinned to 553741557a57df44a46fb3ab72b6aafeaf945337.",
+    "Static source study, source-linked mechanism explanations and explicitly bounded interactive models, not a full serving runtime or GPU benchmark.",
+    "Both explicit themes tested; current System-dark OS branch only.",
+    "Earlier engine-only trial retained in run-engine-trial.json."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "da620d84397ea84abe1e2fa14735d76d336a22148823f11849163ec9fa862047",
+    "../../../src/components/deepinfer/model.js": "3558ac3cdae8db6089c9ec26415c1d23fba635f59eea724ba12e6dec19c7ce01",
+    "../../../src/components/deepinfer/content.js": "ff23a9b5f25d8bf8f5a1d789eca5a0311ac0f7a909459b86235dcfc83763dd61",
+    "../../../src/components/deepinfer/deepinfer.css": "41e8239c74d0cbc0e9cf4ea1ad5a92528313fbbaf0f9cf7291217f2b77bf8bc7",
+    "../../../src/components/deepinfer/SystemExplorer.jsx": "d7213a1d0c9fe81cf57b414f66ddeef63531f32ae9027b123546b5b0c32d177f",
+    "../../../src/components/deepinfer/system-model.js": "81e75d1a99a5816a174e12721e29cf3bb5d8b4925da87ec23e9f29f849f6a129",
+    "../../../src/components/deepinfer/system-content.js": "004cd84412deed7fd67767a0cac09c5da2cc83276275dcb14092f8df644b42f6",
+    "../../../src/components/deepinfer/system.css": "7febbb444a7dc3a2042c099b9535491de4eddfd4a3fbaef1be51c9383965c7be",
+    "../../../scripts/check-deepinfer.mjs": "5c95f9e1611bec2146508cbada3a4e047cce93f465ed114f504fd0416ba3a29c",
+    "../../../src/lib/experiment-sharing.js": "61c7d44db22e56eee849c151b0edf25d7bf5fdde74c95f93b04e2d3ec6ee0dbe",
+    "../../../scripts/check-workbench-sharing.mjs": "277170b115a5fe2eaee80012d83ab1a5374bee3697080a6282d9695f56d02d63",
+    "../../../src/lib/chapter-registry.js": "51ed048fd350db5f56639f69bebe7fbb7ddeb9a83a612c2006609c21b7ef48d2",
+    "../../../src/lib/chapter-learning.js": "14464850ab387d63788aa81cb08ab9deded6b153aad3895df5f63c8b6da3a134",
+    "../../../src/lib/ThemeContext.jsx": "38c5b39a0cfc1942a50fc458653a649e541efef4d9f44d3bc242a44f129d8b0b",
+    "../../../scripts/theme-colors.mjs": "849a41d14bedf9755bb50bdd7f0f25282a0bf8be79d099f1efcaff730cf3e2ee",
+    "../../../.agents/skills/develop-interactive-module/SKILL.md": "d2f388a0350f9de1e0809fbb9b5839e71fd5cd0d814536c25548253ae7b44fb4",
+    "../../../.agents/skills/develop-interactive-module/references/technical-analysis.md": "b4d9a385aa29541f8569a9ceb95aa1b80c792c0ebad2d502f57577b736d204e3",
+    "../../../.agents/skills/develop-interactive-module/references/qa-checklist.md": "948965c748605ba57afe6d299d8f75944adada3e59417c08d176c22047f21208",
+    "../../../.agents/skills/develop-interactive-module/references/autonomous-delivery.md": "b0916547ee670265d5d25a853a87d9c7192694c181d6f01af8d3ec67c2445299",
+    "../../../.agents/skills/develop-interactive-module/evals/scenarios.json": "32c9f9b4959ebc26ceae084b4625f11896b0f3a1bda6043c5d3fdacc8d508521",
+    "../../../.agents/skills/codebase-knowledge-builder/SKILL.md": "0ffe66576d3a90c2c39f314a473cf8d0f528bd7fa068826ac8c4f85f13733141",
+    "../../../AGENTS.md": "c070e60ad478b54b9c790795187cd302ed1703612e047715ee3fd1dd98981451"
+  },
+  "snapshotAt": "2026-10-27T15:37:10.471Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "technical-analysis.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "depth-qa.md"
+    },
+    {
+      "id": "coverage",
+      "kind": "note",
+      "path": "content-coverage.md"
+    },
+    {
+      "id": "review",
+      "kind": "note",
+      "path": "depth-review.md"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "evidence/depth-model.log"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "evidence/depth-build.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "evidence/depth-conventions.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "evidence/depth-integration.log"
+    },
+    {
+      "id": "theme-log",
+      "kind": "log",
+      "path": "evidence/depth-theme.log"
+    },
+    {
+      "id": "matrix-log",
+      "kind": "log",
+      "path": "evidence/depth-matrix.log"
+    },
+    {
+      "id": "tooling-log",
+      "kind": "log",
+      "path": "evidence/depth-tooling.log"
+    },
+    {
+      "id": "skill-community-log",
+      "kind": "log",
+      "path": "evidence/depth-skill-community.log"
+    },
+    {
+      "id": "skill-delivery-log",
+      "kind": "log",
+      "path": "evidence/depth-skill-delivery.log"
+    },
+    {
+      "id": "browser-log",
+      "kind": "log",
+      "path": "evidence/depth-browser-journeys.json"
+    },
+    {
+      "id": "visual-log",
+      "kind": "log",
+      "path": "evidence/depth-theme-matrix.json"
+    },
+    {
+      "id": "supplement-log",
+      "kind": "log",
+      "path": "evidence/depth-supplement.json"
+    },
+    {
+      "id": "depth-attention-1440-en-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-attention-1440-en-dark.jpg"
+    },
+    {
+      "id": "depth-attention-1440-en-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-attention-1440-en-light.jpg"
+    },
+    {
+      "id": "depth-attention-390-zh-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-attention-390-zh-dark.jpg"
+    },
+    {
+      "id": "depth-attention-390-zh-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-attention-390-zh-light.jpg"
+    },
+    {
+      "id": "depth-final-preview-zh",
+      "kind": "screenshot",
+      "path": "evidence/depth-final-preview-zh.jpg"
+    },
+    {
+      "id": "depth-mega-1440-en-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-mega-1440-en-dark.jpg"
+    },
+    {
+      "id": "depth-mega-1440-en-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-mega-1440-en-light.jpg"
+    },
+    {
+      "id": "depth-mega-390-zh-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-mega-390-zh-dark.jpg"
+    },
+    {
+      "id": "depth-mega-390-zh-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-mega-390-zh-light.jpg"
+    },
+    {
+      "id": "depth-overlap-en-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-overlap-en-dark.jpg"
+    },
+    {
+      "id": "depth-precision-1440-en-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-precision-1440-en-dark.jpg"
+    },
+    {
+      "id": "depth-precision-1440-en-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-precision-1440-en-light.jpg"
+    },
+    {
+      "id": "depth-precision-390-zh-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-precision-390-zh-dark.jpg"
+    },
+    {
+      "id": "depth-precision-390-zh-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-precision-390-zh-light.jpg"
+    },
+    {
+      "id": "depth-theme-1440-en-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-1440-en-dark.jpg"
+    },
+    {
+      "id": "depth-theme-1440-en-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-1440-en-light.jpg"
+    },
+    {
+      "id": "depth-theme-1440-zh-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-1440-zh-dark.jpg"
+    },
+    {
+      "id": "depth-theme-1440-zh-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-1440-zh-light.jpg"
+    },
+    {
+      "id": "depth-theme-390-en-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-390-en-dark.jpg"
+    },
+    {
+      "id": "depth-theme-390-en-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-390-en-light.jpg"
+    },
+    {
+      "id": "depth-theme-390-zh-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-390-zh-dark.jpg"
+    },
+    {
+      "id": "depth-theme-390-zh-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-390-zh-light.jpg"
+    },
+    {
+      "id": "depth-theme-768-en-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-768-en-dark.jpg"
+    },
+    {
+      "id": "depth-theme-768-en-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-768-en-light.jpg"
+    },
+    {
+      "id": "depth-theme-768-zh-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-768-zh-dark.jpg"
+    },
+    {
+      "id": "depth-theme-768-zh-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-theme-768-zh-light.jpg"
+    },
+    {
+      "id": "depth-trace-1440-en-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-trace-1440-en-dark.jpg"
+    },
+    {
+      "id": "depth-trace-1440-en-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-trace-1440-en-light.jpg"
+    },
+    {
+      "id": "depth-trace-390-zh-dark",
+      "kind": "screenshot",
+      "path": "evidence/depth-trace-390-zh-dark.jpg"
+    },
+    {
+      "id": "depth-trace-390-zh-light",
+      "kind": "screenshot",
+      "path": "evidence/depth-trace-390-zh-light.jpg"
+    }
+  ],
+  "claims": [
+    {
+      "id": "moe-dispatch",
+      "statement": "Mega and separated MoE are exclusive dispatch paths constrained by platform, supported precision and NVLink domain.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/model_executor/models/v4_modules/mlp.py#L184",
+      "locator": "DeepseekMoE.__init__, forward",
+      "boundary": "Predicate probe only; independent Boolean inputs do not assert arbitrary hardware configurations are deployable. Library call is not one hardware kernel.",
+      "model": "deriveMoeDispatch",
+      "trigger": "Change GPU/domain/precision",
+      "expected": "Within-domain GPU supported path selects Mega; outside-domain or non-GPU BF16 selects separate.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "verification-budget",
+      "statement": "Under a fixed extra-row budget, cumulative confidence products allocate prefix verification rows while mandatory main rows remain.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/csrc/engine/mtp_varlen.hpp",
+      "locator": "MTPVarlen.schedule and schedule_mtp_varlen device path",
+      "boundary": "Three requests / three drafts; full implementation additionally chooses budget from hardware cost curves and uses delayed/newer confidence. Selected is not accepted.",
+      "model": "deriveVerificationAllocation with exhaustive prefix oracle",
+      "trigger": "Budget0/9 and varied/low confidence",
+      "expected": "Extra selections0/9, total query rows3/12; prefix property and expected contribution verified.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "cache-record",
+      "statement": "Main/SWA/index formats have distinct value and scale byte costs.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/model_executor/layers/tilelang_ops/cache_common.py#L119",
+      "locator": "V41_FP4_FORMAT, V41_FORMAT, FP4_INDEX_KV_FORMAT",
+      "boundary": "Single record, no additional alignment/metadata/layers/tokens; index data/scale block layout is not a token-interleaved byte animation.",
+      "model": "deriveCacheRecord",
+      "trigger": "Select Main/SWA/Indexer",
+      "expected": "288 / 528 / 68 bytes; separate value and scale accounting.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "first-output",
+      "statement": "Partial prefill emits no output; final prompt chunk can sample the first output and CPU commit updates committed count.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/csrc/engine/scheduler.hpp#L351",
+      "locator": "_schedule_prefill plus worker sampling/commit",
+      "boundary": "Synchronous NORMAL one-rank nextn0 sufficient blocks, teaching interval1 and two slots.",
+      "model": "buildRequestTrace / deriveDeepInferState",
+      "trigger": "Mixed budget8, seek sample then commit",
+      "expected": "A pending1 committed0; B partial2/4 pending0; commit increments A only.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "overlap-dependency",
+      "statement": "Async work preserves prior-sample to next-forward dependency and needs final drain.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/worker/worker.py#L89",
+      "locator": "Worker.batch_inference, flush_inflight_reqs",
+      "boundary": "Dimensionless assumed timing, not benchmark or full ZOS implementation.",
+      "model": "deriveOverlapModel",
+      "trigger": "Toggle async and inspect baseline commit operation",
+      "expected": "Sync/async dependent schedules; baseline selection resolves its own track.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "runtime-experiments",
+      "action": "Operate budget boundaries, confidence, platform/domain/precision and cache format; inspect all eleven mechanisms.",
+      "expected": "Canonical allocation, path, byte totals and corresponding source/inspector remain aligned.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "appearance",
+      "action": "Light/Dark x EN/ZH x1440/768/390 plus kernel/precision/attention/trace states; select System with trace paused.",
+      "expected": "Resolved themes correct, no checked overflow/math errors, state distinction and progress retained; only dark OS System branch tested.",
+      "checkIds": [
+        "browser",
+        "visual",
+        "theme-regressions"
+      ]
+    },
+    {
+      "id": "navigation-sharing",
+      "action": "Switch mechanisms, visit Home, return, open share URL and fully reload, then plain reload.",
+      "expected": "Nine primary settings persist or restore, lifecycle resets, plain reload returns defaults.",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    },
+    {
+      "id": "engine-regression",
+      "action": "Seek sample/commit/terminal/reset and toggle/inspect timing tracks.",
+      "expected": "Pending vs committed state correct; terminal next disabled; baseline inspector identity preserved.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "research",
+        "coverage",
+        "review"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "node scripts/check-deepinfer.mjs",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/DeepInfer.jsx --capabilities timeline,math,multiple-modes,structural-comparison",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "integration-log",
+        "matrix-log"
+      ],
+      "command": "npm run check:workbench; node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs docs/module-runs/deepinfer/theme-qa-matrix.json",
+      "exitCode": 0
+    },
+    {
+      "id": "theme-regressions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "theme-log"
+      ],
+      "command": "node scripts/check-theme.mjs",
+      "exitCode": 0
+    },
+    {
+      "id": "tooling",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "tooling-log",
+        "skill-community-log",
+        "skill-delivery-log"
+      ],
+      "command": "node --test .agents/skills/develop-interactive-module/scripts/module-run.test.mjs; python -X utf8 quick_validate.py .agents/skills/codebase-knowledge-builder; python -X utf8 quick_validate.py .agents/skills/develop-interactive-module",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "browser-log",
+        "depth-final-preview-zh",
+        "depth-trace-390-zh-light",
+        "depth-overlap-en-dark"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-10-27T15:37:10.471Z",
+      "artifactIds": [
+        "visual-log",
+        "supplement-log",
+        "review",
+        "depth-attention-1440-en-dark",
+        "depth-attention-1440-en-light",
+        "depth-attention-390-zh-dark",
+        "depth-attention-390-zh-light",
+        "depth-final-preview-zh",
+        "depth-mega-1440-en-dark",
+        "depth-mega-1440-en-light",
+        "depth-mega-390-zh-dark",
+        "depth-mega-390-zh-light",
+        "depth-overlap-en-dark",
+        "depth-precision-1440-en-dark",
+        "depth-precision-1440-en-light",
+        "depth-precision-390-zh-dark",
+        "depth-precision-390-zh-light",
+        "depth-theme-1440-en-dark",
+        "depth-theme-1440-en-light",
+        "depth-theme-1440-zh-dark",
+        "depth-theme-1440-zh-light",
+        "depth-theme-390-en-dark",
+        "depth-theme-390-en-light",
+        "depth-theme-390-zh-dark",
+        "depth-theme-390-zh-light",
+        "depth-theme-768-en-dark",
+        "depth-theme-768-en-light",
+        "depth-theme-768-zh-dark",
+        "depth-theme-768-zh-light",
+        "depth-trace-1440-en-dark",
+        "depth-trace-1440-en-light",
+        "depth-trace-390-zh-dark",
+        "depth-trace-390-zh-light"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "Independent pinned-source review closed VE, Prefill/Decode address-space and translation findings; predicate, prefix-allocation and byte oracles pass. No GPU/vendor-internal performance verification claimed.",
+      "artifactIds": [
+        "qa",
+        "review",
+        "coverage",
+        "depth-final-preview-zh"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pass",
+      "observation": "Source inventory reconciled with content-coverage. Connected E/P/D/VE context and eleven drill-downs support three real transformation experiments; explanatory-only and unknown branches remain explicit.",
+      "artifactIds": [
+        "qa",
+        "review",
+        "coverage",
+        "depth-final-preview-zh"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "Owner-operated final production browser verifies budget boundaries, conditional paths, all inspectors, cross-mechanism/Home retention, nine-key share reload, sample/commit/terminal/reset and timing identity.",
+      "artifactIds": [
+        "qa",
+        "review",
+        "coverage",
+        "depth-final-preview-zh"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "Independent reviewer opened all28 matrix/supplement/trace screenshots; owner inspected final preview/overlap. No remaining P0-P2 found in actual scope. Explicit Light/Dark and current System-dark branch are distinguished.",
+      "artifactIds": [
+        "qa",
+        "review",
+        "coverage",
+        "depth-final-preview-zh"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "Production build, thirteen-chapter workbench schema and final browser navigation/share reload pass. Automatic theme compilation remains supported; eighteen evidence-helper tests and both skill validators pass.",
+      "artifactIds": [
+        "qa",
+        "integration-log",
+        "build-log",
+        "browser-log"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "DEPTH-1",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Framework breadth missing from narrow initial teaching contract; current source inventory, system context and mechanism coverage supplied.",
+      "checkIds": [
+        "research",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "THEME-1",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Initial appearance acceptance omitted themes; final twelve-case matrix plus boundary captures and System resolution recorded.",
+      "checkIds": [
+        "browser",
+        "visual",
+        "theme-regressions"
+      ]
+    },
+    {
+      "id": "D1",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "VE coexisting architecture branch absent; added with documented boundary.",
+      "checkIds": [
+        "research",
+        "visual"
+      ]
+    },
+    {
+      "id": "D2",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Prefill index domain incorrectly generalized to decode physical slots; branches, labels and sources separated.",
+      "checkIds": [
+        "research",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "D3",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Mechanism switching discarded genuine experiment inputs; moved to shared experiment state and validated share schema.",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    },
+    {
+      "id": "D4",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Duplicate translation key replaced KV mechanism title; distinct semantic keys and browser labels checked.",
+      "checkIds": [
+        "model",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "D5",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Short KaTeX header had rounding scrollbar; overflow/flex behavior repaired and final narrow screenshots checked.",
+      "checkIds": [
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "D6",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Group sizes missing from byte ledger; now visible with source-format values.",
+      "checkIds": [
+        "browser",
+        "visual"
+      ]
+    }
+  ],
+  "coverage": "theme-qa-matrix.json"
+}

@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-11-13T15:18:10.513Z",
+  "scope": "Final instruction consolidation; independent-fidelity reads final tolerance paragraph. Earlier A/B/C report retains its earlier version boundary.",
+  "sha256": {
+    ".agents/skills/analyze-technical-principles/SKILL.md": "5a63dc54b46a260f7f8f8a866b0feeb236684c87f2a33eb2fd6a985124dedbc6",
+    ".agents/skills/develop-interactive-module/SKILL.md": "3d3d14cb50b96b92a89e72de4572d7a1825c16d696e14b6a0f0a061f7cf52f89",
+    ".agents/skills/develop-interactive-module/references/technical-analysis.md": "b36f4a7e361e385277a58666c0b9cf5b67048ea619a51ae93cbb2cc1f9b94ff4",
+    ".agents/skills/develop-interactive-module/references/visual-grammar.md": "8559caba840d08f983dc018c2e4c31abd9fc066569d6a824950c2d0c3900413a",
+    ".agents/skills/develop-interactive-module/references/implementation-fidelity.md": "4f659005c499ed1f1c1222d519af6872fddec0241e2db91ab9072513bebf8971",
+    ".agents/skills/develop-interactive-module/references/content-and-math.md": "76209cc294766b68327cff521f00d1b67780d3d9bd3a06a12626fcc3b8e62bc0",
+    ".agents/skills/develop-interactive-module/references/qa-checklist.md": "887995e8f27e620d57aaa6d8ff4afa71f261ad14c0b6d77c13cf5ba038ceb07d",
+    ".agents/skills/develop-interactive-module/references/skill-evaluation.md": "f267774cc74ac51e0cefedf2db63e66f53804ee04df5bdefe0d169efabdec342",
+    ".agents/skills/develop-interactive-module/references/reader-review.md": "227a137e255b4e1aa953478ae808c56cc5a1b29231fe2e1f9540499ff78316c5",
+    ".agents/skills/develop-interactive-module/evals/scenarios.json": "f8d089ee6a777ffa18a6d149757813e18d7c22bf273355ec3164df6de6695c67"
+  }
+}

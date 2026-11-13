@@ -1,0 +1,14 @@
+FAIL  Run is in_progress, not complete
+FAIL  Input changed or hash invalid: ../../../.agents/skills/analyze-technical-principles/SKILL.md
+FAIL  Input changed or hash invalid: ../../../.agents/skills/develop-interactive-module/SKILL.md
+FAIL  Input changed or hash invalid: ../../../.agents/skills/develop-interactive-module/references/technical-analysis.md
+FAIL  Input changed or hash invalid: ../../../.agents/skills/develop-interactive-module/references/qa-checklist.md
+FAIL  Input changed or hash invalid: ../../../.agents/skills/develop-interactive-module/evals/scenarios.json
+FAIL  Input changed or hash invalid: ../../../AGENTS.md
+FAIL  Check reader did not pass (only redesign integration can be skipped with a reason)
+FAIL  Check reader must run after the snapshot
+FAIL  Review teaching needs passing observation
+FAIL  Open blocking finding: missing-outcome-thesis
+FAIL  Open blocking finding: reader-hierarchy-continuity
+FAIL  Open blocking finding: reader-visible-mechanisms
+FAIL  Open blocking finding: reader-engineering-cost-link

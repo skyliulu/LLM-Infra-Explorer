@@ -12,7 +12,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## Choose a question, then explore
 
-12 workbenches, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
+13 workbenches, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
 
 | Area | Workbench | What you can investigate |
 | :--- | :--- | :--- |
@@ -28,6 +28,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target verification, rejection correction, EAGLE-2 and DSpark. |
 | Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram retrieval, context-aware gates and memory movement. |
 | Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | Causal Encoder-Decoder, CSA2 sharing, FP4 byte budgets, hierarchical indexing, continuous generation and session recovery. |
+| Advanced Inference | [**DeepInfer ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#deepinfer) | Trace performance and cost through expert batching, fixed replica capacity, communication overlap, shared history and scheduling, with pinned source evidence. |
 
 ### A path into DeepSeek CED
 

@@ -1,0 +1,826 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "DeepInfer framework principles, meaningful hierarchy and chapter ownership",
+  "kind": "redesign",
+  "status": "complete",
+  "nextAction": "Locally delivered for the current principles/chapter-responsibility contract. Preserve hierarchy and natural copy; invalidate affected gates for later changes.",
+  "capabilities": [
+    "timeline",
+    "multiple-modes",
+    "structural-comparison",
+    "data-movement",
+    "math"
+  ],
+  "assumptions": [
+    "Official source pinned to553741557a57df44a46fb3ab72b6aafeaf945337.",
+    "Principles determine chapter structure; source tracing verifies behavior where needed.",
+    "Static hierarchy shows responsibilities; request trace and assumed async schedule are explicitly bounded.",
+    "System follows the available dark OS branch; no claim about the other OS branch or GPU/NPU performance.",
+    "Previous broad-feature trial retained in run-depth-trial.json; research breadth is not a page-navigation requirement."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "f48d351ede8910e7ded205196f8587b1fa2dae9a8bc9eab6f4380f9ec225d12d",
+    "../../../src/components/deepinfer/model.js": "6de2d982442af50ff8c1b93f5c30feef3768fa31838193c1b32a44e1393e9c2b",
+    "../../../src/components/deepinfer/content.js": "e070cec5fe6fb946bba5aec91b1b7ee387084c0a9735182a1b00362b7c26737e",
+    "../../../src/components/deepinfer/deepinfer.css": "880a24c8a519d0bca1926608e75bee3f583b9fb12d3f0b672301fa54463f28bb",
+    "../../../src/components/deepinfer/SystemExplorer.jsx": "7a034579b3a0990661701f4d4f6c912155f85883e46f1a948613fd3c13166057",
+    "../../../src/components/deepinfer/system-model.js": "6d03bf1e744804150c6e04db26a23e9796ddc2ec2af53e621e56fbd5b4bc801f",
+    "../../../src/components/deepinfer/system-content.js": "59aa875a6e9c6eb07ce97d85f9e256a1fbcaa728356df7c9a24739b1a8a6c7ea",
+    "../../../src/components/deepinfer/system.css": "c9cab08c6d6080035382cd402c22ca18c3df0dfe6dc7519b2c8b07b6e2326139",
+    "../../../scripts/check-deepinfer.mjs": "3650c385ec59cf0cce451ea4a4a187c2c7fa6e2cf86e6f99c27cd320e6ec8e99",
+    "../../../src/lib/experiment-sharing.js": "0c17ca7f3a82b680c5b6d3906a9340d70a29ddc846264b11c54a249cc3f9315f",
+    "../../../scripts/check-workbench-sharing.mjs": "7482838695e362409c6f44cf577dcac55a1be45a8a3f666dc66af275234d63da",
+    "../../../scripts/check-learning-paths.mjs": "d91144c3c7125c30363942d2f07c5ca53178493c38699076aa14a37cc6d85fb1",
+    "../../../src/lib/chapter-registry.js": "64a28fd5eeca413cadb8d1e6c1af4fa950a3fdf1347e2cc9cd833988a6ae8adf",
+    "../../../src/lib/chapter-learning.js": "47d7375c1eb6b531fe147cd63cadd5a2c88a554f6a8bd659b0c0f329be98aef8",
+    "../../../.agents/skills/develop-interactive-module/SKILL.md": "3da0fbb94ab44384c4eaf969be92cb58f728a8a3538d594de2e69b2872974e07",
+    "../../../.agents/skills/develop-interactive-module/references/technical-analysis.md": "df4352ca621dca9ed31d0e5861528118b791b1923ea898831d6aa9bb12cced15",
+    "../../../.agents/skills/develop-interactive-module/references/content-and-math.md": "668a8e7f5f2a04ab4dc96cbcde9d4ce0c077aca0955604c5bbcb0622d1e2d60e",
+    "../../../.agents/skills/develop-interactive-module/references/qa-checklist.md": "a30475ce29dea73daad24e10765625a968704e18fc8c26c6ae2f882b66707094",
+    "../../../.agents/skills/develop-interactive-module/references/autonomous-delivery.md": "c1475ec56ddf899ab0a5b0d7e22afb00ecbe3880a180d7d9744faeeea0509bae",
+    "../../../.agents/skills/develop-interactive-module/evals/scenarios.json": "54ae53a73903ee5962fca94a05cc3d8e2465e0a8e7620935a4ac16d0dda83b6e",
+    "../../../.agents/skills/analyze-technical-principles/SKILL.md": "5e02d863d2942f004a41d1bd4898a31607f843e01df50068ab6a7a13757df8a1",
+    "../../../AGENTS.md": "286d41ae866e686645536aa23cf94dfce69c60876b90d027b9edd28fac9cb202"
+  },
+  "snapshotAt": "2026-10-27T16:18:21.859Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "hierarchy/principles.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "hierarchy/qa.md"
+    },
+    {
+      "id": "review",
+      "kind": "note",
+      "path": "hierarchy/review.md"
+    },
+    {
+      "id": "coverage",
+      "kind": "note",
+      "path": "content-coverage.md"
+    },
+    {
+      "id": "skill-eval",
+      "kind": "note",
+      "path": "../../audits/skill-autonomy/principles-focus-eval.md"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "hierarchy/evidence/build.log"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "hierarchy/evidence/model.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "hierarchy/evidence/integration.log"
+    },
+    {
+      "id": "theme-log",
+      "kind": "log",
+      "path": "hierarchy/evidence/theme.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "hierarchy/evidence/conventions.log"
+    },
+    {
+      "id": "principles-skill-log",
+      "kind": "log",
+      "path": "hierarchy/evidence/principles-skill.log"
+    },
+    {
+      "id": "delivery-skill-log",
+      "kind": "log",
+      "path": "hierarchy/evidence/delivery-skill.log"
+    },
+    {
+      "id": "matrix-log",
+      "kind": "log",
+      "path": "hierarchy/evidence/matrix.log"
+    },
+    {
+      "id": "rendered-matrix",
+      "kind": "log",
+      "path": "hierarchy/evidence/rendered-matrix.json"
+    },
+    {
+      "id": "detail-matrix",
+      "kind": "log",
+      "path": "hierarchy/evidence/detail-matrix.json"
+    },
+    {
+      "id": "browser-journeys",
+      "kind": "log",
+      "path": "hierarchy/evidence/browser-journeys.json"
+    },
+    {
+      "id": "console",
+      "kind": "log",
+      "path": "hierarchy/evidence/console.json"
+    },
+    {
+      "id": "timing-matrix",
+      "kind": "log",
+      "path": "hierarchy/evidence/timing-matrix.json"
+    },
+    {
+      "id": "shot-1440-en-dark-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-en-dark-engine.jpg"
+    },
+    {
+      "id": "shot-1440-en-dark-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-en-dark-execution.jpg"
+    },
+    {
+      "id": "shot-1440-en-dark-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-en-dark-service.jpg"
+    },
+    {
+      "id": "shot-1440-en-light-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-en-light-engine.jpg"
+    },
+    {
+      "id": "shot-1440-en-light-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-en-light-execution.jpg"
+    },
+    {
+      "id": "shot-1440-en-light-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-en-light-service.jpg"
+    },
+    {
+      "id": "shot-1440-zh-dark-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-zh-dark-engine.jpg"
+    },
+    {
+      "id": "shot-1440-zh-dark-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-zh-dark-execution.jpg"
+    },
+    {
+      "id": "shot-1440-zh-dark-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-zh-dark-service.jpg"
+    },
+    {
+      "id": "shot-1440-zh-light-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-zh-light-engine.jpg"
+    },
+    {
+      "id": "shot-1440-zh-light-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-zh-light-execution.jpg"
+    },
+    {
+      "id": "shot-1440-zh-light-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/1440-zh-light-service.jpg"
+    },
+    {
+      "id": "shot-390-en-dark-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-en-dark-engine.jpg"
+    },
+    {
+      "id": "shot-390-en-dark-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-en-dark-execution.jpg"
+    },
+    {
+      "id": "shot-390-en-dark-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-en-dark-service.jpg"
+    },
+    {
+      "id": "shot-390-en-light-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-en-light-engine.jpg"
+    },
+    {
+      "id": "shot-390-en-light-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-en-light-execution.jpg"
+    },
+    {
+      "id": "shot-390-en-light-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-en-light-service.jpg"
+    },
+    {
+      "id": "shot-390-zh-dark-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-zh-dark-engine.jpg"
+    },
+    {
+      "id": "shot-390-zh-dark-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-zh-dark-execution.jpg"
+    },
+    {
+      "id": "shot-390-zh-dark-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-zh-dark-service.jpg"
+    },
+    {
+      "id": "shot-390-zh-light-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-zh-light-engine.jpg"
+    },
+    {
+      "id": "shot-390-zh-light-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-zh-light-execution.jpg"
+    },
+    {
+      "id": "shot-390-zh-light-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/390-zh-light-service.jpg"
+    },
+    {
+      "id": "shot-768-en-dark-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-en-dark-engine.jpg"
+    },
+    {
+      "id": "shot-768-en-dark-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-en-dark-execution.jpg"
+    },
+    {
+      "id": "shot-768-en-dark-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-en-dark-service.jpg"
+    },
+    {
+      "id": "shot-768-en-light-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-en-light-engine.jpg"
+    },
+    {
+      "id": "shot-768-en-light-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-en-light-execution.jpg"
+    },
+    {
+      "id": "shot-768-en-light-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-en-light-service.jpg"
+    },
+    {
+      "id": "shot-768-zh-dark-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-zh-dark-engine.jpg"
+    },
+    {
+      "id": "shot-768-zh-dark-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-zh-dark-execution.jpg"
+    },
+    {
+      "id": "shot-768-zh-dark-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-zh-dark-service.jpg"
+    },
+    {
+      "id": "shot-768-zh-light-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-zh-light-engine.jpg"
+    },
+    {
+      "id": "shot-768-zh-light-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-zh-light-execution.jpg"
+    },
+    {
+      "id": "shot-768-zh-light-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/768-zh-light-service.jpg"
+    },
+    {
+      "id": "shot-detail-390-en-dark-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-en-dark-engine.jpg"
+    },
+    {
+      "id": "shot-detail-390-en-dark-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-en-dark-execution.jpg"
+    },
+    {
+      "id": "shot-detail-390-en-dark-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-en-dark-service.jpg"
+    },
+    {
+      "id": "shot-detail-390-en-light-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-en-light-engine.jpg"
+    },
+    {
+      "id": "shot-detail-390-en-light-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-en-light-execution.jpg"
+    },
+    {
+      "id": "shot-detail-390-en-light-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-en-light-service.jpg"
+    },
+    {
+      "id": "shot-detail-390-zh-dark-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-zh-dark-engine.jpg"
+    },
+    {
+      "id": "shot-detail-390-zh-dark-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-zh-dark-execution.jpg"
+    },
+    {
+      "id": "shot-detail-390-zh-dark-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-zh-dark-service.jpg"
+    },
+    {
+      "id": "shot-detail-390-zh-light-engine",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-zh-light-engine.jpg"
+    },
+    {
+      "id": "shot-detail-390-zh-light-execution",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-zh-light-execution.jpg"
+    },
+    {
+      "id": "shot-detail-390-zh-light-service",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/detail-390-zh-light-service.jpg"
+    },
+    {
+      "id": "shot-final-engine-zh-dark",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/final-engine-zh-dark.jpg"
+    },
+    {
+      "id": "shot-partial-390-zh-dark",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/partial-390-zh-dark.jpg"
+    },
+    {
+      "id": "shot-partial-390-zh-light",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/partial-390-zh-light.jpg"
+    },
+    {
+      "id": "shot-schedule-390-zh-dark",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/schedule-390-zh-dark.jpg"
+    },
+    {
+      "id": "shot-schedule-390-zh-light",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/schedule-390-zh-light.jpg"
+    },
+    {
+      "id": "shot-timing-1440-zh-dark",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/timing-1440-zh-dark.jpg"
+    },
+    {
+      "id": "shot-timing-1440-zh-light",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/timing-1440-zh-light.jpg"
+    },
+    {
+      "id": "shot-timing-390-zh-dark",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/timing-390-zh-dark.jpg"
+    },
+    {
+      "id": "shot-timing-390-zh-light",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/timing-390-zh-light.jpg"
+    },
+    {
+      "id": "shot-timing-detail-390-zh-dark",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/timing-detail-390-zh-dark.jpg"
+    },
+    {
+      "id": "shot-timing-detail-390-zh-light",
+      "kind": "screenshot",
+      "path": "hierarchy/evidence/timing-detail-390-zh-light.jpg"
+    }
+  ],
+  "claims": [
+    {
+      "id": "hierarchy",
+      "statement": "Serving context, engine responsibilities and model execution are distinct levels connected by concrete input/output ownership.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/engine/llm_engine.py#L860",
+      "locator": "LLMEngine.step; worker/model runtime and official serving Q&A",
+      "boundary": "A responsibility hierarchy, not a literal serial trace of asynchronous code or a complete public online deployment.",
+      "model": "FRAMEWORK parent/children and deriveFrameworkView",
+      "trigger": "Open execution, inspect a leaf, return directly or stepwise to ancestors",
+      "expected": "Parent context and containing branch stay aligned; service/engine/execution expose distinct responsibilities.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "request-progress",
+      "statement": "Scheduling chooses work before computation; partial prefill emits no token, and committing a sampled result updates request state.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/csrc/engine/scheduler.hpp#L351",
+      "locator": "_schedule_prefill plus model/worker output processing",
+      "boundary": "One-rank synchronous NORMAL, nextn0, two toy generation slots, sufficient cache and interval1.",
+      "model": "buildRequestTrace/deriveDeepInferState with schedule-vs-partial regression",
+      "trigger": "Step through schedule A, forward B, sample and commit",
+      "expected": "ScheduleA is not yet computed; partialB retains history without output; sampleA pending1 then commitA output1.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "async",
+      "statement": "CPU work can overlap device execution while prior sample remains a prerequisite of the next forward.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/worker/worker.py#L89",
+      "locator": "Worker.batch_inference and final drain",
+      "boundary": "Assumed time units1/4/1/2; no GPU measurement or predicted speedup.",
+      "model": "deriveOverlapModel and scoped timing selection",
+      "trigger": "Toggle sync/async and select a timing operation",
+      "expected": "Baseline/candidate selection resolves its own operation; dependency remains and the final result drains.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "hierarchy-navigation",
+      "action": "Traverse service/engine/execution, keyboard-select leaves, and return via breadcrumb/back.",
+      "expected": "Each drill-down narrows the parent question; ancestors select the containing branch and interfaces remain readable.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "chapter-ownership",
+      "action": "Open sampling and follow its specialist link to existing Spec Decode/DSpark.",
+      "expected": "Framework explains accepted output/state integration; specialist algorithm opens in its owning chapter; retired experiments absent here.",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    },
+    {
+      "id": "copy-stages",
+      "action": "Read selectedA at schedule, partialB after forward, then sample/commit/terminal/reset/autoplay.",
+      "expected": "Natural Chinese remains stage-correct and every view tracks the same request state.",
+      "checkIds": [
+        "browser",
+        "model",
+        "visual"
+      ]
+    },
+    {
+      "id": "appearance",
+      "action": "Three levels by three widths by two languages and themes, plus mobile inspector/stage/timing close-ups.",
+      "expected": "Correct resolved theme, no checked page overflow/math errors, readable parent relationships and selected-state contrast. System dark OS branch only.",
+      "checkIds": [
+        "browser",
+        "visual",
+        "theme"
+      ]
+    },
+    {
+      "id": "workbench",
+      "action": "Home return, three-key sharing and actual document reload, plain reload.",
+      "expected": "Configuration retains/restores, presentation resets, legacy retired settings are ignored.",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "research",
+        "review",
+        "coverage"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "node scripts/check-deepinfer.mjs",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "integration-log",
+        "matrix-log"
+      ],
+      "command": "npm run check:workbench; node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs docs/module-runs/deepinfer/hierarchy/qa-matrix.json",
+      "exitCode": 0
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/DeepInfer.jsx --capabilities timeline,math,multiple-modes,structural-comparison",
+      "exitCode": 0
+    },
+    {
+      "id": "theme",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "theme-log"
+      ],
+      "command": "node scripts/check-theme.mjs",
+      "exitCode": 0
+    },
+    {
+      "id": "skills",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "principles-skill-log",
+        "delivery-skill-log"
+      ],
+      "command": "python -X utf8 quick_validate.py .agents/skills/analyze-technical-principles; python -X utf8 quick_validate.py .agents/skills/develop-interactive-module",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "browser-journeys",
+        "rendered-matrix",
+        "timing-matrix",
+        "console",
+        "shot-final-engine-zh-dark",
+        "shot-schedule-390-zh-dark"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-10-27T16:18:21.859Z",
+      "artifactIds": [
+        "review",
+        "rendered-matrix",
+        "detail-matrix",
+        "timing-matrix",
+        "shot-1440-en-dark-engine",
+        "shot-1440-en-dark-execution",
+        "shot-1440-en-dark-service",
+        "shot-1440-en-light-engine",
+        "shot-1440-en-light-execution",
+        "shot-1440-en-light-service",
+        "shot-1440-zh-dark-engine",
+        "shot-1440-zh-dark-execution",
+        "shot-1440-zh-dark-service",
+        "shot-1440-zh-light-engine",
+        "shot-1440-zh-light-execution",
+        "shot-1440-zh-light-service",
+        "shot-390-en-dark-engine",
+        "shot-390-en-dark-execution",
+        "shot-390-en-dark-service",
+        "shot-390-en-light-engine",
+        "shot-390-en-light-execution",
+        "shot-390-en-light-service",
+        "shot-390-zh-dark-engine",
+        "shot-390-zh-dark-execution",
+        "shot-390-zh-dark-service",
+        "shot-390-zh-light-engine",
+        "shot-390-zh-light-execution",
+        "shot-390-zh-light-service",
+        "shot-768-en-dark-engine",
+        "shot-768-en-dark-execution",
+        "shot-768-en-dark-service",
+        "shot-768-en-light-engine",
+        "shot-768-en-light-execution",
+        "shot-768-en-light-service",
+        "shot-768-zh-dark-engine",
+        "shot-768-zh-dark-execution",
+        "shot-768-zh-dark-service",
+        "shot-768-zh-light-engine",
+        "shot-768-zh-light-execution",
+        "shot-768-zh-light-service",
+        "shot-detail-390-en-dark-engine",
+        "shot-detail-390-en-dark-execution",
+        "shot-detail-390-en-dark-service",
+        "shot-detail-390-en-light-engine",
+        "shot-detail-390-en-light-execution",
+        "shot-detail-390-en-light-service",
+        "shot-detail-390-zh-dark-engine",
+        "shot-detail-390-zh-dark-execution",
+        "shot-detail-390-zh-dark-service",
+        "shot-detail-390-zh-light-engine",
+        "shot-detail-390-zh-light-execution",
+        "shot-detail-390-zh-light-service",
+        "shot-final-engine-zh-dark",
+        "shot-partial-390-zh-dark",
+        "shot-partial-390-zh-light",
+        "shot-schedule-390-zh-dark",
+        "shot-schedule-390-zh-light",
+        "shot-timing-1440-zh-dark",
+        "shot-timing-1440-zh-light",
+        "shot-timing-390-zh-dark",
+        "shot-timing-390-zh-light",
+        "shot-timing-detail-390-zh-dark",
+        "shot-timing-detail-390-zh-light"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "Independent pinned-source review verifies responsibilities and execution grouping; H1 stage-copy mismatch fixed with model/browser regression. No invented architecture metrics or measured performance.",
+      "artifactIds": [
+        "qa",
+        "review",
+        "research",
+        "shot-final-engine-zh-dark"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pass",
+      "observation": "Principles and chapter-ownership table guide three real hierarchy levels; framework loop remains complete while specialist algorithm internals are linked. Chinese copy reviewed in actual selected/phase states.",
+      "artifactIds": [
+        "qa",
+        "review",
+        "research",
+        "shot-final-engine-zh-dark"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "Owner-operated browser confirms ancestor branch context, keyboard, all three levels, real specialist route, phase progression, terminal/autoplay/reset, Home and share reload.",
+      "artifactIds": [
+        "qa",
+        "review",
+        "research",
+        "shot-final-engine-zh-dark"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "Independent review opened36 hierarchy views,12 mobile inspectors,4 phase cases,4 timing views and2 timing close-ups. Targeted selected-outline repair independently rechecked; no remaining P0-P2 or the observed P3 outline finding.",
+      "artifactIds": [
+        "qa",
+        "review",
+        "research",
+        "shot-final-engine-zh-dark"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "Thirteen-chapter workbench checks pass. Only three DeepInfer experiment keys remain shareable; older retired fields are ignored. Production build, theme regression, both skill validators and conventions pass.",
+      "artifactIds": [
+        "qa",
+        "integration-log",
+        "build-log",
+        "browser-journeys"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "FOCUS",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Flat feature inventory obscured framework organization; replaced with principle hierarchy and chapter ownership.",
+      "checkIds": [
+        "research",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "COPY",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Reader-facing Chinese was overly abstract/process-oriented; rewritten and read in actual states.",
+      "checkIds": [
+        "research",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "H1",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Selected schedule request described already-computed partial work; separated requestScheduled from post-forward partial state.",
+      "checkIds": [
+        "model",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "H2",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Direct ancestor return selected an unrelated first child; now preserves containing branch from trail.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "H3",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Final sampling text implied pre-forward verification budget scheduling; clarified target-result verification and accepted-length feedback.",
+      "checkIds": [
+        "research",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "OUTLINE",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Dark selection outline blended into the background; explicit light-dark outline independently rechecked.",
+      "checkIds": [
+        "theme",
+        "browser",
+        "visual"
+      ]
+    }
+  ],
+  "coverage": "hierarchy/qa-matrix.json"
+}

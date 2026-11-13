@@ -1,112 +1,124 @@
 ---
 name: develop-interactive-module
-description: Develop interactive LLM infrastructure visualization modules throughout their lifecycle. Use when creating a chapter, modifying or extending an existing module, correcting technical or interaction behavior, improving visual encoding or responsive layout, revising formulas or implementation evidence, or performing rendered interaction QA.
+description: Turn a technical topic, paper, or implementation into a researched, working interactive LLM infrastructure chapter in this repository. Also use for chapter repairs, extensions, redesigns, and rendered QA. Own research, teaching design, implementation, integration, verification, and repair through delivery; assessment or planning requests remain assessment or planning.
 ---
 
 # Develop an Interactive Module
 
-Build an explicit teaching model before building the interface. Choose interactions that fit the learning object; do not add animation, comparison, or architectural layers by default.
+Deliver a working explanation that lets a reader **see and investigate why the mechanism works**. Treat “讲透 X，做成交互式图解” as an implementation request. Own the decisions and verification needed to finish; the user should not have to act as the researcher, art director, or test operator.
 
-## 1. Capture the existing contract
+## Operating contract
 
-Read `AGENTS.md`, neighboring modules, routing, shared components, and the current QA record. For an existing module, render every current mode and record:
+- Default to autonomous local delivery. State the outcome, choose reasonable reversible defaults, record assumptions, and continue through verification. Internal plans, research notes and storyboards are working artifacts, not approval gates.
+- Choose technology for explanatory clarity and usable interaction. The existing React/Vite/Tailwind/Motion stack is a starting point, not a constraint: evaluate and adopt other renderers, libraries, module frameworks or necessary build changes when they materially improve the result. A technology change alone does not require another approval. Preserve the accepted learning behavior and project experience through appropriate integration.
+- Honor narrower intent: “先评估 / 先讨论 / 只规划” ends with that artifact; it does not authorize implementation. Repairs and extensions preserve accepted major regions, control placement and interaction paths. New chapters and requested redesigns permit composing a suitable structure.
+- Discover answers in the repository and primary sources before asking. Ask only when unresolved topic identity, incompatible requirements, missing essential evidence/access, or an actual permission boundary prevents correct work. Continue independent work while awaiting an answer. Do not ask users to choose routine layouts, palettes, state models or QA paths.
+- A topic example in a request to improve this skill is not a request to implement that topic. Local delivery does not itself request publishing or pushing; honor any actual authorization already present.
+- A successful build is one check, not acceptance. Never label unexecuted browser checks, scenario dry runs, or self-reported quality scores as verified output.
+- Every chapter delivery includes an automatic owner read-through of the actual rendered page from first screen to footer and its important branches. This is required without a user reminder and cannot be delegated to an independent reviewer or replaced by local checks. Apply [reader-review.md](references/reader-review.md); autonomously repair and reread within the authorized scope before delivery.
 
-- the teaching question and accepted interaction structure;
-- the controls, canvases, inspectors, and cross-view interactions that must remain;
-- the behavior that may change in this iteration;
-- representative baseline states and responsive widths.
+## 1. Discover scope and establish the teaching contract
 
-Classify the work as a repair, extension, or structural redesign. Default to the smallest change that satisfies the request. Do not replace the information architecture during a repair or extension unless the user authorizes that scope.
+Read `AGENTS.md`, current `design-qa.md` entries for the affected module, routing/shared primitives, and two relevant neighboring chapters. Read [project-integration.md](references/project-integration.md) for the integration surface and tool discovery. Inspect only relevant conversation history when available; extract repeated failures, not every historical preference.
 
-For a repair or extension, treat the existing layout as an acceptance constraint, not as optional inspiration. Unless the user explicitly authorizes a structural redesign or large-scale refactor:
+Classify the task as **create, repair, extend, redesign, QA, or assess**. For an existing chapter, capture affected modes and rendered baseline before layout-affecting edits. Declare what may change and what must survive. Work within that contract; if a repair cannot fit, explain the concrete conflict and ask about the scope expansion instead of silently redesigning it.
 
-- preserve the order, relative prominence, and spatial relationships of major regions;
-- preserve control placement, primary canvases, inspectors, and established interaction paths;
-- add or correct evidence inside the existing regions before introducing new panels or moving content;
-- do not replace a page-wide composition, split ratio, navigation pattern, or responsive reading order merely to make implementation cleaner;
-- stop and explain the required structural tradeoff before editing if the requested behavior cannot fit the existing contract.
+Search the registry before creating a topic chapter. If it already exists, inspect current coverage and deliver the requested improvement there. If it already meets the request, verify and report that coverage; do not duplicate it or invent work merely to generate a diff.
 
-Capture a rendered baseline before the first layout-affecting edit. After implementation, compare the same states and widths against that baseline; a technically correct result still fails the change contract if it unnecessarily destroys the accepted layout or interaction structure.
-
-Declare the change surface before editing: list the dimensions that can alter behavior (for example mode, lifecycle state, language, or viewport), the affected views, and the behavior that must remain unchanged. Include only dimensions relevant to this iteration.
-
-Before adding an entry or panel, classify the new content as an alternative mechanism, a cooperating subsystem, a numeric format, or an implementation example. This determines its place in the existing chapter and control hierarchy; a new technical term alone does not justify a new section. Apply the integration guidance in [content-and-math.md](references/content-and-math.md) and the architecture drill-down guidance in [interaction-model.md](references/interaction-model.md).
-
-For top-level controls, first inventory neighboring modules and capture the repository's control contract: order, grouping, shape, label semantics, trailing-edge placement, and responsive breakpoint. Reuse the established pattern for semantically equivalent controls instead of introducing a chapter-specific variant. Treat language as a presentation preference; use the repository's established single-toggle or segmented pattern consistently, and make a toggle label communicate the target language. In timeline modules, keep the reset/play/next group at the trailing edge when that is the repository convention. Deviate only when the chapter has a real interaction need, and record the reason in QA.
-
-## 2. Declare the teaching capabilities
-
-State which capabilities the module actually needs:
-
-- `timeline`: ordered execution with play, pause, step, or scrub;
-- `multiple-modes`: modes whose mechanisms or consequences differ;
-- `resource-metrics`: quantitative capacity, traffic, latency, or utilization;
-- `structural-comparison`: representations or architectures compared on shared dimensions;
-- `data-movement`: ownership, transfer, routing, or communication paths;
-- `dense-layout`: matrices, cards, lanes, or other high-density responsive content;
-- `math`: mathematical notation that must use the shared renderer.
-
-These capabilities select interaction and QA requirements; they are not a required feature list. A structural explorer does not need a global playback state, and a timeline should not be added merely to satisfy a convention.
-
-## 3. Verify claims and boundaries
-
-Use primary papers, official documentation, or real implementations when technical behavior is uncertain. Record a compact claim ledger with the claim, authoritative basis, assumptions, capability boundary, model consequence, and visible evidence.
-
-Verify formulas, shapes, data dependencies, ownership, resource scaling, and execution context before implementing the UI. Distinguish training, prefill, and decode when relevant. Label deliberate simplifications and version-specific behavior; never let a simplification reverse the real conclusion.
-
-## 4. Build one canonical domain model
-
-Read [interaction-model.md](references/interaction-model.md). Classify each control as independent input, derived value, constrained input, mutually exclusive mode, or presentation-only preference. Normalize inputs before deriving a pure snapshot.
-
-Store only user-controlled and lifecycle state. Derive every canvas, metric, formula, highlight, and explanation from the same model. Keep technical rules out of ad hoc JSX branches. Add module-level model regression when the legal state space is large or interactions have important invariants.
-
-For `timeline`, model the real dependency order and keep exactly one operation active. For other capabilities, use the interaction grammar that best exposes structure, ownership, comparison, or parameter sensitivity.
-
-## 5. Design claim-to-evidence interactions
-
-Read [visual-grammar.md](references/visual-grammar.md). For each important claim, specify:
-
-1. the user action or state that exposes it;
-2. the visual variable or relationship that changes;
-3. the expected early, representative, boundary, or final snapshot.
-
-A mode switch must visibly change every layer it claims to affect. Reuse the primary visual objects when adding movement, ownership, or annotations instead of creating a second disconnected explanation. Allocate space by information density and preserve the existing visual hierarchy unless the change contract permits otherwise.
-
-## 6. Implement the smallest coherent slice
-
-Read [content-and-math.md](references/content-and-math.md). Implement or correct the pure model first, then connect the existing views to it, then refine visual encoding and prose. Route display prose through i18n and mathematical notation through the shared KaTeX renderer.
-
-Keep rendering a pure model-to-UI mapping. Separate domain derivation, translated content, visual primitives, and panels when complexity justifies it. Avoid broad refactors that do not contribute to the accepted teaching claim or regression safety.
-
-Reuse an existing shared control component when the repository provides one. Otherwise copy the smallest established markup and interaction semantics from a neighboring module, including dimensions, icon sizing, target-language text, dynamic accessible names, disabled states, and responsive wrapping. Do not standardize controls by moving or rebuilding unrelated content.
-
-## 7. Validate in layers
-
-Read [qa-checklist.md](references/qa-checklist.md). Run the common convention checks plus the declared capabilities:
+For a new chapter or substantial redesign, read [autonomous-delivery.md](references/autonomous-delivery.md) and initialize a resumable run:
 
 ```bash
-node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/YourModule.jsx --capabilities timeline,math,multiple-modes
-npm run build
+node .agents/skills/develop-interactive-module/scripts/module-run.mjs init chapter-id --topic "Technical topic" --kind create
 ```
 
-Use three complementary verification layers:
+Use `docs/module-runs/<chapter-id>/` for the run record, a concise `brief.md`, and `research.md`. Reuse the run when continuing. Small repairs use the affected `design-qa.md` entry and focused evidence; do not burden a label correction with a full dossier.
 
-- pure-model tests for formulas, constraints, invariants, and large combination spaces;
-- browser interaction tests for key controls, coupled state, and representative paths;
-- rendered QA for visual evidence, responsive density, both languages, accessibility, and console output.
+In the brief, decide:
 
-When the change surface contains several values or coupled dimensions, create a small module-owned QA matrix and validate it with:
+- **Teaching question:** what should a reader understand or predict after exploring?
+- **Explanatory thesis:** what result or design concern motivated this request, and what causal answer should the reader be able to give? Preserve that concern through decomposition; a generic architecture tour or a polished local demo is not enough.
+- **Prerequisites and scope:** supply essential concepts in context or link existing chapters; do not implement a whole prerequisite course.
+- **Chapter ownership:** decide what this chapter teaches in depth, what it connects to the system, and what belongs in a named neighboring chapter. Read the destination before promising its coverage. A dependency's importance does not automatically make its internals part of this chapter.
+- **Mechanism and tradeoff:** what changes, why it helps, where it fails or costs more.
+- **First useful view:** which concrete objects and relationships make the mechanism visible immediately?
+- **Exploration:** the meaningful action, changed model fact, visible consequence, and expected boundary state.
+- **Change surface:** affected modes, execution contexts, parameters, selections, languages and widths; preserved behavior for existing work.
+
+Choose only needed capabilities: `timeline`, `multiple-modes`, `resource-metrics`, `structural-comparison`, `data-movement`, `dense-layout`, `math`. These select design and verification requirements, not a feature checklist.
+
+## 2. Resolve identity and verify the technical model
+
+Before committing to an ambiguous name, inspect user links, local context and authoritative search results. Record the resolved project/paper, version or commit and source. Do not substitute a familiar similarly named project. If materially different candidates remain, ask one precise identity question and leave dependent implementation pending.
+
+Use primary papers, official documentation and actual source implementations. Read relevant content, not only search snippets. For implementation-level teaching, source-check the claimed path at a pinned revision and execution context; follow [implementation-fidelity.md](references/implementation-fidelity.md). Shallow examples may simplify size/presentation while preserving semantics and dependencies; deeper views must expose the verified implementation relationship and identify remaining abstractions. Stop broad searching once the central mechanism, shapes, execution, resource accounting and boundary have adequate evidence. Read [content-and-math.md](references/content-and-math.md) when producing claims, equations or implementation evidence.
+
+For technical topics, framework/system explanations or feedback about focus/depth, read [technical-analysis.md](references/technical-analysis.md) and use Analyze Technical Principles. Establish the central question, conceptual hierarchy and chapter ownership before choosing experiments. Use repository analysis only when the task or an unresolved implementation fact calls for it. Complete research does not mean putting every discovered feature on the page.
+
+Record each central claim in the run: source URL and section/symbol, execution assumptions, simplification/boundary, pure-model consequence, exploration trigger, expected visual evidence. Resolve or explicitly bound source conflicts; remove unsupported claims rather than inventing internals or speedups. Distinguish training/prefill/decode, logical/physical state, estimated/measured cost and illustrative/real tensor values where relevant.
+
+## 3. Design evidence before panels
+
+Read [interaction-model.md](references/interaction-model.md) and [visual-grammar.md](references/visual-grammar.md). Compare two plausible representations briefly in the brief, then choose the one exposing the mechanism with less indirection. Do not create two full implementations or ask the user to art-direct them.
+
+Choose the implementation after choosing the representation. Read [technology-selection.md](references/technology-selection.md) for a new chapter/redesign or when the current renderer limits clarity, density, performance or interaction. Record the chosen approach, relevant alternatives and evidence in the brief. Routine repairs need no technology survey unless technology causes the defect.
+
+- Start from concrete model objects: dimension-labeled matrices, token positions, cache slots, state containers, devices or requests. Operation-name boxes and prose do not substitute for showing a central transformation.
+- For a genuine optimization, expose the relevant baseline, mechanism, benefit and cost together on shared inputs and quantitative scales. Include a boundary where the benefit shrinks or reverses when supported; do not manipulate scales to guarantee a win.
+- For cooperating subsystems, show the connected architecture together, then overview → component → record → return. Comparison tabs must not pretend those subsystems are alternatives.
+- Put controls beside the canvas they affect. Separate independently paced explorations into explicit local playback scopes; views claiming the same execution derive from the same lifecycle. Do not force one global clock on independent canvases.
+- Keep the first view understandable and immediately useful. Put detailed derivations/provenance in contextual inspectors; preserve visible tradeoffs and primary controls. Avoid paragraphs inside nodes or a page of cards before the experiment.
+- Carry the analysis handoff's concrete objects and relationships into the first useful view and local experiments. A sourced result may introduce the question; local counts must point to visible objects. Prefer direct selection on those objects with a nearby consequence/inspector over a separate selector followed by explanatory text and another jump. Preserve the continuous default argument and parent context; do not turn cooperating components into replacement views.
+
+## 4. Implement a complete vertical slice, then complete the teaching question
+
+Normalize inputs, derive a pure domain snapshot, then render all dependent views from it. Store only genuine configuration and lifecycle state. Classify independent, constrained, derived, mutually exclusive and presentation controls. Define reset/remap behavior before wiring mode changes.
+
+Implement a representative path end to end early: real control → model transition → visible operation/result → synchronized explanation/metric. Render it before expanding to more modes. If the essential mechanism remains invisible, fix the representation now rather than adding prose later.
+
+Read this first usable slice in reader order before expanding it. Catch an incoherent organizing idea here; do not defer the first holistic reading until after every panel has been built.
+
+For timelines, follow real dependencies and distinguish pending/active/passed/done. A serial lane has one active operation; actual parallel lanes may execute together. Advance tokens only after their pipeline completes; end cleanly without accidental wrap or end-frame jump. Preserve stable object identities when tracing provenance.
+
+In the current React shell, reuse shared language, `MathFormula`, `ChapterIcon`, workbench spacing and experiment state/sharing conventions. Other rendering/module technologies must integrate those user-visible contracts through adapters or equivalent implementations: one site language control, correct LaTeX, coherent chapter identity, navigation, configuration lifecycle and share links. A specific hook, CSS framework or component API is not itself the learning requirement. Follow [project-integration.md](references/project-integration.md); keep changes relevant to the accepted outcome.
+
+## 5. Inspect, repair, and reverify autonomously
+
+Read [qa-checklist.md](references/qa-checklist.md) and the gates in [autonomous-delivery.md](references/autonomous-delivery.md). Execute checks appropriate to affected behavior:
+
+1. Model invariants and numerical oracles, including representative and boundary cases.
+   For a real implementation path, reconcile the model and rendered states with the inspected source, including non-default branches that the chapter exposes. Use independent numerical/reference expectations where applicable; tests that repeat the visualization's own assumptions do not prove source fidelity. Unresolved central correctness or implementation mismatches block technical acceptance, even if the page is readable and the build passes.
+2. Browser journeys: change controls, inspect coupled views, traverse drill-down and return, switch modes mid-run, reset, finish playback where present, leave/reenter the chapter, and use a share link when affected.
+3. For full chapter delivery, inspect the actual teaching canvas in Chinese/English at desktop, tablet and mobile widths, including dense and boundary states, in both light and dark themes. Exercise System preference and record its resolved theme; a single resolved System screenshot does not cover both themes. A focused repair inspects affected states and relevant language/width/theme risks, without claiming whole-chapter coverage. Check contrast, dimensions, proportionality, control proximity, connections, empty space, console, math and overflow. Open and inspect screenshots, not just save them.
+4. Conventions, applicable domain checks, the actual production build, and workbench routing/sharing checks when affected. On the current stack these are `npm run build` and `npm run check:workbench`. If technology changes, keep these entry points working where feasible or update their documented replacements and validate the same behaviors. Adapt React-specific lexical checks to the chosen implementation; never waive the underlying quality requirement because a checker assumes the old stack.
+5. Owner reader acceptance: follow [reader-review.md](references/reader-review.md), personally read the final rendered chapter continuously, explore important branches and reconstruct its answer from what is visible. Record actual reading order and friction, repair substantive gaps without waiting for the user, then reread the whole explanation. Functional/visual matrices and independent approval do not waive this gate.
+
+For several coupled dimensions, create a module-owned `qa-matrix.json` and run:
+
+Use pure-model checks for broad legal combinations and coupled invariants; browser journeys cover representative interactions plus each affected mode, risky transition and rendered boundary. Declare that distinction in the matrix/QA note instead of implying that enumerated combinations all ran in a browser.
 
 ```bash
-node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs path/to/qa-matrix.json
+node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs docs/module-runs/chapter-id/qa-matrix.json
+node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/YourModule.jsx --capabilities timeline,math
 ```
 
-The matrix declares arbitrary dimensions and required cross-products; keep domain-specific values and assertions in the module, not in this skill.
+Review technical truth, teaching focus/hierarchy, natural reader-facing copy, interaction behavior, visual usability and project integration. For each, record observable findings and evidence; a numeric self-rating is not proof. Check whether the reader can follow the main idea without opening every dependency and whether each drill-down explains its parent. Fix defects within scope, add meaningful regression coverage for confirmed failures, and re-run affected checks. Recheck the final revision, not an earlier screenshot.
 
-Turn every confirmed defect into a reusable regression assertion, browser case, or checklist item. Update `design-qa.md` with the current result, evidence, unresolved limitations, and change-contract impact. Do not declare completion from source inspection or a successful build alone.
+Review the user outcome independently of mechanical QA: ask the reviewer to reconstruct the chapter's causal answer from the rendered artifact, identify what distinguishes this subject, and explain a condition where the headline result would not transfer. Supply the original request and sources without the author's preferred answer or prior pass verdicts. A successful click journey, hierarchy, build or large screenshot matrix cannot waive a missing central explanation. Reopen the teaching design when this test fails.
 
-### Chapter identity and control prominence
+For substantial work, bring the neighboring rendered chapters into this judgement before expanding the first slice, then check the final experience again as specified in [reader-review.md](references/reader-review.md). Compare useful observation, direct interaction and dense mechanism reading, not decoration or screenshot totals. If repeated review exposes the same gap, revisit the argument/representation rather than accumulating more paragraphs, controls or QA records.
 
-- Use `src/lib/chapter-icons.js` as the single chapter-icon mapping. Body titles render `ChapterIcon` with their chapter ID; navigation and home cards use the same mapping through the chapter registry. Do not choose a separate decorative icon in a chapter header. Preserve unique, content-relevant icons across chapters and check title/navigation agreement when adding or changing a chapter.
-- Keep primary experiment policies discoverable. For Radix HiCache, prefetch, backup and runtime-condition controls are expanded by default. Minimum-load tuning and the companion-reader toggle are deliberately omitted from the teaching UI; do not restore them just because the engine model supports them. Retain the shared-prefix visualization itself.
-- Distinguish optional runtime diagnostics from controls needed to explore the main teaching question. Reduce secondary controls before hiding primary policies. A preference for one chapter is not a requirement to expand every disclosure in every chapter.
+Include selection falsification in browser journeys: click corresponding objects on both comparison sides, inspect an object excluded from the active operation, then change configuration so the selected object disappears. Verify diagram identity, highlight, inspector, stage-specific copy and source stay aligned. Check a non-default execution branch even if it shares stage labels with the default branch.
+
+Use one independent reviewer for substantial new chapters/redesigns when subagents are available and authorized by this workflow. Give the reviewer the user request, source basis, current artifact and acceptance contract; ask for observed issues and reproduction steps without supplying your preferred verdict. The owner integrates fixes. Otherwise perform a separate adversarial pass and record self-review; neither mode grants extra tool permissions.
+
+If a tool/check remains unavailable, try a suitable supported fallback. Record the blocked check and cause, finish unaffected work, and deliver an accurately labeled partial result. Do not retry unchanged failures indefinitely or quietly waive the gate. If repeated design attempts fail the same teaching claim, revisit the representation/source model rather than endlessly changing CSS.
+
+## 6. Deliver with evidence and a continuation point
+
+Update `design-qa.md` with scope, resolved claims, actual checks, screenshots, findings, remaining limitations and contract impact. For full runs, record input hashes and validate the run record as specified in [autonomous-delivery.md](references/autonomous-delivery.md). Keep unexecuted checks pending/blocked; the helper validates evidence bookkeeping, not whether science or design is good.
+
+Deliver a runnable chapter/preview and concise account of what the reader can now see, verification performed and unresolved limits only after the owner reader pass and other required gates succeed. For assessment, deliver assessment only. Do not end with an invitation for the user to discover obvious missing functionality or trigger the holistic read-through. Leave precise next actions in the run if interrupted; on resume inspect current files and continue from the earliest invalidated gate.
+
+## Maintaining this skill
+
+Use [skill-evaluation.md](references/skill-evaluation.md) and [evals/scenarios.json](evals/scenarios.json) when changing this workflow. Test realistic behavior and failure cases, not merely whether instructions contain expected words. [upgrade-basis.md](references/upgrade-basis.md) records research and historical failures; read it when revising the workflow, not on every chapter task.

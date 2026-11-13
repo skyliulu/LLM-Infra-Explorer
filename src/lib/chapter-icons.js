@@ -1,4 +1,4 @@
-import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split} from 'lucide-react';
+import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split,CircuitBoard} from 'lucide-react';
 
 export const CHAPTER_ICONS = {
   llm: Cpu,
@@ -13,4 +13,5 @@ export const CHAPTER_ICONS = {
   radixcache: GitBranch,
   dpattention: Split,
   linearattn: Repeat2,
+  deepinfer: CircuitBoard,
 };

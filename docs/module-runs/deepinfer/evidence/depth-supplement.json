@@ -1,0 +1,98 @@
+[
+  {
+    "screenshot": "depth-mega-1440-en-light.jpg",
+    "mathErrors": 0,
+    "mechanism": "mega",
+    "overflow": false,
+    "theme": "light",
+    "width": 1440
+  },
+  {
+    "screenshot": "depth-precision-1440-en-light.jpg",
+    "mathErrors": 0,
+    "mechanism": "precision",
+    "overflow": false,
+    "theme": "light",
+    "width": 1440
+  },
+  {
+    "screenshot": "depth-attention-1440-en-light.jpg",
+    "mathErrors": 0,
+    "mechanism": "attentionKernel",
+    "overflow": false,
+    "theme": "light",
+    "width": 1440
+  },
+  {
+    "screenshot": "depth-mega-1440-en-dark.jpg",
+    "mathErrors": 0,
+    "mechanism": "mega",
+    "overflow": false,
+    "theme": "dark",
+    "width": 1440
+  },
+  {
+    "screenshot": "depth-precision-1440-en-dark.jpg",
+    "mathErrors": 0,
+    "mechanism": "precision",
+    "overflow": false,
+    "theme": "dark",
+    "width": 1440
+  },
+  {
+    "screenshot": "depth-attention-1440-en-dark.jpg",
+    "mathErrors": 0,
+    "mechanism": "attentionKernel",
+    "overflow": false,
+    "theme": "dark",
+    "width": 1440
+  },
+  {
+    "screenshot": "depth-mega-390-zh-light.jpg",
+    "mathErrors": 0,
+    "mechanism": "mega",
+    "overflow": false,
+    "theme": "light",
+    "width": 390
+  },
+  {
+    "screenshot": "depth-precision-390-zh-light.jpg",
+    "mathErrors": 0,
+    "mechanism": "precision",
+    "overflow": false,
+    "theme": "light",
+    "width": 390
+  },
+  {
+    "screenshot": "depth-attention-390-zh-light.jpg",
+    "mathErrors": 0,
+    "mechanism": "attentionKernel",
+    "overflow": false,
+    "theme": "light",
+    "width": 390
+  },
+  {
+    "screenshot": "depth-mega-390-zh-dark.jpg",
+    "mathErrors": 0,
+    "mechanism": "mega",
+    "overflow": false,
+    "theme": "dark",
+    "width": 390
+  },
+  {
+    "screenshot": "depth-precision-390-zh-dark.jpg",
+    "mathErrors": 0,
+    "mechanism": "precision",
+    "overflow": false,
+    "theme": "dark",
+    "width": 390
+  },
+  {
+    "screenshot": "depth-attention-390-zh-dark.jpg",
+    "mathErrors": 0,
+    "mechanism": "attentionKernel",
+    "overflow": false,
+    "theme": "dark",
+    "width": 390
+  }
+]

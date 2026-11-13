@@ -1,0 +1,33 @@
+{
+  "h1": "DeepInfer：从专家计算到推理服务",
+  "mathErrors": 0,
+  "overflow": false,
+  "sections": [
+    {
+      "id": "topology",
+      "title": "两种负载，两种并行布局"
+    },
+    {
+      "id": "experts",
+      "title": "Wide-EP：让专家权重服务更大的批量"
+    },
+    {
+      "id": "kernel",
+      "title": "Mega MoE：按数据就绪推进计算"
+    },
+    {
+      "id": "cache",
+      "title": "共享缓存：复用历史，也释放路由选择"
+    },
+    {
+      "id": "scheduling",
+      "title": "负载调度：按计算成本分配工作"
+    },
+    {
+      "id": "results",
+      "title": "从离线吞吐到线上成本"
+    }
+  ],
+  "theme": "light",
+  "width": 390
+}

@@ -1,0 +1,1266 @@
+{
+  "recordedAt": "2026-10-28T15:23:13.182709+00:00",
+  "provenance": "84 actual UI paths with emitted geometry checks and native screenshots. Manifest indexed from screenshot filenames; the transient aggregate array was not retained. Full matrix preceded final English Communication→Data transfer copy fix; final six-case English kernel regression is recorded separately.",
+  "cases": [
+    {
+      "name": "zh-light-1440-overview",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-1440-overview.jpg",
+      "revision": "final"
+    },
+    {
+      "name": "zh-light-1440-cache",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-1440-cache.jpg",
+      "revision": "final"
+    },
+    {
+      "name": "zh-light-1440-prefill",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-1440-prefill.jpg",
+      "revision": "final"
+    },
+    {
+      "name": "zh-light-1440-decode",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-1440-decode.jpg",
+      "revision": "final"
+    },
+    {
+      "name": "zh-light-1440-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-1440-kernel.jpg",
+      "revision": "final"
+    },
+    {
+      "name": "zh-light-1440-coordination",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-1440-coordination.jpg",
+      "revision": "final"
+    },
+    {
+      "name": "zh-light-1440-overlap",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-1440-overlap.jpg",
+      "revision": "final"
+    },
+    {
+      "name": "zh-light-900-overview",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-900-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-900-cache",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-900-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-900-prefill",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-900-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-900-decode",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-900-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-900-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-900-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-900-coordination",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-900-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-900-overlap",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-900-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-390-overview",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-390-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-390-cache",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-390-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-390-prefill",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-390-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-390-decode",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-390-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-390-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-390-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-390-coordination",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-390-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-light-390-overlap",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-light-390-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-1440-overview",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-1440-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-1440-cache",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-1440-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-1440-prefill",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-1440-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-1440-decode",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-1440-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-1440-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-1440-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-1440-coordination",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-1440-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-1440-overlap",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-1440-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-900-overview",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-900-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-900-cache",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-900-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-900-prefill",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-900-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-900-decode",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-900-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-900-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-900-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-900-coordination",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-900-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-900-overlap",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-900-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-390-overview",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-390-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-390-cache",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-390-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-390-prefill",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-390-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-390-decode",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-390-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-390-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-390-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-390-coordination",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-390-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "zh-dark-390-overlap",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/zh-dark-390-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-1440-overview",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-1440-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-1440-cache",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-1440-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-1440-prefill",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-1440-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-1440-decode",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-1440-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-1440-kernel",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-1440-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-1440-coordination",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-1440-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-1440-overlap",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-1440-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-900-overview",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-900-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-900-cache",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-900-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-900-prefill",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-900-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-900-decode",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-900-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-900-kernel",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-900-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-900-coordination",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-900-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-900-overlap",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-900-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-390-overview",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-390-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-390-cache",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-390-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-390-prefill",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-390-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-390-decode",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-390-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-390-kernel",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-390-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-390-coordination",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-390-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-light-390-overlap",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-light-390-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-1440-overview",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-1440-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-1440-cache",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-1440-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-1440-prefill",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-1440-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-1440-decode",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-1440-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-1440-kernel",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-1440-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-1440-coordination",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-1440-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-1440-overlap",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-1440-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-900-overview",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-900-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-900-cache",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-900-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-900-prefill",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-900-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-900-decode",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-900-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-900-kernel",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-900-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-900-coordination",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-900-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-900-overlap",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-900-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-390-overview",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "view": "overview"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-390-overview.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-390-cache",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "view": "cache"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-390-cache.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-390-prefill",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "view": "prefill"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-390-prefill.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-390-decode",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "view": "decode"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-390-decode.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-390-kernel",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "view": "kernel"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-390-kernel.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-390-coordination",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "view": "coordination"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-390-coordination.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    },
+    {
+      "name": "en-dark-390-overlap",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "view": "overlap"
+      },
+      "checks": [
+        "browser: actual UI view and innerWidth verified",
+        "visual: native screenshot captured; representative images opened"
+      ],
+      "evidence": "evidence/en-dark-390-overlap.jpg",
+      "revision": "complete matrix before final English lane-label correction; affected English kernel regressed separately"
+    }
+  ]
+}

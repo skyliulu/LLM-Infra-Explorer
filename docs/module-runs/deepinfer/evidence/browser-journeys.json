@@ -1,0 +1,256 @@
+{
+  "startedAt": "2026-10-27T14:28:56.541Z",
+  "url": "http://127.0.0.1:4173/#deepinfer",
+  "checks": [
+    {
+      "case": "budget-first-output",
+      "scenario": "mixed",
+      "budget": 4,
+      "computed": [
+        4,
+        0,
+        0
+      ],
+      "output": [
+        0,
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "budget-first-output",
+      "scenario": "mixed",
+      "budget": 8,
+      "computed": [
+        6,
+        2,
+        0
+      ],
+      "output": [
+        1,
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "budget-first-output",
+      "scenario": "mixed",
+      "budget": 12,
+      "computed": [
+        6,
+        4,
+        0
+      ],
+      "output": [
+        1,
+        1,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "budget-first-output",
+      "scenario": "pressure",
+      "budget": 4,
+      "computed": [
+        4,
+        0,
+        0,
+        0
+      ],
+      "output": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "budget-first-output",
+      "scenario": "pressure",
+      "budget": 8,
+      "computed": [
+        4,
+        4,
+        0,
+        0
+      ],
+      "output": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "budget-first-output",
+      "scenario": "pressure",
+      "budget": 12,
+      "computed": [
+        4,
+        4,
+        0,
+        0
+      ],
+      "output": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "budget-first-output",
+      "scenario": "long",
+      "budget": 4,
+      "computed": [
+        4,
+        0,
+        0
+      ],
+      "output": [
+        0,
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "budget-first-output",
+      "scenario": "long",
+      "budget": 8,
+      "computed": [
+        8,
+        0,
+        0
+      ],
+      "output": [
+        0,
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "budget-first-output",
+      "scenario": "long",
+      "budget": 12,
+      "computed": [
+        12,
+        0,
+        0
+      ],
+      "output": [
+        0,
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "decode-excluded-source",
+      "passed": true
+    },
+    {
+      "case": "removed-selection",
+      "passed": true
+    },
+    {
+      "case": "timing-segments",
+      "overlap": false,
+      "track": "baseline",
+      "count": 12,
+      "passed": true
+    },
+    {
+      "case": "timing-segments",
+      "overlap": false,
+      "track": "candidate",
+      "count": 12,
+      "passed": true
+    },
+    {
+      "case": "timing-segments",
+      "overlap": true,
+      "track": "baseline",
+      "count": 12,
+      "passed": true
+    },
+    {
+      "case": "timing-segments",
+      "overlap": true,
+      "track": "candidate",
+      "count": 12,
+      "passed": true
+    },
+    {
+      "case": "mobile-operation-picker",
+      "passed": true
+    },
+    {
+      "case": "terminal-autoplay-replay-keyboard",
+      "rows": [
+        {
+          "id": "A",
+          "output": "3",
+          "status": "done"
+        },
+        {
+          "id": "B",
+          "output": "2",
+          "status": "done"
+        },
+        {
+          "id": "C",
+          "output": "3",
+          "status": "done"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "home-return",
+      "budget": "12",
+      "overlap": false,
+      "scenario": "long",
+      "selection": "scheduler",
+      "step": "0",
+      "passed": true
+    },
+    {
+      "case": "share-fragment-navigation",
+      "budget": "12",
+      "overlap": false,
+      "scenario": "long",
+      "step": "0",
+      "passed": true
+    },
+    {
+      "case": "plain-document-reload-defaults",
+      "budget": "8",
+      "overlap": true,
+      "scenario": "mixed",
+      "step": "0",
+      "passed": true
+    },
+    {
+      "case": "shared-document-reload",
+      "budget": "12",
+      "overlap": false,
+      "scenario": "long",
+      "step": "0",
+      "passed": true
+    },
+    {
+      "case": "architecture-six-selections",
+      "passed": true
+    }
+  ],
+  "console": [],
+  "testNote": "Fragment navigation preserves in-memory state; real document reload tested separately. Final source snapshot precedes all these production journeys."
+}

@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "DeepInfer: project-relative teaching experience, causal first view, directly selectable expert objects and block-time execution",
+  "kind": "redesign",
+  "status": "complete",
+  "nextAction": "Local preview delivered; no deployment requested.",
+  "capabilities": [
+    "timeline",
+    "structural-comparison",
+    "data-movement",
+    "resource-metrics",
+    "math"
+  ],
+  "assumptions": [
+    "Technical reader; default continuous argument plus direct contextual exploration.",
+    "Pinned technical claims/models unchanged; eight-rank and block timing examples are not benchmarks.",
+    "12 actual production variants with local overflow checks and representative pixel inspection; System current OS-dark only.",
+    "Prior connected pass superseded after user correction and independent comparative rejection; this is not an error-free one-input outcome.",
+    "No hardware, precision, true service cost or payback reproduction and no deployment."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "b7700f5d47977cd9f1ce41e239bf1ab0cfcb5b4ff9a64b6d0d0e34cc9e22dbd5",
+    "../../../src/components/deepinfer/ConnectedReport.jsx": "701298815f042115be457b19867508e99eb6e59de38a6c3b09158351d1ff56c8",
+    "../../../src/components/deepinfer/ExpertComparison.jsx": "18b055c8d88dbd07277da3ee642adb2831f67ae068254955db7685bbbaa8e84e",
+    "../../../src/components/deepinfer/connected.css": "d10c60f6f7a3c48775866065f545404099f3300d68e01fc37d1d3e2be38f056b",
+    "../../../src/components/deepinfer/MechanismPanels.jsx": "e3ee766e09e3d87771b612b61f293d6a7f5ff349e2a8a85c948d53388053d56e",
+    "../../../src/components/deepinfer/mechanism-model.js": "95329a0fd2072181dcae37fc4253ec75c2c4f4944b78bffdd244d8ebb437f07c",
+    "../../../src/components/deepinfer/mechanism-panels.css": "0cad3900669baac131a175c780c3377835f54b88cce829acfbc2894ba187f412",
+    "../../../src/components/deepinfer/lesson-model.js": "200bcd92fc4f5dc3c820a45650c34fbbb961d05b9d3d66ad3f817d1a50a578ce",
+    "../../../src/components/deepinfer/lesson-content.js": "552f4be752c1d8596c7413d2723aa7d58cb5060f29ecb5c46c859a260957ef99",
+    "../../../src/components/deepinfer/lesson.css": "04cf3f26b0c6452bd142e51b1ff895806ab67d04196d8e39d60896fb150d701e",
+    "../../../src/components/deepinfer/LessonExplorer.jsx": "b5b994a6871c3ca68d16a2e00dbbc23a6bb9e6739e87f19b215cb84f60a3ac17",
+    "../../../src/components/deepinfer/model.js": "6de2d982442af50ff8c1b93f5c30feef3768fa31838193c1b32a44e1393e9c2b",
+    "../../../src/components/deepinfer/article-content.js": "d442de32fe0180f34855a13081b84cd99734aeb1589ad122acbf9ed77d62a051",
+    "../../../src/lib/experiment-sharing.js": "4f0928094f466f9603a7bddf375674befef2380481d6539ca124f8214882d6c0",
+    "../../../scripts/check-deepinfer-lesson.mjs": "dc627a9e1991b02ca1a5c0dcc5aed0d43daf8398793916bb7df29e6466f8c850",
+    "../../../scripts/check-deepinfer-mechanisms.mjs": "4a771279042ca9c2682bed5ff2138aa15a7ab6134c7ee774a99019d6ef498506",
+    "../../../scripts/check-workbench-sharing.mjs": "e5012944953a73600216af9d2f37792a0b9a16628fdff9dacf984678676a8a9e",
+    "../../../package.json": "45bec2f56750ad475c530a1e7105d330cc65c85c8b3487d0fa3b344cf1fc81d7",
+    "../../../public/deepinfer-wide-ep.png": "719594a75b14cbb14ddba69872eb44be7a328729716dfb3838ce59dbf898ab7c",
+    "../../../src/components/deepinfer/SystemAtlas.jsx": "036c5f0fc2ddb19fee8bca2e4e3802f6670e3584a24a0a03ab195d64b727fa7f",
+    "../../../src/components/deepinfer/atlas.css": "f449c33ac435575137a44aa470a8a0649e16fa4e2b9a5a03973791901300e710",
+    "../../../.agents/skills/develop-interactive-module/references/reader-review.md": "227a137e255b4e1aa953478ae808c56cc5a1b29231fe2e1f9540499ff78316c5",
+    "../../../.agents/skills/develop-interactive-module/evals/scenarios.json": "51a09eff936550b5c8af52378623030ff2c5889becb86bd6a896088b2dc68c4d"
+  },
+  "snapshotAt": "2026-11-13T14:52:46.926Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "comparative/brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "connected/research-notes.md"
+    },
+    {
+      "id": "primary-checks",
+      "kind": "note",
+      "path": "rebuild/primary-checks.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "comparative/qa.md"
+    },
+    {
+      "id": "reader-review",
+      "kind": "note",
+      "path": "comparative/reader-review.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "note",
+      "path": "comparative/independent-final.md"
+    },
+    {
+      "id": "baseline-review",
+      "kind": "note",
+      "path": "comparative/independent-baseline.md"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "comparative/evidence/model.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "comparative/evidence/integration.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "comparative/evidence/conventions.log"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "comparative/evidence/build.log"
+    },
+    {
+      "id": "theme-log",
+      "kind": "log",
+      "path": "comparative/evidence/theme.log"
+    },
+    {
+      "id": "owner-shot",
+      "kind": "screenshot",
+      "path": "comparative/evidence/final-preview.jpg"
+    },
+    {
+      "id": "kernel-shot",
+      "kind": "screenshot",
+      "path": "comparative/evidence/final-zh-dark-1440-kernel.jpg"
+    },
+    {
+      "id": "mobile-shot",
+      "kind": "screenshot",
+      "path": "comparative/evidence/final-en-dark-390-experts.jpg"
+    },
+    {
+      "id": "footer-shot",
+      "kind": "screenshot",
+      "path": "comparative/evidence/final-footer.jpg"
+    }
+  ],
+  "claims": [
+    {
+      "id": "history",
+      "statement": "共享持久block KV让所选P实例复用连续前缀，剩余后缀仍需计算",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L129–177",
+      "boundary": "SWA另有存储/恢复；匹配在路由前，搬运非零",
+      "model": "deriveCache固定8块×128，history0/3/6；主机和设备分阶段填入",
+      "trigger": "选择0/3/6及A/B，逐步到3/3",
+      "expected": "同一H块读入，后缀补算后设备有完整8块；0命中无读入",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "weight-reuse",
+      "statement": "固定8卡同样路由工作，更宽EP组能减少多组之间的重复专家权重读取",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L29–57",
+      "boundary": "8逻辑等大专家top1，理想每激活专家副本只读一次；不是实测流量",
+      "model": "deriveMoe按每个(rank,expert copy)激活数，工作量保持8/32",
+      "trigger": "EP2/8与batch1/4",
+      "expected": "高负载均匀32/8份而32计算不变；低负载两者8份",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "hotspots",
+      "statement": "额外热点副本可分摊最忙rank，代价是副本和可能的额外权重读取",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L93–103",
+      "boundary": "简化轮转分配，不复现生产EPLB算法",
+      "model": "deriveMoe固定32工作，热点副本3份",
+      "trigger": "hot EP8 batch4关闭/打开副本",
+      "expected": "最忙16→4，额外副本0→3，活跃权重5→8",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "fusion",
+      "statement": "Mega MoE融合dispatch/GEMM/activation/combine并交叠通信计算",
+      "source": "https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/README.md#mega-moe",
+      "locator": "Mega MoE pinned README and layout/mega_moe.cuh L345–365",
+      "boundary": "A/B/C timing is educational; symmetric HBM buffers remain and separate operators can already overlap partially.",
+      "model": "getKernelBuffers derives block input/read, expert compute, result production/read and source return at positions 0–12, with dependency oracles.",
+      "trigger": "Select a path and block on same-scale timelines; scrub/step/play, inspect corresponding buffers, return to original architecture.",
+      "expected": "At 3 fused A returns while B computes; selected serial C is waiting with readable input; readiness and final return remain correct.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "overlap",
+      "statement": "CPU调度和状态更新可与设备执行交叠，采样→下一前向依赖保留",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "worker/worker.py L89 and engine execution description",
+      "boundary": "1/4/1/2时间是假设，非实测",
+      "model": "deriveOverlapModel(false/true,3)",
+      "trigger": "异步关闭/打开",
+      "expected": "同3轮同步24与交叠18；自回归依赖无冲突",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "decode-load",
+      "statement": "Request count and total KV represent different decode loads; a low-count rank can already hold much more history.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Data-parallel load balancing: decode request count and total KV length",
+      "boundary": "Educational short-count/long-KV heuristic, not the exact production router or latency model.",
+      "model": "getDecodeRouting conserves request and KV totals for the same four candidates and added short/long request.",
+      "trigger": "Switch short 8K / long 64K with both policies visible.",
+      "expected": "Count-only chooses A in both; dual heuristic chooses A short/B long; after-state load totals equal input plus the new request.",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "connected-reading",
+      "action": "Read default connected map and all six sections through footer; drill map MoE to kernel and back.",
+      "expected": "Argument remains continuous, selected component maps to lower objects and returns to the original map.",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "boundaries",
+      "action": "Vary batch/hotspots/replicas, click weights on both sides, inspect block-path selection and playback lifecycle, cache hits/receiver and short/long request.",
+      "expected": "Canonical identities and boundary facts remain aligned; no collapsed/removed playback leaks and playback stops at completion.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "benchmark-reading",
+      "action": "Select 64/32 request point pairs.",
+      "expected": "Original plot highlights move with approximate coordinate table; same-speed and replica cautions visible.",
+      "checkIds": [
+        "research",
+        "browser"
+      ]
+    },
+    {
+      "id": "sharing",
+      "action": "Set 3/B/short; Home return; generated setup link plus complete reload; plain URL reload.",
+      "expected": "Navigation retains configuration, explicit share restores it, plain reload defaults to 6/A/long; inspection/timing excluded.",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    },
+    {
+      "id": "relative-experience",
+      "action": "Compare actual neighboring first screens, direct object interactions and dense mechanisms; read updated default route.",
+      "expected": "Result and causal objects appear before a large architecture; objects precede supporting metrics, time overlap is geometric, and interactions expose local consequences.",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-11-13T14:52:46.926Z",
+      "artifactIds": [
+        "research",
+        "primary-checks",
+        "baseline-review",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-11-13T14:52:46.926Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "npm run check:deepinfer",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-11-13T14:53:09.995Z",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-11-13T14:53:09.995Z",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot",
+        "mobile-shot",
+        "footer-shot"
+      ]
+    },
+    {
+      "id": "reader",
+      "kind": "reader",
+      "status": "passed",
+      "startedAt": "2026-11-13T14:53:09.995Z",
+      "artifactIds": [
+        "reader-review",
+        "owner-shot",
+        "kernel-shot",
+        "footer-shot"
+      ],
+      "reviewer": "owner",
+      "route": "http://127.0.0.1:4173/#deepinfer · final production, zh Light desktop",
+      "readingPath": [
+        "Read neighboring CED/Sparse/Flash actual first screens and representative mechanism interactions, then reject prior DeepInfer experience",
+        "Read new lead and official operating-point anchor → three resource mechanisms → compact connected system and contextual role",
+        "Continue default DP/EP → physical weight placement and token rows before metrics → same-scale A/B/C timeline and chosen-block buffers",
+        "Continue shared history → P budget and D common candidate loads → official plot and complete cost boundary → footer",
+        "Explore direct benefit link, both comparison-side physical selections, inactive expert, same-map return, block-path identity, playback lifecycle, cache/routes and share reload",
+        "After cost-font-only polish, recapture current variants, reread rendered main argument and inspect the final footer at 19px"
+      ],
+      "retelling": "P and D have different useful batches. Attention retains local request history while MoE gathers input rows at experts; wider EP reduces repeated ideal weight reads only with sufficient concurrency, and replicas trade resources for hotspot relief. Ready block inputs/results permit communication and compute overlap without bypassing dependencies. Shared KV reduces recomputation and relaxes placement, while P time budgets and D request/KV balance keep work suited to resources. The measured speed/throughput frontier and total fees per effective output constrain cost; educational read counts and public income do not establish real speedups or profit.",
+      "frictions": [
+        "Earlier complete article and large status tables still failed relative teaching experience; baseline explicitly rejected.",
+        "Old cache grid placement broke the first horizontal attempt; reset child placement and inspected actual path.",
+        "Dark theme compiled input channels into nearly invisible cells; fixed and inspected actual mobile cells.",
+        "Timeline short operation names and 19px cost formula improved local reading; final source frozen after these repairs.",
+        "Mobile science figure and dense topology still require vertical reading; no desktop-equivalent claim."
+      ]
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-11-13T14:52:46.926Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/deepinfer/MechanismPanels.jsx --capabilities timeline,structural-comparison,data-movement,resource-metrics,math",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-11-13T14:52:46.926Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-11-13T14:52:46.926Z",
+      "artifactIds": [
+        "integration-log"
+      ],
+      "command": "npm run check:workbench",
+      "exitCode": 0
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "Pinned claims and model invariants preserved; real original marked points distinguished from educational counts and production revenue.",
+      "artifactIds": [
+        "research",
+        "primary-checks",
+        "model-log"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pass",
+      "observation": "Prior experience independently failed against neighbors; new first view, direct objects and shared-time mechanism support a causal answer. Owner continuous production read and independent review are separate.",
+      "artifactIds": [
+        "reader-review",
+        "baseline-review",
+        "independent-review",
+        "owner-shot"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "Direct physical weight selection on both sides, selected block scoped by path, local play/step/restart/end/unmount, common routing input, map return and share lifecycle verified.",
+      "artifactIds": [
+        "qa",
+        "kernel-shot"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "12 final production language/theme/width combinations with representative pixels actually inspected; local/main overflow and actual dark channels checked. Current OS-dark System resolution only.",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot",
+        "mobile-shot",
+        "footer-shot"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "Shared config/KaTeX/language/theme/navigation preserved; model, workbench, theme, conventions and production build passed.",
+      "artifactIds": [
+        "integration-log",
+        "build-log"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "report-architecture",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "默认路径overview直接结论，技术论证隐藏。改连续六节报告。",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "technical-depth",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "缺GEMM批量/DP-EP/缓存-路由/成本quota关系，正文及表格/专家行数补足。",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "migration-copy",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "meta/编号/旧R/上一层/实验范围措辞已修。",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "toc-remount",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "本章目录hash重挂载影响定位和实验，使用保留href的本地定位。",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "hierarchy-report",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Added connected request map, same-map component interfaces, explicit parent scopes and retained-selection return; verified actual upper/lower correspondence.",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "mechanism-evidence",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Always-visible same-input expert placement/rows, block input/output readiness and count/KV routing replace prose-only claims; owner and independent boundary predictions pass.",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "performance-linkage",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Official plot always visible; 64/32 real marked point rings and coordinate table linked with stated conditions; neither toy counts nor interpolation claimed as new measurement.",
+      "checkIds": [
+        "research",
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "hidden-playback",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Old collapsed experiment leak replaced: core kernel always visible, user-initiated local playback stops at end and clears on chapter unmount; optional CPU detail conditionally unmounted.",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "relative-first-view",
+      "severity": "P2",
+      "description": "Earlier large neutral architecture postponed the useful result/mechanism. Replaced with a source-bounded operating point, three concrete mechanisms and compact contextual system map.",
+      "status": "fixed",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "objects-before-counts",
+      "severity": "P2",
+      "description": "Earlier expert metric table preceded physical explanation. Physical copies and channel rows now appear first, directly selectable from either side, with adjacent downstream metrics.",
+      "status": "fixed",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "time-geometry",
+      "severity": "P2",
+      "description": "Earlier 24 text states demanded mental concurrency reconstruction. Shared-scale trajectories plus selected-block buffers expose overlap and dependency.",
+      "status": "fixed",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "dark-channel-visibility",
+      "severity": "P2",
+      "description": "Theme compilation made illustrative channel cells nearly invisible; fixed explicit semantic fill and inspected current dark mobile cells.",
+      "status": "fixed",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "operation-labels",
+      "severity": "P3",
+      "description": "Added visible short operation names inside timeline bars; independent final production closure confirmed.",
+      "status": "fixed",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    }
+  ],
+  "coverage": "comparative/qa-matrix.json"
+}

@@ -1,0 +1,423 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "DeepInfer technical report: workload → parallelism → kernels → cache → scheduling",
+  "kind": "redesign",
+  "status": "in_progress",
+  "nextAction": "Run final checks on these inputs; record fresh evidence, reviews and result.",
+  "capabilities": [
+    "timeline",
+    "multiple-modes",
+    "resource-metrics",
+    "structural-comparison",
+    "data-movement",
+    "math"
+  ],
+  "assumptions": [
+    "Technical reader with inference foundations; continuous default report and optional embedded mechanisms.",
+    "Fixed official source, toy counts/times remain educational.",
+    "12 real language/theme/width combinations preceded final local directory-handler repair; final production locally regressed.",
+    "No GPU/NPU benchmark or deployment; past lesson acceptance is superseded by this report review."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "76be148b353055c3982caf16af8cce51d36ab84a75f9bd82805c900a52899ee4",
+    "../../../src/components/deepinfer/ConnectedReport.jsx": "e2d58b884d5ef55306f736ea76cfc061eaca019202b61e585c4b2bca6adbc065",
+    "../../../src/components/deepinfer/ExpertComparison.jsx": "dd6eaa33eab5559f8f6e37f9884691b67ee634a1fd73b8ccd962c5c89c56db9d",
+    "../../../src/components/deepinfer/connected.css": "d10c60f6f7a3c48775866065f545404099f3300d68e01fc37d1d3e2be38f056b",
+    "../../../src/components/deepinfer/MechanismPanels.jsx": "998ef1ad9696407fc5743ccc489982ccd08adbae35a4c85e306577346da8534f",
+    "../../../src/components/deepinfer/mechanism-model.js": "95329a0fd2072181dcae37fc4253ec75c2c4f4944b78bffdd244d8ebb437f07c",
+    "../../../src/components/deepinfer/mechanism-panels.css": "a271b68f5534293fd6134983681f188d69034eacd7c4b1e0bf946e0f70554e0f",
+    "../../../src/components/deepinfer/lesson-model.js": "200bcd92fc4f5dc3c820a45650c34fbbb961d05b9d3d66ad3f817d1a50a578ce",
+    "../../../src/components/deepinfer/lesson-content.js": "552f4be752c1d8596c7413d2723aa7d58cb5060f29ecb5c46c859a260957ef99",
+    "../../../src/components/deepinfer/lesson.css": "04cf3f26b0c6452bd142e51b1ff895806ab67d04196d8e39d60896fb150d701e",
+    "../../../src/components/deepinfer/LessonExplorer.jsx": "b5b994a6871c3ca68d16a2e00dbbc23a6bb9e6739e87f19b215cb84f60a3ac17",
+    "../../../src/components/deepinfer/model.js": "6de2d982442af50ff8c1b93f5c30feef3768fa31838193c1b32a44e1393e9c2b",
+    "../../../src/components/deepinfer/article-content.js": "d442de32fe0180f34855a13081b84cd99734aeb1589ad122acbf9ed77d62a051",
+    "../../../src/lib/experiment-sharing.js": "4f0928094f466f9603a7bddf375674befef2380481d6539ca124f8214882d6c0",
+    "../../../scripts/check-deepinfer-lesson.mjs": "dc627a9e1991b02ca1a5c0dcc5aed0d43daf8398793916bb7df29e6466f8c850",
+    "../../../scripts/check-deepinfer-mechanisms.mjs": "4a771279042ca9c2682bed5ff2138aa15a7ab6134c7ee774a99019d6ef498506",
+    "../../../scripts/check-workbench-sharing.mjs": "e5012944953a73600216af9d2f37792a0b9a16628fdff9dacf984678676a8a9e",
+    "../../../package.json": "45bec2f56750ad475c530a1e7105d330cc65c85c8b3487d0fa3b344cf1fc81d7",
+    "../../../public/deepinfer-wide-ep.png": "719594a75b14cbb14ddba69872eb44be7a328729716dfb3838ce59dbf898ab7c"
+  },
+  "snapshotAt": "2026-11-13T12:37:15.258Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "report/brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "report/research.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "report/qa.md"
+    },
+    {
+      "id": "reader-review",
+      "kind": "note",
+      "path": "report/reader-review.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "note",
+      "path": "report-review.md"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "report/evidence/build.log"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "report/evidence/model.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "report/evidence/integration.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "report/evidence/conventions.log"
+    },
+    {
+      "id": "owner-shot",
+      "kind": "screenshot",
+      "path": "report/evidence/final-preview.jpg"
+    },
+    {
+      "id": "kernel-shot",
+      "kind": "screenshot",
+      "path": "report/evidence/final-kernel.jpg"
+    },
+    {
+      "id": "review-2026-11-13",
+      "kind": "note",
+      "path": "review-2026-11-13/review.md"
+    }
+  ],
+  "claims": [
+    {
+      "id": "history",
+      "statement": "共享持久block KV让所选P实例复用连续前缀，剩余后缀仍需计算",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L129–177",
+      "boundary": "SWA另有存储/恢复；匹配在路由前，搬运非零",
+      "model": "deriveCache固定8块×128，history0/3/6；主机和设备分阶段填入",
+      "trigger": "选择0/3/6及A/B，逐步到3/3",
+      "expected": "同一H块读入，后缀补算后设备有完整8块；0命中无读入",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "weight-reuse",
+      "statement": "固定8卡同样路由工作，更宽EP组能减少多组之间的重复专家权重读取",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L29–57",
+      "boundary": "8逻辑等大专家top1，理想每激活专家副本只读一次；不是实测流量",
+      "model": "deriveMoe按每个(rank,expert copy)激活数，工作量保持8/32",
+      "trigger": "EP2/8与batch1/4",
+      "expected": "高负载均匀32/8份而32计算不变；低负载两者8份",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "hotspots",
+      "statement": "额外热点副本可分摊最忙rank，代价是副本和可能的额外权重读取",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L93–103",
+      "boundary": "简化轮转分配，不复现生产EPLB算法",
+      "model": "deriveMoe固定32工作，热点副本3份",
+      "trigger": "hot EP8 batch4关闭/打开副本",
+      "expected": "最忙16→4，额外副本0→3，活跃权重5→8",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "fusion",
+      "statement": "Mega MoE融合dispatch/GEMM/activation/combine并交叠通信计算",
+      "source": "https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/README.md#mega-moe",
+      "locator": "Mega MoE pinned README and layout/mega_moe.cuh L345–365",
+      "boundary": "12/8仅示意，真实分离路径已有部分重叠；对称HBM缓冲和通信保留",
+      "model": "deriveFusion同3块，同通信/计算资源和块内依赖",
+      "trigger": "展开第3节kernel并推进时间",
+      "expected": "同批块依赖和按块并发可见，缓冲衔接表保持输入/输出/生产消费关系",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "overlap",
+      "statement": "CPU调度和状态更新可与设备执行交叠，采样→下一前向依赖保留",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "worker/worker.py L89 and engine execution description",
+      "boundary": "1/4/1/2时间是假设，非实测",
+      "model": "deriveOverlapModel(false/true,3)",
+      "trigger": "异步关闭/打开",
+      "expected": "同3轮同步24与交叠18；自回归依赖无冲突",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "report-order",
+      "action": "默认连续滚动六节，不展开可选细节，再探索并返回正文",
+      "expected": "完整论证可读，目录指向原文而不切换另一套主线",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "experiments",
+      "action": "改变EP/batch/热点，展开kernel/cache/CPU实验",
+      "expected": "复用同一配置和纯模型，矩阵行数与路由计数同步，局部播放",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "sharing",
+      "action": "Home往返、分享重载和plain reload",
+      "expected": "配置保留/显式恢复，生命周期停止，普通重载默认；section自动化限制见QA",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [
+        "research",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "npm run check:deepinfer",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot"
+      ]
+    },
+    {
+      "id": "reader",
+      "kind": "reader",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [],
+      "reviewer": "owner",
+      "route": "http://127.0.0.1:4173/#deepinfer · zh Light default report and experiments",
+      "readingPath": [],
+      "retelling": "",
+      "frictions": [],
+      "reason": "Current review found insufficient hierarchy, mechanism visibility and evidence linkage; previous retelling was too weak an acceptance test."
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/deepinfer/LessonExplorer.jsx --capabilities timeline,multiple-modes,structural-comparison,data-movement,resource-metrics,math",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [
+        "integration-log"
+      ],
+      "command": "npm run check:workbench",
+      "exitCode": 0
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pending",
+      "observation": "固定来源核对DP/EP、GEMM、缓冲、3FS/SWA/GDR及负载策略；模型未偷换实测。",
+      "artifactIds": [
+        "research",
+        "model-log"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pending",
+      "observation": "2026-11-13 actual read and interactions reopen core teaching concerns; see new assessment.",
+      "artifactIds": [
+        "reader-review",
+        "independent-review",
+        "owner-shot"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pending",
+      "observation": "实验参数/展开/目录/Home/share操作，分享section自动化滚动限制如实记录。",
+      "artifactIds": [
+        "qa",
+        "kernel-shot"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pending",
+      "observation": "12实渲染组合，代表截图实际打开；最终生产局部回归。",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pending",
+      "observation": "保留共享配置/语言/主题/数学契约，production build与workbench检查通过。",
+      "artifactIds": [
+        "integration-log",
+        "build-log"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "report-architecture",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "默认路径overview直接结论，技术论证隐藏。改连续六节报告。",
+      "checkIds": [
+        "reader",
+        "browser"
+      ]
+    },
+    {
+      "id": "technical-depth",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "缺GEMM批量/DP-EP/缓存-路由/成本quota关系，正文及表格/专家行数补足。",
+      "checkIds": [
+        "research",
+        "reader",
+        "model"
+      ]
+    },
+    {
+      "id": "migration-copy",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "meta/编号/旧R/上一层/实验范围措辞已修。",
+      "checkIds": [
+        "reader",
+        "browser"
+      ]
+    },
+    {
+      "id": "toc-remount",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "本章目录hash重挂载影响定位和实验，使用保留href的本地定位。",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    },
+    {
+      "id": "hierarchy-report",
+      "severity": "P2",
+      "status": "open",
+      "description": "Linear report lacks navigable component hierarchy and explicit system connections.",
+      "checkIds": []
+    },
+    {
+      "id": "mechanism-evidence",
+      "severity": "P2",
+      "status": "open",
+      "description": "Scheduling and kernel internals remain prose beyond the actual corresponding canvases.",
+      "checkIds": []
+    },
+    {
+      "id": "performance-linkage",
+      "severity": "P2",
+      "status": "open",
+      "description": "Official results and toy mechanisms are separate, with no worked benchmark interpretation.",
+      "checkIds": []
+    },
+    {
+      "id": "hidden-playback",
+      "severity": "P3",
+      "status": "open",
+      "description": "Collapsed kernel experiment continues playing; actual reproduction recorded.",
+      "checkIds": []
+    }
+  ],
+  "coverage": "performance/qa-matrix.json"
+}

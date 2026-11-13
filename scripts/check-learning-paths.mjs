@@ -3,10 +3,10 @@ import {READING_ORDER,LEARNING_PATHS,learningHref} from '../src/lib/chapter-lear
 import {MODULE_GROUPS} from '../src/lib/module-groups.js';
 import {SHARE_SCHEMA} from '../src/lib/experiment-sharing.js';
 
-assert.equal(new Set(READING_ORDER).size,12);
+assert.equal(new Set(READING_ORDER).size,13);
 assert.deepEqual([...READING_ORDER].sort(),Object.keys(SHARE_SCHEMA).sort());
 assert.deepEqual(READING_ORDER,MODULE_GROUPS.flatMap(group=>group.chapters));
-assert.deepEqual(READING_ORDER,['llm','flash','flashdecode','sparseattn','linearattn','quantization','radixcache','parallel','dpattention','speculative','engram','cachearch']);
+assert.deepEqual(READING_ORDER,['llm','flash','flashdecode','sparseattn','linearattn','quantization','radixcache','parallel','dpattention','speculative','engram','cachearch','deepinfer']);
 for(const [id,path] of Object.entries(LEARNING_PATHS)) {
   for(const topic of path.before) {
     assert(READING_ORDER.indexOf(topic.chapter)<READING_ORDER.indexOf(id),'Foundations precede their dependent chapter');
@@ -18,4 +18,6 @@ for(const [id,path] of Object.entries(LEARNING_PATHS)) {
 assert.deepEqual(LEARNING_PATHS.cachearch.before.map(t=>t.chapter),['sparseattn','quantization','radixcache']);
 assert(!LEARNING_PATHS.cachearch.before.some(t=>t.chapter==='linearattn'));
 assert.equal(LEARNING_PATHS.parallel.next,'dpattention');
-console.log('PASS learning order: 12 unique chapters, forward-only prerequisites/continuations, bilingual section links and CED dependencies');
+assert.deepEqual(LEARNING_PATHS.deepinfer.before.map(t=>t.section),['llminference-1','llminference-2'],'Framework entry needs generation/KV foundations; specialized algorithms remain optional deep dives');
+assert.equal(LEARNING_PATHS.cachearch.next,'deepinfer');
+console.log('PASS learning order: 13 unique chapters, forward-only prerequisites/continuations, bilingual section links and CED / DeepInfer dependencies');

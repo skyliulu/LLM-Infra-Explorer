@@ -1,4 +1,4 @@
 interface:
   display_name: "Develop Interactive Module"
-  short_description: "Create, improve, and validate interactive chapters"
-  default_prompt: "Use $develop-interactive-module to create, modify, refactor, or validate an interactive infrastructure visualization chapter."
+  short_description: "Research, build, inspect, and repair interactive chapters"
+  default_prompt: "Use $develop-interactive-module to turn my technical topic into a working interactive chapter, owning research, design, implementation, integration, and verification through local delivery."

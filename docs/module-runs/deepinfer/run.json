@@ -1,0 +1,387 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "Focused source-fidelity repair: final Mega MoE consumption, fixed EPLB capacity and block-KV metric scope",
+  "kind": "qa",
+  "status": "complete",
+  "nextAction": "Local focused repair delivered; no deployment requested.",
+  "capabilities": [
+    "timeline",
+    "structural-comparison",
+    "data-movement",
+    "resource-metrics",
+    "math"
+  ],
+  "assumptions": [
+    "Preserve accepted page layout; only the three review findings and affected regressions are newly accepted.",
+    "Earlier full redesign evidence is archived in fidelity-repair-2026-11-13/run-before-repair.json, not recertified as current full-matrix coverage.",
+    "No upstream GPU timing, numerical precision or production economics reproduced."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "b7700f5d47977cd9f1ce41e239bf1ab0cfcb5b4ff9a64b6d0d0e34cc9e22dbd5",
+    "../../../src/components/deepinfer/ConnectedReport.jsx": "cb754320b16e3c03a0eb917c71d294d59ae502c49210e3f94790d4f843fae495",
+    "../../../src/components/deepinfer/SystemAtlas.jsx": "2de833cc745b905f72f0a1da5e03d304b5ae584804392527d21710360be8627e",
+    "../../../src/components/deepinfer/ExpertComparison.jsx": "af60c52235223e4ac99416a077ac565157166a54ec4155670262ee218f47fc14",
+    "../../../src/components/deepinfer/lesson-model.js": "c8c89fee69d30be31497d792547fae525425f171063fa20c2e89f96e33f5d896",
+    "../../../src/components/deepinfer/mechanism-model.js": "e0650e7bc156a5ef623336888d785a4d1695b3a3c1316e7a41f83e00f96ec7b1",
+    "../../../src/components/deepinfer/MechanismPanels.jsx": "c4339c00dc38cca05b71081b4428b54883772ab06b2062e61915904e0710861f",
+    "../../../src/components/deepinfer/lesson-content.js": "8f54397b0fed1bbd345bbf9c4b53de4c3f07c9478dce5517885de67464550da8",
+    "../../../src/components/deepinfer/mechanism-panels.css": "7a96e0081e6bb2defafbec2c584e060ad4def182142f11b7fd0a6c6118493466",
+    "../../../src/components/deepinfer/connected.css": "d10c60f6f7a3c48775866065f545404099f3300d68e01fc37d1d3e2be38f056b",
+    "../../../scripts/check-deepinfer-lesson.mjs": "eb82c5f630c94bf03a81d9ddea56e809f13562c4466d70e4413d62a979bab1ed",
+    "../../../scripts/check-deepinfer-mechanisms.mjs": "c16a4fd858094c88c3c32ecb8cd2ee5400a7071228a1dc2a68c802b4a2ecb076",
+    "../../../package.json": "45bec2f56750ad475c530a1e7105d330cc65c85c8b3487d0fa3b344cf1fc81d7"
+  },
+  "snapshotAt": "2026-11-13T15:48:14.028Z",
+  "inputHashRecordedAt": "2026-11-13T15:56:16.778Z",
+  "timestampBasis": "Focused verification window begins at the final runtime source modification; inputs remained unchanged through checks and rendering. Hashes were recorded after QA. startedAt denotes this window, not exact per-process launch.",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "fidelity-repair-2026-11-13/qa.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "fidelity-repair-2026-11-13/qa.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "fidelity-repair-2026-11-13/qa.md"
+    },
+    {
+      "id": "reader-review",
+      "kind": "note",
+      "path": "fidelity-repair-2026-11-13/qa.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "note",
+      "path": "fidelity-repair-2026-11-13/independent.md"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "fidelity-repair-2026-11-13/model.log"
+    },
+    {
+      "id": "workbench-log",
+      "kind": "log",
+      "path": "fidelity-repair-2026-11-13/workbench.log"
+    },
+    {
+      "id": "theme-log",
+      "kind": "log",
+      "path": "fidelity-repair-2026-11-13/theme.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "fidelity-repair-2026-11-13/conventions.log"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "fidelity-repair-2026-11-13/build.log"
+    },
+    {
+      "id": "owner-shot",
+      "kind": "screenshot",
+      "path": "fidelity-repair-2026-11-13/evidence/final-kernel-zh-light.jpg"
+    },
+    {
+      "id": "mobile-shot",
+      "kind": "screenshot",
+      "path": "fidelity-repair-2026-11-13/evidence/inspector-zh-dark-mobile.jpg"
+    },
+    {
+      "id": "tablet-shot",
+      "kind": "screenshot",
+      "path": "fidelity-repair-2026-11-13/evidence/kernel-zh-dark-tablet-final.jpg"
+    }
+  ],
+  "claims": [
+    {
+      "id": "final-output",
+      "statement": "部分专家贡献可提前写回，但最终输出必须等待相关owner本轮写入、就绪通知和来源归约",
+      "source": "https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/impls/sm100_fp8_fp4_mega_moe.cuh",
+      "locator": "1273–1354,1410–1460; SM100 FP8/FP4 branch",
+      "boundary": "ABC同一GPU1 owner、top1，来源GPU2无本地专家工作；非全局EP屏障；时间非实测",
+      "model": "getKernelBuffers: written -> owner-ready -> selected-peer wait -> reduction -> returned",
+      "trigger": "选择fused A检查t4/8/9/10，serial C到14",
+      "expected": "t4贡献written但输出等待，fused10/serial14最终完成",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "physical-slots",
+      "statement": "EP8冗余容量等额驻留，16总槽与活跃副本分开计量",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/model_executor/eplb/__init__.py",
+      "locator": "resolve_num_extra_experts:21–28; MLP:196–205",
+      "boundary": "8逻辑专家top1；固定映射和热点轮流分配是教学策略，非完整生产EPLB",
+      "model": "deriveMoe: balance EP8 reserves 2 slots/rank at all loads",
+      "trigger": "hot/uniform、batch1/4、冗余off/on、闲置副本选择",
+      "expected": "驻留8->16，冗余0->8，hot32算术不变、最忙16->4；闲置仍驻留",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "cache-scope",
+      "statement": "256表示块KV未覆盖的后缀位置，不等于完整Prefill工作",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "179–191: SWA bounded replay",
+      "boundary": "SWA恢复/重放和token-layer工作另计，不复制CED专题",
+      "model": "deriveCache remains 8 blocks ×128 with scope-qualified labels",
+      "trigger": "history6，缓存结束态和首屏，中英文",
+      "expected": "768复用/256块KV未覆盖，旁注明确不含SWA和总计算量",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-11-13T15:48:14.028Z",
+      "artifactIds": [
+        "research",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-11-13T15:48:14.028Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "npm run check:deepinfer",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-11-13T15:48:14.028Z",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "mobile-shot"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-11-13T15:48:14.028Z",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "mobile-shot",
+        "tablet-shot"
+      ]
+    },
+    {
+      "id": "reader",
+      "kind": "reader",
+      "status": "passed",
+      "startedAt": "2026-11-13T15:48:14.028Z",
+      "artifactIds": [
+        "reader-review",
+        "owner-shot"
+      ],
+      "reviewer": "owner",
+      "route": "http://127.0.0.1:4173/#deepinfer",
+      "readingPath": [
+        "首屏与官方工作点",
+        "三种优化和系统图",
+        "DP/EP",
+        "专家输入/驻留容量",
+        "部分写回/最终归约",
+        "块KV覆盖范围",
+        "调度及CPU补充",
+        "官方图、成本、页尾"
+      ],
+      "retelling": "宽EP汇集输入行摊薄重复权重读取；热点分流需要固定容量；融合允许部分贡献提前写回但保留相关rank就绪和最终归约；块KV复用不消除SWA工作。最终看满足服务速度的有效吞吐和完整成本。",
+      "frictions": [
+        "900宽旧条内文字换行，改短标签并保留完整图例/aria，最终构建复看无溢出。"
+      ]
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-11-13T15:48:14.028Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/DeepInfer.jsx --capabilities timeline,math",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-11-13T15:48:14.028Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-11-13T15:48:14.028Z",
+      "artifactIds": [
+        "workbench-log",
+        "theme-log"
+      ],
+      "command": "npm run check:workbench; node scripts/check-theme.mjs",
+      "exitCode": 0
+    }
+  ],
+  "journeys": [
+    {
+      "id": "expert-capacity",
+      "action": "Toggle redundancy under hot and low-load states; inspect active and idle copies.",
+      "expected": "Equal resident slots remain allocated, active copies/work/load are independently accounted.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "writeback-readiness",
+      "action": "Scrub A through4/8/9/10; select serial C and play to14.",
+      "expected": "Arrival precedes final output readiness; selected-path inspector stays aligned; playback stops at14.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "scope-and-return",
+      "action": "Read cache end state; enter kernel from system map and return.",
+      "expected": "Block-KV scope stays visible and component context retained.",
+      "checkIds": [
+        "browser",
+        "reader"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "Three scoped findings repaired against fixed sources and independent source review; no claim of all backend/GPU equivalence.",
+      "artifactIds": [
+        "qa",
+        "independent-review",
+        "model-log"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pass",
+      "observation": "Accepted argument/layout retained; owner reread actual page to footer after final copy/bar changes. Partial contribution, fixed capacity, and cache scope are now explicit.",
+      "artifactIds": [
+        "reader-review",
+        "owner-shot"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "Hot/off/on/low load/idle selection, t4/8/9/10, serial C and autoplay14/end, system enter/return verified.",
+      "artifactIds": [
+        "qa",
+        "owner-shot"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "Focused affected states: zh light desktop, en dark desktop, zh dark900/390, en light390. Repaired900 label wraps; System current OS-dark only. No new full matrix claim.",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "tablet-shot",
+        "mobile-shot"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "Production build, workbench schema/navigation, theme and conventions passed; no deployment.",
+      "artifactIds": [
+        "build-log",
+        "workbench-log",
+        "theme-log",
+        "conventions-log"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "mega-final-readiness",
+      "severity": "P2",
+      "description": "Partial GEMM2 remote output writeback is presented as completed final combine without pinned rank/selected-peer readiness.",
+      "status": "fixed",
+      "checkIds": [
+        "research",
+        "model",
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "eplb-fixed-slots",
+      "severity": "P2",
+      "description": "EP8 hot replica layout totals 11 physical copies with uneven capacities, unlike pinned equal-slot divisible layout.",
+      "status": "fixed",
+      "checkIds": [
+        "research",
+        "model",
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "cache-metric-scope",
+      "severity": "P3",
+      "description": "256 suffix positions are labeled as all request computation; qualify block-KV scope beside metric and exclude SWA replay.",
+      "status": "fixed",
+      "checkIds": [
+        "research",
+        "model",
+        "browser",
+        "reader"
+      ]
+    },
+    {
+      "id": "tablet-bar-wrap",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "900px bar labels wrapped; shortened text, removed padding and disabled wrapping, then inspected final build.",
+      "checkIds": [
+        "visual",
+        "browser"
+      ]
+    }
+  ]
+}

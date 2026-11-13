@@ -1,0 +1,57 @@
+{
+  "executedAt": "2026-11-13T15:36:19.900Z",
+  "method": "Imported current pure chapter models in Node; source constraints checked separately, no GPU execution.",
+  "eplb": {
+    "perRank": [
+      1,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1
+    ],
+    "total": 11,
+    "extra": 3,
+    "activeCopies": 8,
+    "jobs": 32,
+    "maxJobs": 4,
+    "expectedSourceConstraint": "totalPhysical % epSize === 0; equal slots/rank",
+    "expectedMinimumExtraForEightLogicalEp8": 8
+  },
+  "kernelAt4": [
+    {
+      "id": "A",
+      "compute": "computed",
+      "returned": true
+    },
+    {
+      "id": "B",
+      "compute": "computing",
+      "returned": false
+    },
+    {
+      "id": "C",
+      "compute": "waiting",
+      "returned": false
+    }
+  ],
+  "cache": {
+    "reused": 768,
+    "suffix": 256,
+    "excludes": "SWA restoration/replay and token-layer work"
+  },
+  "routing": [
+    {
+      "request": "short",
+      "count": "A",
+      "dual": "A"
+    },
+    {
+      "request": "long",
+      "count": "A",
+      "dual": "B"
+    }
+  ]
+}

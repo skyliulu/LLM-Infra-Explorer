@@ -17,6 +17,7 @@ export const SHARE_SCHEMA={
  speculative:{'SpeculativeDecoding.config':object({algorithm:one('eagle2','dspark'),depth:range(1,5),width:range(1,3),budget:range(2,16),blockSize:range(1,8)})},
  engram:{'Engram.systemMode':one('inference','training'),'Engram.slideIdx':one(2,3,4,5)},
  radixcache:{},
+ deepinfer:{'DeepInfer.routeRequest':one('short','long'),'DeepInfer.lesson':object({history:one(0,3,6),replica:one('A','B'),ep:one(2,8),batch:one(1,4),routing:one('uniform','hot'),balance:bool,split:bool,async:bool})},
 };
 export function sanitizeSettings(chapter, values){
  if(!values||typeof values!=='object'||Array.isArray(values)) return {};

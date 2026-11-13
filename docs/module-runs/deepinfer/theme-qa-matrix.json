@@ -1,0 +1,206 @@
+{
+  "dimensions": {
+    "theme": [
+      "light",
+      "dark"
+    ],
+    "language": [
+      "en",
+      "zh"
+    ],
+    "viewport": [
+      1440,
+      768,
+      390
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "theme",
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "1440-en-light",
+      "layer": "browser",
+      "state": {
+        "theme": "light",
+        "language": "en",
+        "viewport": 1440
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-1440-en-light.jpg"
+      ]
+    },
+    {
+      "name": "1440-en-dark",
+      "layer": "browser",
+      "state": {
+        "theme": "dark",
+        "language": "en",
+        "viewport": 1440
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-1440-en-dark.jpg"
+      ]
+    },
+    {
+      "name": "1440-zh-light",
+      "layer": "browser",
+      "state": {
+        "theme": "light",
+        "language": "zh",
+        "viewport": 1440
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-1440-zh-light.jpg"
+      ]
+    },
+    {
+      "name": "1440-zh-dark",
+      "layer": "browser",
+      "state": {
+        "theme": "dark",
+        "language": "zh",
+        "viewport": 1440
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-1440-zh-dark.jpg"
+      ]
+    },
+    {
+      "name": "768-en-light",
+      "layer": "browser",
+      "state": {
+        "theme": "light",
+        "language": "en",
+        "viewport": 768
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-768-en-light.jpg"
+      ]
+    },
+    {
+      "name": "768-en-dark",
+      "layer": "browser",
+      "state": {
+        "theme": "dark",
+        "language": "en",
+        "viewport": 768
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-768-en-dark.jpg"
+      ]
+    },
+    {
+      "name": "768-zh-light",
+      "layer": "browser",
+      "state": {
+        "theme": "light",
+        "language": "zh",
+        "viewport": 768
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-768-zh-light.jpg"
+      ]
+    },
+    {
+      "name": "768-zh-dark",
+      "layer": "browser",
+      "state": {
+        "theme": "dark",
+        "language": "zh",
+        "viewport": 768
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-768-zh-dark.jpg"
+      ]
+    },
+    {
+      "name": "390-en-light",
+      "layer": "browser",
+      "state": {
+        "theme": "light",
+        "language": "en",
+        "viewport": 390
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-390-en-light.jpg"
+      ]
+    },
+    {
+      "name": "390-en-dark",
+      "layer": "browser",
+      "state": {
+        "theme": "dark",
+        "language": "en",
+        "viewport": 390
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-390-en-dark.jpg"
+      ]
+    },
+    {
+      "name": "390-zh-light",
+      "layer": "browser",
+      "state": {
+        "theme": "light",
+        "language": "zh",
+        "viewport": 390
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-390-zh-light.jpg"
+      ]
+    },
+    {
+      "name": "390-zh-dark",
+      "layer": "browser",
+      "state": {
+        "theme": "dark",
+        "language": "zh",
+        "viewport": 390
+      },
+      "checks": [
+        "resolved theme matches preference",
+        "selected 5 / total query rows 8",
+        "no page overflow / KaTeX errors",
+        "opened rendered screenshot depth-theme-390-zh-dark.jpg"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
 import {SHARE_SCHEMA, sanitizeSettings, createShareHash, readSharedSettings} from '../src/lib/experiment-sharing.js';
+import {LESSON_DEFAULTS} from '../src/components/deepinfer/lesson-model.js';
+const lessonSettings={'DeepInfer.routeRequest':'short','DeepInfer.lesson':{...LESSON_DEFAULTS,history:0,batch:1,ep:2,split:false}};
+assert.deepEqual(readSharedSettings('deepinfer',createShareHash('deepinfer',lessonSettings)),lessonSettings);
+assert.deepEqual(sanitizeSettings('deepinfer',{'DeepInfer.lesson':{...LESSON_DEFAULTS,history:9}}),{});
+assert.deepEqual(sanitizeSettings('deepinfer',{'DeepInfer.lesson':{...LESSON_DEFAULTS,step:3}}),{});
 const examples={
  llm:{'LLMInference.modelType':'dense','LLMInference.topK':2},
  parallel:{'ParallelStrategies.degrees':{dp:2,tp:2,pp:1,cp:1,ep:1,etp:1},'ParallelStrategies.mappingModel':'dcpReuse','ParallelStrategies.attentionMode':'dpAttention'},
@@ -12,6 +17,7 @@ const examples={
  quantization:{'Quantization.config':{mode:'fp4',batch:8,context:8192,kv:'fp4',prefill:true},'quantization/SGLangWorkbench.preset':'saved-static'},
  speculative:{'SpeculativeDecoding.config':{algorithm:'dspark',depth:3,width:2,budget:8,blockSize:8}},
  engram:{'Engram.systemMode':'training'},radixcache:{},
+ deepinfer:lessonSettings,
 };
 assert.deepEqual(Object.keys(examples).sort(),Object.keys(SHARE_SCHEMA).sort());
 for(const [chapter,values] of Object.entries(examples)){
@@ -28,6 +34,11 @@ assert.deepEqual(sanitizeSettings('cachearch',{'CacheArchitecture.layer':40,'Cac
 assert.deepEqual(sanitizeSettings('parallel',{'ParallelStrategies.degrees':{dp:4,tp:4,pp:4,cp:4,ep:4,etp:4}}),{});
 assert.deepEqual(readSharedSettings('llm','#llm?setup='+encodeURIComponent('{"v":1,"values":{"__proto__":{"polluted":true}}}')),{});
 assert.equal({}.polluted,undefined);
-console.log('Sharing schema: all 12 chapters round-trip; malformed, oversized, unknown and out-of-range settings rejected.');
+assert.deepEqual(sanitizeSettings('deepinfer',{'DeepInfer.scenario':'unknown','DeepInfer.prefillBudget':6,'DeepInfer.overlap':'true','DeepInfer.step':3,'DeepInfer.playing':true}),{});
+console.log('Sharing schema: all 13 chapters round-trip; malformed, oversized, unknown and out-of-range settings rejected.');
 
 assert.deepEqual(sanitizeSettings('radixcache',{'HiCache.scenario':'unknown','HiCache.prefetch':'forever','HiCache.write':true}),{});
+
+assert.deepEqual(sanitizeSettings('deepinfer',{'DeepInfer.scenario':'mixed','DeepInfer.verificationBudget':9,'DeepInfer.kernelGpu':true,'DeepInfer.cacheFormat':'index'}),{},'Retired dependency experiments are ignored in older share links');
+
+assert.deepEqual(sanitizeSettings('deepinfer',{'DeepInfer.performance':{hit:80},'DeepInfer.scenario':'mixed'}),{},'Old chapter settings are retired rather than mapped into unrelated lessons');

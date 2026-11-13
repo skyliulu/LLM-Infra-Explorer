@@ -1,0 +1,122 @@
+TAP version 13
+# Snapshotted 1 input(s); final checks/reviews are pending.
+# Created pending run: C:\\Users\\29043\\AppData\\Local\\Temp\\module-evidence-test-7a6umu\\docs\\module-runs\\fresh-run\\run.json
+# Subtest: consistent synthetic record passes; fresh initialization cannot pass
+ok 1 - consistent synthetic record passes; fresh initialization cannot pass
+  ---
+  duration_ms: 32.2471
+  ...
+# Subtest: changed implementation invalidates completion
+ok 2 - changed implementation invalidates completion
+  ---
+  duration_ms: 16.3447
+  ...
+# Subtest: missing artifacts, fake PNG and stale evidence are rejected
+ok 3 - missing artifacts, fake PNG and stale evidence are rejected
+  ---
+  duration_ms: 8.8749
+  ...
+# Subtest: checks from before snapshot and failed commands cannot pass
+ok 4 - checks from before snapshot and failed commands cannot pass
+  ---
+  duration_ms: 8.7131
+  ...
+# Subtest: browser failure or skip blocks completion despite passing build
+ok 5 - browser failure or skip blocks completion despite passing build
+  ---
+  duration_ms: 19.5562
+  ...
+# Subtest: green local checks and reviews cannot waive a missing or unperformed reader pass
+ok 6 - green local checks and reviews cannot waive a missing or unperformed reader pass
+  ---
+  duration_ms: 23.3655
+  ...
+# Subtest: reader pass needs owner, route, continuous reading, reconstruction and inspected evidence
+ok 7 - reader pass needs owner, route, continuous reading, reconstruction and inspected evidence
+  ---
+  duration_ms: 8.3824
+  ...
+# Subtest: a failed whole-chapter judgement blocks completion despite a filled reader record
+ok 8 - a failed whole-chapter judgement blocks completion despite a filled reader record
+  ---
+  duration_ms: 12.2444
+  ...
+# Subtest: reader pass cannot reuse an earlier revision or stale screenshot
+ok 9 - reader pass cannot reuse an earlier revision or stale screenshot
+  ---
+  duration_ms: 13.9281
+  ...
+# Subtest: claims and journeys require successful behavioral/model evidence
+ok 10 - claims and journeys require successful behavioral/model evidence
+  ---
+  duration_ms: 8.161
+  ...
+# Subtest: open P2 blocks, fixed findings need regression, open P3 can be disclosed
+ok 11 - open P2 blocks, fixed findings need regression, open P3 can be disclosed
+  ---
+  duration_ms: 18.383
+  ...
+# Subtest: path escapes and absolute evidence paths are rejected without reading them
+ok 12 - path escapes and absolute evidence paths are rejected without reading them
+  ---
+  duration_ms: 10.7127
+  ...
+# Subtest: null entries and malformed lists return validation errors, not exceptions
+ok 13 - null entries and malformed lists return validation errors, not exceptions
+  ---
+  duration_ms: 5.2478
+  ...
+# Subtest: only redesign integration is skippable, with a reason
+ok 14 - only redesign integration is skippable, with a reason
+  ---
+  duration_ms: 18.2996
+  ...
+# Subtest: truncated PNG magic is rejected as unreadable evidence
+ok 15 - truncated PNG magic is rejected as unreadable evidence
+  ---
+  duration_ms: 8.0583
+  ...
+# Subtest: reviews cannot reuse stale screenshot while checks use a fresh one
+ok 16 - reviews cannot reuse stale screenshot while checks use a fresh one
+  ---
+  duration_ms: 9.8962
+  ...
+# Subtest: chapter identity cannot be coerced from a non-string
+ok 17 - chapter identity cannot be coerced from a non-string
+  ---
+  duration_ms: 8.6202
+  ...
+# Subtest: native JPEG framing with a matching filename is accepted
+ok 18 - native JPEG framing with a matching filename is accepted
+  ---
+  duration_ms: 8.323
+  ...
+# Subtest: native image bytes with a misleading extension are rejected
+ok 19 - native image bytes with a misleading extension are rejected
+  ---
+  duration_ms: 8.3229
+  ...
+# Subtest: truncated JPEG and SOI/EOI-only magic cannot pass as screenshots
+ok 20 - truncated JPEG and SOI/EOI-only magic cannot pass as screenshots
+  ---
+  duration_ms: 11.4579
+  ...
+# Subtest: CLI init refuses overwrite and snapshot invalidates checks/reviews
+ok 21 - CLI init refuses overwrite and snapshot invalidates checks/reviews
+  ---
+  duration_ms: 12.7446
+  ...
+# Subtest: CLI init creates pending record and rejects invalid IDs/options
+ok 22 - CLI init creates pending record and rejects invalid IDs/options
+  ---
+  duration_ms: 6.9845
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 341.0807

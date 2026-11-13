@@ -1,0 +1,15 @@
+PASS  translation route
+PASS  derived model
+PASS  math renderer
+PASS  phase state
+PASS  step state
+PASS  playback state
+PASS  next-step handler
+PASS  reset handler
+PASS  play handler
+PASS  hardcoded JSX prose
+WARN  unicode math lookalikes: Review Unicode math-like characters and render formulas as LaTeX.
+
+Capabilities: timeline, math, multiple-modes, structural-comparison
+9/9 required checks passed; 1 warning(s); 0 failure(s).
+Manual rendered QA required for: multiple-modes, structural-comparison.

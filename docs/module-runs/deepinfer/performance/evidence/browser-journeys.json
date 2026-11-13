@@ -1,0 +1,96 @@
+[
+  {
+    "action": "reuse Home/End",
+    "expected": "1000/0 remaining positions",
+    "observed": [
+      "1000",
+      "0"
+    ]
+  },
+  {
+    "action": "EP2/EP8 plus hotspot redistribution",
+    "wideValues": [
+      "4\n每卡持有专家权重\n1\n每份专家权重处理 Token\n32\n全体 GPU 本轮读取权重份数",
+      "1\n每卡持有专家权重\n4\n每份专家权重处理 Token\n8\n全体 GPU 本轮读取权重份数"
+    ],
+    "observed": {
+      "unbalanced": "16",
+      "balanced": "9"
+    }
+  },
+  {
+    "action": "input-heavy traffic",
+    "observed": "6"
+  },
+  {
+    "action": "zero revenue, then expense 50 above revenue38",
+    "observed": [
+      "none",
+      "none"
+    ]
+  },
+  {
+    "action": "share -> Home and return -> share reload",
+    "sharedKeys": [
+      "DeepInfer.scenario",
+      "DeepInfer.prefillBudget",
+      "DeepInfer.overlap",
+      "DeepInfer.performance"
+    ],
+    "settings": {
+      "hit": 100,
+      "ep": 8,
+      "balanced": true,
+      "traffic": "prefill",
+      "capital": 100000,
+      "cost": 50,
+      "revenue": 100
+    },
+    "homeRetention": "100000",
+    "shareRetention": "50",
+    "selectionResets": "reuse"
+  },
+  {
+    "action": "plain reload",
+    "defaultCost": "8"
+  },
+  {
+    "action": "schedule -> partial B -> terminal -> replay",
+    "scheduleA": "这一步在做什么\n安排本批\n\n按队列顺序分配本轮输入预算。预算不够时，长输入留到后续批次继续处理；生成名额已满时，先推进运行中的请求。\n\n查看请求\n请求 A 等待处理\n\n这个请求已选入本批。虚线框是接下来要处理的位置，现在还没有开始计算。\n\n看看对应的引擎操作\n查看实现",
+    "partialB": {
+      "computed": "2",
+      "output": "0",
+      "pending": "0"
+    },
+    "terminalNextDisabled": true
+  },
+  {
+    "action": "replay autoplay to end",
+    "observed": "done",
+    "nextDisabled": true
+  },
+  {
+    "action": "System theme on paused partial B",
+    "observed": {
+      "osDark": true,
+      "request": "B",
+      "step": "2",
+      "theme": "dark"
+    }
+  },
+  {
+    "action": "open official EP comparison",
+    "observed": {
+      "complete": true,
+      "naturalHeight": 930,
+      "naturalWidth": 1350,
+      "src": "./deepinfer-wide-ep.png"
+    }
+  },
+  {
+    "action": "keyboard architecture selection and baseline restore",
+    "selected": "execution",
+    "hourlyExpense": "8",
+    "console": []
+  }
+]

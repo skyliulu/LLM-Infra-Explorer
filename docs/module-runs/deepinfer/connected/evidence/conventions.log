@@ -1,0 +1,9 @@
+PASS  translation route
+PASS  derived model
+PASS  math renderer
+PASS  hardcoded JSX prose
+PASS  unicode math lookalikes
+
+Capabilities: structural-comparison, data-movement, resource-metrics, math
+3/3 required checks passed; 0 warning(s); 0 failure(s).
+Manual rendered QA required for: structural-comparison, data-movement, resource-metrics.

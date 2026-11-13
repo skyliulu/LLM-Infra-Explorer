@@ -1,0 +1,608 @@
+{
+  "dimensions": {
+    "level": [
+      "service",
+      "engine",
+      "execution"
+    ],
+    "viewport": [
+      1440,
+      768,
+      390
+    ],
+    "language": [
+      "zh",
+      "en"
+    ],
+    "theme": [
+      "light",
+      "dark"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "level",
+      "viewport",
+      "language",
+      "theme"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "1440-zh-light-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 1440,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-zh-light-engine.jpg"
+      ]
+    },
+    {
+      "name": "1440-zh-light-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 1440,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-zh-light-execution.jpg"
+      ]
+    },
+    {
+      "name": "1440-zh-light-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 1440,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-zh-light-service.jpg"
+      ]
+    },
+    {
+      "name": "1440-zh-dark-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 1440,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-zh-dark-engine.jpg"
+      ]
+    },
+    {
+      "name": "1440-zh-dark-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 1440,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-zh-dark-execution.jpg"
+      ]
+    },
+    {
+      "name": "1440-zh-dark-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 1440,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-zh-dark-service.jpg"
+      ]
+    },
+    {
+      "name": "1440-en-light-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 1440,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-en-light-engine.jpg"
+      ]
+    },
+    {
+      "name": "1440-en-light-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 1440,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-en-light-execution.jpg"
+      ]
+    },
+    {
+      "name": "1440-en-light-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 1440,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-en-light-service.jpg"
+      ]
+    },
+    {
+      "name": "1440-en-dark-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 1440,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-en-dark-engine.jpg"
+      ]
+    },
+    {
+      "name": "1440-en-dark-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 1440,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-en-dark-execution.jpg"
+      ]
+    },
+    {
+      "name": "1440-en-dark-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 1440,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 1440-en-dark-service.jpg"
+      ]
+    },
+    {
+      "name": "768-zh-light-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 768,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-zh-light-engine.jpg"
+      ]
+    },
+    {
+      "name": "768-zh-light-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 768,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-zh-light-execution.jpg"
+      ]
+    },
+    {
+      "name": "768-zh-light-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 768,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-zh-light-service.jpg"
+      ]
+    },
+    {
+      "name": "768-zh-dark-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 768,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-zh-dark-engine.jpg"
+      ]
+    },
+    {
+      "name": "768-zh-dark-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 768,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-zh-dark-execution.jpg"
+      ]
+    },
+    {
+      "name": "768-zh-dark-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 768,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-zh-dark-service.jpg"
+      ]
+    },
+    {
+      "name": "768-en-light-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 768,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-en-light-engine.jpg"
+      ]
+    },
+    {
+      "name": "768-en-light-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 768,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-en-light-execution.jpg"
+      ]
+    },
+    {
+      "name": "768-en-light-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 768,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-en-light-service.jpg"
+      ]
+    },
+    {
+      "name": "768-en-dark-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 768,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-en-dark-engine.jpg"
+      ]
+    },
+    {
+      "name": "768-en-dark-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 768,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-en-dark-execution.jpg"
+      ]
+    },
+    {
+      "name": "768-en-dark-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 768,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 768-en-dark-service.jpg"
+      ]
+    },
+    {
+      "name": "390-zh-light-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 390,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-zh-light-engine.jpg"
+      ]
+    },
+    {
+      "name": "390-zh-light-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 390,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-zh-light-execution.jpg"
+      ]
+    },
+    {
+      "name": "390-zh-light-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 390,
+        "language": "zh",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-zh-light-service.jpg"
+      ]
+    },
+    {
+      "name": "390-zh-dark-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 390,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-zh-dark-engine.jpg"
+      ]
+    },
+    {
+      "name": "390-zh-dark-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 390,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-zh-dark-execution.jpg"
+      ]
+    },
+    {
+      "name": "390-zh-dark-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 390,
+        "language": "zh",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-zh-dark-service.jpg"
+      ]
+    },
+    {
+      "name": "390-en-light-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 390,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-en-light-engine.jpg"
+      ]
+    },
+    {
+      "name": "390-en-light-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 390,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-en-light-execution.jpg"
+      ]
+    },
+    {
+      "name": "390-en-light-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 390,
+        "language": "en",
+        "theme": "light"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-en-light-service.jpg"
+      ]
+    },
+    {
+      "name": "390-en-dark-engine",
+      "layer": "browser",
+      "state": {
+        "level": "engine",
+        "viewport": 390,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-en-dark-engine.jpg"
+      ]
+    },
+    {
+      "name": "390-en-dark-execution",
+      "layer": "browser",
+      "state": {
+        "level": "execution",
+        "viewport": 390,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-en-dark-execution.jpg"
+      ]
+    },
+    {
+      "name": "390-en-dark-service",
+      "layer": "browser",
+      "state": {
+        "level": "service",
+        "viewport": 390,
+        "language": "en",
+        "theme": "dark"
+      },
+      "checks": [
+        "actual resolved theme",
+        "hierarchical view and selection",
+        "no page overflow / KaTeX errors",
+        "opened screenshot: 390-en-dark-service.jpg"
+      ]
+    }
+  ]
+}

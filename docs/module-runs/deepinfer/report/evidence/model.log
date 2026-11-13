@@ -1,0 +1,5 @@
+
+> ai-infra-viz@0.1.0 check:deepinfer
+> node scripts/check-deepinfer-lesson.mjs
+
+PASS DeepInfer lesson: 24 cache positions/ownership cases, 64 expert snapshots, exact token/weight/replica invariants, fair low-load boundary, pipeline dependency/resource oracles, stage-allocation tradeoff and parent mapping. Bilingual keys match.

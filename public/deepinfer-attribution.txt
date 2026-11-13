@@ -1,0 +1,6 @@
+deepinfer-wide-ep.png is the unchanged wide_ep_decode_pareto.png from
+deepseek-ai/DeepInfer commit 553741557a57df44a46fb3ab72b6aafeaf945337,
+doc/images/wide_ep_decode_pareto.png.
+Source: https://github.com/deepseek-ai/DeepInfer
+Licensed under the Apache License, Version 2.0.
+https://www.apache.org/licenses/LICENSE-2.0

@@ -1,0 +1,456 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "DeepInfer offline engine and asynchronous execution",
+  "kind": "create",
+  "status": "complete",
+  "nextAction": "Delivered locally. Re-run affected gates after future implementation changes.",
+  "capabilities": [
+    "timeline",
+    "multiple-modes",
+    "resource-metrics",
+    "structural-comparison",
+    "data-movement",
+    "dense-layout",
+    "math"
+  ],
+  "assumptions": [
+    "Official DeepInfer pinned to 553741557a57df44a46fb3ab72b6aafeaf945337.",
+    "Request trace is synchronous NORMAL, one rank, nextn=0, two decode-ready toy slots, sufficient blocks, prompt-attempt interval1 instead of default70.",
+    "Overlap durations1/4/1/2 are illustrative dimensionless values, not measurements.",
+    "No GPU inference, weights, physical cache service, preemption, multi-rank voting or speculative acceptance is simulated."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "5bcb862c4329d7d9575be73991d4ea113ca72d4401c5d734406372e63d57a5a7",
+    "../../../src/components/deepinfer/model.js": "3558ac3cdae8db6089c9ec26415c1d23fba635f59eea724ba12e6dec19c7ce01",
+    "../../../src/components/deepinfer/content.js": "5191c41793161b07c85120f018acbde82ca7e8f6924db6f555ed95bb8ec09af3",
+    "../../../src/components/deepinfer/deepinfer.css": "8a6a3dea73b3d7ec457596a4c9e93820d14ea6f3f8d0e3452a0544aa734ca584",
+    "../../../scripts/check-deepinfer.mjs": "ed136405a01f2f465b92b8d092a6683d1a269ba8dd5bb9179dbc1deb35d4252d",
+    "../../../src/lib/chapter-registry.js": "51ed048fd350db5f56639f69bebe7fbb7ddeb9a83a612c2006609c21b7ef48d2",
+    "../../../src/lib/chapter-learning.js": "14464850ab387d63788aa81cb08ab9deded6b153aad3895df5f63c8b6da3a134",
+    "../../../src/lib/chapter-icons.js": "3feced271824df8526adc280f32c37486d8f51a8014381e2ad99d80570423276",
+    "../../../src/lib/module-titles.js": "c3cd6bf4c728a22ee3fe33361b4555c15a59677c51e545486970881e90e14d85",
+    "../../../src/lib/module-groups.js": "b6e8cfe8dcb071a377f18677045e8a2b1ad6637b022e252398ca0c16ff4ad717",
+    "../../../src/lib/experiment-sharing.js": "0c17ca7f3a82b680c5b6d3906a9340d70a29ddc846264b11c54a249cc3f9315f",
+    "../../../scripts/check-workbench-sharing.mjs": "ef6360008234fb0b6994bd421274bf1942abc7c5056190b41bee3ef9a0a33736",
+    "../../../scripts/check-learning-paths.mjs": "113f15c0593d763f2a9e1c749338b66503ef613344d7d5d43bbda03406ffb4be",
+    "../../../package.json": "c905ebe837185eae51449a0e8c09cf018e2a095aa6d0067cfe7b9ae99c3246c4",
+    "../../../.agents/skills/develop-interactive-module/SKILL.md": "7545ff92add2405edc907266bc54e3fbdb2e8db22ec8133eef4361d245a03bf5",
+    "../../../.agents/skills/develop-interactive-module/references/interaction-model.md": "a256989d8e760134f718dc1e74baf1e09197bc0d0cc0e05ca3d88c8c0529cea0",
+    "../../../.agents/skills/develop-interactive-module/references/content-and-math.md": "27b3e943641291490d7e405e9060e0332ef686be90290f0939e98e56d9f9ae12",
+    "../../../.agents/skills/develop-interactive-module/references/qa-checklist.md": "1203d3a1fa26bd84a1ccc06c04c28d6e425423c925da2c2c1c75c93b4abfbd12",
+    "../../../.agents/skills/develop-interactive-module/references/skill-evaluation.md": "8f964d6657b69197b3d1200f66cd3a3dfb09e2e7836f8a1f6eb5045363c9281c",
+    "../../../.agents/skills/develop-interactive-module/evals/scenarios.json": "cd6636419936dee097f56af47c2ae6889faf0d069e0289044227e31a2124a947"
+  },
+  "snapshotAt": "2026-10-27T14:27:19.314Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "research.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "qa.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "note",
+      "path": "independent-review.md"
+    },
+    {
+      "id": "project-qa",
+      "kind": "note",
+      "path": "../../../design-qa.md"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "evidence/model.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "evidence/conventions.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "evidence/integration.log"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "evidence/build.log"
+    },
+    {
+      "id": "browser-log",
+      "kind": "log",
+      "path": "evidence/browser-journeys.json"
+    },
+    {
+      "id": "visual-log",
+      "kind": "log",
+      "path": "evidence/rendered-layout.json"
+    },
+    {
+      "id": "workbench",
+      "kind": "screenshot",
+      "path": "evidence/final-workbench-zh.jpg"
+    },
+    {
+      "id": "decode",
+      "kind": "screenshot",
+      "path": "evidence/final-decode-excluded-en.jpg"
+    },
+    {
+      "id": "overlap",
+      "kind": "screenshot",
+      "path": "evidence/final-overlap-en.jpg"
+    },
+    {
+      "id": "terminal",
+      "kind": "screenshot",
+      "path": "evidence/final-terminal-mobile.jpg"
+    },
+    {
+      "id": "desktop",
+      "kind": "screenshot",
+      "path": "evidence/final-1440-en-mixed.jpg"
+    },
+    {
+      "id": "tablet",
+      "kind": "screenshot",
+      "path": "evidence/final-768-zh-pressure.jpg"
+    },
+    {
+      "id": "mobile",
+      "kind": "screenshot",
+      "path": "evidence/final-390-en-long.jpg"
+    },
+    {
+      "id": "mobile-zh",
+      "kind": "screenshot",
+      "path": "evidence/final-390-zh-pressure.jpg"
+    },
+    {
+      "id": "tooling-log",
+      "kind": "log",
+      "path": "evidence/tooling.log"
+    }
+  ],
+  "claims": [
+    {
+      "id": "exclusive-batches",
+      "statement": "NORMAL-engine ordinary batches select prefill or decode, not mixed requests of both kinds.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/csrc/engine/scheduler.hpp#L285",
+      "locator": "Scheduler::_schedule / _schedule_prefill / _schedule_decode",
+      "boundary": "Toy single rank with interval1, sufficient blocks and no DP vote or preemption simulation.",
+      "model": "buildRequestTrace selects one kind and derives selected token ranges and decode inputIndex.",
+      "trigger": "Change scenario and budget, then advance to default decode step9.",
+      "expected": "Prefill and decode badges, source links, narrative and selected positions change consistently; C can remain excluded.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "partial-prefill",
+      "statement": "Incomplete prompt chunks build history without output; final prefill yields the first sample, and CPU commit changes the output ledger.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/csrc/engine/scheduler.hpp#L351",
+      "locator": "_schedule_prefill and process_outputs; Worker.execute_model_step",
+      "boundary": "Ordinary nextn0 synchronous logical trace with symbolic tokens, not physical block counts or real model logits.",
+      "model": "computed, pending and output are separate fields; only commit increments output.",
+      "trigger": "Mixed budget8 first sample: A6/6, B2/4; then commit.",
+      "expected": "A1 pending on device, B emits nothing; A committed output becomes1 only at commit.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "async-dependency",
+      "statement": "Async decode can overlap processing previous CPU output with the current forward while preserving sampled-token device dependencies and a final drain.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/worker/worker.py#L89",
+      "locator": "execute_model_step, _post_process_step, flush_inflight_reqs; csrc/engine/zos.cpp remap",
+      "boundary": "Three synthetic rounds with assumed durations1/4/1/2; nextn0 remapping rather than speculative acceptance-length correction; no measured speedup.",
+      "model": "deriveOverlapModel enforces one CPU/device lane, sample-to-next-forward, commit-after-sample and flush.",
+      "trigger": "Toggle async and inspect operations on both tracks or the equivalent mobile picker.",
+      "expected": "Baseline commit3 remains22–24; async commit2 is11–13; each selector resolves its own track. One-round boundary remains8 in both.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "budget-oracle",
+      "action": "Execute first sample and CPU commit for all9 scenario/budget pairs.",
+      "expected": "Concrete computed positions and committed outputs match independent fixture oracles; partial prefill has no pending sample.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "selection-falsification",
+      "action": "Inspect waiting C during decode; select D and remove it by changing scenario; click baseline and candidate timing operations.",
+      "expected": "Excluded state explicit; selection resets across row/inspector; track identities and source intervals match all48 clicks.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "responsive-equivalence",
+      "action": "Use390px operation picker and inspect18 width/language/scenario layouts.",
+      "expected": "Two-column request cards, readable legend and operation IDs, no checked overflow or math errors.",
+      "checkIds": [
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "terminal-playback",
+      "action": "Seek to end, go back one event, autoplay, inspect via keyboard and replay.",
+      "expected": "Final outputs3/2/3, resources retired, no wrap; replay resumes explicitly.",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "workbench-lifecycle",
+      "action": "Leave for Home and return; open share URL and explicitly reload; explicitly reload plain URL.",
+      "expected": "Navigation preserves configuration but resets playback/selection. Share reload restores long/12/false; plain reload returns mixed/8/true.",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-10-27T14:27:19.376Z",
+      "artifactIds": [
+        "research",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-10-27T14:28:09.664Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "npm run check:deepinfer",
+      "exitCode": 0
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-27T14:28:09.664Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/DeepInfer.jsx --capabilities timeline,multiple-modes,resource-metrics,structural-comparison,data-movement,dense-layout,math",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-10-27T14:28:09.664Z",
+      "artifactIds": [
+        "integration-log"
+      ],
+      "command": "npm run check:workbench; node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs docs/module-runs/deepinfer/qa-matrix.json",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-10-27T14:28:09.664Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-10-27T14:28:56.541Z",
+      "artifactIds": [
+        "browser-log",
+        "workbench",
+        "decode",
+        "overlap",
+        "terminal"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-10-27T14:28:56.792Z",
+      "artifactIds": [
+        "visual-log",
+        "desktop",
+        "tablet",
+        "mobile",
+        "mobile-zh",
+        "workbench",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "evidence-tooling",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-27T14:45:55.326Z",
+      "artifactIds": [
+        "tooling-log"
+      ],
+      "command": "python -X utf8 quick_validate.py .agents/skills/develop-interactive-module; node --test .agents/skills/develop-interactive-module/scripts/module-run.test.mjs",
+      "exitCode": 0
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "Owner research plus independent pinned-source/model review found no central contradiction in the explicitly reduced scope; model invariants and numerical timing dependencies pass.",
+      "artifactIds": [
+        "research",
+        "model-log",
+        "independent-review"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pass",
+      "observation": "Concrete A/B prompt and device-pending cells expose why partial prefill emits nothing; architecture cooperates rather than presenting subsystems as alternatives. Tradeoff diagram retains true dependencies and labeled assumed units.",
+      "artifactIds": [
+        "workbench",
+        "overlap",
+        "qa",
+        "independent-review"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "Owner-operated production browser reproduced and closed the three independent P2 findings;22 grouped journeys include48 timing selections,9 budget oracles and real document reloads.",
+      "artifactIds": [
+        "browser-log",
+        "decode",
+        "terminal",
+        "independent-review"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "Owner and independent screenshot review across languages and widths;18 actual rendered cases have no checked overflow or KaTeX errors. Clean viewport captures supplement sticky-header artifacts in full-page images.",
+      "artifactIds": [
+        "visual-log",
+        "desktop",
+        "tablet",
+        "mobile",
+        "mobile-zh",
+        "workbench",
+        "independent-review"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "Shared metadata/learning/sharing check passes13 chapters; actual Home return, share restoration and production assets were exercised. No unrelated chapter contract changed. Native screenshot format and suffix agreement verified after a real-tool JPEG compatibility correction;18 helper tests pass.",
+      "artifactIds": [
+        "integration-log",
+        "build-log",
+        "browser-log",
+        "tooling-log"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "DI-1",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Timing IDs lacked track identity and selected the wrong diagram's interval.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "DI-2",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Decode scheduling reused prefill instructions/source and did not highlight decoded input.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "DI-3",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Removed/excluded request selection could mismatch the row and active-batch narrative.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "DI-4",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Architecture input IDs were static for the four-request scenario.",
+      "checkIds": [
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "DI-5",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Narrow timing segments lacked a sufficiently usable equivalent selection control/legend.",
+      "checkIds": [
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "DI-6",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Evidence transport assumed PNG although browser returned native JPEG. Captures renamed without byte changes; validator supports PNG/JPEG framing and matching extensions.",
+      "checkIds": [
+        "evidence-tooling",
+        "browser"
+      ]
+    }
+  ],
+  "coverage": "qa-matrix.json"
+}

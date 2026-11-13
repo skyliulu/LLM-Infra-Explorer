@@ -1,0 +1,1187 @@
+{
+  "dimensions": {
+    "language": [
+      "zh",
+      "en"
+    ],
+    "theme": [
+      "light",
+      "dark"
+    ],
+    "width": [
+      1440,
+      900,
+      390
+    ],
+    "section": [
+      "system",
+      "experts",
+      "kernel",
+      "cache",
+      "scheduling",
+      "results"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "language",
+      "theme",
+      "width",
+      "section"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "zh-light-1440-system",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-1440-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-1440-experts",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-1440-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-1440-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-1440-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-1440-cache",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-1440-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-1440-scheduling",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-1440-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-1440-results",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 1440,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-1440-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-1440-system",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-1440-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-1440-experts",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-1440-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-1440-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-1440-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-1440-cache",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-1440-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-1440-scheduling",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-1440-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-1440-results",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 1440,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-1440-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-1440-system",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-1440-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-1440-experts",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-1440-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-1440-kernel",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-1440-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-1440-cache",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-1440-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-1440-scheduling",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-1440-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-1440-results",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 1440,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-1440-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-1440-system",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-1440-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-1440-experts",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-1440-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-1440-kernel",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-1440-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-1440-cache",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-1440-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-1440-scheduling",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-1440-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-1440-results",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 1440,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-1440-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-900-system",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-900-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-900-experts",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-900-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-900-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-900-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-900-cache",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-900-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-900-scheduling",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-900-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-900-results",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 900,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-900-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-900-system",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-900-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-900-experts",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-900-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-900-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-900-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-900-cache",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-900-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-900-scheduling",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-900-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-900-results",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 900,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-900-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-900-system",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-900-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-900-experts",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-900-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-900-kernel",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-900-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-900-cache",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-900-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-900-scheduling",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-900-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-900-results",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 900,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-900-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-900-system",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-900-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-900-experts",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-900-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-900-kernel",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-900-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-900-cache",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-900-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-900-scheduling",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-900-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-900-results",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 900,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-900-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-390-system",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-390-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-390-experts",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-390-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-390-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-390-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-390-cache",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-390-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-390-scheduling",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-390-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-light-390-results",
+      "state": {
+        "language": "zh",
+        "theme": "light",
+        "width": 390,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-light-390-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-390-system",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-390-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-390-experts",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-390-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-390-kernel",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-390-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-390-cache",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-390-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-390-scheduling",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-390-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "zh-dark-390-results",
+      "state": {
+        "language": "zh",
+        "theme": "dark",
+        "width": 390,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/zh-dark-390-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-390-system",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-390-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-390-experts",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-390-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-390-kernel",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-390-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-390-cache",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-390-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-390-scheduling",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-390-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-light-390-results",
+      "state": {
+        "language": "en",
+        "theme": "light",
+        "width": 390,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-light-390-results.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-390-system",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "section": "system"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-390-system.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-390-experts",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "section": "experts"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-390-experts.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-390-kernel",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "section": "kernel"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-390-kernel.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-390-cache",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "section": "cache"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-390-cache.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-390-scheduling",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "section": "scheduling"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-390-scheduling.jpg",
+      "result": "passed"
+    },
+    {
+      "name": "en-dark-390-results",
+      "state": {
+        "language": "en",
+        "theme": "dark",
+        "width": 390,
+        "section": "results"
+      },
+      "checks": [
+        "Actual production route and native viewport",
+        "No whole-page overflow, KaTeX errors or missing figure",
+        "Captured screenshot; representative pixel inspection scope in qa.md"
+      ],
+      "evidence": "evidence/en-dark-390-results.jpg",
+      "result": "passed"
+    }
+  ]
+}

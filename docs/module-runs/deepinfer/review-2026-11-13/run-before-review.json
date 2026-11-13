@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "DeepInfer technical report: workload → parallelism → kernels → cache → scheduling",
+  "kind": "redesign",
+  "status": "complete",
+  "nextAction": "Delivered locally as a continuous technical report. Future edits reopen affected reading and technical acceptance.",
+  "capabilities": [
+    "timeline",
+    "multiple-modes",
+    "resource-metrics",
+    "structural-comparison",
+    "data-movement",
+    "math"
+  ],
+  "assumptions": [
+    "Technical reader with inference foundations; continuous default report and optional embedded mechanisms.",
+    "Fixed official source, toy counts/times remain educational.",
+    "12 real language/theme/width combinations preceded final local directory-handler repair; final production locally regressed.",
+    "No GPU/NPU benchmark or deployment; past lesson acceptance is superseded by this report review."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "dd6fd5da82e255768777396fe4aeb363f439cdda8ec9774dbdcfab61e81f0b87",
+    "../../../src/components/deepinfer/TechnicalReport.jsx": "b46ca0ec147712e4dec9f5090cfe314eba56a92873217becc692d7a71b2e09ff",
+    "../../../src/components/deepinfer/article-content.js": "d442de32fe0180f34855a13081b84cd99734aeb1589ad122acbf9ed77d62a051",
+    "../../../src/components/deepinfer/report.css": "25245d670871aa03b6a9ebb84fec9ccce19db53f2b247d96e3e3955acc183599",
+    "../../../src/components/deepinfer/LessonExplorer.jsx": "b5b994a6871c3ca68d16a2e00dbbc23a6bb9e6739e87f19b215cb84f60a3ac17",
+    "../../../src/components/deepinfer/lesson-content.js": "552f4be752c1d8596c7413d2723aa7d58cb5060f29ecb5c46c859a260957ef99",
+    "../../../src/components/deepinfer/lesson-model.js": "200bcd92fc4f5dc3c820a45650c34fbbb961d05b9d3d66ad3f817d1a50a578ce",
+    "../../../src/components/deepinfer/lesson.css": "04cf3f26b0c6452bd142e51b1ff895806ab67d04196d8e39d60896fb150d701e",
+    "../../../src/components/deepinfer/model.js": "6de2d982442af50ff8c1b93f5c30feef3768fa31838193c1b32a44e1393e9c2b",
+    "../../../src/lib/experiment-sharing.js": "9b3c51d77117af51f41819002ce086241aaf22f9379f7b47035d5bcfad877cb5",
+    "../../../public/deepinfer-wide-ep.png": "719594a75b14cbb14ddba69872eb44be7a328729716dfb3838ce59dbf898ab7c",
+    "../../../.agents/skills/analyze-technical-principles/SKILL.md": "223ec2a5f6117d5dd5a79a30cf26da12b32a124ca743762e30f0e9ecfd57f7c9",
+    "../../../.agents/skills/develop-interactive-module/SKILL.md": "5b0edcc27d4d77c5fcf266270af2ff9bf16fad4214f770c5e686d72672fd5363",
+    "../../../.agents/skills/develop-interactive-module/references/reader-review.md": "7b86c8cd8e50c308ac91541b8ee781be0c52dad07373570c9159253bbf29cb10"
+  },
+  "snapshotAt": "2026-11-05T14:22:07.280Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "report/brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "report/research.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "report/qa.md"
+    },
+    {
+      "id": "reader-review",
+      "kind": "note",
+      "path": "report/reader-review.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "note",
+      "path": "report-review.md"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "report/evidence/build.log"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "report/evidence/model.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "report/evidence/integration.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "report/evidence/conventions.log"
+    },
+    {
+      "id": "owner-shot",
+      "kind": "screenshot",
+      "path": "report/evidence/final-preview.jpg"
+    },
+    {
+      "id": "kernel-shot",
+      "kind": "screenshot",
+      "path": "report/evidence/final-kernel.jpg"
+    }
+  ],
+  "claims": [
+    {
+      "id": "history",
+      "statement": "共享持久block KV让所选P实例复用连续前缀，剩余后缀仍需计算",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L129–177",
+      "boundary": "SWA另有存储/恢复；匹配在路由前，搬运非零",
+      "model": "deriveCache固定8块×128，history0/3/6；主机和设备分阶段填入",
+      "trigger": "选择0/3/6及A/B，逐步到3/3",
+      "expected": "同一H块读入，后缀补算后设备有完整8块；0命中无读入",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "weight-reuse",
+      "statement": "固定8卡同样路由工作，更宽EP组能减少多组之间的重复专家权重读取",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L29–57",
+      "boundary": "8逻辑等大专家top1，理想每激活专家副本只读一次；不是实测流量",
+      "model": "deriveMoe按每个(rank,expert copy)激活数，工作量保持8/32",
+      "trigger": "EP2/8与batch1/4",
+      "expected": "高负载均匀32/8份而32计算不变；低负载两者8份",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "hotspots",
+      "statement": "额外热点副本可分摊最忙rank，代价是副本和可能的额外权重读取",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L93–103",
+      "boundary": "简化轮转分配，不复现生产EPLB算法",
+      "model": "deriveMoe固定32工作，热点副本3份",
+      "trigger": "hot EP8 batch4关闭/打开副本",
+      "expected": "最忙16→4，额外副本0→3，活跃权重5→8",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "fusion",
+      "statement": "Mega MoE融合dispatch/GEMM/activation/combine并交叠通信计算",
+      "source": "https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/README.md#mega-moe",
+      "locator": "Mega MoE pinned README and layout/mega_moe.cuh L345–365",
+      "boundary": "12/8仅示意，真实分离路径已有部分重叠；对称HBM缓冲和通信保留",
+      "model": "deriveFusion同3块，同通信/计算资源和块内依赖",
+      "trigger": "展开第3节kernel并推进时间",
+      "expected": "同批块依赖和按块并发可见，缓冲衔接表保持输入/输出/生产消费关系",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "overlap",
+      "statement": "CPU调度和状态更新可与设备执行交叠，采样→下一前向依赖保留",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "worker/worker.py L89 and engine execution description",
+      "boundary": "1/4/1/2时间是假设，非实测",
+      "model": "deriveOverlapModel(false/true,3)",
+      "trigger": "异步关闭/打开",
+      "expected": "同3轮同步24与交叠18；自回归依赖无冲突",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "report-order",
+      "action": "默认连续滚动六节，不展开可选细节，再探索并返回正文",
+      "expected": "完整论证可读，目录指向原文而不切换另一套主线",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "experiments",
+      "action": "改变EP/batch/热点，展开kernel/cache/CPU实验",
+      "expected": "复用同一配置和纯模型，矩阵行数与路由计数同步，局部播放",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "sharing",
+      "action": "Home往返、分享重载和plain reload",
+      "expected": "配置保留/显式恢复，生命周期停止，普通重载默认；section自动化限制见QA",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-11-05T14:22:07.280Z",
+      "artifactIds": [
+        "research",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-11-05T14:22:07.280Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "npm run check:deepinfer",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-11-05T14:22:07.280Z",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-11-05T14:22:07.280Z",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot"
+      ]
+    },
+    {
+      "id": "reader",
+      "kind": "reader",
+      "status": "passed",
+      "startedAt": "2026-11-05T14:22:07.280Z",
+      "artifactIds": [
+        "reader-review",
+        "owner-shot",
+        "kernel-shot"
+      ],
+      "reviewer": "owner",
+      "route": "http://127.0.0.1:4173/#deepinfer · zh Light default report and experiments",
+      "readingPath": [
+        "首屏标题/导语/六节目录",
+        "P/D负载与DP Attention→EP MoE、KV状态传递、部署对照表",
+        "Wide-EP独立组重复权重→专家GEMM行数，操作EP2/8、batch1/4、热点副本",
+        "Mega两GEMM/SwiGLU及dispatch/combine缓冲表，展开3块流水",
+        "共享缓存路由关系、metadata/fetch/swap-in、block/SWA状态表和部分命中B实例",
+        "P时间quota与D双指标，展开CPU/device交叠",
+        "官方Pareto测试条件、生产/开源边界、SLO成本公式、相关章节/页尾"
+      ],
+      "retelling": "P和D的Token批量不同，因而采用不同并行规模；Attention保持各rank请求归属，MoE跨rank汇集专家批量。宽组减少跨独立组重复权重读取，但需要处理通信和最忙专家尾部，Mega按块衔接与EPLB分别处理这些约束。共享3FS使前缀复用与负载路由不再互斥，SWA另存/重放。P按时间成本配额求chunk，D平衡请求数及KV总长度，把局部执行效率落实到满足首字/出字要求的服务量，成本才能据总支出评价。",
+      "frictions": [
+        "旧版默认阅读架构失败，已重写；本次字段/编号/旧措辞/目录摩擦已修复，见reader-review"
+      ]
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-11-05T14:22:07.280Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/deepinfer/LessonExplorer.jsx --capabilities timeline,multiple-modes,structural-comparison,data-movement,resource-metrics,math",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-11-05T14:22:07.280Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-11-05T14:22:07.280Z",
+      "artifactIds": [
+        "integration-log"
+      ],
+      "command": "npm run check:workbench",
+      "exitCode": 0
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "固定来源核对DP/EP、GEMM、缓冲、3FS/SWA/GDR及负载策略；模型未偷换实测。",
+      "artifactIds": [
+        "research",
+        "model-log"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pass",
+      "observation": "Owner最终整章实读，独立正文/实验阅读；默认阅读路径包含论证，技术细节支持工程预测。",
+      "artifactIds": [
+        "reader-review",
+        "independent-review",
+        "owner-shot"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "实验参数/展开/目录/Home/share操作，分享section自动化滚动限制如实记录。",
+      "artifactIds": [
+        "qa",
+        "kernel-shot"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "12实渲染组合，代表截图实际打开；最终生产局部回归。",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "kernel-shot"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "保留共享配置/语言/主题/数学契约，production build与workbench检查通过。",
+      "artifactIds": [
+        "integration-log",
+        "build-log"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "report-architecture",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "默认路径overview直接结论，技术论证隐藏。改连续六节报告。",
+      "checkIds": [
+        "reader",
+        "browser"
+      ]
+    },
+    {
+      "id": "technical-depth",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "缺GEMM批量/DP-EP/缓存-路由/成本quota关系，正文及表格/专家行数补足。",
+      "checkIds": [
+        "research",
+        "reader",
+        "model"
+      ]
+    },
+    {
+      "id": "migration-copy",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "meta/编号/旧R/上一层/实验范围措辞已修。",
+      "checkIds": [
+        "reader",
+        "browser"
+      ]
+    },
+    {
+      "id": "toc-remount",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "本章目录hash重挂载影响定位和实验，使用保留href的本地定位。",
+      "checkIds": [
+        "browser",
+        "integration"
+      ]
+    }
+  ],
+  "coverage": "performance/qa-matrix.json"
+}

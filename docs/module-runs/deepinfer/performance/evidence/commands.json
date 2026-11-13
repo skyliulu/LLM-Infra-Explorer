@@ -1,0 +1,41 @@
+{
+  "startedAt": "2026-10-28T13:27:55.453Z",
+  "commands": [
+    [
+      "build",
+      "npm run build"
+    ],
+    [
+      "model",
+      "npm run check:deepinfer"
+    ],
+    [
+      "integration",
+      "npm run check:workbench"
+    ],
+    [
+      "theme",
+      "node scripts/check-theme.mjs"
+    ],
+    [
+      "matrix",
+      "node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs docs/module-runs/deepinfer/performance/qa-matrix.json"
+    ],
+    [
+      "conventions",
+      "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/DeepInfer.jsx --capabilities timeline,multiple-modes,structural-comparison,data-movement,math"
+    ],
+    [
+      "performance-conventions",
+      "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/deepinfer/PerformanceExplorer.jsx --capabilities multiple-modes,resource-metrics,structural-comparison,math"
+    ],
+    [
+      "analysis-skill",
+      "python -X utf8 C:/Users/29043/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/analyze-technical-principles"
+    ],
+    [
+      "rendering-skill",
+      "python -X utf8 C:/Users/29043/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/develop-interactive-module"
+    ]
+  ]
+}

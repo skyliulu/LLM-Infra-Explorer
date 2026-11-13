@@ -1,0 +1,6 @@
+
+> ai-infra-viz@0.1.0 check:deepinfer
+> node scripts/check-deepinfer.mjs
+
+Framework hierarchy: parent/child containment, three levels, selection normalization and chapter ownership pass.
+PASS DeepInfer: 612 trace snapshots, 18 settings, 10 resource/dependency schedules, partial-prefill and first-token oracles; bilingual keys match.

@@ -1,0 +1,145 @@
+[
+  {
+    "case": "enter execution and select sampling",
+    "level": "execution",
+    "selected": "sampling"
+  },
+  {
+    "case": "direct ancestor return",
+    "level": "service",
+    "selected": "engine"
+  },
+  {
+    "case": "keyboard drill and leaf selection",
+    "selected": "experts",
+    "text": "专家计算\n接收\n模型层的输入，以及路由选出的专家。\n处理\n按专家并行分发数据，完成专家计算后合并输出。EPLB 可以调整热点专家的副本，缓解少数卡过忙的问题。\n交给下游\n按原 Token 顺序合并的模型层输出。\n\n请求分得均匀，专家负载也可能不均。框架要组织通信、专家放置和计算，避免整批工作总在等最慢的卡。\n\n继续了解对应原理\n并行策略：专家怎样分布到多张卡"
+  },
+  {
+    "case": "back preserves containing component",
+    "level": "engine",
+    "selected": "execution",
+    "text": "设备执行\n接收\n调度器选出的批次，以及位置、缓存地址等信息。\n处理\n整理设备输入并调用模型后端。合适的执行路径会复用 CUDA Graph，减少 CPU 反复发射算子的开销。\n交给下游\n本轮模型输出和采样结果。\n\n调度器面向请求，设备面向张量。执行器把这两种工作方式接起来。"
+  },
+  {
+    "case": "specialist link ownership",
+    "href": "#speculative?section=speculativedecoding-2",
+    "retiredExperimentCount": 0
+  },
+  {
+    "case": "specialist route opens existing DSpark",
+    "algorithm": "true",
+    "dsparkVisible": true
+  },
+  {
+    "case": "schedule selected A not yet computed",
+    "step": "1",
+    "inspector": "这一步在做什么\n安排本批\n\n按队列顺序分配本轮输入预算。预算不够时，长输入留到后续批次继续处理；生成名额已满时，先推进运行中的请求。\n\n查看请求\n请求 A 等待处理\n\n这个请求已选入本批。虚线框是接下来要处理的位置，现在还没有开始计算。\n\n看看对应的引擎操作\n查看实现"
+  },
+  {
+    "case": "forward B has a real partial prompt",
+    "step": "2",
+    "inspector": "这一步在做什么\n执行模型\n\n设备计算选中的位置。处理输入时会积累历史；进入 Decode 后，则使用历史和最新 Token 继续计算。\n\n查看请求\n请求 B 等待处理\n\n这个请求的输入还没处理完，已经计算的部分会保留下来。剩余输入处理完之前，不会产生新输出。\n\n看看对应的引擎操作\n查看实现"
+  },
+  {
+    "case": "System preserves paused selection and progress",
+    "prefersDark": true,
+    "request": "B",
+    "step": "2",
+    "theme": "dark"
+  },
+  {
+    "case": "device sample pending",
+    "rows": [
+      {
+        "computed": "6",
+        "id": "A",
+        "output": "0",
+        "pending": "1"
+      },
+      {
+        "computed": "2",
+        "id": "B",
+        "output": "0",
+        "pending": "0"
+      },
+      {
+        "computed": "0",
+        "id": "C",
+        "output": "0",
+        "pending": "0"
+      }
+    ]
+  },
+  {
+    "case": "CPU updates request",
+    "rows": [
+      {
+        "computed": "6",
+        "id": "A",
+        "output": "1",
+        "pending": "0"
+      },
+      {
+        "computed": "2",
+        "id": "B",
+        "output": "0",
+        "pending": "0"
+      },
+      {
+        "computed": "0",
+        "id": "C",
+        "output": "0",
+        "pending": "0"
+      }
+    ]
+  },
+  {
+    "case": "terminal",
+    "nextEnabled": false,
+    "phase": "done"
+  },
+  {
+    "case": "autoplay stops at end",
+    "phase": "done"
+  },
+  {
+    "case": "sync and timing scope",
+    "track": "baseline",
+    "operation": "commit-0"
+  },
+  {
+    "case": "Home retains only experiment settings and resets presentation",
+    "scenario": "long",
+    "budget": "4",
+    "async": false,
+    "level": "engine",
+    "step": "0"
+  },
+  {
+    "case": "share contains framework experiments only",
+    "values": {
+      "DeepInfer.scenario": "long",
+      "DeepInfer.prefillBudget": 4,
+      "DeepInfer.overlap": false
+    }
+  },
+  {
+    "case": "share reload restores configuration",
+    "scenario": "long",
+    "budget": "4",
+    "async": false,
+    "level": "engine",
+    "step": "0"
+  },
+  {
+    "case": "plain reload defaults",
+    "scenario": "mixed",
+    "budget": "8",
+    "async": true
+  },
+  {
+    "case": "post-outline-CSS verification",
+    "scope": "Only selected operation outline changed; refreshed all36 hierarchy views,12 mobile details, schedule/partial and timing captures.",
+    "partialText": "这一步在做什么\n执行模型\n\n设备计算选中的位置。处理输入时会积累历史；进入 Decode 后，则使用历史和最新 Token 继续计算。\n\n查看请求\n请求 B 等待处理\n\n这个请求的输入还没处理完，已经计算的部分会保留下来。剩余输入处理完之前，不会产生新输出。\n\n看看对应的引擎操作\n查看实现"
+  }
+]

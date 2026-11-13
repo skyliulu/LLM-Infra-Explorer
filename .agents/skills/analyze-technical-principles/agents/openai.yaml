@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Technical Principles"
+  short_description: "Explain principles, hierarchy and chapter responsibilities"
+  default_prompt: "Use $analyze-technical-principles to establish the reader concern and a testable explanatory thesis, trace outcomes to causes, then decompose the system and decide which mechanisms to explain here or link elsewhere."

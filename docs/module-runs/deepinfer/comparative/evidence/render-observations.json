@@ -1,0 +1,276 @@
+{
+  "startedAt": "2026-11-13T14:53:09.995Z",
+  "earlierCompleteRead": "2026-11-13T14:46:20.742Z",
+  "finishedAt": "2026-11-13T14:54:41.507Z",
+  "variants": [
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "actualWidth": 1440,
+      "actualTheme": "light",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-zh-light-1440-overview.jpg",
+        "final-zh-light-1440-system.jpg",
+        "final-zh-light-1440-experts.jpg",
+        "final-zh-light-1440-kernel.jpg",
+        "final-zh-light-1440-cache.jpg",
+        "final-zh-light-1440-scheduling.jpg",
+        "final-zh-light-1440-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "actualWidth": 1440,
+      "actualTheme": "dark",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-zh-dark-1440-overview.jpg",
+        "final-zh-dark-1440-system.jpg",
+        "final-zh-dark-1440-experts.jpg",
+        "final-zh-dark-1440-kernel.jpg",
+        "final-zh-dark-1440-cache.jpg",
+        "final-zh-dark-1440-scheduling.jpg",
+        "final-zh-dark-1440-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "actualWidth": 1440,
+      "actualTheme": "light",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-en-light-1440-overview.jpg",
+        "final-en-light-1440-system.jpg",
+        "final-en-light-1440-experts.jpg",
+        "final-en-light-1440-kernel.jpg",
+        "final-en-light-1440-cache.jpg",
+        "final-en-light-1440-scheduling.jpg",
+        "final-en-light-1440-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 1440,
+      "actualWidth": 1440,
+      "actualTheme": "dark",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-en-dark-1440-overview.jpg",
+        "final-en-dark-1440-system.jpg",
+        "final-en-dark-1440-experts.jpg",
+        "final-en-dark-1440-kernel.jpg",
+        "final-en-dark-1440-cache.jpg",
+        "final-en-dark-1440-scheduling.jpg",
+        "final-en-dark-1440-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 900,
+      "actualWidth": 900,
+      "actualTheme": "light",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-zh-light-900-overview.jpg",
+        "final-zh-light-900-system.jpg",
+        "final-zh-light-900-experts.jpg",
+        "final-zh-light-900-kernel.jpg",
+        "final-zh-light-900-cache.jpg",
+        "final-zh-light-900-scheduling.jpg",
+        "final-zh-light-900-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 900,
+      "actualWidth": 900,
+      "actualTheme": "dark",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-zh-dark-900-overview.jpg",
+        "final-zh-dark-900-system.jpg",
+        "final-zh-dark-900-experts.jpg",
+        "final-zh-dark-900-kernel.jpg",
+        "final-zh-dark-900-cache.jpg",
+        "final-zh-dark-900-scheduling.jpg",
+        "final-zh-dark-900-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 900,
+      "actualWidth": 900,
+      "actualTheme": "light",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-en-light-900-overview.jpg",
+        "final-en-light-900-system.jpg",
+        "final-en-light-900-experts.jpg",
+        "final-en-light-900-kernel.jpg",
+        "final-en-light-900-cache.jpg",
+        "final-en-light-900-scheduling.jpg",
+        "final-en-light-900-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 900,
+      "actualWidth": 900,
+      "actualTheme": "dark",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-en-dark-900-overview.jpg",
+        "final-en-dark-900-system.jpg",
+        "final-en-dark-900-experts.jpg",
+        "final-en-dark-900-kernel.jpg",
+        "final-en-dark-900-cache.jpg",
+        "final-en-dark-900-scheduling.jpg",
+        "final-en-dark-900-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 390,
+      "actualWidth": 390,
+      "actualTheme": "light",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-zh-light-390-overview.jpg",
+        "final-zh-light-390-system.jpg",
+        "final-zh-light-390-experts.jpg",
+        "final-zh-light-390-kernel.jpg",
+        "final-zh-light-390-cache.jpg",
+        "final-zh-light-390-scheduling.jpg",
+        "final-zh-light-390-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 390,
+      "actualWidth": 390,
+      "actualTheme": "dark",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-zh-dark-390-overview.jpg",
+        "final-zh-dark-390-system.jpg",
+        "final-zh-dark-390-experts.jpg",
+        "final-zh-dark-390-kernel.jpg",
+        "final-zh-dark-390-cache.jpg",
+        "final-zh-dark-390-scheduling.jpg",
+        "final-zh-dark-390-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "actualWidth": 390,
+      "actualTheme": "light",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-en-light-390-overview.jpg",
+        "final-en-light-390-system.jpg",
+        "final-en-light-390-experts.jpg",
+        "final-en-light-390-kernel.jpg",
+        "final-en-light-390-cache.jpg",
+        "final-en-light-390-scheduling.jpg",
+        "final-en-light-390-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 390,
+      "actualWidth": 390,
+      "actualTheme": "dark",
+      "overflow": false,
+      "localOverflow": [],
+      "mathErrors": 0,
+      "brokenImages": 0,
+      "shots": [
+        "final-en-dark-390-overview.jpg",
+        "final-en-dark-390-system.jpg",
+        "final-en-dark-390-experts.jpg",
+        "final-en-dark-390-kernel.jpg",
+        "final-en-dark-390-cache.jpg",
+        "final-en-dark-390-scheduling.jpg",
+        "final-en-dark-390-results.jpg"
+      ]
+    }
+  ],
+  "system": {
+    "osDark": true,
+    "resolved": "dark"
+  },
+  "inspected": [
+    "final-zh-light-1440-overview",
+    "final-zh-dark-1440-kernel",
+    "final-en-dark-390-experts",
+    "final-zh-light-390-overview",
+    "final-en-light-390-kernel",
+    "final-zh-dark-390-cache",
+    "final-en-light-390-scheduling",
+    "final-en-light-900-system",
+    "final-zh-dark-900-experts",
+    "final-en-dark-390-system",
+    "final-zh-light-390-results"
+  ],
+  "finalPolish": "Only cost formula font changed after complete production read; rebuilt, re-captured all variants, reread main rendered argument and inspected actual final footer at 19px.",
+  "readThrough": [
+    "overview",
+    "layout",
+    "experts",
+    "kernel",
+    "cache",
+    "scheduling",
+    "results",
+    "footer"
+  ],
+  "metadataRecovery": "Final exported variants was empty after persistent REPL variable rebinding. The 12 records were recovered from the actual returned CUA variant observations (all printed actualWidth/theme and zero overflow/math/image errors), with all 84 named screenshot files verified fresh after final snapshot. No UI execution or pixel inspection was invented."
+}

@@ -1,0 +1,2 @@
+DeepInfer systems: 12 dispatch configurations, 20 allocation cases with exhaustive prefix oracle, 3 source-format byte oracles, 11 bilingual mechanisms.
+PASS DeepInfer: 612 trace snapshots, 18 settings, 10 resource/dependency schedules, partial-prefill and first-token oracles; bilingual keys match.

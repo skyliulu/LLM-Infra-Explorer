@@ -1,0 +1,86 @@
+[
+  {
+    "lang": "zh",
+    "theme": "light",
+    "level": "engine",
+    "selected": "execution",
+    "screenshot": "detail-390-zh-light-engine.jpg"
+  },
+  {
+    "lang": "zh",
+    "theme": "light",
+    "level": "execution",
+    "selected": "sampling",
+    "screenshot": "detail-390-zh-light-execution.jpg"
+  },
+  {
+    "lang": "zh",
+    "theme": "light",
+    "level": "service",
+    "selected": "engine",
+    "screenshot": "detail-390-zh-light-service.jpg"
+  },
+  {
+    "lang": "zh",
+    "theme": "dark",
+    "level": "engine",
+    "selected": "execution",
+    "screenshot": "detail-390-zh-dark-engine.jpg"
+  },
+  {
+    "lang": "zh",
+    "theme": "dark",
+    "level": "execution",
+    "selected": "sampling",
+    "screenshot": "detail-390-zh-dark-execution.jpg"
+  },
+  {
+    "lang": "zh",
+    "theme": "dark",
+    "level": "service",
+    "selected": "engine",
+    "screenshot": "detail-390-zh-dark-service.jpg"
+  },
+  {
+    "lang": "en",
+    "theme": "light",
+    "level": "engine",
+    "selected": "execution",
+    "screenshot": "detail-390-en-light-engine.jpg"
+  },
+  {
+    "lang": "en",
+    "theme": "light",
+    "level": "execution",
+    "selected": "sampling",
+    "screenshot": "detail-390-en-light-execution.jpg"
+  },
+  {
+    "lang": "en",
+    "theme": "light",
+    "level": "service",
+    "selected": "engine",
+    "screenshot": "detail-390-en-light-service.jpg"
+  },
+  {
+    "lang": "en",
+    "theme": "dark",
+    "level": "engine",
+    "selected": "execution",
+    "screenshot": "detail-390-en-dark-engine.jpg"
+  },
+  {
+    "lang": "en",
+    "theme": "dark",
+    "level": "execution",
+    "selected": "sampling",
+    "screenshot": "detail-390-en-dark-execution.jpg"
+  },
+  {
+    "lang": "en",
+    "theme": "dark",
+    "level": "service",
+    "selected": "engine",
+    "screenshot": "detail-390-en-dark-service.jpg"
+  }
+]

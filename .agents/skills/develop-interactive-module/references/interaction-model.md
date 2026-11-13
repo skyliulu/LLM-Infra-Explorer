@@ -9,7 +9,7 @@ Choose the smallest interaction grammar that exposes the concept:
 | Ordered execution | play, pause, step, scrub, active/passed/pending stages |
 | Structure or ownership | select, inspect, lock, highlight relationships |
 | State lifecycle | allocate, grow, reuse, evict, commit, reset |
-| Algorithm comparison | switch modes on shared inputs and scales |
+| Algorithm comparison | colocated views or mode switches on shared inputs and scales |
 | Parameter sensitivity | adjust a parameter and derive all consequences immediately |
 | Resource or data movement | show locations, direction, transfer, and ownership changes |
 
@@ -38,6 +38,10 @@ The snapshot should contain every fact needed by the views: structure, dimension
 
 For objects shown in several views, assign stable semantic identities in the model. Derive location, residency, selection, activity, and visibility from that identity so a user can follow the same object across canvases instead of interpreting unrelated lookalikes.
 
+Selection identity must include the representation scope when IDs repeat: a baseline operation and an alternative operation can both be `commit-2` while occurring at different times. Resolve the selection against its own diagram/model, highlight that diagram, and derive the inspector from the same resolved object. After a configuration change removes an object, reset/remap both the highlight and inspector together; a silent inspector fallback with no visible selected object is inconsistent.
+
+Distinguish an inspected object from the active batch/stage. When a reader selects a waiting or excluded request, explicitly show that it is outside the current operation and explain its actual state. Do not place global execution copy beneath an object-specific heading as if that object were executing it. Validate active, excluded, finished and removed selections, not only the default active item.
+
 ## Classify controls and dependencies
 
 For each control, record whether it is:
@@ -62,9 +66,11 @@ For a `timeline` capability, include `phase`, `step`, `isPlaying`, and the relev
 
 - finish the current operation before advancing its enclosing token or chunk;
 - represent prefill, decode, training, tiling, and parallel work according to their real execution;
-- keep exactly one operation active and distinguish `active`, `passed`, `pending`, and `done`;
+- keep one active operation per serial lane; represent actual parallel work together, and distinguish `active`, `passed`, `pending`, and `done`;
 - stop cleanly at `done` and keep reset, play/pause, step, and scrub consistent;
-- pause playback when the user manually inspects a stage.
+- define whether selecting a stage scrubs execution (pause/remap) or only changes the inspector (execution continues); keep that distinction visible and preserve accepted behavior.
+
+Independent explorations can have separate lifecycle scopes, such as a macro comparison and a single-token microscope. Place each playback group beside its canvas and label its scope. Shared experiment inputs may feed both models; do not make a selected token appear synchronized with an unrelated aggregate checkpoint. Within one claimed execution, all views derive from its canonical snapshot.
 
 ## Validate large state spaces outside the UI
 

@@ -12,6 +12,7 @@ export const MODULE_LABELS = {
   radixcache: 'Radix HiCache',
   dpattention: 'DP Attention',
   linearattn: 'Linear Attention',
+  deepinfer: 'DeepInfer',
 };
 
 export const getModuleLabel = id => MODULE_LABELS[id];

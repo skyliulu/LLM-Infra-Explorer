@@ -1,5 +1,32 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-10-28 — Automatic owner reader gate added to the Skills
+
+- User requested that holistic reader review happen automatically before delivery. The previous workflow had outcome questions but allowed the owner to substitute local checks and independent review for a continuous reading experience.
+- Rendering Skill now requires owner first-screen-to-footer reading, important branches/returns, a reconstructed answer using visible content, observed friction, autonomous in-scope repair and complete reread. Analysis Skill checks the connected argument before handoff. Assessment/skill-only scope remains bounded. AGENTS and delivery/QA references point to the same requirement.
+- The run helper now requires a non-skippable `reader` check with owner identity, actual route/path, reconstructed answer, friction list, note and inspected screenshot. Snapshot invalidates prior reader state. Green build/matrix/independent reviews do not waive this gate; the helper still cannot prove human comprehension.
+- Validation:22 helper tests pass, including missing/skipped/failed reader, delegated owner work, missing reconstruction/evidence, stale revision and unresolved teaching findings. Both official Skill validators pass;22 relative Markdown links checked. Current DeepInfer remains explicitly incomplete with failed reader/teaching acceptance; no application source was changed or chapter reaccepted.
+- Behavioral evaluation and limitations are recorded in `docs/audits/skill-autonomy/reader-gate/`; read-through results are separate from synthetic bookkeeping tests.
+- The fresh-context behavioral test did automatically execute a real full read and branch exploration, but its release judgement was too permissive: it accepted a prose reconstruction and downgraded central interaction gaps. Kept this false positive in the evaluation record. Strengthened the rule to grade narrative vs demonstrated mechanism separately and require mapping across upper/lower architectures; no second behavioral judgement pass or current-page acceptance is claimed.
+
+### 2026-10-28 — DeepInfer owner read-through reopens teaching acceptance
+
+- Assessment-only follow-up: owner personally read the actual Chinese Light production page from first screen to footer, explored all three performance branches, official figure, economics, engine/device drill-down, one request round and async timeline. No implementation or Skill changes.
+- Verdict: whole-chapter teaching quality does not yet meet the user's original outcome. Prior build/theme/model/integration results remain valid within their scope; withdraw the broader claim that these establish overall reader comprehension.
+- Open teaching P2: component navigation and benefit grouping disagree (Prefill selection contains async/DSpark); upper P/D architecture and lower generic-engine hierarchy lack a continuous mapping; several experiments show counts/presets rather than the relevant mechanism, particularly cache paths and kernel fusion; the main economics panel does not complete the engineering link from efficiency to unit serving cost.
+- Chinese transitions, note density and reading hierarchy remain P3. Theme repair and the more concrete Wide-EP/request/timing examples are real improvements, not proof of completed teaching design.
+- Full observed findings and two current viewport images: `docs/module-runs/deepinfer/performance/reader-review.md` and `reader-review-evidence/`. Current run's teaching verdict is reopened; historical independent review is retained as the prior narrower assessment.
+
+### 2026-10-28 — DeepInfer performance/cost thesis and independent outcome acceptance
+
+- User correction: the earlier hierarchy remained a generic request-loop tour and did not explain why DeepInfer performs well or lowers serving cost; its fixed dark architecture also failed Light appearance. That trial's acceptance is superseded for this reader concern.
+- Rebuilt the primary explanation around avoided repeat Prefill, efficient parallel/kernel execution and reduced service/engine waiting. Connected production P/D/storage selections lead to bounded experiments. Wide-EP explicitly conserves eight illustrative GPUs/32 Token jobs while changing expert partitioning and weight reuse; EPLB separately exposes the slow-rank limit. The former request and async demos remain as optional lower-level detail.
+- Official production 155T/day and $38/GPU-hour retain their source/scope and revenue meaning. Hypothetical economics expose costs, capital and revenue sensitivity; nonpositive net cash has no finite recovery period. No official one-month-payback promise or reproduced GPU speed claim.
+- Upgraded both content and rendering Skills: establish a testable explanatory thesis/outcome-to-cause map before hierarchy, preserve necessary mechanism ownership, independently reconstruct the user outcome, and inspect real theme surfaces. A blind vLLM handoff test supplements this actual DeepInfer iteration; it is not an end-to-end second chapter test.
+- All final checks passed: model, production build, sharing/learning integration, theme compiler, convention checks, 36-case manifest and both official Skill validators. Production browser covers36 main view cases (3 widths × 2 languages × 2 themes × 3 branches),12 engine viewport cases and11 recorded journeys. Actual Light diagram maps/nodes are light; no unintended overflow or console warning/error observed. System resolved the current OS Dark preference without changing paused step2/requestB.
+- Independent reviewer found and closed a real teaching P2 in the first regenerated version: Wide-EP was still only asserted while the visual demonstrated EPLB. Added and retested expert-group/weight-reuse structure. Reviewer opened11 final production images and checked all36 matrix facts, without claiming36 independent pixel reviews. A stale negative-economics paint capture was recaptured and independently confirmed at cost50/daily−288/no finite recovery.
+- Final evidence: `docs/module-runs/deepinfer/performance/qa.md`, `performance/evidence/`, `outcome-review.md` and current `run.json`; historical hierarchy record is `run-hierarchy-trial.json`. No GPU/NPU runtime benchmark, commit, push or deployment.
+
 ### 2026-09-13 — Reading order and CED section hierarchy
 
 - Authorized structural reordering: shared Home/sidebar learning groups and CED major sections. Preserve diagram geometry, model accounting, section IDs, selection and playback; phase controls move beside the single-forward canvas, while token count remains shared.
@@ -1635,3 +1662,127 @@ Replaced separate token-group cards with one continuous matrix: token rows, inte
 - Build passed. Browser checked all eight Softmax/GLA stage selections: panels measured 371–423px, with clientHeight equal to scrollHeight and zero KaTeX errors. Screenshot: docs/audits/linear-compact-inspector.png. Chinese desktop dark mode verified; remaining language/viewport combinations not separately checked.
 
 - Follow-up: reordered paired Decode lanes to selected Linear/GLA first, Softmax second as requested; browser DOM verified GLA then Softmax. No algorithm or control changes.
+
+## 2026-10-27 — Autonomous interactive-module skill upgrade
+
+- Scope: workflow/skill redesign; no production chapter, routing, domain model or UI source changed. Preserve existing module conventions and focused repair/assessment scope. Reviewed relevant local project conversations and primary public practices; rationale in `.agents/skills/develop-interactive-module/references/upgrade-basis.md`.
+- Reworked `$develop-interactive-module` to own topic identity, bounded source research, teaching contract, concrete claim-to-visual evidence, early end-to-end slice, implementation/integration, rendered self-review and defect repair through local delivery. Routine design choices proceed without intermediate approval. Existing topics reuse current chapters; ambiguous identity, actual access/permission limits and requested assessment retain their boundaries.
+- Added resumable run initialization, explicit final input snapshots and evidence verification in `module-run.mjs`. Never executes recorded commands or manufactures passed results. Requires fresh final evidence, source/model/browser traceability, behavioral journeys, five review areas and no open P0–P2 issues. Small repairs remain proportional.
+- Corrected conflicting language-control guidance, clarified independent playback scopes versus synchronized views, real parallel lanes, terminal states, and contextual rather than mandatory eight-block inspectors. Documented current integration files and the stale Linux/global assumptions in the legacy visual helper. Updated AGENTS guidance to acknowledge existing model checks.
+- Verification: official skill-creator `quick_validate.py` passed (PyYAML supplied only from a temporary validator directory); helper tests 15/15 passed; existing QA-matrix self-test passed; production build passed (1996 modules); local reference/JSON/YAML checks and `git diff --check` passed. No rendered chapter QA claimed for this documentation/tool-only change.
+- Independent behavioral dry run covered six realistic prompts; decisions conformed after grading. Its findings prompted explicit guidance on existing topics, proportional repair QA, model versus browser coverage, and full-QA integration. Independent script review found four gate defects (truncated PNG, stale review screenshot, non-string identity, integration-skip mismatch); all fixed with regressions and independently retested. Junction tests unavailable because sandbox disallows junction creation; realpath check inspected only.
+- Evidence and limitations: `docs/audits/skill-autonomy/behavior-dry-run.md` and `docs/audits/skill-autonomy/results.md`. No full fresh-topic generation or old/new E2E benchmark executed; do not infer a one-shot quality rate from synthetic bookkeeping tests or decision exercises. No commit, push or publication in this task.
+
+### 2026-10-27 — Open technology selection
+
+- User clarification: the rendering system, interaction tools, module framework and technology stack may evolve to serve clear technical explanation. Updated AGENTS and skill entrypoint so the current React stack and framework-specific examples are defaults, with compatible behavioral contracts for alternative implementations. A technology change alone introduces no design approval gate.
+- Added `references/technology-selection.md`: select from the teaching object, compare relevant approaches, use a representative spike when needed, record actual evidence and integration costs, and adopt the useful implementation boundary. Preserve coherent navigation, language/math, experiment lifecycle, sharing and production delivery through reuse/adapters; verify renderer-specific risks such as zoom, hit testing, device scaling, resource cleanup and capability fallback when relevant.
+- Updated integration, autonomous delivery and QA guidance to support alternate runtimes/builds and equivalent checks. Added the `open-technology-choice` behavioral scenario. Format validation, local reference links, seven-scenario JSON structure and whitespace checks passed. The seventh scenario was added but not independently executed; the previous six-scenario dry run remains its original evidence. No app/runtime or evidence-helper code changed, so no new rendered QA or repeated build claimed.
+
+## 2026-10-27 — DeepInfer real autonomous delivery trial
+
+- Created `DeepInfer.jsx` with a connected offline-engine architecture, source-backed subsystem inspectors, concrete request/prompt/output cells and a separate CPU/device dependency comparison. Official identity pinned to deepseek-ai/DeepInfer `553741557a57df44a46fb3ab72b6aafeaf945337`. Research, scope, technology decision and primary locators are in `docs/module-runs/deepinfer/brief.md`, `research.md` and `research-notes.md`.
+- Pure model distinguishes exclusive Prefill/Decode batches, budget-driven chunks, no partial-prefill output, first output from final prefill, pending device output vs CPU commit, two toy decode-ready slots and terminal retirement. Request trace is explicitly synchronous/nextn0/single-rank with sufficient memory; a separate illustrative dependency schedule explains async remapping and final flush. No physical KV-service, runtime benchmark or speculative acceptance behavior was fabricated.
+- Integrated chapter13 into Home/sidebar/search, consistent CircuitBoard identity, reading prerequisites/related branches, section anchors and three shareable settings. Configuration survives navigation; playback/selection reset on return; share links restore settings across document reloads. README/AGENTS inventories updated. React/DOM was chosen for the small scene's semantic controls and responsive text; no new renderer dependency was justified.
+- Independent first-case review found three P2 issues: cross-diagram timing selection, stale Prefill copy/source during Decode, and inconsistent removed/excluded request selection. Fixed with representation-qualified identities, context-derived narrative/source/input highlights and normalized/request-specific inspection. Also fixed dynamic entry IDs and narrow-segment discoverability with a legend plus equivalent native operation selector. Actual mobile computed grid disproved an initially suspected third-column regression.
+- Final checks: `check:deepinfer` passes612 snapshots/18 configurations/10 dependency schedules; convention checker9/9 with0 warnings; `check:workbench` passes13 chapter sharing/learning contracts; matrix validator passes36 cases; production build passes2000 modules. Final source input hashes recorded before final checks. Official Skill format and18 evidence-helper tests pass. Native JPEG capture suffixes were normalized without changing bytes; evidence checker now supports PNG/JPEG framing and suffix agreement, with truncated/mislabeled formats still rejected.
+- Actual production-browser acceptance at port4173:18 rendered scenarios across1440/768/390px, both languages and all request profiles, without document/checked-component overflow or KaTeX errors. Final browser journey log contains22 grouped cases, including9 budget/output oracles,48 time-segment selections, mobile equivalent selection, Decode/excluded/source mapping, removed selection, terminal autoplay/replay/keyboard, Home return and explicit share/plain document reloads. Final console warning/error list empty.
+- Owner and independent reviewer inspected representative final screenshots; no remaining P0–P2 observed within their stated scope. Source/model/screenshot review is documented separately from owner-operated browser checks. Clean viewport captures supplement full-page images whose sticky-header stitching obscures a narrow strip. Evidence: `docs/module-runs/deepinfer/qa.md`, `independent-review.md`, `evidence/browser-journeys.json`, `evidence/rendered-layout.json`, `evidence/final-workbench-zh.jpg`, `evidence/final-decode-excluded-en.jpg` and `evidence/final-overlap-en.jpg`.
+- Skill refined from observed defects: scope-qualified selection identities; active/excluded/finished/removed selection journeys; stage-specific prose/source/pseudocode checks; narrow-layout legends; separate first-pass/final evidence. This one user request reached local delivery without further human correction, while the first implementation required autonomous repairs. No general one-shot success rate is inferred; GPU engine execution, measured performance and full production-service correctness remain outside this teaching model. No commit/push/publication requested or performed.
+## 2026-10-27 — DeepInfer content-depth and appearance correction
+
+The user identified two material omissions in the first real case: theme acceptance was absent, and a correct offline scheduler/ZOS toy was presented without enough framework architecture and kernel coverage. The original engine-only trial remains in `docs/module-runs/deepinfer/run-engine-trial.json`; it is not evidence of complete framework or theme acceptance.
+
+Reused community `codebase-knowledge-builder`, pinned to `b01f40c5aef4eb8f6c52c664fe19b33e661c7abd`, under `.agents/skills/` with its upstream MIT license. Selection rationale and the alternative explain-this workflow are in `docs/audits/skill-autonomy/community-analysis-skills.md`. The project adapter now requires breadth inventory, layered source trails, optimization causes/costs, implementation-vs-production distinctions and an actual content/UI coverage table. The rendering Skill owns the subsequent design/model/browser repair. AGENTS now describes the existing two-theme compiler correctly, and the Skill permanently requires explicit Light/Dark plus System resolution evidence. Two independent decision dry runs are in `depth-theme-eval.md`; they are not E2E performance evidence.
+
+Independent source analysis produced `docs/module-runs/deepinfer/technical-analysis.md` (19 related mechanisms, pinned source contracts). The actual page now adds connected VE/P/D/storage context and 11 drill-downs, separate Prefill/Decode source chains, conditional Mega/fallback paths, fixed-budget DSpark allocation and a KV data/scale byte ledger. Graph/profile, EPLB, low precision, CED replay, Engram/mHC, SO and deterministic-sampling boundaries connect the runtime story. `content-coverage.md` distinguishes actual experiments from explanatory inspectors and unknown vendor internals.
+
+Independent review found and closed missing VE, incorrect prefill index-address generalization, discarded experiment configuration and a duplicate translation key. Owner/reviewer also repaired a tiny mobile KaTeX scrollbar and exposed group size in the byte ledger. Final build/model/workbench/theme/convention checks and 18 evidence-helper tests pass; both Skill validators pass. The model includes 12 dispatch cases, 20 prefix-allocation cases checked exhaustively, 3 byte-format oracles and the previous 612 trace snapshots. Browser journeys confirm nine-key sharing, full reload, Home return, input retention, System/paused progress, pending/commit/terminal/reset and timing track selection.
+
+Actual final appearance acceptance: Light/Dark × EN/ZH × 1440/768/390 (12 cases), plus 12 kernel/precision/attention and 4 old-trace captures. Independent reviewer opened all 28; owner inspected the final preview/overlap as well. No remaining P0–P2 in the checked scope. Thirty final native JPEG artifacts, receipts, model/build logs, review findings and a consistent final input snapshot are referenced by `run.json`; the evidence verifier passes. Full details: `docs/module-runs/deepinfer/depth-qa.md` and `depth-review.md`.
+
+Limits: System resolved the available dark OS branch; no supported light-OS emulation was available. Explicit Light was tested. No GPU/NPU execution, external fused-kernel internals, measured throughput or quantization/replay quality experiment is claimed. Several mechanisms remain source-backed explanatory drill-downs. This result followed user correction and internal repair; it does not establish a general one-shot success rate.
+
+Preview: `docs/module-runs/deepinfer/evidence/depth-final-preview-zh.jpg`.
+## 2026-10-28 — DeepInfer 原理分层、章节分工与中文重写
+
+用户指出上一轮把研究广度变成了页面特性清单，未抓住框架本身；Codebase Knowledge Builder 也不是其需要的原理分析入口。本轮新增 `.agents/skills/analyze-technical-principles/SKILL.md`：先讲问题与设计思路，自上而下拆职责，再决定本章深入、接口说明/专题链接和省略内容。代码分析仅作可选取证。同步修改 rendering Skill、technical-analysis/content-and-math/QA/autonomous-delivery、AGENTS 和行为场景。独立两场景 dry run 见 `docs/audits/skill-autonomy/principles-focus-eval.md`；指出的职责范围、具体接口与静态架构验收限制已补入规则。
+
+DeepInfer 现为服务→引擎→执行组件三级下钻，保留请求/批次/执行/状态闭环与异步依赖实验。移除本章重复的 DSpark 预算、精度探针和字节账本；算法经组件链接进入对应专题。EPLB 只在专家负载的框架上下文解释。先修改为生成流程与 KV 基础，中文按实际页面连读重写，代码默认折叠。当前职责合同见 `docs/module-runs/deepinfer/hierarchy/principles.md`，旧广度 trial 留在 `run-depth-trial.json`。
+
+独立复核修复 H1 调度尚未计算却显示部分计算说明（P2）、H2 跨级返回分支不一致（P3）、H3 采样文案混入前置验证量调度（P3）；补了阶段/路径回归。深色选中描边 P3 也已通过 light-dark 配色修复并局部复核。最终 model/build/workbench/theme/conventions 与两个 Skill validator 通过，`run.json` 输入/证据检查通过。原有 612 轨迹快照、18配置、10依赖安排继续有效。
+
+真实浏览器覆盖三层×三宽度×双语×双主题36组合，补12手机说明、4阶段、4时间图和2手机时间图尾部；独立目视58张，主作者另保留主预览。跨层、键盘、真实专题链接、Home、三字段分享完整重载、普通重载、采样/更新/末帧/自动停/重置均有回执。最终无剩余 P0–P2；全部已观察修复项关闭。System 只验证当前 dark OS 分支，不声称另一分支或真实 GPU 性能。
+
+详细验收、发现和限制：`docs/module-runs/deepinfer/hierarchy/qa.md`、`hierarchy/review.md`。不以控件数、研究条目数或测试数证明重点拿捏正确；这仍是一次经过用户纠正的案例，不是所有主题一次成功的保证。
+
+
+## 2026-10-28 — DeepInfer 按新 Skill 完整重做与自动读者验收
+
+本次取代前几版的松散特性清单/通用引擎附录，围绕“同样算力为何能服务更多有用请求，什么时候能降低单位成本”重新生成。历史记录中的机械通过不代表本次教学标准；前一失败版留存 run-performance-trial.json。
+
+一个连贯工作台保留请求R、P/D及3FS总览，逐层进入历史复用、Prefill、专家执行、Mega MoE、服务资源与CPU/GPU配合。R→T1→A/B/C保留对象身份；专业算法进入各自章节。去掉任意回本计算器，成本结论接在可见机制之后，官方155T/day与38美元/GPU-hour按生产收入和部署条件解释。
+
+Owner亲自从首屏连续读到页尾并走主要分支/返回，在修复后完整复读；独立读者完整阅读补充判断。实修包括对象映射、P/D工作定义、分离开关正文、内核等待合并状态、历史结束态标签、平板公式收缩和手机英文轨道侵入。最终无未关闭P0–P2，复述和实际路径见 docs/module-runs/deepinfer/rebuild/reader-review.md；独立报告及最终局部复核见同目录independent-review.md。
+
+生产浏览器实际7视图×双语×双主题×1440/900/390的84态矩阵，owner打开代表截图并实读；随后最后英文轨道标签修复单独6态回归，中文全视图亦于最终快照后复走。没有将84截图当84次独立像素审查。原生viewport的innerWidth实际核对；不生效的托管1280预览未计入响应式覆盖。Full-page sticky截图伪影用普通视口核对；公式/英文轨道最终截图均实际查看。
+
+24缓存阶段案例、64专家快照、路由/工作/副本/读取与管线依赖守恒、低负载反例、P/D延迟交换、父层关系及双语键检查通过。最终check:deepinfer、check:workbench、conventions9/9、production build及84态manifest通过；run.json19项输入和证据一致性验证通过。Home配置保留与生命周期重置、显式分享完整重载、普通重载默认、播放终点/重置/重播、播放中改配置、T32失效选中和实际System→OSdark已验。没有check:theme脚本；主题以真实Light/Dark渲染验收。
+
+完整范围、命令、发现和限制见 docs/module-runs/deepinfer/rebuild/qa.md。没有GPU/NPU真实吞吐/精度或经济回报复现，没有提交/推送/发布，不保证任意主题一次生成即完美。
+
+
+## 2026-11-05 — DeepInfer 连续技术报告重写
+
+用户再次否定文案、密度、文章推进及技术深度。重看确认前轮通过标准偏松：默认overview后直接结论，局部交互不能替代完整技术论证。已改成六节连续报告，按负载差异→DP/EP→专家批量/权重→通信融合→共享缓存/路由→实际负载策略→SLO成本推进。补GEMM行数、两次GEMM/SwiGLU与缓冲、3FS/SWA/GDR和时间quota/双指标；CED缩为必要接口。用语从操作脚本改技术段落；原机制实验嵌入正文。
+
+Owner及独立审查实际读全章并操作关键实验；12语言/主题/尺寸组合采集和代表像素检查，最终目录处理另生产回归。模型/工作台/约定/生产build通过。具体范围与限制 docs/module-runs/deepinfer/report/qa.md，独立报告report-review.md，当前reader-review在report/目录，前轮保留run-lesson-trial.json。Skill新增默认未点击阅读路径与技术预测深度判断；独立A/B情境确认不会强制算法章长文化。没有发布或真实GPU测量。
+
+
+## 2026-11-13 — 效果评审重新打开教学验收
+
+用户再次要求review。实际中文桌面连续阅读并操作专家/kernel/官方图，确认线性技术报告仍不足以达到层次化交互图解目标：总览缺可下钻连接，关键内部机制主要停在文字，性能结果与机制缺读图证据链；另复现收起kernel仍后台播放。详见docs/module-runs/deepinfer/review-2026-11-13/review.md。本次是评审，未改页面；保留原工程检查结果但撤回当前教学通过，run.json重新in_progress/reader failed，前记录另存。未声称做了新一轮全主题/尺寸验收。
+
+## 2026-11-13 — DeepInfer 连接图与机制重建
+
+用户授权继续修改。运行入口改为 ConnectedReport：同一请求系统图提供组件接口、详情入口及原图返回；连续六节正文保留。EP2/EP8 同输入并列显示专家物理副本与 Token 行；Mega MoE 显示每块输入/计算/结果/来源的就绪依赖；D 调度比较同候选卡的请求数和 KV 总量，P 用预算约束而不捏造耗时系数。官方原图常显，64/32 原有点圈标与读数表联动。正文减少模板总结，保留必要适用条件。
+
+Owner 在最终输入快照后亲自从首屏到页尾读过并操作边界/返回；独立读者另读全篇和关键分支。修复局部组件重挂载、手机指标对照、重复结果面包屑与原图未高亮。运行路径去掉自动 timer，缓存手动步进、内核位置检查，补充关闭即卸载。当前无未关闭 P0–P2；详见 docs/module-runs/deepinfer/connected/reader-review.md 和 independent-review.md。历史失败评审仍保留，未把前轮通过自动继承。
+
+最终生产实渲染：中英×明暗×1440/900/390 共12组合，每组合六区域72截图；整页无横向溢出、公式错误或缺图。实际打开代表像素的范围记录在 connected/evidence/render-observations.json，没有称逐张独立审图。System 验证当前 OS-dark 解析；浅色画布实际核对。Home 保留3/B/short，显式分享完整重载恢复，普通重载回6/A/long；当前生产控制台无新增 warn/error。模型、工作台、theme、conventions 与生产 build 通过，覆盖及证据一致性另外核对。
+
+完整当前范围见 connected/qa.md。未复现硬件吞吐、精度、服务费用或回本；未提交、推送、部署。手机原始科学图较密，保留坐标表和原图入口；未声称与桌面等价。
+
+## 2026-11-13 — 以站内章节体验重新评审 DeepInfer
+
+用户再次否定视觉/交互/组织/密度/教学友好。实际对照CED、Sparse、Flash后确认上一轮“内容齐全”的通过偏松：大空框主图拖延有效内容、专家指标先于对象、内核两套文字表要求读者脑内还原时间关系。独立基线同样不通过，报告 comparative/independent-baseline.md；旧记录保留，不继承通过。
+
+改首屏为来源有界的官方工作点→历史/专家/交接缩略机制→紧凑请求图/同屏职责。机制按钮一步定位；正文连续保留。专家物理副本与通道行先于指标，直接点选任一侧权重同步追踪。内核改同尺度A/B/C时间条+路径/块检查器，局部播放/步进/重播/终点和离开清理；缓存横向3FS→主机→HBM；调度共用四卡初值，只重复不同的决策结果。标题更直接，减少模板式讲解。技术纯模型/来源不变，没有新增吞吐承诺。
+
+自动owner生产版通读和独立实际复核均执行；修复继承grid位置导致的横排破坏、深色通道格不清楚、时间条操作名和成本分式字号。最终中英×明暗×三宽12组合，含局部溢出/实际主题值，代表像素范围如实记录，未把84张采集当84次审图；最终19px公式另实看。System仅当前OS-dark。物理对象点选、边界、播放终点/卸载、原图返回、Home和分享重载已核验。模型、工作台、theme、约定、生产build通过；当前控制台无新增warn/error。
+
+Skill reader-review新增实际邻章对照的判断，并给owner场景补标准；格式validator通过。当前案例展示了旧判定的假阳性及修复，不是未来一次成功率证明，没有重跑全部历史情境。详细证据与限制：docs/module-runs/deepinfer/comparative/brief.md、reader-review.md、qa.md、independent-final.md。未进行硬件/精度/真实经济复现，未提交、推送或部署。
+
+## 2026-11-13 — 两套 Skill 经验沉淀与实现一致性要求
+
+用户认可本轮效果，要求同步两套Skill并总结经验；随后补充浅层正确、深层尽可能贴近真实实现。分析Skill新增首个有用观察、默认论证与具体对象/关系/边界预测交接；渲染Skill落实直接对象操作、数字贴近对象、按关系选择空间/时间表达、实际邻章比较及最小教学标记的主题/字号验收。经验报告在docs/audits/skill-autonomy/deepinfer-lessons-2026-11-13/lessons.md，失败与修复依据均链接原有实际评审。
+
+新增共享implementation-fidelity参考：真实实现断言需要匹配固定版本/后端/运行分支的源码，核对形状、dtype/layout、状态归属、缓冲/同步、分配和读写提交；源码事实→模型→页面逐项对齐并用独立预期/参考验证。入门示例可缩尺寸但不能改错语义、归属和依赖；代码展示可选，后台核对不可由链接或自洽测试替代。实现bug与算法规范差别需报告；精度容差/近似及未执行硬件检查如实区分。核心不一致阻断技术通过，旧章节不追溯自动获得已验证状态。
+
+两Skill格式validator通过，新增本地引用均可解析；情境库共16条，新增3条并校验结构。独立迁移试读针对查询引擎、递归状态、小调色给出不同范围/表示，未强制DeepInfer布局，也未伪称实际渲染；新增实现一致性规则另用合成源码fixture检验，具体输出与判读见同目录validation.md。本次没有网页或domain-model源码变化，因此未重新构建/渲染；保留原交付runtime证据，将交付时workflow哈希单独归档并通过run一致性检查。没有全站源码正确性审计、硬件性能复现或发布。
+
+## 2026-11-13 — 按新版 Skill 重新评审 DeepInfer 的实现一致性
+
+本次仅评审。主作者实际从首屏到页尾通读中文浅色桌面章节，操作专家热点/复制、内核 A 块时间4、缓存范围说明、CPU补充及系统图路径，并查看英文暗色内核画布；未声称重新覆盖全响应式/双语/主题矩阵或System。整体叙事和已认可的布局可保留，当前检查范围内没有新增视觉阻断。
+
+对照固定 DeepInfer 55374155 与其 DeepGEMM gitlink 1fc9c669 后确认两项P2：Mega MoE提前部分回写被标成最终合并完成，缺少相关rank/peer就绪关系；EP8热点的11个不等额物理副本不符合实现中的等额固定槽位。另P3是缓存256位置指标应限定为块KV未覆盖后缀，不代表包含SWA恢复/重放的总Prefill工作。独立来源审查的第三项初始化错误经质疑后撤回，只保留缓冲归属需要说明的深度建议。
+
+新执行check:deepinfer通过，另导入当前纯模型保存复现；这证明现有测试自洽，不能证明与源码约束一致。完整评审、实际截图、精确来源和限制见 docs/module-runs/deepinfer/review-new-skills-2026-11-13/review.md。run.json保留旧记录快照并重开technical/implementation-fidelity，当前不能沿用旧“无P2”结论。未改页面或模型，未重复build/完整集成验收；未运行上游GPU、精度、费用测试，未提交、推送、部署。
+
+## 2026-11-13 — DeepInfer 三项实现一致性修复
+
+用户授权修复后，保留当前主要结构和交互。内核时间条把提前专家贡献写回与最终输出分开，补同一GPU1 owner的本轮写回完成、发布/等待相关卡、GPU2来源卡归约；t4贡献可存在但未returned，fused在10、serial在14完成，时间仍只是示意。接收环、远端槽和输出写明归属，top1及GPU2本轮无本地专家工作明确；未引入全EP全局屏障的错误概括。EP8冗余改固定每卡2槽共16，闲置也驻留，指标分别列活跃副本/驻留槽/冗余槽；热点分流明确为简化策略。缓存指标及首屏改为块KV未覆盖位置，不含SWA恢复/重放和总Prefill工作。必要处新增固定源码链接。
+
+新增来源约束的回归全部通过，独立来源复核确认两项P2关闭。实际dev和production检查中文浅色桌面、英文暗色桌面、中文暗色900及390、英文浅色390的受影响区域；900标签换行经缩短条内字及nowrap修复，最终再看。System当前解析dark；没有声称全12组合重跑。主作者整章通读至页尾，最终短标签修正后再复读；播放自然到14停、检查器路径/块、热点开关/低负载/闲置副本、总览进入和返回通过。最终控制台无warn/error。
+
+check:deepinfer、workbench、theme、约定9/9及production build通过。三项发现关闭，证据和明确限制见 docs/module-runs/deepinfer/fidelity-repair-2026-11-13/qa.md、independent.md。范围是这次聚焦修复，未复现真实GPU并行执行、数值精度、吞吐或经济收益，未提交、推送、部署。

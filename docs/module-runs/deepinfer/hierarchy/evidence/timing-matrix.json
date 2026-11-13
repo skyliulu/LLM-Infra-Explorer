@@ -1,0 +1,22 @@
+[
+  {
+    "width": 1440,
+    "theme": "light",
+    "outline": "rgb(15, 23, 42)"
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "outline": "rgb(147, 197, 253)"
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "outline": "rgb(15, 23, 42)"
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "outline": "rgb(147, 197, 253)"
+  }
+]

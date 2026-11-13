@@ -12,7 +12,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## 带着问题选择章节
 
-12 个工作台按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
+13 个工作台按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
 
 | 方向 | 工作台 | 可以探索什么 |
 | :--- | :--- | :--- |
@@ -28,6 +28,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、拒绝修正、EAGLE-2 与 DSpark。 |
 | Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram 检索、上下文门控和数据移动。 |
 | Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | 因果编码器—解码器、CSA2 共享、FP4 字节账本、分层索引、连续生成与会话恢复。 |
+| Advanced Inference | [**DeepInfer ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#deepinfer) | 从专家批量、固定副本容量、通信交叠、共享历史与调度，理解性能和成本，并对照固定版本源码。 |
 
 ### 深入 DeepSeek CED
 

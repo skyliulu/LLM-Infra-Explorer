@@ -14,6 +14,7 @@ const LinearAttention = lazy(() => import('../components/LinearAttention.jsx'));
 const Quantization = lazy(() => import('../components/Quantization.jsx'));
 const SparseAttention = lazy(() => import('../components/SparseAttention.jsx'));
 const CacheArchitecture = lazy(() => import('../components/CacheArchitecture.jsx'));
+const DeepInfer = lazy(() => import('../components/DeepInfer.jsx'));
 
 const routes = [
   { id: 'llm', icon: CHAPTER_ICONS.llm, component: LLMInference },
@@ -28,9 +29,18 @@ const routes = [
   { id: 'radixcache', icon: CHAPTER_ICONS.radixcache, component: RadixCache },
   { id: 'dpattention', icon: CHAPTER_ICONS.dpattention, component: DpAttention },
   { id: 'linearattn', icon: CHAPTER_ICONS.linearattn, component: LinearAttention },
+  { id: 'deepinfer', icon: CHAPTER_ICONS.deepinfer, component: DeepInfer },
 ];
 
 const descriptions = [
+  {
+    id: 'deepinfer',
+    description: {
+      en: 'Explain DeepInfer performance and cost through cache reuse, parallel execution, kernels and service-wide resource allocation.',
+      zh: '从缓存复用、并行与内核、整套服务的资源安排，理解 DeepInfer 的性能与成本。',
+    },
+    iconClass: 'text-orange-300',
+  },
   {
     id: 'llm',
     description: {
@@ -125,7 +135,7 @@ const descriptions = [
     iconClass: 'text-sky-300',
   },
 ];
-const aliases={llm:'推理 预填充 生成 token moe dense kv',parallel:'并行 dp tp pp cp ep etp gpu helix',flash:'fa fa2 fa3 fa4 分块 注意力 sram hbm',sparseattn:'dsa csa hca swa 稀疏 压缩 注意力',cachearch:'ced csa2 deepseek 缓存 共享 编码 解码',flashdecode:'解码 split 分块 reduction',speculative:'投机解码 draft target eagle dspark',quantization:'量化 精度 int4 fp4 fp8 bf16 awq gptq smoothquant',engram:'记忆 ngram 预取',radixcache:'前缀缓存 基数树 sglang lru hicache 分层存储 预取 host gpu',linearattn:'线性注意力 gla 递归 状态',dpattention:'dp tp mla attention 数据并行'};
-const related={llm:['quantization','speculative'],parallel:['dpattention','flashdecode'],flash:['sparseattn','flashdecode'],sparseattn:['flash','cachearch'],cachearch:['sparseattn','quantization','radixcache'],flashdecode:['flash','dpattention'],speculative:['llm','radixcache'],quantization:['llm','cachearch'],engram:['llm','radixcache'],radixcache:['llm','cachearch'],dpattention:['parallel','flashdecode'],linearattn:['flash','sparseattn']};
+const aliases={deepinfer:'deepseek offline engine scheduler async cpu device overlap request dspark distributed 离线引擎 调度 异步 请求 运行时',llm:'推理 预填充 生成 token moe dense kv',parallel:'并行 dp tp pp cp ep etp gpu helix',flash:'fa fa2 fa3 fa4 分块 注意力 sram hbm',sparseattn:'dsa csa hca swa 稀疏 压缩 注意力',cachearch:'ced csa2 deepseek 缓存 共享 编码 解码',flashdecode:'解码 split 分块 reduction',speculative:'投机解码 draft target eagle dspark',quantization:'量化 精度 int4 fp4 fp8 bf16 awq gptq smoothquant',engram:'记忆 ngram 预取',radixcache:'前缀缓存 基数树 sglang lru hicache 分层存储 预取 host gpu',linearattn:'线性注意力 gla 递归 状态',dpattention:'dp tp mla attention 数据并行'};
+const related={deepinfer:['llm','speculative','cachearch','parallel'],llm:['quantization','speculative'],parallel:['dpattention','flashdecode'],flash:['sparseattn','flashdecode'],sparseattn:['flash','cachearch'],cachearch:['sparseattn','quantization','radixcache'],flashdecode:['flash','dpattention'],speculative:['llm','radixcache'],quantization:['llm','cachearch'],engram:['llm','radixcache'],radixcache:['llm','cachearch'],dpattention:['parallel','flashdecode'],linearattn:['flash','sparseattn']};
 export const CHAPTERS=READING_ORDER.map(id=>routes.find(route=>route.id===id)).map(route=>({...descriptions.find(item=>item.id===route.id),...route,title:getModuleLabel(route.id),aliases:aliases[route.id],related:related[route.id],learning:LEARNING_PATHS[route.id]}));
 export function matchesChapter(chapter, query){return query.trim().toLowerCase().split(/\s+/).every(word=>[chapter.title,chapter.id,chapter.aliases,...Object.values(chapter.description)].join(' ').toLowerCase().includes(word));}

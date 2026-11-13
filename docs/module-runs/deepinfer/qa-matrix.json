@@ -1,0 +1,547 @@
+{
+  "dimensions": {
+    "scenario": [
+      "mixed",
+      "pressure",
+      "long"
+    ],
+    "budget": [
+      4,
+      8,
+      12
+    ],
+    "overlap": [
+      false,
+      true
+    ],
+    "language": [
+      "en",
+      "zh"
+    ],
+    "viewport": [
+      "desktop",
+      "tablet",
+      "mobile"
+    ]
+  },
+  "requiredCrossProducts": [
+    [
+      "scenario",
+      "budget"
+    ],
+    [
+      "scenario",
+      "viewport"
+    ],
+    [
+      "language",
+      "viewport"
+    ]
+  ],
+  "cases": [
+    {
+      "name": "model-mixed-4-false",
+      "layer": "model",
+      "state": {
+        "scenario": "mixed",
+        "budget": 4,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-mixed-4-true",
+      "layer": "model",
+      "state": {
+        "scenario": "mixed",
+        "budget": 4,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-mixed-8-false",
+      "layer": "model",
+      "state": {
+        "scenario": "mixed",
+        "budget": 8,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-mixed-8-true",
+      "layer": "model",
+      "state": {
+        "scenario": "mixed",
+        "budget": 8,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-mixed-12-false",
+      "layer": "model",
+      "state": {
+        "scenario": "mixed",
+        "budget": 12,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-mixed-12-true",
+      "layer": "model",
+      "state": {
+        "scenario": "mixed",
+        "budget": 12,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-pressure-4-false",
+      "layer": "model",
+      "state": {
+        "scenario": "pressure",
+        "budget": 4,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-pressure-4-true",
+      "layer": "model",
+      "state": {
+        "scenario": "pressure",
+        "budget": 4,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-pressure-8-false",
+      "layer": "model",
+      "state": {
+        "scenario": "pressure",
+        "budget": 8,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-pressure-8-true",
+      "layer": "model",
+      "state": {
+        "scenario": "pressure",
+        "budget": 8,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-pressure-12-false",
+      "layer": "model",
+      "state": {
+        "scenario": "pressure",
+        "budget": 12,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-pressure-12-true",
+      "layer": "model",
+      "state": {
+        "scenario": "pressure",
+        "budget": 12,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-long-4-false",
+      "layer": "model",
+      "state": {
+        "scenario": "long",
+        "budget": 4,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-long-4-true",
+      "layer": "model",
+      "state": {
+        "scenario": "long",
+        "budget": 4,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-long-8-false",
+      "layer": "model",
+      "state": {
+        "scenario": "long",
+        "budget": 8,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-long-8-true",
+      "layer": "model",
+      "state": {
+        "scenario": "long",
+        "budget": 8,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-long-12-false",
+      "layer": "model",
+      "state": {
+        "scenario": "long",
+        "budget": 12,
+        "overlap": false,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "model-long-12-true",
+      "layer": "model",
+      "state": {
+        "scenario": "long",
+        "budget": 12,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "All lifecycle snapshots, first-token oracle, partial-prefill zero-output, counts and terminal cleanup"
+      ]
+    },
+    {
+      "name": "render-mixed-en-desktop",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "mixed",
+        "budget": 8,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-mixed-en-tablet",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "mixed",
+        "budget": 8,
+        "overlap": true,
+        "language": "en",
+        "viewport": "tablet"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-mixed-en-mobile",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "mixed",
+        "budget": 8,
+        "overlap": true,
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-mixed-zh-desktop",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "mixed",
+        "budget": 8,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-mixed-zh-tablet",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "mixed",
+        "budget": 8,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "tablet"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-mixed-zh-mobile",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "mixed",
+        "budget": 8,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-pressure-en-desktop",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "pressure",
+        "budget": 12,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-pressure-en-tablet",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "pressure",
+        "budget": 12,
+        "overlap": true,
+        "language": "en",
+        "viewport": "tablet"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-pressure-en-mobile",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "pressure",
+        "budget": 12,
+        "overlap": true,
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-pressure-zh-desktop",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "pressure",
+        "budget": 12,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-pressure-zh-tablet",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "pressure",
+        "budget": 12,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "tablet"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-pressure-zh-mobile",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "pressure",
+        "budget": 12,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-long-en-desktop",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "long",
+        "budget": 4,
+        "overlap": true,
+        "language": "en",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-long-en-tablet",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "long",
+        "budget": 4,
+        "overlap": true,
+        "language": "en",
+        "viewport": "tablet"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-long-en-mobile",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "long",
+        "budget": 4,
+        "overlap": true,
+        "language": "en",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-long-zh-desktop",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "long",
+        "budget": 4,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "desktop"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-long-zh-tablet",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "long",
+        "budget": 4,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "tablet"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    },
+    {
+      "name": "render-long-zh-mobile",
+      "layer": "browser-and-visual",
+      "state": {
+        "scenario": "long",
+        "budget": 4,
+        "overlap": true,
+        "language": "zh",
+        "viewport": "mobile"
+      },
+      "checks": [
+        "Actual controls reach first sample; inspect screenshot, overflow, KaTeX, readable tokens and timing legend"
+      ]
+    }
+  ]
+}

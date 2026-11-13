@@ -1,0 +1,235 @@
+{
+  "startedAt": "2026-11-13T12:37:51.507Z",
+  "observedAt": "2026-11-13T12:44:03.436Z",
+  "variants": [
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "zh-light-1440-system.jpg",
+        "zh-light-1440-experts.jpg",
+        "zh-light-1440-kernel.jpg",
+        "zh-light-1440-cache.jpg",
+        "zh-light-1440-scheduling.jpg",
+        "zh-light-1440-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "zh-dark-1440-system.jpg",
+        "zh-dark-1440-experts.jpg",
+        "zh-dark-1440-kernel.jpg",
+        "zh-dark-1440-cache.jpg",
+        "zh-dark-1440-scheduling.jpg",
+        "zh-dark-1440-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "actualTheme": "light",
+      "actualWidth": 1440,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "en-light-1440-system.jpg",
+        "en-light-1440-experts.jpg",
+        "en-light-1440-kernel.jpg",
+        "en-light-1440-cache.jpg",
+        "en-light-1440-scheduling.jpg",
+        "en-light-1440-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 1440,
+      "actualTheme": "dark",
+      "actualWidth": 1440,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "en-dark-1440-system.jpg",
+        "en-dark-1440-experts.jpg",
+        "en-dark-1440-kernel.jpg",
+        "en-dark-1440-cache.jpg",
+        "en-dark-1440-scheduling.jpg",
+        "en-dark-1440-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 900,
+      "actualTheme": "light",
+      "actualWidth": 900,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "zh-light-900-system.jpg",
+        "zh-light-900-experts.jpg",
+        "zh-light-900-kernel.jpg",
+        "zh-light-900-cache.jpg",
+        "zh-light-900-scheduling.jpg",
+        "zh-light-900-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 900,
+      "actualTheme": "dark",
+      "actualWidth": 900,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "zh-dark-900-system.jpg",
+        "zh-dark-900-experts.jpg",
+        "zh-dark-900-kernel.jpg",
+        "zh-dark-900-cache.jpg",
+        "zh-dark-900-scheduling.jpg",
+        "zh-dark-900-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 900,
+      "actualTheme": "light",
+      "actualWidth": 900,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "en-light-900-system.jpg",
+        "en-light-900-experts.jpg",
+        "en-light-900-kernel.jpg",
+        "en-light-900-cache.jpg",
+        "en-light-900-scheduling.jpg",
+        "en-light-900-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 900,
+      "actualTheme": "dark",
+      "actualWidth": 900,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "en-dark-900-system.jpg",
+        "en-dark-900-experts.jpg",
+        "en-dark-900-kernel.jpg",
+        "en-dark-900-cache.jpg",
+        "en-dark-900-scheduling.jpg",
+        "en-dark-900-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 390,
+      "actualTheme": "light",
+      "actualWidth": 390,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "zh-light-390-system.jpg",
+        "zh-light-390-experts.jpg",
+        "zh-light-390-kernel.jpg",
+        "zh-light-390-cache.jpg",
+        "zh-light-390-scheduling.jpg",
+        "zh-light-390-results.jpg"
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 390,
+      "actualTheme": "dark",
+      "actualWidth": 390,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "zh-dark-390-system.jpg",
+        "zh-dark-390-experts.jpg",
+        "zh-dark-390-kernel.jpg",
+        "zh-dark-390-cache.jpg",
+        "zh-dark-390-scheduling.jpg",
+        "zh-dark-390-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "actualTheme": "light",
+      "actualWidth": 390,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "en-light-390-system.jpg",
+        "en-light-390-experts.jpg",
+        "en-light-390-kernel.jpg",
+        "en-light-390-cache.jpg",
+        "en-light-390-scheduling.jpg",
+        "en-light-390-results.jpg"
+      ]
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 390,
+      "actualTheme": "dark",
+      "actualWidth": 390,
+      "brokenImages": 0,
+      "mathErrors": 0,
+      "overflow": false,
+      "shots": [
+        "en-dark-390-system.jpg",
+        "en-dark-390-experts.jpg",
+        "en-dark-390-kernel.jpg",
+        "en-dark-390-cache.jpg",
+        "en-dark-390-scheduling.jpg",
+        "en-dark-390-results.jpg"
+      ]
+    }
+  ],
+  "system": {
+    "osDark": true,
+    "resolved": "dark"
+  },
+  "inspected": [
+    "zh-light-1440-system",
+    "en-dark-1440-kernel",
+    "zh-light-390-system",
+    "zh-light-390-experts",
+    "en-dark-390-kernel",
+    "zh-dark-390-cache",
+    "en-light-390-scheduling",
+    "zh-light-390-results",
+    "en-light-900-system",
+    "zh-dark-900-experts",
+    "en-dark-900-scheduling"
+  ]
+}

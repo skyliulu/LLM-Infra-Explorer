@@ -1,0 +1,33 @@
+{
+  "h1": "DeepInfer: from expert execution to a serving system",
+  "mathErrors": 0,
+  "overflow": false,
+  "sections": [
+    {
+      "id": "topology",
+      "title": "Different workloads, different parallel layouts"
+    },
+    {
+      "id": "experts",
+      "title": "Wide-EP: reuse expert weights across larger batches"
+    },
+    {
+      "id": "kernel",
+      "title": "Mega MoE: progress as data becomes ready"
+    },
+    {
+      "id": "cache",
+      "title": "Shared caching also frees the routing decision"
+    },
+    {
+      "id": "scheduling",
+      "title": "Schedule computation cost, not just request count"
+    },
+    {
+      "id": "results",
+      "title": "From offline throughput to serving cost"
+    }
+  ],
+  "theme": "light",
+  "width": 1440
+}

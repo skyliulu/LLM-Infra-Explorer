@@ -11,13 +11,15 @@ npm run build     # Production build → dist/
 npm run preview   # Preview production build locally
 ```
 
-No test suite exists. Validate changes visually via `npm run dev`.
+Module model checks are available as `npm run check:*` commands in `package.json`; choose the checks affected by the change. Validate rendered interactions via `npm run dev` as well. A production build alone does not establish visual or technical correctness.
 
 ## Architecture
 
 **LLM-Infra-Explorer** is a React SPA for interactively visualizing LLM infrastructure concepts. It deploys as a static site to GitHub Pages.
 
 **Stack:** React 18 + Vite + Tailwind CSS + Framer Motion + Lucide React
+
+**Technology choice:** This describes the current implementation, not a fixed technology requirement. Choose rendering, interaction libraries, module frameworks and necessary build infrastructure for explanatory clarity and usable interaction. Alternatives may be adopted autonomously when justified by the teaching outcome; record the decision and verify integration, production delivery and affected existing behavior. The implementation examples and framework-specific conventions below are defaults for the current stack. Other implementations must preserve their user-visible contracts through appropriate adapters or equivalents. A technology change alone does not require another design approval.
 
 ### Navigation flow
 
@@ -43,10 +45,11 @@ Each file is a self-contained, interactive visualization:
 | `RadixCache.jsx` | SGLang radix tree KV cache, LRU eviction, block reuse |
 | `DpAttention.jsx` | DP/TP hybrid attention, KV cache sharding, cross-rank communication |
 | `LinearAttention.jsx` | Softmax, kernelized linear attention, recurrent state, and GLA gating |
+| `DeepInfer.jsx` | Offline engine architecture, exclusive Prefill/Decode batches, concrete request lifecycle and CPU/device overlap |
 
 ### Styling conventions
 
-- Dark theme throughout: `bg-slate-950`, `text-slate-100`
+- The brand shell retains its dark identity. Workbenches support the shared Light, Dark and System appearance control; `docs/theme.md` describes CSS palette compilation and renderer exceptions.
 - Framer Motion for animated transitions (`motion.div`, `AnimatePresence`)
 - `clsx` + `tailwind-merge` for conditional class composition
 - Responsive breakpoints: `md:` for sidebar/layout changes
@@ -62,7 +65,7 @@ Each file is a self-contained, interactive visualization:
 
 Every visualization component (`src/components/*.jsx`) follows the durable project conventions below. Page structure and stage count remain concept-dependent; do not force a module into a layout that misrepresents the underlying algorithm.
 
-**Theme:** Components use light mode internally (`bg-slate-50 text-slate-800`, cards as `bg-white border border-slate-200`), contrasting with the dark shell. This "entering a workbench" feel is intentional.
+**Theme:** The authored base palette uses light workbench surfaces (`bg-slate-50 text-slate-800`, cards as `bg-white border border-slate-200`) against the dark shell. The shared theme compiler supplies the dark palette. Author both-theme-compatible semantics and verify actual Light/Dark rendering, including inline SVG/canvas colors that the compiler does not transform. Do not add a chapter-local appearance control.
 
 **Top control bar structure (default):** Keep title + subtitle, primary comparison mode, reset/play/step controls, and language switching together when they affect the whole module. Place controls that affect only one lower canvas beside that canvas instead of in the global header.
 
@@ -115,6 +118,12 @@ useEffect(() => {
 - When engine pseudocode contributes to the teaching claim, it must expose runtime operations such as allocation, metadata, cache/state access, kernel dispatch, and write-back rather than translating formulas line by line
 
 **To create, modify, extend, substantially refactor, or QA an interactive module**, use `$develop-interactive-module` from `.agents/skills/develop-interactive-module/SKILL.md`. Follow its interaction, visual grammar, content/math, and rendered QA references. Record final evidence in `design-qa.md`.
+
+For a topic-to-chapter request, this skill owns research through verified local delivery without intermediate design approval gates. New chapters and substantial redesigns keep resumable evidence in `docs/module-runs/<chapter-id>/`; small repairs use focused QA. Assessment-only requests remain assessments. Do not infer a deployment request from local implementation.
+
+For technical principles and chapter design, use `.agents/skills/analyze-technical-principles/SKILL.md` with the rendering skill's `references/technical-analysis.md` handoff. Establish the reader concern and a testable explanatory thesis before hierarchy: trace the result to causes, mechanisms, costs and conditions. A generic architecture tour or polished scheduler demo does not establish a framework's performance/cost explanation. Decide chapter ownership without moving the chapter's necessary mechanism elsewhere. Research completeness does not require showing every dependency. Codebase Knowledge Builder is optional for actual source-analysis tasks, not the default for principle explanations. Review Chinese copy for natural, concrete phrasing. Full rendered acceptance covers light/dark themes, both languages and desktop/tablet/mobile, plus System preference resolution; inspect actual canvas surfaces and record coverage and limitations. Substantial redesigns receive independent outcome review in addition to mechanical QA.
+
+Before delivering any new or revised chapter, the owner automatically performs the rendering skill's `references/reader-review.md` pass: personally read the actual page continuously from first screen to footer, explore important branches and returns, and reconstruct the answer from visible content. Record the reading path and friction. Repair substantive gaps and reread within the existing authorization; do not wait for a user reminder. Independent review, test matrices and successful builds cannot replace or waive this owner gate. Small repairs keep a short record; assessment-only and skill-only requests retain their scope.
 
 ### Deployment
 

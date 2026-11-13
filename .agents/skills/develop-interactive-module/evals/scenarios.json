@@ -1,0 +1,189 @@
+{
+  "skill": "develop-interactive-module",
+  "scenarios": [
+    {
+      "id": "automatic-owner-read-through",
+      "prompt": "章节已实现，build、模型、主题、分享和36组截图检查全绿，独立 reviewer 也写了通过。请完成这次本地交付，不需要向我再问设计选择。",
+      "criteria": [
+        "Automatically perform owner continuous read from first screen to footer and important branches without waiting for a reader-review request",
+        "Read actual rendered content in reader order; do not substitute source inspection, a matrix, a prepared expected answer or independent approval",
+        "Reconstruct the answer using visible content and identify hierarchy/causal bridges or note-density friction",
+        "If central gaps remain, keep acceptance failed and autonomously repair/reread inside implementation scope",
+        "Record actual route, reading path, reconstructed explanation, friction, evidence and final outcome; no rubber-stamp completion",
+        "Judge fluent retelling separately from whether the promised diagram/interaction exposes each central mechanism",
+        "Map upper overview objects into lower detail and back; local breadcrumb functionality alone is insufficient",
+        "Do not downgrade a user-requested central explanation gap to P3 because prose states the conclusion or an owning chapter is linked",
+        "For a substantial redesign with visual/teaching feedback, compare actual neighboring first screens, direct object interaction and dense mechanism views; reject distant experiments or manually reconstructed spatial/time relationships despite mechanical completeness"
+      ]
+    },
+    {
+      "id": "outcome-before-hierarchy",
+      "prompt": "我想知道一个推理框架为什么性能好、成本低，现有页面只讲调度流程，浅色模式架构仍然黑色。请先改skill，再生成并独立验收。",
+      "criteria": [
+        "Establish a testable reader-outcome thesis before decomposition or reuse of existing demos",
+        "Explain useful throughput through subject-specific mechanisms and deployment/workload conditions, not generic responsibilities",
+        "Keep necessary mechanisms visible here while specialized algorithm internals stay in their owning chapter",
+        "Distinguish measured production revenue, offline engine benchmarks and hypothetical payback; do not multiply independent gains",
+        "Inspect actual main surfaces in both themes, not only the theme flag",
+        "Independent reviewer reconstructs causal answer from rendered artifact and can reject build-passing work"
+      ]
+    },
+    {
+      "id": "hierarchy-chapter-ownership",
+      "prompt": "DeepInfer章节列了DSpark、精度字节、mHC等十几个实验，但我想理解框架本身的原理与分层；算法应在专题展开，中文也不自然。请重做skill和页面。",
+      "criteria": [
+        "Establish a framework-level question and meaningful parent-child hierarchy, not a flat feature list",
+        "Keep the request/batch/execution/state loop here; explain dependency integration and link real owning chapters",
+        "Do not equate comprehensive research with exhaustive visible controls",
+        "Use principle analysis by default and source tracing only where useful",
+        "Rewrite Chinese as connected concrete explanations, then inspect real rendered states",
+        "Do not overcorrect by deleting the framework mechanism or delegating an algorithm chapter’s own central principle"
+      ]
+    },
+    {
+      "id": "framework-content-depth",
+      "prompt": "把这个推理框架讲透。已有章节只有一个 scheduler toy，但框架还有 kernel、专家通信、缓存与生产架构；build 已过。请补齐并自主验收。",
+      "criteria": [
+        "Use principle analysis and inspect primary evidence",
+        "Inventory to understand the system, then choose chapter responsibilities",
+        "Explain the framework organization and its own mechanisms at appropriate depth",
+        "Connect specialized dependencies to actual owning chapters without duplicating their internals",
+        "Check both insufficient explanation and excessive unrelated detail",
+        "Do not mistake a supported narrow toy or a complete feature list for a coherent framework explanation"
+      ]
+    },
+    {
+      "id": "theme-acceptance",
+      "prompt": "昨天只看过深色截图，今天改了矩阵、公式、小字和选中态。System 当前解析浅色，请完成验收。",
+      "criteria": [
+        "Invalidate affected old visual evidence",
+        "Exercise explicit Light/Dark across representative widths and both languages",
+        "Record preference and resolved theme with actual rendered evidence",
+        "Check active/inactive/selected/disabled and math/lines, not only menu state",
+        "Check theme changes preserve experiment and paused lifecycle",
+        "Treat one System resolution as one OS branch; disclose untested branches"
+      ]
+    },
+    {
+      "id": "topic-delivery",
+      "prompt": "把 Flash Decoding 讲透，做成我们项目里的交互式图解，你自己完成到可以用。",
+      "criteria": [
+        "Inspect existing FlashDecode and choose extend/redesign within the request",
+        "Verify source identity and real split/reduction mechanism",
+        "Make parallel work and reduction concrete",
+        "Own implementation, integration and browser repair without routine approval gates",
+        "Deliver only after final evidence; do not promise measured speedups from toy costs"
+      ]
+    },
+    {
+      "id": "ambiguous-topic",
+      "prompt": "把 DeepInfer 解析一下，做到项目里，做成显微镜式交互图解。没有提供链接。",
+      "criteria": [
+        "Search local context and primary sources for identity",
+        "Do not silently choose DeepEP, DeepSpeed or FlashInfer",
+        "If materially different identities remain, ask one identity question",
+        "Continue independent repository discovery but defer topic-specific implementation"
+      ]
+    },
+    {
+      "id": "repair-scope",
+      "prompt": "Sparse Attention 最后一步会跳回去，帮我修一下，不要动现在的布局。",
+      "criteria": [
+        "Treat as repair with terminal-state baseline",
+        "Preserve layout and controls",
+        "Exercise end, reset and replay and add regression",
+        "Use focused QA without forcing a new chapter dossier"
+      ]
+    },
+    {
+      "id": "assessment-only",
+      "prompt": "Linear Attention 是否值得加普通 Attention 的矩阵计算对比？先评估，别改代码。",
+      "criteria": [
+        "Inspect existing chapter and source basis",
+        "Produce assessment and proposed evidence only",
+        "Do not implement or initialize production run",
+        "State real comparison boundaries"
+      ]
+    },
+    {
+      "id": "blocked-browser",
+      "prompt": "实现已经完成，模型检查和 build 都通过了。但浏览器工具不可用，旧 visual-check.js 还报 /opt/node22 模块找不到。请完成验收。",
+      "criteria": [
+        "Discover supported runtime/browser fallback",
+        "Do not force Linux global path on Windows",
+        "Finish unaffected checks",
+        "If no browser is usable keep rendered checks blocked and report partial outcome",
+        "Do not fabricate screenshots or mark complete"
+      ]
+    },
+    {
+      "id": "open-technology-choice",
+      "prompt": "新主题需要可缩放的大量连接和密集矩阵，现在的 DOM 方案看不清也不流畅。渲染技术、交互库、模块框架和构建方式都可以选，你自己决定并交付。",
+      "criteria": [
+        "Define the visible mechanism and interactions before selecting technology",
+        "Compare relevant approaches and use a representative spike when needed; do not assume the current stack is mandatory",
+        "Choose and justify implementation autonomously without a routine stack approval",
+        "Integrate navigation, language, math, experiment lifecycle and sharing through direct reuse or adapters",
+        "Verify real rendering, relevant device/fallback behavior and production packaging; adapt stack-specific checks without waiving behavioral requirements",
+        "Avoid unrelated migration when a contained approach works equally well"
+      ]
+    },
+    {
+      "id": "cross-view-selection",
+      "prompt": "双图里都有 commit-2；点左边后右侧说明却来自右边。另一个请求没有进入本批，但点它后仍显示当前计算说明；切换场景后选中对象还可能消失。请自主修复并验收。",
+      "criteria": [
+        "Use representation identity plus object identity to resolve selection",
+        "Derive highlight and inspector from the same resolved object",
+        "Differentiate inspected object from active batch and explain excluded/finished states",
+        "Reset or remap removed selections consistently",
+        "Exercise both comparison sides and non-default execution branches including their source links",
+        "Retain actual browser reproduction and regression evidence"
+      ]
+    },
+    {
+      "id": "resume-and-steering",
+      "prompt": "继续上一轮。run.json 写着已通过，但 model.js 刚改过。另外把右侧说明压短一点，原来的功能都保留。",
+      "criteria": [
+        "Inspect current diff and existing run",
+        "Invalidate model-dependent checks and stale renders",
+        "Keep original objective and preserve functionality",
+        "Refresh snapshot before re-running affected checks",
+        "Condense contextual prose without deleting the mechanism or replacing with tiny unreadable type"
+      ]
+    },
+    {
+      "id": "project-relative-explanation",
+      "prompt": "技术读者认为这一章比同站其他章节更难学。已有完整文章、架构图和指标表，模型与build已通过。请用两套skill判断问题并规划一次有边界的改进，暂不改站点。",
+      "criteria": [
+        "Inspect or explicitly plan actual neighboring first useful screens, direct object interaction and dense mechanism view; source text alone cannot establish relative rendered quality",
+        "Distinguish analysis argument and ownership from renderer representation; hand off concrete shared inputs, object relationships, resource consequence and boundary prediction",
+        "Keep default argument connected while making object exploration direct/contextual; avoid both giant empty overview and hiding the reasoning behind replacement tabs",
+        "Do not infer teaching pass from complete content, a plausible paraphrase or matrix totals; unobserved rendered quality remains unverified",
+        "Keep assessment-only scope, no runtime redesign or publishing"
+      ]
+    },
+    {
+      "id": "representation-without-template",
+      "prompt": "为一个固定大小的递归状态算法设计教学解释。没有真实性能测试，关键是旧状态如何与当前输入合并，再作为下一步的状态。请用两套skill给出简短分析与渲染交接，不实现网页。",
+      "criteria": [
+        "Choose the recurrence/state relationship and stable object identity as teaching evidence",
+        "Do not invent measured speedups, cost figures or a performance curve to satisfy an opening convention",
+        "Do not require three optimization cards, six article sections, a multi-component architecture or two comparison sides when the concept does not need them",
+        "Specify a first useful observation, meaningful interaction and boundary prediction without exposing every implementation detail",
+        "Keep interpretation/design distinct from actual rendered verification"
+      ]
+    },
+    {
+      "id": "implementation-fidelity",
+      "prompt": "这个章节入门解释看得懂，但深入视图声称对应真实实现。文档说FP8缓存约一半，实际分配还含scale和padding；CPU与CUDA分支、复制完成事件也不同。现有可视化测试自洽、build通过，请评估技术正确性并提出核对/修复方案，先别改页面。",
+      "criteria": [
+        "Require matching revision, backend/configuration and active execution context for implementation claims; trace caller/callee/data transformations instead of citing a README alone",
+        "Reconcile source runtime shapes/layout/dtype/metadata/padding and read/write dependencies with canonical model and visible explanation; docs or comments cannot override unresolved code behavior",
+        "Distinguish simplified illustration, inferred fact, static source verification and actual hardware/numerical/performance reproduction",
+        "Use independent/reference expectations and boundary cases rather than accepting tests that mirror the visualization",
+        "Keep the shallow layer faithful and the deep object mapping explicit without forcing a code tour or source panel",
+        "Block central unsupported or incorrect implementation claims; preserve assessment-only scope and do not retroactively certify other chapters"
+      ]
+    }
+  ]
+}

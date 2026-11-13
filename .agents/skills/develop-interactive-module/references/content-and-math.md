@@ -12,7 +12,13 @@ Before polishing prose, record each important claim with:
 
 Use the same terms for a concept across controls, canvases, formulas, metrics, and implementation evidence. Do not let user-facing copy become a second, conflicting technical model.
 
+Execution context selects narrative and provenance as well as numbers. If a shared stage represents prefill in one state and decode in another, update its explanation, source symbol/link, pseudocode and visible input highlight for that actual operation. A correct canvas with stale stage copy still fails technical acceptance. Check executable behavior against comments when they disagree; bound the claim to the inspected revision rather than repeating an inaccurate comment.
+
+For implementation-level explanations, apply [implementation-fidelity.md](implementation-fidelity.md): verify the active source path and reconcile its runtime facts with the model and page. Make the progression from small example to real execution explicit; simplifying dimensions must not alter semantics, ownership or dependencies. Source inspection is required for implementation claims, while a visible code panel is optional. A documentation link or self-consistent test alone does not establish accuracy.
+
 ## Establish the chapter hierarchy
+
+Start with one reader question and a top-down responsibility map, not a catalogue of implementation features. Each level should answer a narrower part of its parent's question; retain the parent context and a clear way back. Read the project's Analyze Technical Principles skill for chapter ownership. Research notes may be comprehensive while the visible chapter deliberately selects a small coherent argument. Cross-chapter links should say what the destination explains and preserve this chapter's own integration story.
 
 Keep titles concise and consistent with neighboring chapters. Separate two explanatory levels when useful:
 
@@ -33,7 +39,7 @@ When reusing a view, recheck its text as well as its numbers: sample counts, dim
 
 ## Structure the inspector around the current selection or stage
 
-Prefer this order:
+Use these questions to select the information needed for the current state; they are not eight mandatory visible cards. Combine related answers and keep the primary explanation compact. Prefer this reading order:
 
 1. current selection, state, or stage and its mechanism;
 2. core problem;
@@ -45,6 +51,16 @@ Prefer this order:
 8. capability boundary.
 
 Keep each block concise. Do not repeat the same paragraph in the canvas and inspector.
+
+## Read the copy as a reader
+
+Before delivery, read the Chinese page in reading order and rewrite it as an engineer explaining the idea to another engineer. Say who does what, to which object, and why. Prefer a concrete question or action over an abstract noun chain. Translate the explanation independently rather than following English sentence structure.
+
+Avoid process/audit language in the main narrative: source snapshot identifiers, capability matrices, canonical models, evidence gates, "教学值", "本次教学主线", "机制如何串起来", and repeated "边界/契约/后果" labels. Keep necessary assumptions and provenance in a compact note or disclosure near the relevant example. These examples do not ban ordinary technical words when they help the reader.
+
+Keep established terms such as Prefill, Decode and KV Cache where useful, explain them on first use when needed, and use the same terminology in controls and prose. Remove awkward literal translations, vague "支撑/协同/赋能" phrasing, redundant disclaimers and repeated "不是 X 而是 Y" contrasts. Preserve necessary limitations and real distinctions.
+
+Copy acceptance is semantic: can the reader restate the idea, identify the next step and connect labels to the diagram? A banned-word count or shorter character count is not proof of natural writing. Check the actual Chinese render for long labels and review English for the same meaning.
 
 ## Render mathematics consistently
 

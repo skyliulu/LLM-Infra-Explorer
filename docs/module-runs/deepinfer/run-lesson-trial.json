@@ -1,0 +1,501 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "DeepInfer: why useful serving throughput rises and unit cost may fall",
+  "kind": "redesign",
+  "status": "complete",
+  "nextAction": "Local redesign delivered; preserve current evidence. Future chapter edits reopen affected checks and automatic owner reading.",
+  "capabilities": [
+    "timeline",
+    "multiple-modes",
+    "resource-metrics",
+    "structural-comparison",
+    "data-movement",
+    "math"
+  ],
+  "assumptions": [
+    "Engineer reader; top-down system explanation with specialist chapter ownership.",
+    "Source pinned; all sizes/times/weight counts explicitly illustrative.",
+    "Complete 84 rendered states followed by final six English-kernel regressions; representative screenshots visually inspected, not 84 independent pixel reviews.",
+    "System exercises actual OS Dark; explicit Light and Dark both checked.",
+    "No actual GPU/NPU benchmark, quality/economic reproduction, commit/push/deployment, or arbitrary-topic one-shot guarantee."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "eb311746f0270c41f2a95b6082ca726cbb4093f29aee04aafbf40878b142b4ba",
+    "../../../src/components/deepinfer/LessonExplorer.jsx": "cec114fafd4dcb639cf60ebab2f3df0e4f537ef666813df63794c00b96321e89",
+    "../../../src/components/deepinfer/lesson-model.js": "200bcd92fc4f5dc3c820a45650c34fbbb961d05b9d3d66ad3f817d1a50a578ce",
+    "../../../src/components/deepinfer/lesson-content.js": "2ccb4e1342fbdd8f9f69bf6dfad9ea952e225f5c852ac217f2b199e188f3e04d",
+    "../../../src/components/deepinfer/lesson.css": "04cf3f26b0c6452bd142e51b1ff895806ab67d04196d8e39d60896fb150d701e",
+    "../../../src/components/deepinfer/model.js": "6de2d982442af50ff8c1b93f5c30feef3768fa31838193c1b32a44e1393e9c2b",
+    "../../../src/lib/experiment-sharing.js": "9b3c51d77117af51f41819002ce086241aaf22f9379f7b47035d5bcfad877cb5",
+    "../../../src/lib/chapter-registry.js": "80808bd8f9f5a3649f711bd2789756792c497303c1e9369558c3afb65755736d",
+    "../../../scripts/check-deepinfer-lesson.mjs": "dc627a9e1991b02ca1a5c0dcc5aed0d43daf8398793916bb7df29e6466f8c850",
+    "../../../scripts/check-workbench-sharing.mjs": "598012e97cbebb881dcc9a73b8b7bf35f0f115f948686a04b7e196984463e66b",
+    "../../../package.json": "01820103a5651a407e6be2b472ecf6c5296f305c4200c11faf136f34aa8d9b4e",
+    "../../../.agents/skills/develop-interactive-module/SKILL.md": "5b0edcc27d4d77c5fcf266270af2ff9bf16fad4214f770c5e686d72672fd5363",
+    "../../../.agents/skills/develop-interactive-module/references/reader-review.md": "522d5ef70b5c608febe8d665ebe43b64a2aa7230c9dcd7fab4eafd020755aa50",
+    "../../../.agents/skills/develop-interactive-module/scripts/module-run.mjs": "46a7a652ff9746ed3f1d9e08a75bb423d1cd99c10692770c8930bbee5257f14b",
+    "../../../.agents/skills/analyze-technical-principles/SKILL.md": "07e4d5581bdd59b642258abf4ac590c4f08d0b0f2f63138ddef1a14620346fbd",
+    "../../../AGENTS.md": "96d41e35a49a03c1efcc4aaf7a2abf4d0ae0fef7e24ff3564488c870a55c1d69",
+    "../../../public/deepinfer-wide-ep.png": "719594a75b14cbb14ddba69872eb44be7a328729716dfb3838ce59dbf898ab7c",
+    "../../../public/deepinfer-attribution.txt": "dbdb606d6a3c93f748f3f236195d5212c6764fe4c4d1dfda34fab382f590117a",
+    "../../../public/deepinfer-LICENSE.txt": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6"
+  },
+  "snapshotAt": "2026-10-28T15:14:49.398Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "rebuild/brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "rebuild/research.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "rebuild/qa.md"
+    },
+    {
+      "id": "reader-review",
+      "kind": "note",
+      "path": "rebuild/reader-review.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "note",
+      "path": "rebuild/independent-review.md"
+    },
+    {
+      "id": "matrix",
+      "kind": "note",
+      "path": "rebuild/qa-matrix.json"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "rebuild/evidence/build.log"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "rebuild/evidence/model.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "rebuild/evidence/integration.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "rebuild/evidence/conventions.log"
+    },
+    {
+      "id": "matrix-log",
+      "kind": "log",
+      "path": "rebuild/evidence/matrix.log"
+    },
+    {
+      "id": "owner-shot",
+      "kind": "screenshot",
+      "path": "rebuild/evidence/owner-final-kernel.jpg"
+    },
+    {
+      "id": "mobile-shot",
+      "kind": "screenshot",
+      "path": "rebuild/evidence/final-mobile-tracks.jpg"
+    },
+    {
+      "id": "cost-shot",
+      "kind": "screenshot",
+      "path": "rebuild/evidence/final-cost-900.jpg"
+    },
+    {
+      "id": "system-shot",
+      "kind": "screenshot",
+      "path": "rebuild/evidence/final-system.jpg"
+    },
+    {
+      "id": "share-shot",
+      "kind": "screenshot",
+      "path": "rebuild/evidence/final-share.jpg"
+    }
+  ],
+  "claims": [
+    {
+      "id": "history",
+      "statement": "共享持久block KV让所选P实例复用连续前缀，剩余后缀仍需计算",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L129–177",
+      "boundary": "SWA另有存储/恢复；匹配在路由前，搬运非零",
+      "model": "deriveCache固定8块×128，history0/3/6；主机和设备分阶段填入",
+      "trigger": "选择0/3/6及A/B，逐步到3/3",
+      "expected": "同一H块读入，后缀补算后设备有完整8块；0命中无读入",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "weight-reuse",
+      "statement": "固定8卡同样路由工作，更宽EP组能减少多组之间的重复专家权重读取",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L29–57",
+      "boundary": "8逻辑等大专家top1，理想每激活专家副本只读一次；不是实测流量",
+      "model": "deriveMoe按每个(rank,expert copy)激活数，工作量保持8/32",
+      "trigger": "EP2/8与batch1/4",
+      "expected": "高负载均匀32/8份而32计算不变；低负载两者8份",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "hotspots",
+      "statement": "额外热点副本可分摊最忙rank，代价是副本和可能的额外权重读取",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L93–103",
+      "boundary": "简化轮转分配，不复现生产EPLB算法",
+      "model": "deriveMoe固定32工作，热点副本3份",
+      "trigger": "hot EP8 batch4关闭/打开副本",
+      "expected": "最忙16→4，额外副本0→3，活跃权重5→8",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "fusion",
+      "statement": "Mega MoE融合dispatch/GEMM/activation/combine并交叠通信计算",
+      "source": "https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/README.md#mega-moe",
+      "locator": "Mega MoE pinned README and layout/mega_moe.cuh L345–365",
+      "boundary": "12/8仅示意，真实分离路径已有部分重叠；对称HBM缓冲和通信保留",
+      "model": "deriveFusion同3块，同通信/计算资源和块内依赖",
+      "trigger": "MoE时间3/8/12，返回Decode",
+      "expected": "时刻3 A回传和B计算并行，时刻8串行块等合并；父批ID保留",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "stage-resources",
+      "statement": "P/D分离让两个阶段分别选择并行规模和资源，延迟目标需权衡",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Q&A L25–67; L193–211",
+      "boundary": "2抽象资源、P2/D1时间、独立请求；并非2生产GPU配置",
+      "model": "deriveCoordination两资源同4P4D共12工作",
+      "trigger": "打开/关闭分离",
+      "expected": "首D3→1但全部P5→8，总工作/资源不变",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "overlap",
+      "statement": "CPU调度和状态更新可与设备执行交叠，采样→下一前向依赖保留",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "worker/worker.py L89 and engine execution description",
+      "boundary": "1/4/1/2时间是假设，非实测",
+      "model": "deriveOverlapModel(false/true,3)",
+      "trigger": "异步关闭/打开",
+      "expected": "同3轮同步24与交叠18；自回归依赖无冲突",
+      "checkIds": [
+        "research",
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "history-path",
+      "action": "0/3/6命中、A/B、逐步与播放",
+      "expected": "同一块身份、完整8块、零命中跳过和自动终止",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "moe-config",
+      "action": "EP/负载/路由/副本、T9双侧和T32失效",
+      "expected": "真实归属与工作守恒、计数变化、选中失效重置",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "kernel-path",
+      "action": "0/3/8/12、重播、返回原Decode",
+      "expected": "真实块依赖、等待状态、同一父选择",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "schedule-path",
+      "action": "分离关/开、CPU异步关/开、返回",
+      "expected": "同资源工作量与文字一致、父配置保留",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "workbench",
+      "action": "Home、分享完整重载、普通重载、System",
+      "expected": "配置保留与生命周期重置、显式分享恢复、普通默认、OSdark解析",
+      "checkIds": [
+        "browser",
+        "model"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-10-28T15:14:49.398Z",
+      "artifactIds": [
+        "research",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-10-28T15:14:49.398Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "npm run check:deepinfer",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-10-28T15:14:49.398Z",
+      "artifactIds": [
+        "qa",
+        "owner-shot",
+        "share-shot",
+        "system-shot"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-10-28T15:14:49.398Z",
+      "artifactIds": [
+        "qa",
+        "matrix",
+        "mobile-shot",
+        "cost-shot",
+        "system-shot"
+      ]
+    },
+    {
+      "id": "reader",
+      "kind": "reader",
+      "status": "passed",
+      "startedAt": "2026-10-28T15:14:49.398Z",
+      "artifactIds": [
+        "reader-review",
+        "owner-shot",
+        "mobile-shot",
+        "cost-shot"
+      ],
+      "reviewer": "owner",
+      "route": "http://127.0.0.1:4173/#deepinfer; zh Light1440 then en mobile Dark/System",
+      "readingPath": [
+        "首屏问题与R→Prefill→Decode/共享3FS总览",
+        "历史3块命中/B实例，逐步到3/3；同一H1–H3从3FS→主机→设备，H4–N2补算",
+        "沿继续进入Prefill：同一后缀→编码层投影→共享块KV→解码层；SWA保留",
+        "进入Decode：32 Token/8卡，T9来源卡3→E1执行卡1；8/32权重读取对照",
+        "进入MoE：A/B/C沿用T编号，时刻3的A回传与B计算；返回同一T9父层",
+        "进入服务调度：同样两资源/12工作量，首D更早而全部P更晚",
+        "进入CPU/GPU，采样依赖、调度/状态更新交叠；返回同一服务调度再到总览",
+        "成本结论、公式、官方图及条件、生产与开源边界、相关章节和页尾"
+      ],
+      "retelling": "历史复用让同一请求只补算未命中的后缀；CED在模型内部共享块KV。生成时更多Token在同一套分片专家上复用权重，热点副本要付显存/额外读取代价。Mega MoE让同批数据分块交叠通信与计算，服务资源和CPU/GPU配合减少等待。它们提高延迟约束下的有效服务量，只有收益足以摊薄存储、互联、副本和备用容量等支出时，单位成本才下降；低命中、低并发和慢互联会削弱收益。",
+      "frictions": [
+        "所有本次发现均已修复，最终完整复读与局部渲染回归后无未关闭问题；历史问题和修复见reader-review"
+      ]
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-28T15:14:49.398Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/deepinfer/LessonExplorer.jsx --capabilities timeline,multiple-modes,structural-comparison,data-movement,resource-metrics,math",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-10-28T15:14:49.398Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-10-28T15:14:49.398Z",
+      "artifactIds": [
+        "integration-log",
+        "matrix-log",
+        "share-shot"
+      ],
+      "command": "npm run check:workbench; node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs docs/module-runs/deepinfer/rebuild/qa-matrix.json",
+      "exitCode": 0
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "Owner与独立一手核查：保留固定工作/卡数、实际专家归属、代价与测量边界；模型与源关系一致。",
+      "artifactIds": [
+        "research",
+        "model-log"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pass",
+      "observation": "Owner最终完整实读及独立整章读者复核可从H/N→R/T→同批块复述成本因果；没有脱离上层的通用引擎附录。",
+      "artifactIds": [
+        "reader-review",
+        "independent-review",
+        "owner-shot"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "实际控制/选择失效/终点重播/返回/Home/share均有操作；模型量和相关视图同步。",
+      "artifactIds": [
+        "qa",
+        "share-shot",
+        "owner-shot"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "实际84态矩阵后修正英文轨道，再6态回归与中文全视图复走；owner打开代表截图，公式/轨道最终均未截断。",
+      "artifactIds": [
+        "qa",
+        "mobile-shot",
+        "cost-shot"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "共享语言、主题、MathFormula、分享validator、导航和普通重载已检查；生产构建成功。",
+      "artifactIds": [
+        "integration-log",
+        "build-log",
+        "share-shot"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "old-reader-fail",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "上一版泛化架构、预设指标及内核名词不能展示中心因果。重做同对象分层工作台，owner与独立重读。",
+      "checkIds": [
+        "reader",
+        "browser",
+        "model"
+      ]
+    },
+    {
+      "id": "record-mapping",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "R/T1/A关系与P/D工作定义隐含，现显式呈现。",
+      "checkIds": [
+        "reader",
+        "browser"
+      ]
+    },
+    {
+      "id": "toggle-copy",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "关闭分离后仍宣称提前，现正文与当前安排一致。",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "tile-wait",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "算完但等待合并的块被标待处理，新增真实等待状态及独立时刻oracle。",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "cache-label",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "完成态还写仍需计算且箭头含混，改中性计数与流向。",
+      "checkIds": [
+        "reader",
+        "browser"
+      ]
+    },
+    {
+      "id": "formula-wrap",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "900px公式被flex压缩换行，固定其收缩并实际复核。",
+      "checkIds": [
+        "visual"
+      ]
+    },
+    {
+      "id": "mobile-lane-label",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "手机英文Communication侵入轨道，改Data transfer并6态回归、普通视口实看。",
+      "checkIds": [
+        "visual",
+        "browser"
+      ]
+    }
+  ],
+  "coverage": "performance/qa-matrix.json"
+}

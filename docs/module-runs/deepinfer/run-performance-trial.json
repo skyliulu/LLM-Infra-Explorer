@@ -1,0 +1,975 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "deepinfer",
+  "topic": "DeepInfer performance and cost: outcome-driven explanation",
+  "kind": "redesign",
+  "status": "in_progress",
+  "nextAction": "Automatic owner reader gate is explicitly failed from the actual prior read-through. Skill workflow now requires in-scope repair and complete reread before future chapter delivery; current request changes workflow only.",
+  "capabilities": [
+    "timeline",
+    "multiple-modes",
+    "resource-metrics",
+    "structural-comparison",
+    "data-movement",
+    "math"
+  ],
+  "assumptions": [
+    "Reader concern is performance and cost, not a generic engine loop.",
+    "Official DeepInfer source pinned to553741557a57df44a46fb3ab72b6aafeaf945337; economic figures describe full production service.",
+    "Input coverage, ideal expert weight counts, load bars, resource shares and economics are explicitly educational models, not measured GPU speedups.",
+    "System exercised the actual OS Dark branch; explicit Light/Dark rendering covered.",
+    "No GPU/NPU performance reproduction or deployment; one case plus an independent analysis handoff do not prove arbitrary-topic one-shot quality."
+  ],
+  "inputs": {
+    "../../../src/components/DeepInfer.jsx": "ec5c50a2e5ef689677f435359828397fa40f02ec53b14c3e5ca471ed504ae71f",
+    "../../../src/components/deepinfer/model.js": "6de2d982442af50ff8c1b93f5c30feef3768fa31838193c1b32a44e1393e9c2b",
+    "../../../src/components/deepinfer/content.js": "51778f0c292c6eaeb61c7bb14f82f18488cc4c739ef69fc2dbb868358a995d28",
+    "../../../src/components/deepinfer/deepinfer.css": "880a24c8a519d0bca1926608e75bee3f583b9fb12d3f0b672301fa54463f28bb",
+    "../../../src/components/deepinfer/SystemExplorer.jsx": "7a034579b3a0990661701f4d4f6c912155f85883e46f1a948613fd3c13166057",
+    "../../../src/components/deepinfer/system-model.js": "6d03bf1e744804150c6e04db26a23e9796ddc2ec2af53e621e56fbd5b4bc801f",
+    "../../../src/components/deepinfer/system-content.js": "0062399654a78a66a6bd113c8fd6d7ab7e67c216e8aa6cff0e3b1fa6adffe4df",
+    "../../../src/components/deepinfer/system.css": "5dbcbc7b1228a8d8f0dd4161093c983fb4194a4b818bce691d0314dacd2d23d0",
+    "../../../src/components/deepinfer/PerformanceExplorer.jsx": "e339f4c95555eac3dc0f92c089634836c11389da1b2570871f305103b530885f",
+    "../../../src/components/deepinfer/performance-model.js": "f5afe1f50c16233f0ec52b5692fa8aa67e3b650b507fbd6093d2191cb721bae5",
+    "../../../src/components/deepinfer/performance-content.js": "44411b1a20b1cc490e90c065e50d1a4300ddd0e92c42f6d62b9c23cf13330f0b",
+    "../../../src/components/deepinfer/performance.css": "59023533a4b5409a7f18066a56a5b8fd3d7f7a99ce50d231272fbc2679903073",
+    "../../../src/lib/experiment-sharing.js": "1f25e150c0d0cf5952d0cfb98cd9bc0149290ae12f27e8e3d5eec7f612b6752a",
+    "../../../src/lib/chapter-registry.js": "80808bd8f9f5a3649f711bd2789756792c497303c1e9369558c3afb65755736d",
+    "../../../scripts/check-deepinfer.mjs": "32fee663d77e983151c40f31f2df2adead9e9bf9a5040736324acab9aa4e5053",
+    "../../../scripts/check-workbench-sharing.mjs": "a06e1c1e0877c707385faceacf9186aa61096a35d8da47468c58abb035d18313",
+    "../../../.agents/skills/analyze-technical-principles/SKILL.md": "2fdd7882e170fe846889eb59138711eeb58d0f6e2725e11e9573bccfbc2920b0",
+    "../../../.agents/skills/analyze-technical-principles/agents/openai.yaml": "3baa826bae1639e81e1574713a8bf1f1c64ea547d9ba34076b5b0e4ed3f3f184",
+    "../../../.agents/skills/develop-interactive-module/SKILL.md": "d0b3dead68e0be7f8f86adbde96345c8567e83ab978f9a79f3e21365c4271463",
+    "../../../.agents/skills/develop-interactive-module/references/technical-analysis.md": "18c580483a5e967a3f60caa79a080f960c40d3bae34bb184848da8f2a80371fc",
+    "../../../.agents/skills/develop-interactive-module/references/qa-checklist.md": "d929ef4125f1d921e07f0d67b353cb6468dee78f14f3a711d6737cfe1236e224",
+    "../../../.agents/skills/develop-interactive-module/evals/scenarios.json": "dd3107fa1b8328d0bbee90d86d93b4ece8b88fe756b132f111ae4b26eeda080f",
+    "../../../AGENTS.md": "227539bec94bae45c04540e51cd9e3bbf07269fd039246819142b5b90b810b88",
+    "../../../public/deepinfer-wide-ep.png": "719594a75b14cbb14ddba69872eb44be7a328729716dfb3838ce59dbf898ab7c",
+    "../../../public/deepinfer-attribution.txt": "dbdb606d6a3c93f748f3f236195d5212c6764fe4c4d1dfda34fab382f590117a",
+    "../../../public/deepinfer-LICENSE.txt": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6"
+  },
+  "snapshotAt": "2026-10-28T13:27:48.471Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "performance/brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "performance/principles.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "performance/qa.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "note",
+      "path": "outcome-review.md"
+    },
+    {
+      "id": "skill-forward-eval",
+      "kind": "note",
+      "path": "../../audits/skill-autonomy/thesis-forward-eval.md"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "performance/evidence/build.log"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "performance/evidence/model.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "performance/evidence/integration.log"
+    },
+    {
+      "id": "theme-log",
+      "kind": "log",
+      "path": "performance/evidence/theme.log"
+    },
+    {
+      "id": "matrix-log",
+      "kind": "log",
+      "path": "performance/evidence/matrix.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "performance/evidence/conventions.log"
+    },
+    {
+      "id": "performance-conventions-log",
+      "kind": "log",
+      "path": "performance/evidence/performance-conventions.log"
+    },
+    {
+      "id": "analysis-skill-log",
+      "kind": "log",
+      "path": "performance/evidence/analysis-skill.log"
+    },
+    {
+      "id": "rendering-skill-log",
+      "kind": "log",
+      "path": "performance/evidence/rendering-skill.log"
+    },
+    {
+      "id": "shot-1440-en-dark-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-en-dark-capacity.jpg"
+    },
+    {
+      "id": "shot-1440-en-dark-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-en-dark-execution.jpg"
+    },
+    {
+      "id": "shot-1440-en-dark-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-en-dark-reuse.jpg"
+    },
+    {
+      "id": "shot-1440-en-light-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-en-light-capacity.jpg"
+    },
+    {
+      "id": "shot-1440-en-light-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-en-light-execution.jpg"
+    },
+    {
+      "id": "shot-1440-en-light-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-en-light-reuse.jpg"
+    },
+    {
+      "id": "shot-1440-zh-dark-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-zh-dark-capacity.jpg"
+    },
+    {
+      "id": "shot-1440-zh-dark-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-zh-dark-execution.jpg"
+    },
+    {
+      "id": "shot-1440-zh-dark-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-zh-dark-reuse.jpg"
+    },
+    {
+      "id": "shot-1440-zh-light-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-zh-light-capacity.jpg"
+    },
+    {
+      "id": "shot-1440-zh-light-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-zh-light-execution.jpg"
+    },
+    {
+      "id": "shot-1440-zh-light-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/1440-zh-light-reuse.jpg"
+    },
+    {
+      "id": "shot-390-en-dark-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-en-dark-capacity.jpg"
+    },
+    {
+      "id": "shot-390-en-dark-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-en-dark-execution.jpg"
+    },
+    {
+      "id": "shot-390-en-dark-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-en-dark-reuse.jpg"
+    },
+    {
+      "id": "shot-390-en-light-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-en-light-capacity.jpg"
+    },
+    {
+      "id": "shot-390-en-light-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-en-light-execution.jpg"
+    },
+    {
+      "id": "shot-390-en-light-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-en-light-reuse.jpg"
+    },
+    {
+      "id": "shot-390-zh-dark-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-zh-dark-capacity.jpg"
+    },
+    {
+      "id": "shot-390-zh-dark-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-zh-dark-execution.jpg"
+    },
+    {
+      "id": "shot-390-zh-dark-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-zh-dark-reuse.jpg"
+    },
+    {
+      "id": "shot-390-zh-light-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-zh-light-capacity.jpg"
+    },
+    {
+      "id": "shot-390-zh-light-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-zh-light-execution.jpg"
+    },
+    {
+      "id": "shot-390-zh-light-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/390-zh-light-reuse.jpg"
+    },
+    {
+      "id": "shot-768-en-dark-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-en-dark-capacity.jpg"
+    },
+    {
+      "id": "shot-768-en-dark-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-en-dark-execution.jpg"
+    },
+    {
+      "id": "shot-768-en-dark-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-en-dark-reuse.jpg"
+    },
+    {
+      "id": "shot-768-en-light-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-en-light-capacity.jpg"
+    },
+    {
+      "id": "shot-768-en-light-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-en-light-execution.jpg"
+    },
+    {
+      "id": "shot-768-en-light-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-en-light-reuse.jpg"
+    },
+    {
+      "id": "shot-768-zh-dark-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-zh-dark-capacity.jpg"
+    },
+    {
+      "id": "shot-768-zh-dark-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-zh-dark-execution.jpg"
+    },
+    {
+      "id": "shot-768-zh-dark-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-zh-dark-reuse.jpg"
+    },
+    {
+      "id": "shot-768-zh-light-capacity",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-zh-light-capacity.jpg"
+    },
+    {
+      "id": "shot-768-zh-light-execution",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-zh-light-execution.jpg"
+    },
+    {
+      "id": "shot-768-zh-light-reuse",
+      "kind": "screenshot",
+      "path": "performance/evidence/768-zh-light-reuse.jpg"
+    },
+    {
+      "id": "shot-economics-negative-1440-zh-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/economics-negative-1440-zh-light.jpg"
+    },
+    {
+      "id": "shot-engine-1440-en-dark",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-1440-en-dark.jpg"
+    },
+    {
+      "id": "shot-engine-1440-en-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-1440-en-light.jpg"
+    },
+    {
+      "id": "shot-engine-1440-zh-dark",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-1440-zh-dark.jpg"
+    },
+    {
+      "id": "shot-engine-1440-zh-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-1440-zh-light.jpg"
+    },
+    {
+      "id": "shot-engine-390-en-dark",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-390-en-dark.jpg"
+    },
+    {
+      "id": "shot-engine-390-en-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-390-en-light.jpg"
+    },
+    {
+      "id": "shot-engine-390-zh-dark",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-390-zh-dark.jpg"
+    },
+    {
+      "id": "shot-engine-390-zh-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-390-zh-light.jpg"
+    },
+    {
+      "id": "shot-engine-768-en-dark",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-768-en-dark.jpg"
+    },
+    {
+      "id": "shot-engine-768-en-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-768-en-light.jpg"
+    },
+    {
+      "id": "shot-engine-768-zh-dark",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-768-zh-dark.jpg"
+    },
+    {
+      "id": "shot-engine-768-zh-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/engine-768-zh-light.jpg"
+    },
+    {
+      "id": "shot-final-overview-zh-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/final-overview-zh-light.jpg"
+    },
+    {
+      "id": "shot-official-wide-1440-zh-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/official-wide-1440-zh-light.jpg"
+    },
+    {
+      "id": "shot-trace-partial-1440-zh-light",
+      "kind": "screenshot",
+      "path": "performance/evidence/trace-partial-1440-zh-light.jpg"
+    },
+    {
+      "id": "rendered-matrix",
+      "kind": "log",
+      "path": "performance/evidence/rendered-matrix.json"
+    },
+    {
+      "id": "engine-matrix",
+      "kind": "log",
+      "path": "performance/evidence/engine-matrix.json"
+    },
+    {
+      "id": "browser-journeys",
+      "kind": "log",
+      "path": "performance/evidence/browser-journeys.json"
+    },
+    {
+      "id": "browser-metadata",
+      "kind": "log",
+      "path": "performance/evidence/browser-metadata.json"
+    },
+    {
+      "id": "console",
+      "kind": "log",
+      "path": "performance/evidence/console.json"
+    },
+    {
+      "id": "owner-reader-review",
+      "kind": "note",
+      "path": "performance/reader-review.md"
+    },
+    {
+      "id": "reader-review",
+      "kind": "note",
+      "path": "performance/reader-review.md"
+    },
+    {
+      "id": "reader-review-current-shot",
+      "kind": "screenshot",
+      "path": "performance/reader-review-evidence/prefill-scope.jpg"
+    }
+  ],
+  "claims": [
+    {
+      "id": "reuse",
+      "statement": "Shared history reduces repeated input processing, with model-specific decoder replay and storage/transfer costs.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "KV cache storage and KV cache hits and recomputation",
+      "boundary": "Coverage counter is not time/FLOPs or a real100% runtime hit promise.",
+      "model": "1000 positions divided into reused/remaining",
+      "trigger": "Move reusable fraction0→100",
+      "expected": "Remaining1000→0 while baseline stays1000",
+      "checkIds": [
+        "model",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "wide",
+      "statement": "Larger expert groups partition weights more finely and amortize each weight over more tokens; EPLB addresses a distinct slow-rank bottleneck.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Inference system overview; Expert-parallel load balancing",
+      "boundary": "Eight toy GPUs/eight equal experts32tokens, uniform top1 and ideal one read per expert per step; not measured HBM or speed.",
+      "model": "EP2/8 preserves32 jobs and4 jobs/rank; weight units32/8",
+      "trigger": "Select EP2/8 and toggle hotspot distribution",
+      "expected": "Expert set topology changes; local weights4/1; reuse1/4; max work16/9 at total32",
+      "checkIds": [
+        "model",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "capacity",
+      "statement": "P/D resource allocation and asynchronous CPU/device execution reduce different waiting costs.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Inference system overview; Data-parallel load balancing; Asynchronous scheduling",
+      "boundary": "Eight allocation shares are not physical GPUs; timing values are assumed1/4/1/2.",
+      "model": "Independent phase pools plus existing dependency model",
+      "trigger": "Select traffic and inspect timing/trace",
+      "expected": "Pools6:2 or2:6; no invented full-system speedup",
+      "checkIds": [
+        "model",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "economics",
+      "statement": "Reported38USD/GPU-hour is production revenue; recovery depends on capital and net operating cash.",
+      "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md",
+      "locator": "Introduction and README release boundary",
+      "boundary": "Illustrative CAPEX/expense/revenue fraction; constant24h, excludes financing/tax/residual value; no official one-month promise in inspected sources.",
+      "model": "capital/[24*(realized revenue-expense)], undefined when denominator<=0",
+      "trigger": "Set revenue0 or hourly expense50",
+      "expected": "No finite recovery at nonpositive cash; default scenario720/day and41.67days",
+      "checkIds": [
+        "model",
+        "browser",
+        "visual"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "1",
+      "action": "reuse Home/End",
+      "expected": "1000/0 remaining positions",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "2",
+      "action": "EP2/EP8 plus hotspot redistribution",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "3",
+      "action": "input-heavy traffic",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "4",
+      "action": "zero revenue, then expense 50 above revenue38",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "5",
+      "action": "share -> Home and return -> share reload",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "6",
+      "action": "plain reload",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "7",
+      "action": "schedule -> partial B -> terminal -> replay",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "8",
+      "action": "replay autoplay to end",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "9",
+      "action": "System theme on paused partial B",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "10",
+      "action": "open official EP comparison",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "11",
+      "action": "keyboard architecture selection and baseline restore",
+      "expected": "Observed DOM and rendered evidence agree with the model and scope; see browser-journeys.json.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "npm run check:deepinfer",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "integration-log"
+      ],
+      "command": "npm run check:workbench",
+      "exitCode": 0
+    },
+    {
+      "id": "theme",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "theme-log"
+      ],
+      "command": "node scripts/check-theme.mjs",
+      "exitCode": 0
+    },
+    {
+      "id": "matrix",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "matrix-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-qa-matrix.mjs docs/module-runs/deepinfer/performance/qa-matrix.json",
+      "exitCode": 0
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/DeepInfer.jsx --capabilities timeline,multiple-modes,structural-comparison,data-movement,math",
+      "exitCode": 0
+    },
+    {
+      "id": "performance-conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "performance-conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/deepinfer/PerformanceExplorer.jsx --capabilities multiple-modes,resource-metrics,structural-comparison,math",
+      "exitCode": 0
+    },
+    {
+      "id": "analysis-skill",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "analysis-skill-log"
+      ],
+      "command": "PYTHONPATH=%TEMP%/llm-infra-skill-validation; python -X utf8 C:/Users/29043/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/analyze-technical-principles",
+      "exitCode": 0
+    },
+    {
+      "id": "rendering-skill",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:27:55.453Z",
+      "artifactIds": [
+        "rendering-skill-log"
+      ],
+      "command": "PYTHONPATH=%TEMP%/llm-infra-skill-validation; python -X utf8 C:/Users/29043/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/develop-interactive-module",
+      "exitCode": 0
+    },
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:28:19.282Z",
+      "artifactIds": [
+        "research",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:28:19.282Z",
+      "artifactIds": [
+        "rendered-matrix",
+        "engine-matrix",
+        "browser-journeys",
+        "browser-metadata",
+        "console",
+        "shot-1440-en-dark-capacity",
+        "shot-1440-en-dark-execution",
+        "shot-1440-en-dark-reuse",
+        "shot-1440-en-light-capacity",
+        "shot-1440-en-light-execution",
+        "shot-1440-en-light-reuse",
+        "shot-1440-zh-dark-capacity",
+        "shot-1440-zh-dark-execution",
+        "shot-1440-zh-dark-reuse",
+        "shot-1440-zh-light-capacity",
+        "shot-1440-zh-light-execution",
+        "shot-1440-zh-light-reuse",
+        "shot-390-en-dark-capacity",
+        "shot-390-en-dark-execution",
+        "shot-390-en-dark-reuse",
+        "shot-390-en-light-capacity",
+        "shot-390-en-light-execution",
+        "shot-390-en-light-reuse",
+        "shot-390-zh-dark-capacity",
+        "shot-390-zh-dark-execution",
+        "shot-390-zh-dark-reuse",
+        "shot-390-zh-light-capacity",
+        "shot-390-zh-light-execution",
+        "shot-390-zh-light-reuse",
+        "shot-768-en-dark-capacity",
+        "shot-768-en-dark-execution",
+        "shot-768-en-dark-reuse",
+        "shot-768-en-light-capacity",
+        "shot-768-en-light-execution",
+        "shot-768-en-light-reuse",
+        "shot-768-zh-dark-capacity",
+        "shot-768-zh-dark-execution",
+        "shot-768-zh-dark-reuse",
+        "shot-768-zh-light-capacity",
+        "shot-768-zh-light-execution",
+        "shot-768-zh-light-reuse",
+        "shot-economics-negative-1440-zh-light",
+        "shot-engine-1440-en-dark",
+        "shot-engine-1440-en-light",
+        "shot-engine-1440-zh-dark",
+        "shot-engine-1440-zh-light",
+        "shot-engine-390-en-dark",
+        "shot-engine-390-en-light",
+        "shot-engine-390-zh-dark",
+        "shot-engine-390-zh-light",
+        "shot-engine-768-en-dark",
+        "shot-engine-768-en-light",
+        "shot-engine-768-zh-dark",
+        "shot-engine-768-zh-light",
+        "shot-final-overview-zh-light",
+        "shot-official-wide-1440-zh-light",
+        "shot-trace-partial-1440-zh-light"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-10-28T13:28:19.282Z",
+      "artifactIds": [
+        "qa",
+        "independent-review",
+        "shot-1440-en-dark-capacity",
+        "shot-1440-en-dark-execution",
+        "shot-1440-en-dark-reuse",
+        "shot-1440-en-light-capacity",
+        "shot-1440-en-light-execution",
+        "shot-1440-en-light-reuse",
+        "shot-1440-zh-dark-capacity",
+        "shot-1440-zh-dark-execution",
+        "shot-1440-zh-dark-reuse",
+        "shot-1440-zh-light-capacity",
+        "shot-1440-zh-light-execution",
+        "shot-1440-zh-light-reuse",
+        "shot-390-en-dark-capacity",
+        "shot-390-en-dark-execution",
+        "shot-390-en-dark-reuse",
+        "shot-390-en-light-capacity",
+        "shot-390-en-light-execution",
+        "shot-390-en-light-reuse",
+        "shot-390-zh-dark-capacity",
+        "shot-390-zh-dark-execution",
+        "shot-390-zh-dark-reuse",
+        "shot-390-zh-light-capacity",
+        "shot-390-zh-light-execution",
+        "shot-390-zh-light-reuse",
+        "shot-768-en-dark-capacity",
+        "shot-768-en-dark-execution",
+        "shot-768-en-dark-reuse",
+        "shot-768-en-light-capacity",
+        "shot-768-en-light-execution",
+        "shot-768-en-light-reuse",
+        "shot-768-zh-dark-capacity",
+        "shot-768-zh-dark-execution",
+        "shot-768-zh-dark-reuse",
+        "shot-768-zh-light-capacity",
+        "shot-768-zh-light-execution",
+        "shot-768-zh-light-reuse",
+        "shot-economics-negative-1440-zh-light",
+        "shot-engine-1440-en-dark",
+        "shot-engine-1440-en-light",
+        "shot-engine-1440-zh-dark",
+        "shot-engine-1440-zh-light",
+        "shot-engine-390-en-dark",
+        "shot-engine-390-en-light",
+        "shot-engine-390-zh-dark",
+        "shot-engine-390-zh-light",
+        "shot-engine-768-en-dark",
+        "shot-engine-768-en-light",
+        "shot-engine-768-zh-dark",
+        "shot-engine-768-zh-light",
+        "shot-final-overview-zh-light",
+        "shot-official-wide-1440-zh-light",
+        "shot-trace-partial-1440-zh-light"
+      ]
+    },
+    {
+      "id": "reader",
+      "kind": "reader",
+      "status": "failed",
+      "startedAt": null,
+      "reviewer": "owner",
+      "route": "http://127.0.0.1:4173/#deepinfer — Chinese, Light, actual desktop viewport",
+      "readingPath": [
+        "Opening metrics/question -> P/D/storage overview",
+        "Cache -> Prefill/capacity -> Decode/Wide-EP/EPLB/kernel -> official figure",
+        "Economics -> generic engine -> device/expert/sampling -> service parent",
+        "Request waiting/schedule/forward/sample/commit -> async timeline -> sources/footer"
+      ],
+      "retelling": "The page supports several local explanations of reuse, expert partitioning and CPU/device overlap, but does not form a continuous explanation of DeepInfer serving efficiency and unit cost. Prefill selection mixes unrelated mechanisms and the lower engine map does not map back to upper P/D instances.",
+      "frictions": [
+        "Component selection and content scope disagree",
+        "Counts/presets and a kernel text arrow leave necessary mechanisms implicit",
+        "Economics detours before the whole engineering explanation closes"
+      ],
+      "artifactIds": [
+        "reader-review",
+        "reader-review-current-shot"
+      ],
+      "reason": "Actual owner read-through failed in the preceding assessment turn; no pass is invented by adding this gate. Timestamp was not recorded in a machine check at that time."
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "Owner model/source checks plus independent outcome_reviewer: scope distinguishes production service, public engine and illustrative models. Wide-EP keeps workload/hardware fixed; economics uses net cash.",
+      "artifactIds": [
+        "qa",
+        "independent-review"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "fail",
+      "observation": "Owner Chinese production read-through from first screen through every branch and footer found a disconnected hierarchy, outcome/count demonstrations without sufficient mechanisms, and an economics detour that fails to complete the engineering cost explanation. Prior functional/independent checks do not establish this broader outcome.",
+      "artifactIds": [
+        "owner-reader-review"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "Owner executed11 production journeys and36 view cases; reviewer separately operated Edge controls and production drill-down. Configuration/share/Home behavior pass; playback and selection remain local.",
+      "artifactIds": [
+        "qa",
+        "independent-review"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "Owner opened representative screenshots/native views; independent reviewer opened11 final production images, checked36 matrix facts, and operated actual themes. Twelve engine captures verify formerly dark Light diagram. Stale negative capture was replaced and independently opened.",
+      "artifactIds": [
+        "qa",
+        "independent-review",
+        "shot-final-overview-zh-light"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "Current build/workbench/theme/conventions pass; public chart loads1350x930. No warn/error in tested production session. Temporary viewport restored; no publishing performed.",
+      "artifactIds": [
+        "qa",
+        "independent-review"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "theme-fixed-dark",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "User Light diagram remained fixed dark; now semantic light base with actual both-theme surface evidence.",
+      "checkIds": [
+        "theme",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "missing-outcome-thesis",
+      "severity": "P2",
+      "status": "open",
+      "description": "The added thesis headline and three benefit labels did not become a coherent reader explanation. Owner top-to-bottom assessment reopens the outcome failure; see performance/reader-review.md.",
+      "checkIds": [
+        "research",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "wide-ep-visible-cause",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Independent reviewer found asserted Wide-EP saving with only EPLB visualization; added same-work expert grouping/weight-reuse structure and reverified.",
+      "checkIds": [
+        "model",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "economics-stale-capture",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Screenshot captured old positive frame after DOM update; replacement separately captured and opened atcost50/daily-288/no finite recovery.",
+      "checkIds": [
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "copy-assumptions",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Clarified top1 toy routing, K/R/C and natural Chinese recovery wording; mobile source link wraps below heading.",
+      "checkIds": [
+        "model",
+        "browser",
+        "visual"
+      ]
+    },
+    {
+      "id": "reader-hierarchy-continuity",
+      "severity": "P2",
+      "status": "open",
+      "description": "Prefill selection mixes cross-phase allocation, async and DSpark; the upper P/D service and lower generic engine maps are not connected into one hierarchy.",
+      "checkIds": []
+    },
+    {
+      "id": "reader-visible-mechanisms",
+      "severity": "P2",
+      "status": "open",
+      "description": "Cache fraction and allocation presets show quantities without the underlying paths; kernel fusion remains a text arrow and names. Necessary mechanisms are insufficiently visible.",
+      "checkIds": []
+    },
+    {
+      "id": "reader-engineering-cost-link",
+      "severity": "P2",
+      "status": "open",
+      "description": "The illustrative payback calculation is valid within assumptions but takes main-story space without completing the engineering connection from serving efficiency to unit cost.",
+      "checkIds": []
+    }
+  ],
+  "coverage": "performance/qa-matrix.json"
+}

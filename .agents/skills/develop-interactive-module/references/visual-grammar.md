@@ -77,6 +77,8 @@ Where the claim concerns matrix operations, show compact dimension-labeled input
 - Check representative sparse and dense states. A layout that works for one item may fail at maximum count or with longer translated labels.
 - Preserve the main teaching region when space tightens; compress secondary controls and metadata before shrinking the core evidence below readability.
 - Compare layout with measurable signals such as region-height ratios, unused space, active-object count, wrapping, and overflow. Use thresholds as regression guards, not as universal design targets.
+- Ground local comparison metrics beside their objects. A genuine measured result may lead the chapter, but do not make readers memorize a large count table before finding the physical copies, input rows or transfers it describes. Shared inputs can be drawn once when only the resulting decisions differ; keep both outcomes and units comparable.
+- Encode the relationship that matters: common time scales for overlap/waiting, connected locations for transfer, stable identities for ownership. Use a selected-object inspector for the remaining state details instead of duplicating large status tables that require mental reconstruction. Retain readable operation names, boundary states and the argument linking them to the whole.
 
 ## Separate identity colors from action colors
 
@@ -89,6 +91,8 @@ Assign accessible identity colors to algorithms only when persistent color ident
 - inactive or future work.
 
 Check contrast on buttons, pale panels, small formulas, lines, sliders, and matrix cells. Do not rely on hue alone; combine color with labels, position, borders, opacity, or icons.
+
+Check the actual smallest teaching marks after theme compilation, not only their containers: tensor channels, pending-operation labels, arrows and inline fractions can become unreadable even with no overflow. Scope explicit palette/size exceptions to the affected renderer when needed, and verify their real Light/Dark output. Do not achieve a subdued future state by fading its only identifying label below readability.
 
 ## Limit prose inside the main canvas
 

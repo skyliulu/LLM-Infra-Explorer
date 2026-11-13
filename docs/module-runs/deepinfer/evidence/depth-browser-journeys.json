@@ -1,0 +1,307 @@
+[
+  {
+    "case": "verification Home",
+    "total": "3",
+    "selected": 0
+  },
+  {
+    "case": "verification End",
+    "total": "12",
+    "selected": 9
+  },
+  {
+    "case": "outside domain",
+    "path": "separate"
+  },
+  {
+    "case": "retain verification across mechanisms",
+    "budget": "9",
+    "profile": "low"
+  },
+  {
+    "case": "retain kernel across mechanisms",
+    "path": "separate",
+    "precision": "bf16xbf16"
+  },
+  {
+    "case": "predicate gpu true bf16xbf16",
+    "path": "mega"
+  },
+  {
+    "case": "predicate gpu true fp8xfp4",
+    "path": "mega"
+  },
+  {
+    "case": "predicate gpu false bf16xbf16",
+    "path": "separate"
+  },
+  {
+    "case": "predicate gpu false fp8xfp4",
+    "path": "mega"
+  },
+  {
+    "case": "cache main",
+    "bytes": "288"
+  },
+  {
+    "case": "cache swa",
+    "bytes": "528"
+  },
+  {
+    "case": "cache index",
+    "bytes": "68"
+  },
+  {
+    "case": "System resolves and retains paused progress",
+    "prefersDark": true,
+    "resolved": "dark",
+    "step": "3"
+  },
+  {
+    "case": "trace sample 1440 en light",
+    "screenshot": "depth-trace-1440-en-light.jpg",
+    "formulaOverflow": "visible",
+    "pageOverflow": false,
+    "rows": [
+      {
+        "computed": "6",
+        "id": "A",
+        "output": "0",
+        "pending": "1"
+      },
+      {
+        "computed": "2",
+        "id": "B",
+        "output": "0",
+        "pending": "0"
+      },
+      {
+        "computed": "0",
+        "id": "C",
+        "output": "0",
+        "pending": "0"
+      }
+    ],
+    "step": "3"
+  },
+  {
+    "case": "trace sample 1440 en dark",
+    "screenshot": "depth-trace-1440-en-dark.jpg",
+    "formulaOverflow": "visible",
+    "pageOverflow": false,
+    "rows": [
+      {
+        "computed": "6",
+        "id": "A",
+        "output": "0",
+        "pending": "1"
+      },
+      {
+        "computed": "2",
+        "id": "B",
+        "output": "0",
+        "pending": "0"
+      },
+      {
+        "computed": "0",
+        "id": "C",
+        "output": "0",
+        "pending": "0"
+      }
+    ],
+    "step": "3"
+  },
+  {
+    "case": "trace sample 390 zh light",
+    "screenshot": "depth-trace-390-zh-light.jpg",
+    "formulaOverflow": "visible",
+    "pageOverflow": false,
+    "rows": [
+      {
+        "computed": "6",
+        "id": "A",
+        "output": "0",
+        "pending": "1"
+      },
+      {
+        "computed": "2",
+        "id": "B",
+        "output": "0",
+        "pending": "0"
+      },
+      {
+        "computed": "0",
+        "id": "C",
+        "output": "0",
+        "pending": "0"
+      }
+    ],
+    "step": "3"
+  },
+  {
+    "case": "trace sample 390 zh dark",
+    "screenshot": "depth-trace-390-zh-dark.jpg",
+    "formulaOverflow": "visible",
+    "pageOverflow": false,
+    "rows": [
+      {
+        "computed": "6",
+        "id": "A",
+        "output": "0",
+        "pending": "1"
+      },
+      {
+        "computed": "2",
+        "id": "B",
+        "output": "0",
+        "pending": "0"
+      },
+      {
+        "computed": "0",
+        "id": "C",
+        "output": "0",
+        "pending": "0"
+      }
+    ],
+    "step": "3"
+  },
+  {
+    "case": "sample commit",
+    "step": "4",
+    "rows": [
+      {
+        "computed": "6",
+        "id": "A",
+        "output": "1",
+        "pending": "0"
+      },
+      {
+        "computed": "2",
+        "id": "B",
+        "output": "0",
+        "pending": "0"
+      },
+      {
+        "computed": "0",
+        "id": "C",
+        "output": "0",
+        "pending": "0"
+      }
+    ]
+  },
+  {
+    "case": "terminal",
+    "step": "32",
+    "nextEnabled": false
+  },
+  {
+    "case": "Home return retains verification",
+    "budget": "9",
+    "profile": "low",
+    "step": "0"
+  },
+  {
+    "case": "Home return retains kernel",
+    "gpu": false,
+    "path": "mega"
+  },
+  {
+    "case": "share includes nine settings",
+    "values": {
+      "DeepInfer.scenario": "mixed",
+      "DeepInfer.prefillBudget": 8,
+      "DeepInfer.overlap": true,
+      "DeepInfer.kernelGpu": false,
+      "DeepInfer.kernelDomain": true,
+      "DeepInfer.kernelPrecision": "fp8xfp4",
+      "DeepInfer.verificationBudget": 9,
+      "DeepInfer.confidenceProfile": "low",
+      "DeepInfer.cacheFormat": "index"
+    }
+  },
+  {
+    "case": "share full reload restores verification",
+    "budget": "9",
+    "profile": "low",
+    "step": "0"
+  },
+  {
+    "case": "share restores cache format",
+    "format": "index",
+    "bytes": "68"
+  },
+  {
+    "case": "all eleven mechanism inspectors",
+    "inspected": [
+      {
+        "title": "E/P/D & Wide-EP",
+        "mechanism": "deployment",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md#L29"
+      },
+      {
+        "title": "Compressed caches & bounded replay",
+        "mechanism": "cache",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md#L140"
+      },
+      {
+        "title": "The attention kernel chain",
+        "mechanism": "attentionKernel",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/model_executor/layers/attention_backend.py#L26"
+      },
+      {
+        "title": "Mega MoE & fusion boundaries",
+        "mechanism": "mega",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/model_executor/models/v4_modules/mlp.py#L185"
+      },
+      {
+        "title": "EPLB: expert replica placement",
+        "mechanism": "eplb",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/model_executor/models/v4_modules/mlp.py#L359"
+      },
+      {
+        "title": "Precision & storage contracts",
+        "mechanism": "precision",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/model_executor/layers/tilelang_ops/cache_common.py#L119"
+      },
+      {
+        "title": "Engram & mHC fusion",
+        "mechanism": "modelFusion",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/model_executor/models/v4_modules/hc.py#L174"
+      },
+      {
+        "title": "DSpark: allocate useful verification",
+        "mechanism": "dspark",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/csrc/engine/mtp_varlen.hpp"
+      },
+      {
+        "title": "Async scheduling & device remapping",
+        "mechanism": "zos",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/worker/worker.py#L89"
+      },
+      {
+        "title": "CUDA Graph & cost curves",
+        "mechanism": "graphs",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/deepinfer/worker/model_runner.py#L562"
+      },
+      {
+        "title": "Structured output & platforms",
+        "mechanism": "structured",
+        "source": "https://github.com/deepseek-ai/DeepInfer/blob/553741557a57df44a46fb3ab72b6aafeaf945337/doc/inference_deployment_qa.md#L276"
+      }
+    ]
+  },
+  {
+    "case": "plain reload defaults",
+    "budget": "6",
+    "profile": "varied"
+  },
+  {
+    "case": "sync comparison toggle",
+    "selection": "candidate"
+  },
+  {
+    "case": "baseline timing selection",
+    "track": "baseline",
+    "operation": "commit-0"
+  }
+]

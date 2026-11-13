@@ -1,0 +1,8 @@
+npm error Missing script: "check:theme"
+npm error
+npm error Did you mean this?
+npm error   npm run check:llm # run the "check:llm" package script
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: C:\Users\29043\AppData\Local\npm-cache\_logs\2026-10-28T15_02_00_717Z-debug-0.log
