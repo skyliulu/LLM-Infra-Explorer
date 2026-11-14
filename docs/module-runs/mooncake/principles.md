@@ -108,6 +108,8 @@ Ownership update: the paper's Conductor, CPP, layer-wise prefill and early rejec
 here at principle level, because the chapter's title is now the system; radix/layout details stay
 in Radix HiCache; the open-source Conductor-as-index evolution is stated as a boundary, not taught.
 
+> Superseded: the final section 1 draws only the implemented stack (see qa.md F50 and research.md C20). The paper-design material below is kept as run history, not as the page.
+
 ## System handoff: difficulty ledger, relationship map, design alternative
 
 The chapter's spine is now the system, not the cache tier.

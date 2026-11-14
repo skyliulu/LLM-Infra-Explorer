@@ -8,7 +8,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -21,185 +21,10 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch.png"
-    },
-    {
-      "name": "zh-light-1440-arch-choose",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3847,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-choose.png"
-    },
-    {
-      "name": "zh-light-1440-arch-prefill",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3847,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-prefill.png"
-    },
-    {
-      "name": "zh-light-1440-arch-placement",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3847,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-placement.png"
-    },
-    {
-      "name": "zh-light-1440-arch-transfer",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3847,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-transfer.png"
-    },
-    {
-      "name": "zh-light-1440-arch-slo",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3847,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-slo.png"
-    },
-    {
-      "name": "zh-light-1440-arch-overload",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3833,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 25,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-overload.png"
-    },
-    {
-      "name": "zh-light-1440-arch-design",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3883,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-design.png"
     },
     {
       "name": "zh-dark-1440-arch",
@@ -208,7 +33,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "dark",
@@ -221,7 +46,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-arch.png"
@@ -233,7 +58,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 4108,
+        "contentHeight": 3695,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -246,7 +71,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake: KVCache-centric serving"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-arch.png"
@@ -258,7 +83,7 @@
           "width": 900,
           "height": 1100
         },
-        "contentHeight": 6507,
+        "contentHeight": 5782,
         "documentWidth": 900,
         "overflowX": false,
         "theme": "dark",
@@ -271,7 +96,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake: KVCache-centric serving"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-arch.png"
@@ -283,7 +108,7 @@
           "width": 390,
           "height": 844
         },
-        "contentHeight": 7822,
+        "contentHeight": 7067,
         "documentWidth": 390,
         "overflowX": false,
         "theme": "light",
@@ -296,7 +121,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-arch.png"
@@ -308,7 +133,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -321,7 +146,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers.png"
@@ -333,7 +158,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -346,7 +171,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 46,
+        "buttons": 30,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-round5.png"
@@ -358,7 +183,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -371,7 +196,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 49,
+        "buttons": 33,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-end.png"
@@ -383,7 +208,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -396,7 +221,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 37,
+        "buttons": 21,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-instance.png"
@@ -408,7 +233,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -421,7 +246,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 49,
+        "buttons": 33,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-pool24.png"
@@ -433,7 +258,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -446,7 +271,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-hit-prefetch.png"
@@ -458,7 +283,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3850,
+        "contentHeight": 3417,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -471,7 +296,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-hit-done.png"
@@ -483,7 +308,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -496,7 +321,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-cost.png"
@@ -508,7 +333,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3834,
+        "contentHeight": 3401,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -521,7 +346,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-cost-slow.png"
@@ -533,7 +358,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "dark",
@@ -546,7 +371,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-cost-ssd.png"
@@ -558,7 +383,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "dark",
@@ -571,7 +396,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 48,
+        "buttons": 32,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-tiers.png"
@@ -583,7 +408,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3849,
+        "contentHeight": 3415,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "dark",
@@ -596,7 +421,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-hit.png"
@@ -608,7 +433,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "dark",
@@ -621,7 +446,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-cost.png"
@@ -633,7 +458,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 4108,
+        "contentHeight": 3695,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -646,7 +471,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 48,
+        "buttons": 32,
         "title": "Mooncake: KVCache-centric serving"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-tiers.png"
@@ -658,7 +483,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 4108,
+        "contentHeight": 3695,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -671,7 +496,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake: KVCache-centric serving"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-hit.png"
@@ -683,7 +508,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 4108,
+        "contentHeight": 3695,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -696,7 +521,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake: KVCache-centric serving"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-cost.png"
@@ -708,7 +533,7 @@
           "width": 900,
           "height": 1100
         },
-        "contentHeight": 6514,
+        "contentHeight": 5789,
         "documentWidth": 900,
         "overflowX": false,
         "theme": "dark",
@@ -721,7 +546,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 48,
+        "buttons": 32,
         "title": "Mooncake: KVCache-centric serving"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-tiers.png"
@@ -733,7 +558,7 @@
           "width": 900,
           "height": 1100
         },
-        "contentHeight": 6507,
+        "contentHeight": 5782,
         "documentWidth": 900,
         "overflowX": false,
         "theme": "dark",
@@ -746,7 +571,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake: KVCache-centric serving"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-cost.png"
@@ -758,7 +583,7 @@
           "width": 390,
           "height": 844
         },
-        "contentHeight": 7881,
+        "contentHeight": 7127,
         "documentWidth": 390,
         "overflowX": false,
         "theme": "light",
@@ -771,7 +596,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 48,
+        "buttons": 32,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-tiers.png"
@@ -783,7 +608,7 @@
           "width": 390,
           "height": 844
         },
-        "contentHeight": 7867,
+        "contentHeight": 7112,
         "documentWidth": 390,
         "overflowX": false,
         "theme": "light",
@@ -796,7 +621,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-hit.png"
@@ -808,7 +633,7 @@
           "width": 390,
           "height": 844
         },
-        "contentHeight": 7822,
+        "contentHeight": 7067,
         "documentWidth": 390,
         "overflowX": false,
         "theme": "dark",
@@ -821,7 +646,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-390-cost.png"
@@ -833,7 +658,7 @@
           "width": 390,
           "height": 844
         },
-        "contentHeight": 8691,
+        "contentHeight": 7870,
         "documentWidth": 390,
         "overflowX": false,
         "theme": "light",
@@ -846,7 +671,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake: KVCache-centric serving"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-light-390-hit.png"
@@ -858,7 +683,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3847,
+        "contentHeight": 3414,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -871,7 +696,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-full.png"
@@ -883,7 +708,7 @@
           "width": 1440,
           "height": 860
         },
-        "contentHeight": 3834,
+        "contentHeight": 3401,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -896,7 +721,7 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-share-open.png"
@@ -908,7 +733,7 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3834,
+        "contentHeight": 3401,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
@@ -921,97 +746,13 @@
           "mooncake-tiers",
           "mooncake-cost"
         ],
-        "buttons": 30,
+        "buttons": 14,
         "title": "Mooncake：以 KVCache 为中心的分离式服务"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-share-load.png"
     }
   ],
   "console": [
-    {
-      "type": "debug",
-      "text": "[vite] connecting..."
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connected."
-    },
-    {
-      "type": "info",
-      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connecting..."
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connected."
-    },
-    {
-      "type": "info",
-      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connecting..."
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connected."
-    },
-    {
-      "type": "info",
-      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connecting..."
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connected."
-    },
-    {
-      "type": "info",
-      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connecting..."
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connected."
-    },
-    {
-      "type": "info",
-      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connecting..."
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connected."
-    },
-    {
-      "type": "info",
-      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connecting..."
-    },
-    {
-      "type": "debug",
-      "text": "[vite] connected."
-    },
-    {
-      "type": "info",
-      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
-    },
     {
       "type": "debug",
       "text": "[vite] connecting..."

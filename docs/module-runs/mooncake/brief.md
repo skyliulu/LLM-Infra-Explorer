@@ -117,6 +117,8 @@ Ownership: the paper architecture (Conductor scheduling, CPP, layer-wise prefill
 is explained here; the open-source evolution (Conductor as a prefix index for routers) is stated
 as a boundary; radix/layout details stay in Radix HiCache; store/RDMA details are section 3.
 
+> Superseded: the final section 1 draws only the implemented stack (see qa.md F50 and research.md C20). The paper-design material below is kept as run history, not as the page.
+
 ## Architecture rewrite (system-first spine)
 
 The owner rejected the previous version for lacking the overall architecture's technical

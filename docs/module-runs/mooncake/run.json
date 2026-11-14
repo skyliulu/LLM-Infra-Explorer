@@ -22,29 +22,28 @@
     "The paper architecture is taught; the current open-source Conductor provides a prefix index for routers, which the page states as an evolution boundary."
   ],
   "inputs": {
-    "../../../src/components/MooncakeL3.jsx": "3f2f5763b3d81d39e8aae6c72cbd040e57eb27856f57705e501011a9f393e3bd",
+    "../../../src/components/MooncakeL3.jsx": "b6bc69819e3bc802d365c39f80358887a75798c5280242d127d8bebcda41d9ce",
     "../../../src/components/mooncake/model.js": "1845e348f38ee4019ad676992f8198a3d6095907c0b7919cba28caca322fd3e5",
-    "../../../src/components/mooncake/serving.js": "6ee54c192e799e6d6cde8a08d2e7a892213fa93d6572e9d98742da2e07a1f7fe",
-    "../../../src/components/mooncake/content.js": "c9cb9def202ac23e719e4e08d5020d3cb882e3a6dc21612174a70ace21b693ff",
+    "../../../src/components/mooncake/content.js": "11ecc40396a4d69fac6dd035419a3bc3c4702feba30f16d7ac83ccee7897d1c0",
     "../../../src/components/mooncake/format.js": "c7bccd01cd070cabf58afc396b0106d1d7a8897001b50472f0362e302f35d69e",
-    "../../../src/components/mooncake/ServingArchitecture.jsx": "0f7a9b4f0e5bc2ab2ad8f32de528bdcdfafbf10327171d351a38a2e6a84de8db",
+    "../../../src/components/mooncake/ServingArchitecture.jsx": "3970b8332c7cc27dc46f7732c2338df2851c47c3e2161cd0923b4fd1c84df55d",
     "../../../src/components/mooncake/TierCanvas.jsx": "6bf46cd8711e60013d86863d57550b1356457104c3ef9c02cbac6c748f8cc40e",
     "../../../src/components/mooncake/HitPath.jsx": "66263b9f1eb4ea55ab7cab5f78fbd8389afa53b2169e680ab40f32cb94166f78",
     "../../../src/components/mooncake/Economics.jsx": "9e501f1732bf5bdec9bc3e576b967b2b514e59a80a7cb78fc091594716a6618a",
-    "../../../src/components/mooncake/mooncake.css": "8db87851ba79b6328ced9bd26213b9c4e66334ee3e93bb3f4b3b37643ee7a1f4",
+    "../../../src/components/mooncake/mooncake.css": "7a43444252adc3ba6e32c4f8f4099c34924b8c7080942056669118f421be7a14",
     "../../../src/components/workbench.css": "157084f682490c66b3b0752804a55668c96de2ee54f9a6c2c8dbe9f78939d916",
     "../../../src/lib/chapter-registry.js": "6c2ee20013a1377e83e739d46cb53846da219ef2827b037cceae77aba9bcd3a7",
     "../../../src/lib/chapter-learning.js": "c2ef57c99b28dd9dd4f5cc9c2851b561e53497ca4e6ab9d07311123cade0df5e",
     "../../../src/lib/chapter-icons.js": "cbaab61c0a60bc3b26b098feca57fa9bf11c090528a466dcd4e7dcdf56213457",
     "../../../src/lib/module-groups.js": "d721cff769ea199395dd2ca0f3e2874d7f0984ff2020901ce96004b20b9aafa8",
     "../../../src/lib/module-titles.js": "d864416ccca153119ba95aca85ffba7e56d4a0c9c7ba03869a64464c14313dc2",
-    "../../../src/lib/experiment-sharing.js": "d730ae74037a93f5f1a8168b2d405f9b8bb375e10acdc1de5fd6a4bed6361214",
-    "../../../scripts/check-mooncake.mjs": "4f82a9a6acbddf1f33094ac99ca31c0424432526ccb412c71fbaa970c84e7d91",
+    "../../../src/lib/experiment-sharing.js": "318e323e3b284d7c96cdd09a9418231190ff383bae5d5f0e13708d41ce21ffdc",
+    "../../../scripts/check-mooncake.mjs": "26afdd74f516e314663f6a8d2bb6f6826d110f6113cab4b959a45c830b1125fb",
     "../../../scripts/check-learning-paths.mjs": "1450eca28cc6b024e76469d1c23a478c6eb7a4adf9a9d510305a9c2186509db0",
-    "../../../scripts/check-workbench-sharing.mjs": "1d004d8ec6cc0813c2fd28bc9ac1ec14f176b4ef4144a322a0ba62f866dff137",
+    "../../../scripts/check-workbench-sharing.mjs": "d0a1c72aa33fbd8c4ba95c88b29047dc06884f6d4c4227d4bfe8ff8f29667837",
     "../../../package.json": "a36960bc232843b16a490e61217e3e9617efcb88dbae66f47a828eb634e01fd3"
   },
-  "snapshotAt": "2026-11-14T13:15:11.829Z",
+  "snapshotAt": "2026-11-14T13:26:35.085Z",
   "artifacts": [
     {
       "id": "brief",
@@ -202,21 +201,6 @@
       "path": "evidence/zh-light-1440-arch.png"
     },
     {
-      "id": "shot-arch-prefill",
-      "kind": "screenshot",
-      "path": "evidence/zh-light-1440-arch-prefill.png"
-    },
-    {
-      "id": "shot-arch-slo",
-      "kind": "screenshot",
-      "path": "evidence/zh-light-1440-arch-slo.png"
-    },
-    {
-      "id": "shot-arch-overload",
-      "kind": "screenshot",
-      "path": "evidence/zh-light-1440-arch-overload.png"
-    },
-    {
       "id": "shot-arch-dark",
       "kind": "screenshot",
       "path": "evidence/zh-dark-1440-arch.png"
@@ -235,26 +219,6 @@
       "id": "shot-arch-en",
       "kind": "screenshot",
       "path": "evidence/en-light-1440-arch.png"
-    },
-    {
-      "id": "shot-arch-transfer",
-      "kind": "screenshot",
-      "path": "evidence/zh-light-1440-arch-transfer.png"
-    },
-    {
-      "id": "shot-arch-placement",
-      "kind": "screenshot",
-      "path": "evidence/zh-light-1440-arch-placement.png"
-    },
-    {
-      "id": "shot-controls",
-      "kind": "screenshot",
-      "path": "evidence/control-playback-crop.png"
-    },
-    {
-      "id": "shot-arch-design",
-      "kind": "screenshot",
-      "path": "evidence/zh-light-1440-arch-design.png"
     }
   ],
   "claims": [
@@ -344,13 +308,13 @@
     },
     {
       "id": "C7",
-      "statement": "Cache-aware placement is a tradeoff: the longest reusable prefix can miss the TTFT SLO when its queue is long, so the scheduler may pick a lower-reuse instance that meets the SLO.",
-      "source": "https://arxiv.org/abs/2407.00079",
-      "locator": "Paper section 1.1 and section 6 (Conductor selection balances reuse, load and TTFT)",
-      "boundary": "Queue values are illustrative; the page teaches the decision rule, not a measured trace.",
-      "model": "deriveServingState long case: reuse policy picks A (12,288 reused, 328.2 ms), SLO policy picks B (11,264 reused, 299.5 ms)",
-      "trigger": "Switch the placement preference between \"复用优先\" and \"守住 TTFT\" in the long case",
-      "expected": "The chosen prefill group, its chunk count, the candidate table highlight and the reason change, and A is flagged over the 300 ms SLO",
+      "statement": "The default architecture is the implemented stack at kvcache-ai/Mooncake@504f2ae: a router queries a prefix-index Conductor and picks an engine, with Transfer Engine, Store and PG/EP underneath; the paper’s Conductor scheduler and CPP prefill pool are not open-sourced and are not drawn.",
+      "source": "https://github.com/kvcache-ai/Mooncake/tree/504f2ae",
+      "locator": "mooncake-conductor/include/conductor/prefixindex; mooncake-store/include/master_client.h; mooncake-transfer-engine/include/topology.h; mooncake-pg, mooncake-ep",
+      "boundary": "Component-level; the engine-specific routing call is not shown.",
+      "model": "Section 1 stack map and source facts",
+      "trigger": "Read section 1",
+      "expected": "The reader can name the router, prefix-index Conductor, engine, TE, Store and PG/EP, and knows which layer is missing from the repo",
       "checkIds": [
         "model",
         "browser"
@@ -358,13 +322,13 @@
     },
     {
       "id": "C8",
-      "statement": "Prefill is chunked and pipelined across nodes and KV moves layer by layer; under overload a request that cannot meet the decode SLO is rejected before prefill.",
-      "source": "https://arxiv.org/abs/2407.00079",
-      "locator": "Paper sections 5.1 (CPP), 5.2 (layer-wise prefill) and 7.2 (early rejection)",
-      "boundary": "The page shows chunk/stage counts and avoided work, not a node-level timeline or the predictor internals.",
-      "model": "serving.js stages = ceil(chunks / 2), chunk = 1,024 tokens; overload stops at step 4 and reports saved prefill and transfer",
-      "trigger": "Play the long case to prefill, then switch to the overload case",
-      "expected": "Chunk squares and the chunks/stages metric move; overload ends in \"拒绝\" with the saved-work box",
+      "statement": "Conductor is a prefix index service: it consumes KV events and answers the longest reusable prefix per instance, medium and DP rank; it does not schedule requests.",
+      "source": "https://github.com/kvcache-ai/Mooncake/tree/504f2ae",
+      "locator": "mooncake-conductor/include/conductor/prefixindex/prefix_indexer.h; client/types.h; architecture docs (cache-aware routing)",
+      "boundary": "The index is queried over HTTP by the router; the routing policy belongs to the engine integration.",
+      "model": "Source facts card",
+      "trigger": "Read the Conductor fact",
+      "expected": "The reader can state what Conductor answers and what it does not decide",
       "checkIds": [
         "model",
         "browser"
@@ -372,13 +336,13 @@
     },
     {
       "id": "C9",
-      "statement": "Each of the system’s four technical difficulties is answered by a named mechanism, with a magnitude, a counterfactual and a boundary: long prefill (chunked pipeline + layer-wise KV), KV movement (registered-memory RDMA + path selection), reuse-vs-SLO placement (Conductor), overload (early rejection).",
-      "source": "https://arxiv.org/abs/2407.00079",
-      "locator": "Paper sections 1.1, 5.1, 5.2, 6 and 7.2",
-      "boundary": "Queue, SLO and chunk values are illustrative; the page teaches the mechanism, not a measured trace.",
-      "model": "deriveArchitectureState budgets: 372.4 vs 186.2 ms, 5.37 GB vs 320 MiB, RDMA vs TCP, A/B TTFT, saved work",
-      "trigger": "Switch the four difficulty lenses and read the budget strip",
-      "expected": "Each lens shows its own magnitude, counterfactual and mechanism; budgets change with the lens while the request path stays the same",
+      "statement": "The Store master returns replica descriptors and a lease TTL; PutStart allocates and PutEnd completes an object; clients read/write registered segments directly through Transfer Engine.",
+      "source": "https://github.com/kvcache-ai/Mooncake/tree/504f2ae",
+      "locator": "mooncake-store/include/master_client.h; rpc_types.h (GetReplicaListResponse); object_metadata.h",
+      "boundary": "Teaching simplification of the client path; not a line-by-line trace.",
+      "model": "Source facts card and section 2",
+      "trigger": "Read the Store fact",
+      "expected": "The reader can say who owns the bytes and who owns the metadata",
       "checkIds": [
         "model",
         "browser"
@@ -386,69 +350,13 @@
     },
     {
       "id": "C10",
-      "statement": "The architecture is a control plane (Conductor: prefix index + placement) over a data plane (prefill groups, decode pool, Store/Transfer Engine), with concrete payloads crossing each interface.",
+      "statement": "The paper’s Conductor scheduler and CPP prefill pool are not open-sourced; they are treated as history and are not part of the architecture view.",
       "source": "https://arxiv.org/abs/2407.00079",
-      "locator": "Paper section 3 (workflow) and section 6 (Conductor selection)",
-      "boundary": "The current open-source Conductor exposes the prefix index to engine routers; the page states the evolution.",
-      "model": "Section 1 labels: placement + block IDs, layer-wise prefix load, layer-wise KV stream; the request state machine",
-      "trigger": "Play the request and read the plane badges and interface labels",
-      "expected": "The conductor carries the placement decision; prefill loads the prefix, computes chunks and streams KV; decode holds the batch; the pool stores the pages",
-      "checkIds": [
-        "model",
-        "browser"
-      ]
-    },
-    {
-      "id": "C11",
-      "statement": "The rejected alternative — monolithic prefill/decode or chunked prefill inside decode — protects capacity or TBT only partially and still needs cross-node prefill for long context, which is why Mooncake keeps disaggregation.",
-      "source": "https://arxiv.org/abs/2407.00079",
-      "locator": "Paper section 5 (design rationale; chunked prefill vs SLO/MFU)",
-      "boundary": "Qualitative comparison; no benchmark is claimed for the alternatives here.",
-      "model": "Section 1 design note (monolithic vs chunked-in-decode vs disaggregated)",
-      "trigger": "Read the design note under the request budget",
-      "expected": "The reader can name the alternative and the price Mooncake pays for separation",
-      "checkIds": [
-        "model",
-        "browser"
-      ]
-    },
-    {
-      "id": "C12",
-      "statement": "The drawn architecture is the paper’s serving form: Conductor picks a prefill group and a decode instance, the prefill request carries prefix and full-cache block IDs, KV streams layer by layer, and the decode scheduler double-checks TBT. In the open-source repo at 504f2ae there is no scheduler or CPP prefill source: Conductor is a prefix index, and TE/Store/PG/EP sit underneath.",
-      "source": "https://arxiv.org/abs/2407.00079",
-      "locator": "Paper sections 3, 5, 6 and 7; Mooncake architecture docs; code spot-check at kvcache-ai/Mooncake 504f2ae (mooncake-conductor/prefixindex, mooncake-store/master_client.h, mooncake-transfer-engine/topology.h)",
-      "boundary": "Numbers are readout assumptions, not measurements; the page says so under the budget.",
-      "model": "Section 1 interface labels and the evolution note; the request walk",
-      "trigger": "Read the section lead, interface labels and the today’s-stack strip",
-      "expected": "The reader can separate the paper’s serving form from today’s infrastructure stack and knows the page is not a measured trace",
-      "checkIds": [
-        "model",
-        "browser"
-      ]
-    },
-    {
-      "id": "C13",
-      "statement": "Evidence levels are explicit: §1 is the paper’s design (no scheduler or CPP prefill source in the repo), while §2 follows the pinned open-source implementation at mooncake-store@504f2ae (GetReplicaList returns replica descriptors and a lease TTL; PutStart/PutEnd; Transfer Engine direct read).",
-      "source": "https://github.com/kvcache-ai/Mooncake/tree/504f2ae",
-      "locator": "mooncake-store/include/master_client.h, rpc_types.h, object_metadata.h; mooncake-transfer-engine/include/topology.h, multi_transport.h; paper sections 3, 5, 6",
-      "boundary": "The page is not a line-by-line trace; §2 is a teaching simplification of the source-level path.",
-      "model": "Section 1 title/lead and the store implementation note",
-      "trigger": "Read the section titles, the evolution note and the store implementation-basis line",
-      "expected": "The reader can tell which claims come from the paper and which follow the open-source code, and at which revision",
-      "checkIds": [
-        "model",
-        "browser"
-      ]
-    },
-    {
-      "id": "C14",
-      "statement": "Today’s open-source stack is a router (vLLM/SGLang) that picks instances from a prefix-index Conductor, engine workers that run prefill/decode, and TE/Store/PG/EP below; there is no global scheduler.",
-      "source": "https://github.com/kvcache-ai/Mooncake/tree/504f2ae",
-      "locator": "mooncake-conductor/prefixindex; mooncake-store/master_client.h; mooncake-transfer-engine/topology.h; architecture docs (Conductor = cache-aware routing)",
-      "boundary": "Component-level depiction; request-level routing details depend on the engine integration.",
-      "model": "Section 1 today’s-stack strip",
-      "trigger": "Read the strip under the paper canvas",
-      "expected": "The reader can name the router, the prefix-index Conductor, the engine workers and the TE/Store/PG/EP substrate, and knows there is no global scheduler",
+      "locator": "Paper sections 3, 5, 6; repository tree at 504f2ae has no scheduler/CPP source",
+      "boundary": "A boundary statement, not a mechanism explanation.",
+      "model": "Section 1 boundary note",
+      "trigger": "Read the boundary note",
+      "expected": "The reader does not mistake the paper design for the current implementation",
       "checkIds": [
         "model",
         "browser"
@@ -487,46 +395,6 @@
       "checkIds": [
         "browser"
       ]
-    },
-    {
-      "id": "J8",
-      "action": "In the long case, switch the placement preference from maximize reuse to protect TTFT",
-      "expected": "The chosen group moves from A to B, A is marked over SLO, and predicted TTFT drops from 328.2 ms to 299.5 ms",
-      "checkIds": [
-        "browser"
-      ]
-    },
-    {
-      "id": "J9",
-      "action": "Switch to the overload case and play to the end",
-      "expected": "The walk stops at step 4, the decode card shows rejection, and the saved-work box reports the avoided prefill and transfer",
-      "checkIds": [
-        "browser"
-      ]
-    },
-    {
-      "id": "J10",
-      "action": "Switch the architecture lens from prefill to transfer",
-      "expected": "The challenge card and budget switch to RDMA vs TCP numbers; the request path and step rail stay the same",
-      "checkIds": [
-        "browser"
-      ]
-    },
-    {
-      "id": "J11",
-      "action": "In the placement lens, switch maximize reuse to protect TTFT",
-      "expected": "The chosen group moves from A to B and the predicted TTFT crosses back under the SLO",
-      "checkIds": [
-        "browser"
-      ]
-    },
-    {
-      "id": "J12",
-      "action": "Switch to the overload lens and play to the end",
-      "expected": "The walk stops at rejection and the budget shows the avoided prefill time and transfer bytes",
-      "checkIds": [
-        "browser"
-      ]
     }
   ],
   "checks": [
@@ -534,7 +402,7 @@
       "id": "research",
       "kind": "research",
       "status": "passed",
-      "startedAt": "2026-11-14T13:17:28.199Z",
+      "startedAt": "2026-11-14T13:28:27.669Z",
       "artifactIds": [
         "research",
         "brief",
@@ -546,7 +414,7 @@
       "id": "model",
       "kind": "model",
       "status": "passed",
-      "startedAt": "2026-11-14T13:15:14.983Z",
+      "startedAt": "2026-11-14T13:26:38.027Z",
       "artifactIds": [
         "model-log"
       ],
@@ -557,7 +425,7 @@
       "id": "conventions",
       "kind": "conventions",
       "status": "passed",
-      "startedAt": "2026-11-14T13:15:15.033Z",
+      "startedAt": "2026-11-14T13:26:38.073Z",
       "artifactIds": [
         "conventions-log"
       ],
@@ -568,7 +436,7 @@
       "id": "build",
       "kind": "build",
       "status": "passed",
-      "startedAt": "2026-11-14T13:15:19.521Z",
+      "startedAt": "2026-11-14T13:26:43.710Z",
       "artifactIds": [
         "build-log"
       ],
@@ -579,7 +447,7 @@
       "id": "integration",
       "kind": "integration",
       "status": "passed",
-      "startedAt": "2026-11-14T13:15:19.921Z",
+      "startedAt": "2026-11-14T13:26:44.133Z",
       "artifactIds": [
         "integration-log"
       ],
@@ -590,8 +458,13 @@
       "id": "browser",
       "kind": "browser",
       "status": "passed",
-      "startedAt": "2026-11-14T13:17:25.145Z",
+      "startedAt": "2026-11-14T13:28:22.776Z",
       "artifactIds": [
+        "shot-arch",
+        "shot-arch-dark",
+        "shot-arch-en",
+        "shot-arch-900",
+        "shot-arch-390",
         "shot-tiers-end",
         "shot-round5",
         "shot-instance",
@@ -600,20 +473,21 @@
         "shot-hit-done",
         "shot-cost-slow",
         "shot-share-open",
-        "shot-share-load",
-        "shot-arch-transfer",
-        "shot-arch-placement",
-        "shot-controls",
-        "shot-arch-design"
+        "shot-share-load"
       ]
     },
     {
       "id": "visual",
       "kind": "visual",
       "status": "passed",
-      "startedAt": "2026-11-14T13:17:25.145Z",
+      "startedAt": "2026-11-14T13:28:22.776Z",
       "artifactIds": [
         "shot-full",
+        "shot-arch",
+        "shot-arch-dark",
+        "shot-arch-en",
+        "shot-arch-900",
+        "shot-arch-390",
         "shot-dark-tiers",
         "shot-dark-cost",
         "shot-dark-ssd",
@@ -621,53 +495,45 @@
         "shot-en-cost",
         "shot-390-hit",
         "shot-390-cost",
-        "shot-en-390",
-        "shot-arch-transfer",
-        "shot-arch-placement"
+        "shot-en-390"
       ]
     },
     {
       "id": "reader",
       "kind": "reader",
       "status": "passed",
-      "startedAt": "2026-11-14T13:17:28.199Z",
+      "startedAt": "2026-11-14T13:28:27.668Z",
       "artifactIds": [
         "reader-review",
         "shot-full",
-        "shot-arch-prefill",
-        "shot-arch-transfer",
-        "shot-arch-placement",
-        "shot-arch-overload",
+        "shot-arch",
+        "shot-arch-dark",
+        "shot-arch-en",
+        "shot-arch-900",
+        "shot-arch-390",
         "shot-hit-done",
         "shot-tiers-end",
-        "shot-cost",
-        "shot-arch-design"
+        "shot-cost"
       ],
       "reviewer": "owner",
       "route": "#mooncake (zh, Light, 1440x1180; en/Dark/900/390 cross-checked)",
       "readingPath": [
         "Header and subtitle",
-        "Section 1 title and lead (paper design)",
-        "Lens toggles, step rail, conductor card and prefill/decode/pool cards",
-        "Prefill lens: budgets 372/186 ms and 5.37 GB to 320 MiB",
-        "Transfer lens: RDMA vs TCP load and stream budgets",
-        "Placement lens: A/B table, SLO, policy switch",
-        "Overload lens: rejection and avoided work",
-        "Design-alternative summary (open it)",
-        "Today’s open-source stack strip",
-        "Design-alternative comparison",
+        "Section 1 title and implemented-stack map",
+        "Source facts (Conductor, Store, Transfer Engine, PG/EP)",
+        "Boundary note (paper scheduler/CPP not open)",
         "Section 2 store fetch: replica list, transport strip, PutEnd",
         "Section 3 L3 integration: trace, pool sizes, L3 gain",
         "Section 4 economics: per-token crossing, threshold, mediums",
         "English, Dark, 900 and 390 widths",
         "Footer and evidence list"
       ],
-      "retelling": "Mooncake separates prefill, decode and KV storage; that creates four difficulties. The prefill request carries the raw input, prefix block IDs and full-cache block IDs; the decode scheduler double-checks TBT. A 16K prefill would take about 372 ms and hold 5.37 GB on one node, so it is chunked over two prefill nodes (186 ms) with layer-wise load/store, resident KV near 320 MiB per chunk. A 12K prefix needs 4.03 GB loaded and 1.34 GB streamed; the paper calls the service Messenger, the open-source implementation is Transfer Engine, and registered-memory RDMA makes that about 21 + 7 ms instead of 322 + 107 ms on TCP. Placement is a tradeoff: A reuses 12,288 but queues 120 ms and predicts 328 ms, over the 300 ms SLO, while B gives up 1,024 tokens of reuse to land at 300 ms. Under overload both predictions miss the SLO, so the request is rejected before prefill, saving 186 ms and 5.37 GB. The Store serves a fetch through a metadata-only master, registered memory and PutEnd; as HiCache L3 it holds the shared pool where the L2-only hit rate decays. Reuse pays when per-token transfer beats compute: about 10 tokens, 256 tokens as policy, 3.9 GB/s floor. The page’s title says this architecture is the paper’s; the open-source repo has no scheduler or CPP prefill source, only a prefix-index Conductor plus TE/Store/PG/EP. Section 2 names its source: mooncake-store@504f2ae, where GetReplicaList returns replica descriptors and a lease TTL, PutStart/PutEnd complete the object, and Transfer Engine reads directly. The budget note labels the readout assumptions. The design comparison is a collapsed disclosure; opening it shows the monolithic and chunked-in-decode alternatives and the price of separation. A strip under the paper view shows today’s stack: a router asks the prefix-index Conductor and picks an engine, with TE/Store/PG/EP below and no global scheduler.",
+      "retelling": "Mooncake as implemented today is an infrastructure stack, not the paper’s global scheduler. At 504f2ae a router (vLLM/SGLang) asks Conductor for the prefix index and picks an engine instance; the engine runs prefill and decode. Transfer Engine moves KV between registered segments over RDMA or other transports, selecting paths by topology. Store’s master owns the object directory, allocation, replicas and leases, while clients contribute segments and read/write directly through Transfer Engine; GetReplicaList returns replicas and a lease TTL, and PutStart/PutEnd complete an object. PG/EP provide elastic membership. The paper’s Conductor scheduler and CPP prefill pool are not in the repository, so they are not drawn; the store section drills into one fetch and the L3 section shows the Store behind HiCache, with the reuse economics last.",
       "frictions": [
-        "The queue, SLO and budget numbers are readout assumptions; the budget note says so.",
-        "The page draws the paper’s serving form; today’s open-source stack differs and the evolution note lists it.",
+        "The architecture is component-level; the engine-specific routing call is not shown.",
         "Section 2 is a fixed default-pool reference case.",
-        "The L3-only baseline is a computed counterfactual, not a measured run."
+        "The L3-only baseline is a computed counterfactual, not a measured run.",
+        "The page is not a line-by-line trace of the source."
       ]
     }
   ],
@@ -1066,6 +932,16 @@
       "severity": "P2",
       "status": "fixed",
       "description": "The chapter showed only the paper’s architecture; today’s open-source stack (router, prefix-index Conductor, engines, TE/Store/PG/EP) was only a note.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F38",
+      "severity": "P1",
+      "status": "fixed",
+      "description": "The architecture section still made the paper’s scheduler/CPP the default view even though the system is implemented; the paper design should be a boundary, not the canvas.",
       "checkIds": [
         "model",
         "browser"

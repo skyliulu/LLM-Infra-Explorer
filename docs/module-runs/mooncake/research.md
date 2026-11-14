@@ -218,3 +218,11 @@ Researched 2026-11-14 against the sources below. Claim IDs are referenced by
   execution. Source files: `mooncake-conductor/include/conductor/prefixindex`, `mooncake-store/include/
   master_client.h`, `mooncake-transfer-engine/include/topology.h`.
 - Boundary: component-level; the exact routing call belongs to the engine integration.
+
+
+### C20 — Final architecture view (supersedes C15/C16 paper framing)
+- The page draws only the implemented stack at `504f2ae`: router -> prefix-index Conductor ->
+  engine, with TE/Store/PG/EP. The paper's Conductor scheduler and CPP prefill pool are a boundary
+  note, not a canvas.
+- The four-lens paper model, its tests and its share config were removed; section 1 is static.
+- Reason: the system has an implementation, so the architecture view must be that implementation.

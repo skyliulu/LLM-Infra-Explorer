@@ -17,7 +17,7 @@ export const SHARE_SCHEMA={
  speculative:{'SpeculativeDecoding.config':object({algorithm:one('eagle2','dspark'),depth:range(1,5),width:range(1,3),budget:range(2,16),blockSize:range(1,8)})},
  engram:{'Engram.samplePreset':one('base','collision'),'Engram.sampleQuery':one('aligned','opposite','orthogonal'),'Engram.systemMode':one('inference','training'),'Engram.slideIdx':one(2,3,4,5)},
  radixcache:{},
- mooncake:{'Mooncake.mode':one('instance','cluster'),'Mooncake.poolPages':value=>Number.isInteger(value)&&value>=24&&value<=192,'Mooncake.serving':object({challenge:one('prefill','transfer','placement','overload'),policy:one('reuse','slo')}),'Mooncake.cost':object({medium:one('rdma','tcp','ssd','slow'),hitTokens:one(8,16,32,64,128,256,512,1024,2048,4096,8192),prefillRate:number(4000,24000)})},
+ mooncake:{'Mooncake.mode':one('instance','cluster'),'Mooncake.poolPages':value=>Number.isInteger(value)&&value>=24&&value<=192,'Mooncake.cost':object({medium:one('rdma','tcp','ssd','slow'),hitTokens:one(8,16,32,64,128,256,512,1024,2048,4096,8192),prefillRate:number(4000,24000)})},
  deepinfer:{'DeepInfer.routeRequest':one('short','long'),'DeepInfer.lesson':object({history:one(0,3,6),replica:one('A','B'),ep:one(2,8),batch:one(1,4),routing:one('uniform','hot'),balance:bool,split:bool,async:bool})},
 };
 export function sanitizeSettings(chapter, values){

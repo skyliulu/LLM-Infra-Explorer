@@ -1,6 +1,6 @@
 # Mooncake — QA
 
-Scope: new chapter (`create`) revised into a system chapter, route `#mooncake`, label "Mooncake". Date 2026-11-14. Four sections: difficulty-led architecture (control/data planes, request walk, design alternative), store data path, L3 integration, reuse economics.
+Scope: new chapter (`create`) revised into a system chapter, route `#mooncake`, label "Mooncake". Date 2026-11-14. Four sections: implemented-stack architecture (router, prefix-index Conductor, engine, TE/Store/PG/EP, source facts), store data path, L3 integration, reuse economics. The paper design is a boundary note only.
 Owner: root agent. Evidence: `docs/module-runs/mooncake/evidence/`.
 
 ## What was verified
@@ -68,7 +68,7 @@ The matrix is rendered evidence, not a claim that every combination was inspecte
 | F30 | P2 | fixed | Owner review: §2's 3.8× baseline was full recompute, so it included the local L2 hit; L3's own contribution was overstated | §2 compares the same request with L2 only against L2+L3: 29.5 ms → 9.16 ms (3.22×); full recompute stays as a labelled reference with a note that S0's local hit is not L3's; `withoutL3`/`ratioL3` are model outputs and asserted |
 | F31 | P2 | fixed | Owner review: `release(lease)` was annotated as the step that makes the new copy readable | Publication is `PutEnd`: the pseudocode, lease note, write-back row ("PutEnd 后可读") and completion copy now separate publication from read protection |
 | F32 | P3 | fixed | Owner review: the transport mechanism appeared only as a bandwidth number | Registered-memory / zero-copy / NIC-path detail added on the existing prefetch step (transport strip, detail text, `te.read` pseudocode), no new panel |
-| F33 | P3 | fixed | Owner review: page ids clipped (`C…`), small labels and ticks | L2 grid 4 columns, 10.5px cells, 8.5px chart ticks, wrapping metric labels; automated clipped-cell count is 0 in all 37 captures |
+| F33 | P3 | fixed | Owner review: page ids clipped (`C…`), small labels and ticks | L2 grid 4 columns, 10.5px cells, 8.5px chart ticks, wrapping metric labels; automated clipped-cell count is 0 in all 30 captures |
 | F34 | P3 | fixed | Owner review: dark cost chart had a large pale shaded zone | The zone now uses an explicit light/dark fill pair |
 | F35 | P2 | fixed | Owner review: the chapter explained only Mooncake's L3 usage, and "Mooncake L3" is too narrow a system name | Renamed to "Mooncake" with the subtitle "KVCache-centric serving"; four sections: architecture/scheduling, tier scope, store hit path, economics |
 | F36 | P2 | fixed | Owner review: Mooncake's own principles were missing (placement, chunked prefill, early rejection) | Added §1: one request walk with long/short/overload cases and reuse-vs-TTFT placement; the model asserts the chosen group, CPP stages and rejection |
@@ -85,6 +85,7 @@ The matrix is rendered evidence, not a claim that every combination was inspecte
 | F47 | P2 | fixed | Owner asked whether the architecture came from the paper or the actual code | Spot-checked `kvcache-ai/Mooncake@504f2ae`: the Conductor is a prefix-index service (no scheduler source), the paper's CPP prefill pool has no source tree, Store exposes PutStart/PutEnd and a read lease, and TE selects transports by topology; the page's evolution note now says this explicitly |
 | F48 | P2 | fixed | Owner set the rule that source code outranks docs and paper when it exists | Source precedence added to the skill; Mooncake now labels §1 as the paper's design (no scheduler/CPP source) and §2 with the pinned store revision (GetReplicaList / PutStart / PutEnd, TE direct read) |
 | F49 | P2 | fixed | Owner asked to change the architecture to today's implementation, not only the paper design | Section 1 now carries a source-level stack strip: router (vLLM/SGLang) → prefix-index Conductor → engine (prefill/decode), with TE/Store/PG/EP as the substrate and a note that the paper's scheduler and CPP pool are not in the repository |
+| F50 | P1 | fixed | Owner rejected keeping the paper architecture as the default view once the system is implemented | Section 1 now draws only the implemented stack at 504f2ae (router -> prefix-index Conductor -> engine, TE/Store/PG/EP); the paper's scheduler and CPP pool appear only as a one-line boundary; the four-lens paper model, tests and share config were removed |
 
 Independent review: `independent-review.md` (state and disposition of every reviewer finding).
 

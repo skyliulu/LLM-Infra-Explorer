@@ -12,6 +12,8 @@ For behavior, **pinned source code outranks documentation, and documentation out
 
 When code and paper/docs diverge, teach the code and note the divergence and the version. Record the evidence level in the claim row; “the paper says” is not a substitute for a source check when the source exists.
 
+**The architecture is the implemented one.** When the subject system has an implementation, the chapter's architecture view is the implemented stack, not the paper's design. A paper mechanism absent from the implementation is not part of the architecture: mention it only as an explicitly unimplemented boundary, and never as the primary canvas or the default reading path. “There is no source for this one mechanism” does not license making it the system's architecture.
+
 ## Choose the evidence level for the claim
 
 Primary papers can establish a mathematical algorithm and design motivation. Official architecture documents can establish a deployment design. Claims about actual allocation, tensor layout/dtype, routing, buffer use, dispatch, synchronization, state updates or implemented constraints require the matching implementation source. A README feature list, kernel name or plausible pseudocode is insufficient.

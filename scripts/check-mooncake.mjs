@@ -17,7 +17,6 @@ import {
   pageSegments,
   simulateTrace,
 } from '../src/components/mooncake/model.js';
-import {CHUNK_MS, CHUNK_TOKENS, PREFILL_NODES, SLO_MS, deriveArchitectureState} from '../src/components/mooncake/serving.js';
 
 // --- Sizes anchor on the documented 40 GB / 128k-token LLaMA3-70B figure -----
 assert.equal(PAGE_BYTES, 20 * 2 ** 20, 'one 64-token page is 20 MiB');
@@ -160,41 +159,4 @@ assert.ok(hit.segmentAll.length >= hit.objects.length);
 assert.equal(hit.segmentMore, hit.segmentAll.length - hit.objects.length);
 assert.ok(hit.l2Slots.includes('S0'));
 
-// --- Mooncake architecture: four difficulties --------------------------------
-const prefill = deriveArchitectureState({challenge: 'prefill', policy: 'reuse', step: 7});
-const transfer = deriveArchitectureState({challenge: 'transfer', policy: 'reuse', step: 7});
-const longReuse = deriveArchitectureState({challenge: 'placement', policy: 'reuse', step: 7});
-const longSlo = deriveArchitectureState({challenge: 'placement', policy: 'slo', step: 7});
-const overload = deriveArchitectureState({challenge: 'overload', policy: 'reuse', step: 4});
-assert.equal(prefill.chosen.id, 'A');
-assert.ok(Math.abs(prefill.budget.singleNodeMs - (4096 / 11000) * 1000) < 1e-9, 'single-node prefill time');
-assert.ok(Math.abs(prefill.budget.cppMs - prefill.chosen.stages * CHUNK_MS) < 1e-9, 'pipeline time uses stages');
-assert.equal(prefill.budget.peakFullBytes, 16384 * KV_BYTES_PER_TOKEN);
-assert.equal(prefill.budget.peakChunkBytes, 1024 * KV_BYTES_PER_TOKEN);
-assert.ok(prefill.budget.savedByCpp > 180 && prefill.budget.savedByCpp < 190, 'CPP saves about half a single-node prefill');
-assert.ok(transfer.budget.tcpLoadMs > 10 * transfer.budget.loadMs, 'TCP is far slower than RDMA');
-assert.ok(transfer.budget.tcpStreamMs > 10 * transfer.budget.streamMs);
-assert.equal(longReuse.chosen.id, 'A', 'reuse preference picks the longest prefix');
-assert.equal(longSlo.chosen.id, 'B', 'TTFT preference avoids the hot queue');
-assert.ok(longReuse.chosen.ttft > SLO_MS, 'the reuse choice misses the SLO on this case');
-assert.ok(longSlo.chosen.ttft <= SLO_MS, 'the TTFT choice meets the SLO');
-assert.equal(longReuse.reason, 'reuse');
-assert.equal(longSlo.reason, 'slo');
-assert.equal(overload.admitted, false, 'overload rejects early');
-assert.equal(overload.reason, 'overload');
-assert.equal(overload.limit, 4, 'overload stops before prefill');
-assert.ok(overload.saved.prefillMs > 0, 'rejection saves prefill work');
-assert.equal(prefill.limit, 7);
-for (const state of [prefill, transfer, longReuse, longSlo, overload]) {
-  for (const candidate of state.candidates) {
-    assert.equal(candidate.chunks, Math.ceil(candidate.compute / CHUNK_TOKENS));
-    assert.equal(candidate.stages, Math.ceil(candidate.chunks / PREFILL_NODES));
-    assert.ok(candidate.hit + candidate.compute === state.prompt);
-    assert.ok(candidate.ttft > candidate.prefillMs);
-  }
-}
-const clampedServing = deriveArchitectureState({challenge: 'prefill', policy: 'reuse', step: 99});
-assert.equal(clampedServing.step, clampedServing.limit);
-assert.equal(clampedServing.phase, 'done');
-assert.equal(deriveArchitectureState({challenge: 'nope', policy: 'nope'}).challenge, 'prefill');
-console.log('Mooncake architecture and pool model: sizes, 48-request trace, capacity invariants, cross-instance shared page, hit path, serving placement, policy gate and break-even boundaries pass.');
+console.log('Mooncake pool model: sizes, 48-request trace, capacity invariants, cross-instance shared page, hit path, serving placement, policy gate and break-even boundaries pass.');
