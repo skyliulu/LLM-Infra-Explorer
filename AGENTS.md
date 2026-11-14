@@ -125,6 +125,12 @@ For technical principles and chapter design, use `.agents/skills/analyze-technic
 
 Before delivering any new or revised chapter, the owner automatically performs the rendering skill's `references/reader-review.md` pass: personally read the actual page continuously from first screen to footer, explore important branches and returns, and reconstruct the answer from visible content. Record the reading path and friction. Repair substantive gaps and reread within the existing authorization; do not wait for a user reminder. Independent review, test matrices and successful builds cannot replace or waive this owner gate. Small repairs keep a short record; assessment-only and skill-only requests retain their scope.
 
+### Skill 编写与自我改进
+
+- 编写或迭代 Skill 时，提炼可迁移的判断方法与验收标准：从具体失败中识别适用条件、被破坏的约束、决策原则和可观察的验证方式，不直接把某次修复方案升级为通用规则。
+- 不将特化案例、项目名、临时配置、固定数值、单次排障过程或复盘日志堆入可复用 Skill；这些证据留在项目的设计或验收记录中。确属该 Skill 领域契约的接口、格式与来源可以保留，但须明确适用范围。
+- 自我改进优先修订已有原则并消除重复、冲突和过时约束。检查新规则能否用于不同主题，以及是否会损害已经做好的体验；不要把一种页面布局、交互形式或实现选择规定为所有任务的默认答案。
+
 ### Deployment
 
 GitHub Actions (`.github/workflows/deploy.yml`) builds and deploys to GitHub Pages on every push to `main`. The Vite base path is relative (`./`) so the build works at any deployment path.

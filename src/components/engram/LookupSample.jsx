@@ -14,7 +14,7 @@ export default function LookupSample({lang}){
  const [query,setQuery]=useExperimentState('Engram.sampleQuery','aligned');
  const [selected,setSelected]=useState(0),m=deriveEngramSample({preset,query});
  return <section className="mb-5 w-full min-w-0 rounded-xl border border-indigo-200 bg-indigo-50/40 p-3 text-slate-700" data-testid="engram-sample">
-  <h3 className="text-sm font-bold text-indigo-900" data-section-anchor="engram-sample">{t('title')}</h3><p className="my-2 text-xs leading-relaxed text-slate-600">{t('scope')}</p>
+  <h3 className="text-sm font-bold text-indigo-900">{t('title')}</h3><p className="my-2 text-xs leading-relaxed text-slate-600">{t('scope')}</p>
   <div className="mb-3 flex flex-wrap items-center gap-2"><span className="text-xs font-semibold">{t('input')}</span>{['base','collision'].map(id=><button key={id} aria-pressed={preset===id} onClick={()=>setPreset(id)} className={`rounded border px-2 py-1 text-xs ${preset===id?'border-indigo-500 bg-indigo-100 text-indigo-900':'border-slate-300 bg-white'}`}>{t(id)}</button>)}<MathFormula>{tuple(m.ids)}</MathFormula></div>
   <div className="mb-3 overflow-x-auto text-xs text-slate-600"><p>{t('hashOrder')}</p><MathFormula>{`(${m.ids[2]}\\times3)\\oplus(${m.ids[1]}\\times5)=${m.heads[0].mix},\\quad ${m.heads[0].mix}\\oplus(${m.ids[0]}\\times7)=${m.heads[2].mix}`}</MathFormula></div>
   <div className="grid gap-4 xl:grid-cols-[1.1fr_1fr]">

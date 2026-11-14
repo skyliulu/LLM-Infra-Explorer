@@ -6,7 +6,7 @@ import {
   Database, Cpu, Combine, Hash, ArrowRight, ArrowDown, ArrowUp, ArrowLeft,
   Layers, BrainCircuit, Play, Pause, SkipForward, RotateCcw,
   Activity, SlidersHorizontal, BookOpen, Server, Network,
-  Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2, } from 'lucide-react';
+  Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2, ChevronDown, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import LookupSample from './engram/LookupSample';
 import {
@@ -29,6 +29,8 @@ const i18n = {
     completed: "已完成",
     replay: "重新播放",
     langToggle: "EN",
+    sampleSummary: "补充实验：算一遍检索与门控",
+    sampleHint: "看完主图后，可展开小数值例子核对查表、碰撞和门控。",
     topoTitle: "网络拓扑结构",
     flowTitle: "Engram微观张量流图",
     codeTitle: "Demo 对齐",
@@ -142,6 +144,8 @@ const i18n = {
     phase3: "阶段 3",
   },
   en: {
+    sampleSummary: "Optional experiment: calculate retrieval and gating",
+    sampleHint: "After the main diagram, explore a small example of lookup, collisions and gating.",
     title: "DeepSeek Engram Architecture",
     subtitle: "Conditional Memory Retrieval, Micro Tensor Flow & System Data Movement",
     reset: "Reset",
@@ -677,7 +681,6 @@ const App = () => {
              <div className="flex items-center gap-1.5"><span className="bg-slate-800 text-white px-1 rounded text-[9px]">Vocab</span> {t('hashSize')}</div>
            </div>
 
-           <LookupSample lang={lang}/>
            <div className="flex-1 flex flex-col items-center relative w-full min-w-[700px]">
              {/* ======================================================= */}
              {/* [层层下落] 1：Tokenizer 压缩与滑动窗口 */}
@@ -1293,6 +1296,18 @@ const App = () => {
               </div>
            </div>
         </div>
+
+        <details className="group mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm" data-testid="engram-sample-disclosure">
+          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl p-4 text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 [&::-webkit-details-marker]:hidden">
+            <Calculator size={18} className="shrink-0 text-indigo-500" />
+            <div className="min-w-0 flex-1">
+              <h2 data-section-anchor="engram-sample" className="text-sm font-semibold">{t('sampleSummary')}</h2>
+              <p className="mt-1 text-xs leading-relaxed text-slate-500">{t('sampleHint')}</p>
+            </div>
+            <ChevronDown size={18} className="shrink-0 transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="border-t border-slate-200 p-3 md:p-4"><LookupSample lang={lang}/></div>
+        </details>
 
       </div>
     </div>

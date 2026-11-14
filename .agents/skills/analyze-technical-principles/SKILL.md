@@ -37,6 +37,8 @@ For each central mechanism, hand off the **object and shared input → transform
 
 Keep two compatible paths: a continuous default argument that reaches the answer, and local exploration that reveals the necessary internal evidence without losing the parent. Assign each section one engineering question; put implementation provenance and repeated qualifications in context instead of making every section follow the same summary template. For Chinese, prefer concrete mechanism headings and object/action sentences. Depth is the ability to predict behavior at a boundary, not the number of details included. These are handoff criteria, not a requirement for a fixed card count, timeline, article layout or animation.
 
+Before adding depth to an existing explanation, classify its role: necessary causal reasoning, supporting evidence, or optional verification. Research completeness and implementation fidelity do not require equal prominence for every verified detail. Keep indispensable mechanisms on the default path; place secondary material where its prerequisites and parent relationship are clear. Evaluate the addition against the whole reader journey: does it strengthen the argument, or replace the organizing idea with a detour? Choose the presentation from that role rather than prescribing one disclosure pattern for all topics.
+
 ## Decide chapter ownership before experiments
 
 Make a small table: concept, role in this system, depth here, owning chapter, and reason. Use three editorial decisions:

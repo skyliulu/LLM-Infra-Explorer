@@ -18,6 +18,12 @@ Look for these demonstrated failure modes:
 
 Judge these against the chapter's actual teaching claim. A structural selector or count-only experiment can be sufficient when that relationship is the learning object; this pass does not require animation, a simulation or more controls in every section.
 
+## Check the cost of an addition to the whole experience
+
+For repairs and extensions, compare the same viewport and representative state with the baseline. Check what occupies the first useful screen, how far the reader travels to reach the primary mechanism, whether its connected objects remain visible together, and whether existing controls still act near their subjects. A correct, responsive new panel can still degrade the chapter by interrupting the argument or stretching its layout; passing local checks does not establish that the addition belongs there.
+
+Separate necessary explanation from optional verification. Keep the causal reasoning required for the chapter's answer on the default path. Introduce supplementary detail after its prerequisites and preserve a clear return to its parent; choose inline, drill-down, disclosure or another placement from the relationship being taught. Do not hide essential reasoning merely to reduce clutter, or turn one successful repair pattern into a universal layout rule. Record the experience before and after, including the default path without opening extras and the return after exploring them.
+
 ## Do not pass a readable summary as a demonstrated explanation
 
 Judge **narrative comprehension** and **the promised visual/interactive explanation** separately; both must meet the user's contract. An expert can paraphrase a paragraph that names the cause without the artifact making that cause understandable. For each central mechanism, identify what the reader actually observes, what changes and why, and which part is merely assumed, preset or stated in prose. If the user asked to understand that mechanism through interaction and it remains an assertion next to changing counts, that is a central P2 gap, not a P3 polish item. A scope disclaimer or correct arithmetic does not repair the missing explanation.

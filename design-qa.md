@@ -1,5 +1,12 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-14 — Engram supplementary detail no longer displaces the primary flow
+
+- User rejected the numerical example's impact on the overall viewing experience. The previous local correctness and viewport checks missed a reading-path regression: supplementary tables occupied the main tensor-flow entry and delayed the connected diagram.
+- Restored the original continuous primary diagram; moved numerical verification to a separate, initially collapsed supplement after the mathematical explanation. Owner reread the actual default page to its footer and tested entering/returning from the supplement without resetting the main `hash` step. Collision + orthogonal query still yields gate .500.
+- Focused checks: six actual width/language cases (Chinese Dark, English Light at 390/768/1440), no page overflow or KaTeX errors; default desktop and open mobile inspected. Model, build and required conventions pass. Exact coverage, screenshots and screenshot timeout limitation: `docs/audits/engram-reading-flow-2026-11-14/review.md`.
+- Both teaching Skills now use general content-role and whole-experience comparison criteria, without embedding this case or prescribing disclosure everywhere. AGENTS requires transferable methods for Skill authoring/self-improvement; cases remain in project audit records. No publish in this pass.
+
 ### 2026-11-14 — Six focused chapter repairs after source-fidelity review
 
 - Kept existing chapter regions and learning order. LLM Inference now computes one coherent synthetic model through attention, Dense/Top-2 MoE, LM Head and seeded sampling feedback. Flash V1 backward preserves dP → dS → dQ/dK; V3 has separate K/V readiness, rescaling, final PV and wait/commit while retaining valid overlap. DPA separates current Decode length 1 from KV history. Engram adds an actual reduced lookup/gate example; GLA distinguishes the general dual-axis form from the paper's beta=1/rank-16-alpha parameterization. Speculative only repairs the stale reading-order selector.

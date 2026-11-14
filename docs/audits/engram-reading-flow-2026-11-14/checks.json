@@ -1,0 +1,50 @@
+[
+  {
+    "client": 375,
+    "errors": 0,
+    "open": true,
+    "page": 375,
+    "width": 390,
+    "language": "zh"
+  },
+  {
+    "client": 375,
+    "errors": 0,
+    "open": true,
+    "page": 375,
+    "width": 390,
+    "language": "en"
+  },
+  {
+    "client": 753,
+    "errors": 0,
+    "open": true,
+    "page": 753,
+    "width": 768,
+    "language": "zh"
+  },
+  {
+    "client": 753,
+    "errors": 0,
+    "open": true,
+    "page": 753,
+    "width": 768,
+    "language": "en"
+  },
+  {
+    "client": 1425,
+    "errors": 0,
+    "open": true,
+    "page": 1425,
+    "width": 1440,
+    "language": "zh"
+  },
+  {
+    "client": 1425,
+    "errors": 0,
+    "open": true,
+    "page": 1425,
+    "width": 1440,
+    "language": "en"
+  }
+]
