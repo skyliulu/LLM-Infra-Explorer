@@ -185,3 +185,18 @@ Researched 2026-11-14 against the sources below. Claim IDs are referenced by
 - Model: section 1's design-alternative note (monolithic vs chunked-in-decode vs disaggregated) and
   the stated price: cross-node KV movement and harder scheduling.
 - Boundary: the comparison is qualitative; no benchmark is claimed for the alternatives here.
+
+
+### C17 — Code spot-check of the open-source stack
+- Revision: `kvcache-ai/Mooncake` at `504f2ae` (main, cloned 2026-11-14, sparse checkout of
+  `mooncake-conductor`, `mooncake-store`, `mooncake-transfer-engine`).
+- Facts checked: `mooncake-conductor/include/conductor/prefixindex/prefix_indexer.h` and
+  `client/types.h` expose a prefix index / `longest_match_tokens`; there is no scheduler or prefill
+  pool source tree (the full `ls-tree` contains only docs for disagg prefill). `mooncake-store/include/
+  master_client.h` defines `PutStart`/`PutEnd` and `lease.h` a read lease; the master service owns
+  allocation/metadata. `mooncake-transfer-engine/include/topology.h` and `multi_transport.h`
+  (`selectTransport`) implement topology-aware transport selection.
+- Teaching mapping: the evolution note now says the paper's Conductor scheduler and CPP prefill pool
+  have no source tree in the open repo; only the prefix index, TE, Store and PG/EP are open.
+- Boundary: this is a spot-check of the named files, not a line-by-line trace of the page's
+  pseudocode; the page's store steps are a teaching simplification.

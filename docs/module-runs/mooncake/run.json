@@ -25,7 +25,7 @@
     "../../../src/components/MooncakeL3.jsx": "3f2f5763b3d81d39e8aae6c72cbd040e57eb27856f57705e501011a9f393e3bd",
     "../../../src/components/mooncake/model.js": "1845e348f38ee4019ad676992f8198a3d6095907c0b7919cba28caca322fd3e5",
     "../../../src/components/mooncake/serving.js": "6ee54c192e799e6d6cde8a08d2e7a892213fa93d6572e9d98742da2e07a1f7fe",
-    "../../../src/components/mooncake/content.js": "7eba617d2162f3e9a24cdbb3e82a834c9f680602e558f011e82bfa4e3d787d2e",
+    "../../../src/components/mooncake/content.js": "ed1ce67fab8a55854bfad82aefb8f27ec256a5502a9413eb49e0ec1626db3306",
     "../../../src/components/mooncake/format.js": "c7bccd01cd070cabf58afc396b0106d1d7a8897001b50472f0362e302f35d69e",
     "../../../src/components/mooncake/ServingArchitecture.jsx": "11e8c65d037fada2bde5bd8d4dc98cd4f618e591ea2c7ef1b932ba838e332028",
     "../../../src/components/mooncake/TierCanvas.jsx": "6bf46cd8711e60013d86863d57550b1356457104c3ef9c02cbac6c748f8cc40e",
@@ -44,7 +44,7 @@
     "../../../scripts/check-workbench-sharing.mjs": "1d004d8ec6cc0813c2fd28bc9ac1ec14f176b4ef4144a322a0ba62f866dff137",
     "../../../package.json": "a36960bc232843b16a490e61217e3e9617efcb88dbae66f47a828eb634e01fd3"
   },
-  "snapshotAt": "2026-11-14T12:37:30.905Z",
+  "snapshotAt": "2026-11-14T12:55:38.544Z",
   "artifacts": [
     {
       "id": "brief",
@@ -414,9 +414,9 @@
     },
     {
       "id": "C12",
-      "statement": "The drawn architecture is the paper’s serving form: Conductor picks a prefill group and a decode instance, the prefill request carries prefix and full-cache block IDs, KV streams layer by layer, and the decode scheduler double-checks TBT. The current open-source stack puts a router above a prefix-index Conductor, with TE/Store/PG/EP below.",
+      "statement": "The drawn architecture is the paper’s serving form: Conductor picks a prefill group and a decode instance, the prefill request carries prefix and full-cache block IDs, KV streams layer by layer, and the decode scheduler double-checks TBT. In the open-source repo at 504f2ae there is no scheduler or CPP prefill source: Conductor is a prefix index, and TE/Store/PG/EP sit underneath.",
       "source": "https://arxiv.org/abs/2407.00079",
-      "locator": "Paper section 3 (workflow, block IDs, double-check), section 5, section 6; Mooncake architecture docs (Conductor prefix index, TE/Store/PG/EP)",
+      "locator": "Paper sections 3, 5, 6 and 7; Mooncake architecture docs; code spot-check at kvcache-ai/Mooncake 504f2ae (mooncake-conductor/prefixindex, mooncake-store/master_client.h, mooncake-transfer-engine/topology.h)",
       "boundary": "Numbers are readout assumptions, not measurements; the page says so under the budget.",
       "model": "Section 1 interface labels and the evolution note; the request walk",
       "trigger": "Read the section lead, interface labels and evolution note",
@@ -506,7 +506,7 @@
       "id": "research",
       "kind": "research",
       "status": "passed",
-      "startedAt": "2026-11-14T12:39:52.288Z",
+      "startedAt": "2026-11-14T12:58:29.531Z",
       "artifactIds": [
         "research",
         "brief",
@@ -518,7 +518,7 @@
       "id": "model",
       "kind": "model",
       "status": "passed",
-      "startedAt": "2026-11-14T12:37:33.944Z",
+      "startedAt": "2026-11-14T12:55:41.283Z",
       "artifactIds": [
         "model-log"
       ],
@@ -529,7 +529,7 @@
       "id": "conventions",
       "kind": "conventions",
       "status": "passed",
-      "startedAt": "2026-11-14T12:37:33.982Z",
+      "startedAt": "2026-11-14T12:55:41.327Z",
       "artifactIds": [
         "conventions-log"
       ],
@@ -540,7 +540,7 @@
       "id": "build",
       "kind": "build",
       "status": "passed",
-      "startedAt": "2026-11-14T12:37:38.561Z",
+      "startedAt": "2026-11-14T12:55:45.870Z",
       "artifactIds": [
         "build-log"
       ],
@@ -551,7 +551,7 @@
       "id": "integration",
       "kind": "integration",
       "status": "passed",
-      "startedAt": "2026-11-14T12:37:38.950Z",
+      "startedAt": "2026-11-14T12:55:46.282Z",
       "artifactIds": [
         "integration-log"
       ],
@@ -562,7 +562,7 @@
       "id": "browser",
       "kind": "browser",
       "status": "passed",
-      "startedAt": "2026-11-14T12:39:46.235Z",
+      "startedAt": "2026-11-14T12:58:25.827Z",
       "artifactIds": [
         "shot-tiers-end",
         "shot-round5",
@@ -583,7 +583,7 @@
       "id": "visual",
       "kind": "visual",
       "status": "passed",
-      "startedAt": "2026-11-14T12:39:46.235Z",
+      "startedAt": "2026-11-14T12:58:25.827Z",
       "artifactIds": [
         "shot-full",
         "shot-dark-tiers",
@@ -602,7 +602,7 @@
       "id": "reader",
       "kind": "reader",
       "status": "passed",
-      "startedAt": "2026-11-14T12:39:52.287Z",
+      "startedAt": "2026-11-14T12:58:29.531Z",
       "artifactIds": [
         "reader-review",
         "shot-full",
@@ -633,7 +633,7 @@
         "English, Dark, 900 and 390 widths",
         "Footer and evidence list"
       ],
-      "retelling": "Mooncake separates prefill, decode and KV storage; that creates four difficulties. The prefill request carries the raw input, prefix block IDs and full-cache block IDs; the decode scheduler double-checks TBT. A 16K prefill would take about 372 ms and hold 5.37 GB on one node, so it is chunked over two prefill nodes (186 ms) with layer-wise load/store, resident KV near 320 MiB per chunk. A 12K prefix needs 4.03 GB loaded and 1.34 GB streamed; the paper calls the service Messenger, the open-source implementation is Transfer Engine, and registered-memory RDMA makes that about 21 + 7 ms instead of 322 + 107 ms on TCP. Placement is a tradeoff: A reuses 12,288 but queues 120 ms and predicts 328 ms, over the 300 ms SLO, while B gives up 1,024 tokens of reuse to land at 300 ms. Under overload both predictions miss the SLO, so the request is rejected before prefill, saving 186 ms and 5.37 GB. The Store serves a fetch through a metadata-only master, registered memory and PutEnd; as HiCache L3 it holds the shared pool where the L2-only hit rate decays. Reuse pays when per-token transfer beats compute: about 10 tokens, 256 tokens as policy, 3.9 GB/s floor. The page draws the paper’s serving form; today’s stack is a prefix-index Conductor plus TE/Store/PG/EP, and the budget note labels the readout assumptions. The design comparison is a collapsed disclosure; opening it shows the monolithic and chunked-in-decode alternatives and the price of separation.",
+      "retelling": "Mooncake separates prefill, decode and KV storage; that creates four difficulties. The prefill request carries the raw input, prefix block IDs and full-cache block IDs; the decode scheduler double-checks TBT. A 16K prefill would take about 372 ms and hold 5.37 GB on one node, so it is chunked over two prefill nodes (186 ms) with layer-wise load/store, resident KV near 320 MiB per chunk. A 12K prefix needs 4.03 GB loaded and 1.34 GB streamed; the paper calls the service Messenger, the open-source implementation is Transfer Engine, and registered-memory RDMA makes that about 21 + 7 ms instead of 322 + 107 ms on TCP. Placement is a tradeoff: A reuses 12,288 but queues 120 ms and predicts 328 ms, over the 300 ms SLO, while B gives up 1,024 tokens of reuse to land at 300 ms. Under overload both predictions miss the SLO, so the request is rejected before prefill, saving 186 ms and 5.37 GB. The Store serves a fetch through a metadata-only master, registered memory and PutEnd; as HiCache L3 it holds the shared pool where the L2-only hit rate decays. Reuse pays when per-token transfer beats compute: about 10 tokens, 256 tokens as policy, 3.9 GB/s floor. The page draws the paper’s serving form; the open-source repo has no scheduler or CPP prefill source, only a prefix-index Conductor plus TE/Store/PG/EP, and the budget note labels the readout assumptions. The design comparison is a collapsed disclosure; opening it shows the monolithic and chunked-in-decode alternatives and the price of separation.",
       "frictions": [
         "The queue, SLO and budget numbers are readout assumptions; the budget note says so.",
         "The page draws the paper’s serving form; today’s open-source stack differs and the evolution note lists it.",
@@ -1009,6 +1009,16 @@
       "status": "fixed",
       "description": "The design-alternative note occupied four lines on the default path; it is now a one-line disclosure that opens on demand.",
       "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F35",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The page’s boundary said the open-source stack differs but not that the paper’s Conductor scheduler and CPP prefill pool have no source tree in the repository.",
+      "checkIds": [
+        "model",
         "browser"
       ]
     }
