@@ -408,9 +408,27 @@
 .mk-node.on{border-color:#6366f1;background:#eef2ff;box-shadow:inset 0 0 0 1px #6366f1}
 .mk-node b{font-size:12.5px}
 .mk-node small{font-size:9.5px;color:#64748b}
-.mk-stack-flow .mk-node{flex:1 1 200px}
+.mk-stack-flow .mk-node{flex:1 1 0}
 .mk-inspect{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin-top:10px;padding:7px 9px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;font-size:10.5px;line-height:1.45}
 .mk-inspect b{font-size:11.5px}
 .mk-inspect span{display:flex;gap:5px;align-items:baseline}
 .mk-inspect i{font-style:normal;font-size:9px;color:#64748b}
 .mk-cap{font-size:9.5px}
+/* Request path: step detail and pseudocode beside the map */
+.mk-step-count{font-size:10px;color:#64748b;font-variant-numeric:tabular-nums}
+.mk-stack-lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:10px;align-items:start;margin-top:8px}
+.mk-stack-side{min-width:0}
+.mk-stack-side h3{font-size:12px;margin:2px 0 5px}
+.mk-step-detail{display:grid;gap:3px;margin:0 0 7px}
+.mk-step-detail>div{display:grid;grid-template-columns:72px minmax(0,1fr);gap:6px;font-size:10.5px;line-height:1.45}
+.mk-step-detail dt{color:#64748b;font-weight:650}
+.mk-step-detail dd{margin:0;color:#334155}
+.mk-code{background:#0d1117;border-radius:6px;padding:6px 8px;margin:0;font-size:9.5px;line-height:1.6;color:#cbd5e1;overflow:auto}
+.mk-code>div{display:grid;grid-template-columns:16px minmax(0,1fr);gap:6px}
+.mk-code>div i{color:#475569;font-style:normal;text-align:right}
+.mk-code>div.on{background:#1e293b;box-shadow:inset 2px 0 0 #818cf8;color:#e2e8f0}
+.mk-node.active{border-color:#f59e0b;box-shadow:inset 0 0 0 1px #f59e0b}
+.mk-stack-link.on span{color:#b45309;font-weight:650}
+.mk-stack-link.on i{color:#f59e0b}
+@media(max-width:900px){.mk-stack-lower{grid-template-columns:1fr}}
+.mk-node>.mk-plane{justify-self:start}

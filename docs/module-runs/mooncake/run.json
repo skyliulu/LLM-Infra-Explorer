@@ -24,13 +24,14 @@
   "inputs": {
     "../../../src/components/MooncakeL3.jsx": "b6bc69819e3bc802d365c39f80358887a75798c5280242d127d8bebcda41d9ce",
     "../../../src/components/mooncake/model.js": "1845e348f38ee4019ad676992f8198a3d6095907c0b7919cba28caca322fd3e5",
-    "../../../src/components/mooncake/content.js": "1188c1a207b9a4c5707e04c96c47f1a5ce9ce7b6e5b6d28d8bc10669ddb09978",
+    "../../../src/components/mooncake/stack.js": "40e0b384c7b2fb1ed840d0e505a25981dac2c41442653fd8420383ed9c295a6c",
+    "../../../src/components/mooncake/content.js": "2c7d18a710c3aa1b443d7c53cc0103e57c153e18fabdd8f1f79abeac1c33d2f1",
     "../../../src/components/mooncake/format.js": "c7bccd01cd070cabf58afc396b0106d1d7a8897001b50472f0362e302f35d69e",
-    "../../../src/components/mooncake/ServingArchitecture.jsx": "51c009b879b4e6296858c357bcbe5d7c6c55536217be670a9ec11ca3ba740c0a",
+    "../../../src/components/mooncake/ServingArchitecture.jsx": "2630c06c6b1fbb0a4a515d57fda04557fc91278588eee7d57d6cf4ecd09a56ce",
     "../../../src/components/mooncake/TierCanvas.jsx": "6bf46cd8711e60013d86863d57550b1356457104c3ef9c02cbac6c748f8cc40e",
     "../../../src/components/mooncake/HitPath.jsx": "66263b9f1eb4ea55ab7cab5f78fbd8389afa53b2169e680ab40f32cb94166f78",
     "../../../src/components/mooncake/Economics.jsx": "9e501f1732bf5bdec9bc3e576b967b2b514e59a80a7cb78fc091594716a6618a",
-    "../../../src/components/mooncake/mooncake.css": "0a94a79830176dcd05ec1cf92258f6c1c1f812781f111d5142a51e34a01ad4f2",
+    "../../../src/components/mooncake/mooncake.css": "c9fb435aeda55e1737fd32449ea2e84dd35bf57880117d0e4ce2c730698d5a61",
     "../../../src/components/workbench.css": "157084f682490c66b3b0752804a55668c96de2ee54f9a6c2c8dbe9f78939d916",
     "../../../src/lib/chapter-registry.js": "6c2ee20013a1377e83e739d46cb53846da219ef2827b037cceae77aba9bcd3a7",
     "../../../src/lib/chapter-learning.js": "c2ef57c99b28dd9dd4f5cc9c2851b561e53497ca4e6ab9d07311123cade0df5e",
@@ -43,7 +44,7 @@
     "../../../scripts/check-workbench-sharing.mjs": "d0a1c72aa33fbd8c4ba95c88b29047dc06884f6d4c4227d4bfe8ff8f29667837",
     "../../../package.json": "a36960bc232843b16a490e61217e3e9617efcb88dbae66f47a828eb634e01fd3"
   },
-  "snapshotAt": "2026-11-14T13:31:00.525Z",
+  "snapshotAt": "2026-11-14T14:15:09.502Z",
   "artifacts": [
     {
       "id": "brief",
@@ -224,6 +225,11 @@
       "id": "shot-arch-store",
       "kind": "screenshot",
       "path": "evidence/zh-light-1440-arch-store.png"
+    },
+    {
+      "id": "shot-arch-step5",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch-step5.png"
     }
   ],
   "claims": [
@@ -317,8 +323,8 @@
       "source": "https://github.com/kvcache-ai/Mooncake/tree/504f2ae",
       "locator": "mooncake-conductor/include/conductor/prefixindex; mooncake-store/include/master_client.h; mooncake-transfer-engine/include/topology.h; mooncake-pg, mooncake-ep",
       "boundary": "Component-level; the engine-specific routing call is not shown.",
-      "model": "Section 1 interactive stack map and node inspector",
-      "trigger": "Read section 1 and click a node",
+      "model": "Section 1 map, step detail, pseudocode and node inspector",
+      "trigger": "Play the seven-step path or click a node",
       "expected": "The reader can name the router, prefix-index Conductor, engine, TE, Store and PG/EP, and knows which layer is missing from the repo",
       "checkIds": [
         "model",
@@ -408,6 +414,14 @@
       "checkIds": [
         "browser"
       ]
+    },
+    {
+      "id": "J6",
+      "action": "Play the architecture path to step 5",
+      "expected": "Transfer Engine becomes active, the detail shows the client/TE load, and the pseudocode highlights the BatchTransfer line",
+      "checkIds": [
+        "browser"
+      ]
     }
   ],
   "checks": [
@@ -415,7 +429,7 @@
       "id": "research",
       "kind": "research",
       "status": "passed",
-      "startedAt": "2026-11-14T13:32:52.226Z",
+      "startedAt": "2026-11-14T14:17:04.178Z",
       "artifactIds": [
         "research",
         "brief",
@@ -427,7 +441,7 @@
       "id": "model",
       "kind": "model",
       "status": "passed",
-      "startedAt": "2026-11-14T13:31:04.145Z",
+      "startedAt": "2026-11-14T14:15:12.214Z",
       "artifactIds": [
         "model-log"
       ],
@@ -438,7 +452,7 @@
       "id": "conventions",
       "kind": "conventions",
       "status": "passed",
-      "startedAt": "2026-11-14T13:31:04.190Z",
+      "startedAt": "2026-11-14T14:15:12.260Z",
       "artifactIds": [
         "conventions-log"
       ],
@@ -449,7 +463,7 @@
       "id": "build",
       "kind": "build",
       "status": "passed",
-      "startedAt": "2026-11-14T13:31:08.899Z",
+      "startedAt": "2026-11-14T14:15:18.277Z",
       "artifactIds": [
         "build-log"
       ],
@@ -460,7 +474,7 @@
       "id": "integration",
       "kind": "integration",
       "status": "passed",
-      "startedAt": "2026-11-14T13:31:09.307Z",
+      "startedAt": "2026-11-14T14:15:18.801Z",
       "artifactIds": [
         "integration-log"
       ],
@@ -471,7 +485,7 @@
       "id": "browser",
       "kind": "browser",
       "status": "passed",
-      "startedAt": "2026-11-14T13:32:49.422Z",
+      "startedAt": "2026-11-14T14:17:01.389Z",
       "artifactIds": [
         "shot-arch",
         "shot-arch-dark",
@@ -487,14 +501,15 @@
         "shot-cost-slow",
         "shot-share-open",
         "shot-share-load",
-        "shot-arch-store"
+        "shot-arch-store",
+        "shot-arch-step5"
       ]
     },
     {
       "id": "visual",
       "kind": "visual",
       "status": "passed",
-      "startedAt": "2026-11-14T13:32:49.422Z",
+      "startedAt": "2026-11-14T14:17:01.389Z",
       "artifactIds": [
         "shot-full",
         "shot-arch",
@@ -510,14 +525,15 @@
         "shot-390-hit",
         "shot-390-cost",
         "shot-en-390",
-        "shot-arch-store"
+        "shot-arch-store",
+        "shot-arch-step5"
       ]
     },
     {
       "id": "reader",
       "kind": "reader",
       "status": "passed",
-      "startedAt": "2026-11-14T13:32:52.225Z",
+      "startedAt": "2026-11-14T14:17:04.178Z",
       "artifactIds": [
         "reader-review",
         "shot-full",
@@ -529,7 +545,8 @@
         "shot-hit-done",
         "shot-tiers-end",
         "shot-cost",
-        "shot-arch-store"
+        "shot-arch-store",
+        "shot-arch-step5"
       ],
       "reviewer": "owner",
       "route": "#mooncake (zh, Light, 1440x1180; en/Dark/900/390 cross-checked)",
@@ -537,6 +554,7 @@
         "Header and subtitle",
         "Section 1 title and implemented-stack map",
         "Click Store in the map (inspector switches)",
+        "Play the path to step 5 (TE active)",
         "Source facts (Conductor, Store, Transfer Engine, PG/EP)",
         "Boundary note (paper scheduler/CPP not open)",
         "Section 2 store fetch: replica list, transport strip, PutEnd",
@@ -545,7 +563,7 @@
         "English, Dark, 900 and 390 widths",
         "Footer and evidence list"
       ],
-      "retelling": "Mooncake as implemented today is an infrastructure stack, not the paper’s global scheduler. At 504f2ae a router (vLLM/SGLang) asks Conductor for the prefix index and picks an engine instance; the engine runs prefill and decode. Transfer Engine moves KV between registered segments over RDMA or other transports, selecting paths by topology. Store’s master owns the object directory, allocation, replicas and leases, while clients contribute segments and read/write directly through Transfer Engine; GetReplicaList returns replicas and a lease TTL, and PutStart/PutEnd complete an object. PG/EP provide elastic membership. The paper’s Conductor scheduler and CPP prefill pool are not in the repository, so they are not drawn; the store section drills into one fetch and the L3 section shows the Store behind HiCache, with the reuse economics last.",
+      "retelling": "Mooncake as implemented today is an infrastructure stack, not the paper’s global scheduler. At 504f2ae a router (vLLM/SGLang) asks Conductor for the prefix index and picks an engine instance; the engine runs prefill and decode. Transfer Engine moves KV between registered segments over RDMA or other transports, selecting paths by topology. Store’s master owns the object directory, allocation, replicas and leases, while clients contribute segments and read/write directly through Transfer Engine; GetReplicaList returns replicas and a lease TTL, and PutStart/PutEnd complete an object. PG/EP provide elastic membership. The paper’s Conductor scheduler and CPP prefill pool are not in the repository, so they are not drawn; the store section drills into one fetch and the L3 section shows the Store behind HiCache, with the reuse economics last. The section also plays a seven-step request path: the map highlights the acting component, the side panel names who acts, the interface and the state left behind, and the pseudocode marks the active line.",
       "frictions": [
         "The architecture is component-level; the engine-specific routing call is not shown.",
         "Section 2 is a fixed default-pool reference case.",
@@ -969,6 +987,15 @@
       "severity": "P3",
       "status": "fixed",
       "description": "Section 1 was a static map followed by a four-block source-facts text grid; the title also carried a redundant \"(open source)\" qualifier.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F40",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "The implemented-stack section had no request path, step detail or pseudocode, so it read thinner than neighboring chapters.",
       "checkIds": [
         "browser"
       ]

@@ -121,6 +121,7 @@ const SHARE_HASH = `#mooncake?section=mooncake-cost&setup=${encodeURIComponent(J
 const PLAN = [
   {name: 'zh-light-1440-arch', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]'},
   {name: 'zh-light-1440-arch-store', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]', actions: ["document.querySelectorAll('.mk-node')[4].click()"]},
+  {name: 'zh-light-1440-arch-step5', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]', actions: clickNext(0, 4)},
   {name: 'zh-dark-1440-arch', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-arch"]'},
   {name: 'en-light-1440-arch', width: 1440, height: 1180, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]'},
   {name: 'en-dark-900-arch', width: 900, height: 1100, lang: 'en', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-arch"]'},
