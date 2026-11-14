@@ -29,6 +29,17 @@ Use a counterfactual to check explanatory completeness: if the most detailed dem
 
 These are reasoning steps, not five mandatory panels. Useful hierarchy changes the question at each level; a breadcrumb above a flat list of unrelated features does not create hierarchy. Do not use code directories, class names, kernel names or a README feature list as the conceptual structure.
 
+## Systems and frameworks: difficulty ledger and relationship map
+
+When the subject is a system or framework, the explanation must show **why its organization exists**, not just what the components do. Three commitments are required before choosing views:
+
+- **Difficulty ledger.** Name the two to four technical difficulties that make the straightforward design insufficient: a resource or timing constraint such as bandwidth, capacity, latency, occupancy, contention, or scheduling under a promise. For each difficulty record the constraint and its unit or magnitude, the counterfactual (**what fails without the mechanism**), the mechanism that answers it, and the boundary where it stops helping. A mechanism that cannot be tied to a named difficulty is background at best, or belongs to another chapter. The page's central mechanisms should be traceable to this ledger.
+- **Relationship map.** Separate the control plane from the data plane. State who owns each resource and each piece of state, what crosses every interface (the concrete payload or decision, not just a line), and the request or state transitions. A row of boxes labelled with component names does not establish relationships; the reader should be able to say who decides, who executes, who stores and what each hand-off contains.
+- **Design alternative.** Name a real competing design (monolithic, a different disaggregation, a different partitioning) and why the subject chose otherwise. Do not present the resulting architecture as inevitable or as the only possible answer.
+- **Design versus implementation.** Pin the paper revision and section for interface-level facts (who sends what, which IDs or decisions cross a boundary, what is checked and when). Name where the current implementation has moved on — a renamed service, a scheduler that became an index, new layers — and state which layer the explanation draws. Do not fill interface details from plausibility, and do not attribute the paper's guarantees to the current deployment.
+
+If the subject is a system but the proposed thesis explains one subordinate mechanism (a cache tier, a scheduling policy, a data format), test the thesis against the user's system-level concern. When it does not answer that concern, the mechanism becomes a section and the system's difficulty/relationship argument becomes the spine.
+
 ## Make the argument observable
 
 Plan the reader's entry point as well as the decomposition. Introduce the result or concrete constraint worth explaining early, with its metric/operating conditions when evidence exists. A problem, resource difference or boundary case can serve when no measurement is available; never invent a headline number to fill the opening. A large architecture inventory before any useful observation can obscure an otherwise correct thesis.
@@ -63,9 +74,9 @@ For headline results, record the metric definition, workload, hardware, scale, o
 
 ## Handoff and review
 
-For a chapter task, save a concise `principles.md` in its module run: reader concern, explanatory thesis and expected reader answer, outcome-to-cause map, hierarchy, design choices/tradeoffs, chapter-ownership table and evidence. Include the first useful observation, default argument progression and the central object/relationship/prediction handoff above. Hand the rendering skill concrete relationships and observations to express; leave rendering technology open.
+For a chapter task, save a concise `principles.md` in its module run: reader concern, explanatory thesis and expected reader answer, outcome-to-cause map, hierarchy, design choices/tradeoffs, chapter-ownership table and evidence. For a system or framework chapter also include the difficulty ledger, the relationship map (control/data planes, owners, interface payloads, state transitions) and the rejected design alternative. Include the first useful observation, default argument progression and the central object/relationship/prediction handoff above. Hand the rendering skill concrete relationships and observations to express; leave rendering technology open.
 
-Review by asking: Can the reader explain the organizing idea? Does each drill-down answer a narrower parent question? Are there details that belong elsewhere? Can one trace the whole without understanding every dependency? Are the important mechanisms clear enough to explain why the design works? Research size and feature counts do not answer these questions.
+Review by asking: Can the reader explain the organizing idea? Does each drill-down answer a narrower parent question? Are there details that belong elsewhere? Can one trace the whole without understanding every dependency? Are the important mechanisms clear enough to explain why the design works? For a system chapter, can the reader name each difficulty, the mechanism that answers it, what would fail without it, and the design alternative that was rejected? Research size and feature counts do not answer these questions.
 
 Before handoff, read the proposed explanation in its intended reader order as connected prose. Check that each section uses only concepts already introduced and advances the original question; reconcile the component hierarchy with the causal argument. A list of individually correct mechanisms or a thesis headline is not a continuous explanation. Reconstruct the answer from the actual material, identify missing bridges, and revise before passing it to rendering.
 

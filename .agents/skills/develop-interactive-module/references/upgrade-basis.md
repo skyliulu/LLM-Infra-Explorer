@@ -33,3 +33,58 @@ The user requested a full case after the initial workflow revision. `docs/module
 The trial completed with autonomous repairs and no intervening human correction. First-pass and final evidence remain distinct. It establishes one real delivery, not universal first-generation quality or a comparative benchmark against the previous skill.
 
 Final run validation exposed an additional integration issue: the browser returned native JPEG bytes under filenames chosen as PNG. Supporting references now require detecting native encoding and preserving it with a matching suffix. The helper supports PNG/JPEG framing and tests extension agreement; this replaces an unjustified PNG-only delivery constraint without weakening freshness or usable-file checks.
+
+## Later trial: system chapter depth and control geometry (2026-11-14)
+
+A Mooncake chapter was delivered from the user's request to explain "Mooncake as an L3 cache". The
+user then reported three successive gaps: the chapter showed only the L3 usage rather than Mooncake's
+own principles; after a scheduler/placement section was added, it still did not explain the overall
+architecture's technical difficulties, relationships and details; and the playback / next icons were
+not centered inside their buttons.
+
+Observed failures and reusable consequences:
+
+- **Scope anchored on the requested mechanism.** The original request named an integration (L3), and
+  the chapter thesis, claims and first view all centered on that tier. When the user asked for the
+  system's principles, adding another mechanism demo satisfied the existing gates but not the new
+  reader concern. Consequence: for a system/framework topic, state the system's difficulties,
+  ownership/interfaces and rejected alternative before accepting a subordinate-mechanism thesis as
+  the spine. Added to the analysis skill and to `technical-analysis.md`.
+- **Gates rewarded a defensible but narrow thesis.** The cache-economics argument was visible,
+  sourced and testable, so model, interaction, visual and reader gates could all pass while the
+  architecture's difficulty was never explained. Consequence: the delivery table and QA checklist now
+  require a difficulty ledger, a control/data-plane relationship map with interface payloads and a
+  rejected design alternative for system chapters.
+- **Downscaled screenshots cannot establish control geometry.** Full-page and full-section captures
+  made a 2-3 px icon offset invisible; the shared playback rule sized the box but did not center its
+  content, while sibling chapters compensated with inline-flex classes. Consequence: control-level QA
+  now requires a computed-style read or ~4x crop of icon-only controls, checks the glyph center and
+  the box separately, and compares size/shape/padding with sibling modules. A shared sizing rule
+  without content alignment is treated as incomplete.
+
+This is one trial. It motivated the added gates; it does not establish that the revised workflow
+guarantees architecture depth or pixel-level control quality.
+
+## Later trial: paper fidelity and copy load (2026-11-14)
+
+The same system chapter was revised twice more. First the owner asked whether the rendering of Mooncake
+matched the real implementation; then the owner reported that the architecture section's text ran too
+tall. Both were legitimate: interface-level claims (block IDs in the prefill request, the decode
+scheduler's TBT double-check) had been added from memory during the previous revision, and the page
+presented analytical budgets as if they were measured. The paper-versus-stack boundary existed, but
+only in a small note; the design comparison occupied four lines on the default path.
+
+- **Paper design vs current implementation.** A named system that began as a paper has three layers:
+  the paper design, the current implementation (renamed services, a scheduler that became an index,
+  added layers), and the deployment context. Interface facts must come from the pinned paper section,
+  and the page must say which layer it draws. Added to `implementation-fidelity.md`, the analysis
+  skill, and the system-chapter checks.
+- **Readout budgets are not measurements.** Time/byte/SLO budgets need their assumptions in the same
+  visible block. Added to the system-chapter checklist.
+- **Depth has a reading cost.** A longer lead, a five-row card and a multi-paragraph aside can leave
+  the canvas less prominent than the prose. After a depth addition, re-read the default path; a
+  supporting comparison can be a disclosure whose summary states the conclusion, but the retelling
+  must not require opening every disclosure. Added to `reader-review.md` and the QA checklist.
+
+This is one trial; it motivated the checks, not a guarantee that every system chapter will be
+source-faithful or visually balanced.

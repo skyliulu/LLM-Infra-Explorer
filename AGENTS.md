@@ -43,6 +43,7 @@ Each file is a self-contained, interactive visualization:
 | `Quantization.jsx` | Offline RTN/AWQ/GPTQ/SmoothQuant, INT4/INT8/FP8 representation, online activation/KV quantization and scale lifecycle |
 | `Engram.jsx` | DeepSeek n-gram memory retrieval, async prefetch |
 | `RadixCache.jsx` | SGLang radix tree KV cache, LRU eviction, block reuse |
+| `MooncakeL3.jsx` | Difficulty-led architecture: control/data planes, chunked pipeline prefill, reuse-vs-SLO placement, early rejection, shared KV pool and L3 economics |
 | `DpAttention.jsx` | DP/TP hybrid attention, KV cache sharding, cross-rank communication |
 | `LinearAttention.jsx` | Softmax, kernelized linear attention, recurrent state, and GLA gating |
 | `DeepInfer.jsx` | Offline engine architecture, exclusive Prefill/Decode batches, concrete request lifecycle and CPU/device overlap |

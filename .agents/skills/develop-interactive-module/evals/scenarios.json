@@ -184,6 +184,40 @@
         "Keep the shallow layer faithful and the deep object mapping explicit without forcing a code tour or source panel",
         "Block central unsupported or incorrect implementation claims; preserve assessment-only scope and do not retroactively certify other chapters"
       ]
+    },
+    {
+      "id": "system-difficulty-and-relationships",
+      "prompt": "这个推理系统章节画了 Conductor、Prefill 池、Decode 池和 KV 池，请求流程也能播放，但读完还是不知道整体架构为什么这样拆、难点在哪、各接口传什么。build 和截图都过了。请判断并补到能讲透。",
+      "criteria": [
+        "Name the two to four technical difficulties with their constraint, unit/magnitude, counterfactual and the mechanism that answers each; a component without a difficulty is background",
+        "Expose control plane vs data plane, ownership, interface payloads and request/state transitions in the first useful view, not a component inventory",
+        "State a real rejected design alternative and why this organization was chosen",
+        "Keep subordinate mechanisms (cache tier, scheduler policy, data format) as sections rather than the chapter spine when the user asked for the system",
+        "Do not accept a flowing request animation or a component list as the system-level explanation"
+      ]
+    },
+    {
+      "id": "control-geometry-parity",
+      "prompt": "整页截图、build、可访问性和溢出检查都通过了，但用户说播放/下一步按钮里的图标没有居中。请查清并修复，同时说明为什么之前的验收没发现。",
+      "criteria": [
+        "Inspect the actual control with computed style or a magnified (~4x) crop; a downscaled page screenshot is not evidence of glyph centering",
+        "Check the control box and the glyph separately and verify the glyph is centered within about 1px in both axes",
+        "Compare size, shape, padding and alignment with sibling modules that use the same shared control group; a shared size rule without content alignment is incomplete",
+        "Preserve native semantics and states (button role, aria-current for the current step, aria-pressed for toggles); remove or explain disabled controls",
+        "Fix the shared rule or the chapter markup according to the root cause, then recapture and re-inspect the control family at narrow width",
+        "Record why the earlier gate missed it and update the QA/acceptance criteria rather than only patching the pixel"
+      ]
+    },
+    {
+      "id": "paper-fidelity-and-copy-load",
+      "prompt": "这个系统章节引用了论文架构，但用户问“符合真实实现吗”，而且补完深度后整节文字堆得很高。build 和截图都过了。请判断并修正。",
+      "criteria": [
+        "Pin the paper revision/section and re-read the interface-level passage; do not fill block IDs, checks or payloads from memory",
+        "Separate the paper design from the current implementation (renamed services, scheduler vs index, new layers) and state which layer the page draws where the reader meets it",
+        "Label analytical budgets with their assumptions in the visible block; do not present readouts as measurements",
+        "After adding depth, re-read the default path for text load; move a supporting comparison into a disclosure whose summary states the conclusion, without hiding the core argument",
+        "Keep the canvas at least as prominent as the prose; a wall of card rows and notes is not depth"
+      ]
     }
   ]
 }

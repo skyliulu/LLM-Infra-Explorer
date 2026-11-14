@@ -6,6 +6,7 @@ For full chapter delivery, apply common checks and the capability sections decla
 
 - Change-contract integrity
 - Technical and interaction truth
+- Control geometry and parity
 - Visual, content, and responsive QA
 - Regression and runtime verification
 - Optional QA matrix
@@ -39,6 +40,16 @@ For full chapter delivery, apply common checks and the capability sections decla
 - [ ] One canonical domain model drives all explanatory layers.
 - [ ] Invalid inputs are rejected or normalized by explicit rules.
 
+### When the chapter explains a system or framework
+
+- [ ] The difficulty ledger is present: each central mechanism is tied to a named constraint (bandwidth, capacity, latency, occupancy, contention, scheduling promise) with a unit or magnitude, the counterfactual, and the boundary where it stops helping.
+- [ ] The relationship map is visible early: control plane vs data plane, who owns each resource/state, and the concrete payload or decision crossing each interface. A component inventory or a row of arrows labelled with names is not enough.
+- [ ] A real design alternative is named and the reason for choosing this organization is stated; the architecture is not presented as inevitable.
+- [ ] The thesis still answers the user's system-level concern; a subordinate mechanism (cache tier, scheduler policy, format) is a section, not the spine, unless the user asked for that mechanism.
+- [ ] The page states which layer it draws — the paper's design or the current implementation — and names renamed services, a scheduler that became an index, or new layers where the reader meets the architecture.
+- [ ] Interface-level claims (who sends what, which IDs or decisions cross a boundary, what is checked and when) come from the pinned paper section or source, not from plausibility; claims added after the first research pass are re-checked and recorded with that locator.
+- [ ] Analytical budgets (time, bytes, SLO) carry their assumptions in the same visible block; only measured values are presented as measurements.
+
 ## Interaction truth
 
 - [ ] Every control updates all and only the dependent views.
@@ -59,6 +70,17 @@ For full chapter delivery, apply common checks and the capability sections decla
 - [ ] Reset, play/pause, step, and scrub update every dependent view.
 - [ ] Autoplay completes at a useful teaching pace and stops cleanly.
 
+## Control geometry and parity
+
+A control can be functionally correct and still look wrong. Downscaled full-page or full-section screenshots do not prove the geometry of a 36px button; inspect the actual control.
+
+- [ ] For every icon-only control family (playback, steppers, icon actions), verify the rendered box and the glyph separately with a computed-style read or a magnified crop (about 4×). The glyph center must sit within ~1px of the box center in both axes; a default button padding or baseline offset is a defect, not polish.
+- [ ] The control's size, shape and padding match the sibling chapters that use the same shared group. When a shared rule sizes a box, its contents need explicit alignment (`inline-flex`/`center` or equivalent), not inherited text alignment.
+- [ ] Every interactive control has visible hover, focus-visible and disabled states; disabled controls are either explained in place or removed rather than left unexplained.
+- [ ] Native semantics survive: do not override a `<button>` role to style a list, use `aria-current` for "current step" rather than `aria-pressed`, and keep `aria-pressed` for real toggles.
+- [ ] Related controls are grouped and ordered consistently with neighboring modules (reset / play / step), and a timeline does not expose two conflicting scrubbers.
+- [ ] The same control family is checked at the narrow breakpoint, where wrapping can change the box size or alignment.
+
 ## Visual explanation
 
 - [ ] Inspect the whole workbench surface in each theme before checking individual controls. Fixed dark diagram backgrounds are defects in the light branch unless a justified code/media surface requires them. Record the main canvas background and readable text, not merely the resolved theme flag.
@@ -72,6 +94,7 @@ For full chapter delivery, apply common checks and the capability sections decla
 - [ ] No major region is dominated by empty space or decorative text.
 - [ ] Local controls are placed near their visible effect.
 - [ ] Secondary annotations reuse the primary semantic objects instead of duplicating a disconnected explanation.
+- [ ] After adding depth, the default path still carries the argument without delivering it as a wall of prose: re-read the lead, card rows and notes for height and density, and let a supporting comparison become a disclosure whose summary states the conclusion.
 
 ## Content and math
 

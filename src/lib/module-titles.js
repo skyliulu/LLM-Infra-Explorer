@@ -10,6 +10,7 @@ export const MODULE_LABELS = {
   quantization: 'Quantization',
   engram: 'Engram',
   radixcache: 'Radix HiCache',
+  mooncake: 'Mooncake',
   dpattention: 'DP Attention',
   linearattn: 'Linear Attention',
   deepinfer: 'DeepInfer',

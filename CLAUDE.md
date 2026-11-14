@@ -37,6 +37,7 @@ Each file is a self-contained, interactive visualization:
 | `FlashDecode.jsx` | KV cache splitting, parallel reduction |
 | `Engram.jsx` | DeepSeek n-gram memory retrieval, async prefetch |
 | `RadixCache.jsx` | SGLang radix tree KV cache, LRU eviction, block reuse |
+| `MooncakeL3.jsx` | Difficulty-led architecture: control/data planes, chunked pipeline prefill, reuse-vs-SLO placement, early rejection, shared KV pool and L3 economics |
 | `DpAttention.jsx` | DP/TP hybrid attention, KV cache sharding, cross-rank communication |
 
 ### Styling conventions

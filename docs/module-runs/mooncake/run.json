@@ -1,0 +1,1016 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "mooncake",
+  "topic": "Mooncake as a KVCache-centric serving system",
+  "kind": "create",
+  "status": "complete",
+  "nextAction": "Run final checks on these inputs; record fresh evidence, reviews and result.",
+  "capabilities": [
+    "timeline",
+    "multiple-modes",
+    "resource-metrics",
+    "data-movement",
+    "structural-comparison",
+    "math"
+  ],
+  "assumptions": [
+    "Illustrative 70B dense model: 80 layers x 8 KV heads x 128 dim, BF16 = 320 KiB/token; 64-token pages of 20 MiB reproduce the documented 40 GB per 128k tokens.",
+    "Analytical prefill critical path: one metadata lookup per request, serial prefetch then load, no queueing, batching, decode or load/compute overlap.",
+    "Teaching capacities preserve the deployed 240 GB L2 : 760 GB pool ratio; the prefetch threshold is lowered to one page for the trace and stated on the page.",
+    "Section 2 is a fixed default-pool reference case; section 3 prices a generic hit rather than the section-2 request.",
+    "Section 1 is a plan view: chunk sizes, queue values and the SLO are illustrative; it teaches the placement tradeoff, not a measured production run.",
+    "The paper architecture is taught; the current open-source Conductor provides a prefix index for routers, which the page states as an evolution boundary."
+  ],
+  "inputs": {
+    "../../../src/components/MooncakeL3.jsx": "3f2f5763b3d81d39e8aae6c72cbd040e57eb27856f57705e501011a9f393e3bd",
+    "../../../src/components/mooncake/model.js": "1845e348f38ee4019ad676992f8198a3d6095907c0b7919cba28caca322fd3e5",
+    "../../../src/components/mooncake/serving.js": "6ee54c192e799e6d6cde8a08d2e7a892213fa93d6572e9d98742da2e07a1f7fe",
+    "../../../src/components/mooncake/content.js": "7eba617d2162f3e9a24cdbb3e82a834c9f680602e558f011e82bfa4e3d787d2e",
+    "../../../src/components/mooncake/format.js": "c7bccd01cd070cabf58afc396b0106d1d7a8897001b50472f0362e302f35d69e",
+    "../../../src/components/mooncake/ServingArchitecture.jsx": "11e8c65d037fada2bde5bd8d4dc98cd4f618e591ea2c7ef1b932ba838e332028",
+    "../../../src/components/mooncake/TierCanvas.jsx": "6bf46cd8711e60013d86863d57550b1356457104c3ef9c02cbac6c748f8cc40e",
+    "../../../src/components/mooncake/HitPath.jsx": "5a289d7fda50de037d943f7d28381baacd466ae2e213618723a177df2a45a378",
+    "../../../src/components/mooncake/Economics.jsx": "9e501f1732bf5bdec9bc3e576b967b2b514e59a80a7cb78fc091594716a6618a",
+    "../../../src/components/mooncake/mooncake.css": "cebc265d75cb67091219e77a477b110f122917147173541b7f34a92b766fbe88",
+    "../../../src/components/workbench.css": "157084f682490c66b3b0752804a55668c96de2ee54f9a6c2c8dbe9f78939d916",
+    "../../../src/lib/chapter-registry.js": "6c2ee20013a1377e83e739d46cb53846da219ef2827b037cceae77aba9bcd3a7",
+    "../../../src/lib/chapter-learning.js": "c2ef57c99b28dd9dd4f5cc9c2851b561e53497ca4e6ab9d07311123cade0df5e",
+    "../../../src/lib/chapter-icons.js": "cbaab61c0a60bc3b26b098feca57fa9bf11c090528a466dcd4e7dcdf56213457",
+    "../../../src/lib/module-groups.js": "d721cff769ea199395dd2ca0f3e2874d7f0984ff2020901ce96004b20b9aafa8",
+    "../../../src/lib/module-titles.js": "d864416ccca153119ba95aca85ffba7e56d4a0c9c7ba03869a64464c14313dc2",
+    "../../../src/lib/experiment-sharing.js": "d730ae74037a93f5f1a8168b2d405f9b8bb375e10acdc1de5fd6a4bed6361214",
+    "../../../scripts/check-mooncake.mjs": "4f82a9a6acbddf1f33094ac99ca31c0424432526ccb412c71fbaa970c84e7d91",
+    "../../../scripts/check-learning-paths.mjs": "1450eca28cc6b024e76469d1c23a478c6eb7a4adf9a9d510305a9c2186509db0",
+    "../../../scripts/check-workbench-sharing.mjs": "1d004d8ec6cc0813c2fd28bc9ac1ec14f176b4ef4144a322a0ba62f866dff137",
+    "../../../package.json": "a36960bc232843b16a490e61217e3e9617efcb88dbae66f47a828eb634e01fd3"
+  },
+  "snapshotAt": "2026-11-14T12:37:30.905Z",
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "research.md"
+    },
+    {
+      "id": "principles",
+      "kind": "note",
+      "path": "principles.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "qa.md"
+    },
+    {
+      "id": "reader-review",
+      "kind": "note",
+      "path": "reader-review.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "note",
+      "path": "independent-review.md"
+    },
+    {
+      "id": "model-log",
+      "kind": "log",
+      "path": "evidence/model.log"
+    },
+    {
+      "id": "conventions-log",
+      "kind": "log",
+      "path": "evidence/conventions.log"
+    },
+    {
+      "id": "build-log",
+      "kind": "log",
+      "path": "evidence/build.log"
+    },
+    {
+      "id": "integration-log",
+      "kind": "log",
+      "path": "evidence/integration.log"
+    },
+    {
+      "id": "shot-full",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-full.png"
+    },
+    {
+      "id": "shot-tiers-end",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-tiers-end.png"
+    },
+    {
+      "id": "shot-round5",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-tiers-round5.png"
+    },
+    {
+      "id": "shot-instance",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-tiers-instance.png"
+    },
+    {
+      "id": "shot-pool24",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-tiers-pool24.png"
+    },
+    {
+      "id": "shot-hit-prefetch",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-hit-prefetch.png"
+    },
+    {
+      "id": "shot-hit-done",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-hit-done.png"
+    },
+    {
+      "id": "shot-cost",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-cost.png"
+    },
+    {
+      "id": "shot-cost-slow",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-cost-slow.png"
+    },
+    {
+      "id": "shot-dark-tiers",
+      "kind": "screenshot",
+      "path": "evidence/zh-dark-1440-tiers.png"
+    },
+    {
+      "id": "shot-dark-cost",
+      "kind": "screenshot",
+      "path": "evidence/zh-dark-1440-cost.png"
+    },
+    {
+      "id": "shot-dark-ssd",
+      "kind": "screenshot",
+      "path": "evidence/zh-dark-1440-cost-ssd.png"
+    },
+    {
+      "id": "shot-en-900",
+      "kind": "screenshot",
+      "path": "evidence/en-dark-900-tiers.png"
+    },
+    {
+      "id": "shot-en-cost",
+      "kind": "screenshot",
+      "path": "evidence/en-light-1440-cost.png"
+    },
+    {
+      "id": "shot-390-hit",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-390-hit.png"
+    },
+    {
+      "id": "shot-390-cost",
+      "kind": "screenshot",
+      "path": "evidence/zh-dark-390-cost.png"
+    },
+    {
+      "id": "shot-en-390",
+      "kind": "screenshot",
+      "path": "evidence/en-light-390-hit.png"
+    },
+    {
+      "id": "shot-share-open",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-share-open.png"
+    },
+    {
+      "id": "shot-share-load",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-share-load.png"
+    },
+    {
+      "id": "shot-en-hit",
+      "kind": "screenshot",
+      "path": "evidence/en-light-1440-hit.png"
+    },
+    {
+      "id": "shot-arch",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch.png"
+    },
+    {
+      "id": "shot-arch-prefill",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch-prefill.png"
+    },
+    {
+      "id": "shot-arch-slo",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch-slo.png"
+    },
+    {
+      "id": "shot-arch-overload",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch-overload.png"
+    },
+    {
+      "id": "shot-arch-dark",
+      "kind": "screenshot",
+      "path": "evidence/zh-dark-1440-arch.png"
+    },
+    {
+      "id": "shot-arch-900",
+      "kind": "screenshot",
+      "path": "evidence/en-dark-900-arch.png"
+    },
+    {
+      "id": "shot-arch-390",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-390-arch.png"
+    },
+    {
+      "id": "shot-arch-en",
+      "kind": "screenshot",
+      "path": "evidence/en-light-1440-arch.png"
+    },
+    {
+      "id": "shot-arch-transfer",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch-transfer.png"
+    },
+    {
+      "id": "shot-arch-placement",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch-placement.png"
+    },
+    {
+      "id": "shot-controls",
+      "kind": "screenshot",
+      "path": "evidence/control-playback-crop.png"
+    },
+    {
+      "id": "shot-arch-design",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch-design.png"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "statement": "L1 and L2 are private to one instance; only the L3 backend spans instances, so cross-instance reuse requires L3.",
+      "source": "https://docs.sglang.io/docs/advanced_features/hicache_design.md",
+      "locator": "HiCache design, section 'Tier Sharing Scope'",
+      "boundary": "Scope depends on the backend: a file backend stays node-local unless the path is shared.",
+      "model": "mode 'instance' vs 'cluster' over the same 48-request trace",
+      "trigger": "Switch the scope toggle and scrub to the moved request at round 5",
+      "expected": "Cluster mode serves S0 and the moved prefix from the pool; instance mode recomputes them and its hit-rate curve collapses",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C2",
+      "statement": "A KV page is a content-addressed object keyed by its prefix hash, so the instance that computed it does not matter.",
+      "source": "https://arxiv.org/abs/2407.00079",
+      "locator": "Paper section 3, Figure 3 (block hash from its own hash and prefix)",
+      "boundary": "The page shows a short teaching key, not a real hash.",
+      "model": "deriveHitScenario: four hit objects in node 0's segment with the same keys",
+      "trigger": "Select C0R1 in section 1, then step section 2 to the replica step",
+      "expected": "The replica list names C0R1..C0R4 in node 0's segment; the key line labels C0R1 as one of the hit objects",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C3",
+      "statement": "The master holds metadata only; page bytes move client-to-client through the Transfer Engine.",
+      "source": "https://kvcache-ai.github.io/Mooncake/design/store/mooncake-store.html",
+      "locator": "Mooncake Store, section 'Master Service': no data flow, only metadata",
+      "boundary": "Allocation (PutStart/PutEnd) is pseudocode only; the master is assumed responsive.",
+      "model": "Section 2 steps: replica list at the master, then a separate prefetch step moving 80 MiB",
+      "trigger": "Play section 2 from 0 to 4",
+      "expected": "Replica descriptors appear at step 3; the 80 MiB / 0.44 ms RDMA transfer only at step 4; the write step publishes the new object via PutEnd while the lease only protects reads.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C4",
+      "statement": "Hit rate is governed by how much of the working set the host or pool can hold, and pool eviction appears once the pool is below the working set.",
+      "source": "https://arxiv.org/abs/2407.00079",
+      "locator": "Paper section 4.2, Table 1 (capacity vs hit rate)",
+      "boundary": "One sampled trace; the chapter reproduces the shape, not the measured values.",
+      "model": "Pool capacity slider with LRU segments; capacity bounds asserted in check-mooncake.mjs",
+      "trigger": "Shrink the pool from 114 to 24 pages at the end of the trace",
+      "expected": "Segments fill to 8/8, recompute rises, cumulative hit rate falls 81% to 47%, L3 gain falls from 484.9 ms to a few ms",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C5",
+      "statement": "A hit pays when per-token fetch time is below per-token prefill time; the crossing is about 10 tokens on RDMA and the 256-token prefetch threshold is a separate policy boundary.",
+      "source": "https://docs.sglang.io/docs/advanced_features/hicache_design.md",
+      "locator": "HiCache design, section 'Prefetch from L3' (default 256-token threshold)",
+      "boundary": "Analytical readout with one lookup per request; no queueing or overlap.",
+      "model": "deriveEconomics per-token series, break-even and policy gate",
+      "trigger": "Set the hit length to 128 tokens, then to 2,048",
+      "expected": "At 128 the verdict is 'below prefetch threshold' and the savings are not paid; at 2,048 it is 'pays off' with the crossing drawn at about 10 tokens",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C6",
+      "statement": "Below a medium bandwidth floor (3.9 GB/s at 11k tokens/s, 9.3 GB/s at 24k) moving a token costs more than computing it, so an L3 hit can never beat recomputation.",
+      "source": "https://github.com/kvcache-ai/Mooncake",
+      "locator": "README, Transfer Engine bandwidth (190 GB/s on 8x400 Gbps RoCE) and the 40 GB / 128k-token size",
+      "boundary": "SSD is modeled by streaming bandwidth only; latency tails and NVMe queueing are excluded and stated.",
+      "model": "bandwidthFloor and verdict in deriveEconomics; 10GbE preset below the floor",
+      "trigger": "Switch to 10GbE at 11k tokens/s, then raise the prefill rate to 24k",
+      "expected": "10GbE shows no crossing, a 'slower than recomputing' verdict and a 3.0x slowdown; at 24k the floor rises to 9.3 GB/s and the warning stays on",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C7",
+      "statement": "Cache-aware placement is a tradeoff: the longest reusable prefix can miss the TTFT SLO when its queue is long, so the scheduler may pick a lower-reuse instance that meets the SLO.",
+      "source": "https://arxiv.org/abs/2407.00079",
+      "locator": "Paper section 1.1 and section 6 (Conductor selection balances reuse, load and TTFT)",
+      "boundary": "Queue values are illustrative; the page teaches the decision rule, not a measured trace.",
+      "model": "deriveServingState long case: reuse policy picks A (12,288 reused, 328.2 ms), SLO policy picks B (11,264 reused, 299.5 ms)",
+      "trigger": "Switch the placement preference between \"复用优先\" and \"守住 TTFT\" in the long case",
+      "expected": "The chosen prefill group, its chunk count, the candidate table highlight and the reason change, and A is flagged over the 300 ms SLO",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C8",
+      "statement": "Prefill is chunked and pipelined across nodes and KV moves layer by layer; under overload a request that cannot meet the decode SLO is rejected before prefill.",
+      "source": "https://arxiv.org/abs/2407.00079",
+      "locator": "Paper sections 5.1 (CPP), 5.2 (layer-wise prefill) and 7.2 (early rejection)",
+      "boundary": "The page shows chunk/stage counts and avoided work, not a node-level timeline or the predictor internals.",
+      "model": "serving.js stages = ceil(chunks / 2), chunk = 1,024 tokens; overload stops at step 4 and reports saved prefill and transfer",
+      "trigger": "Play the long case to prefill, then switch to the overload case",
+      "expected": "Chunk squares and the chunks/stages metric move; overload ends in \"拒绝\" with the saved-work box",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C9",
+      "statement": "Each of the system’s four technical difficulties is answered by a named mechanism, with a magnitude, a counterfactual and a boundary: long prefill (chunked pipeline + layer-wise KV), KV movement (registered-memory RDMA + path selection), reuse-vs-SLO placement (Conductor), overload (early rejection).",
+      "source": "https://arxiv.org/abs/2407.00079",
+      "locator": "Paper sections 1.1, 5.1, 5.2, 6 and 7.2",
+      "boundary": "Queue, SLO and chunk values are illustrative; the page teaches the mechanism, not a measured trace.",
+      "model": "deriveArchitectureState budgets: 372.4 vs 186.2 ms, 5.37 GB vs 320 MiB, RDMA vs TCP, A/B TTFT, saved work",
+      "trigger": "Switch the four difficulty lenses and read the budget strip",
+      "expected": "Each lens shows its own magnitude, counterfactual and mechanism; budgets change with the lens while the request path stays the same",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C10",
+      "statement": "The architecture is a control plane (Conductor: prefix index + placement) over a data plane (prefill groups, decode pool, Store/Transfer Engine), with concrete payloads crossing each interface.",
+      "source": "https://arxiv.org/abs/2407.00079",
+      "locator": "Paper section 3 (workflow) and section 6 (Conductor selection)",
+      "boundary": "The current open-source Conductor exposes the prefix index to engine routers; the page states the evolution.",
+      "model": "Section 1 labels: placement + block IDs, layer-wise prefix load, layer-wise KV stream; the request state machine",
+      "trigger": "Play the request and read the plane badges and interface labels",
+      "expected": "The conductor carries the placement decision; prefill loads the prefix, computes chunks and streams KV; decode holds the batch; the pool stores the pages",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C11",
+      "statement": "The rejected alternative — monolithic prefill/decode or chunked prefill inside decode — protects capacity or TBT only partially and still needs cross-node prefill for long context, which is why Mooncake keeps disaggregation.",
+      "source": "https://arxiv.org/abs/2407.00079",
+      "locator": "Paper section 5 (design rationale; chunked prefill vs SLO/MFU)",
+      "boundary": "Qualitative comparison; no benchmark is claimed for the alternatives here.",
+      "model": "Section 1 design note (monolithic vs chunked-in-decode vs disaggregated)",
+      "trigger": "Read the design note under the request budget",
+      "expected": "The reader can name the alternative and the price Mooncake pays for separation",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "C12",
+      "statement": "The drawn architecture is the paper’s serving form: Conductor picks a prefill group and a decode instance, the prefill request carries prefix and full-cache block IDs, KV streams layer by layer, and the decode scheduler double-checks TBT. The current open-source stack puts a router above a prefix-index Conductor, with TE/Store/PG/EP below.",
+      "source": "https://arxiv.org/abs/2407.00079",
+      "locator": "Paper section 3 (workflow, block IDs, double-check), section 5, section 6; Mooncake architecture docs (Conductor prefix index, TE/Store/PG/EP)",
+      "boundary": "Numbers are readout assumptions, not measurements; the page says so under the budget.",
+      "model": "Section 1 interface labels and the evolution note; the request walk",
+      "trigger": "Read the section lead, interface labels and evolution note",
+      "expected": "The reader can separate the paper’s serving form from today’s infrastructure stack and knows the page is not a measured trace",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J1",
+      "action": "Scrub section 1 to request 48 in '+L3', then switch to 'L1 + L2 only'",
+      "expected": "Source badges, pool occupancy, curves and the L3 gain all change while the request strip keeps the same pages",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "J2",
+      "action": "Set the pool capacity to 24 pages at the end of the trace",
+      "expected": "Segments fill, recompute rises, hit rate drops to 47%, L3 gain falls to a few ms",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "J3",
+      "action": "Play section 2 from 0 to prefetch, then to done",
+      "expected": "Replica list appears, four objects are read, L2 fills, C0R5 enters L2 and the write-back row sends it to node 1",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "J4",
+      "action": "Switch section 3 to 10GbE, then set hit length to 128 tokens, then reload a share link",
+      "expected": "Loss verdict with 'slower by 3.0x' and no crossing; below 256 tokens the verdict becomes 'below prefetch threshold'; the share link restores 10GbE and the section",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "J8",
+      "action": "In the long case, switch the placement preference from maximize reuse to protect TTFT",
+      "expected": "The chosen group moves from A to B, A is marked over SLO, and predicted TTFT drops from 328.2 ms to 299.5 ms",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "J9",
+      "action": "Switch to the overload case and play to the end",
+      "expected": "The walk stops at step 4, the decode card shows rejection, and the saved-work box reports the avoided prefill and transfer",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "J10",
+      "action": "Switch the architecture lens from prefill to transfer",
+      "expected": "The challenge card and budget switch to RDMA vs TCP numbers; the request path and step rail stay the same",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "J11",
+      "action": "In the placement lens, switch maximize reuse to protect TTFT",
+      "expected": "The chosen group moves from A to B and the predicted TTFT crosses back under the SLO",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "J12",
+      "action": "Switch to the overload lens and play to the end",
+      "expected": "The walk stops at rejection and the budget shows the avoided prefill time and transfer bytes",
+      "checkIds": [
+        "browser"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "passed",
+      "startedAt": "2026-11-14T12:39:52.288Z",
+      "artifactIds": [
+        "research",
+        "brief",
+        "principles",
+        "independent-review"
+      ]
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "passed",
+      "startedAt": "2026-11-14T12:37:33.944Z",
+      "artifactIds": [
+        "model-log"
+      ],
+      "command": "node scripts/check-mooncake.mjs",
+      "exitCode": 0
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "passed",
+      "startedAt": "2026-11-14T12:37:33.982Z",
+      "artifactIds": [
+        "conventions-log"
+      ],
+      "command": "node .agents/skills/develop-interactive-module/scripts/check-module-conventions.mjs src/components/MooncakeL3.jsx --capabilities timeline,multiple-modes,resource-metrics,data-movement,math",
+      "exitCode": 0
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "passed",
+      "startedAt": "2026-11-14T12:37:38.561Z",
+      "artifactIds": [
+        "build-log"
+      ],
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "passed",
+      "startedAt": "2026-11-14T12:37:38.950Z",
+      "artifactIds": [
+        "integration-log"
+      ],
+      "command": "npm run check:workbench && node scripts/check-theme.mjs",
+      "exitCode": 0
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "passed",
+      "startedAt": "2026-11-14T12:39:46.235Z",
+      "artifactIds": [
+        "shot-tiers-end",
+        "shot-round5",
+        "shot-instance",
+        "shot-pool24",
+        "shot-hit-prefetch",
+        "shot-hit-done",
+        "shot-cost-slow",
+        "shot-share-open",
+        "shot-share-load",
+        "shot-arch-transfer",
+        "shot-arch-placement",
+        "shot-controls",
+        "shot-arch-design"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "passed",
+      "startedAt": "2026-11-14T12:39:46.235Z",
+      "artifactIds": [
+        "shot-full",
+        "shot-dark-tiers",
+        "shot-dark-cost",
+        "shot-dark-ssd",
+        "shot-en-900",
+        "shot-en-cost",
+        "shot-390-hit",
+        "shot-390-cost",
+        "shot-en-390",
+        "shot-arch-transfer",
+        "shot-arch-placement"
+      ]
+    },
+    {
+      "id": "reader",
+      "kind": "reader",
+      "status": "passed",
+      "startedAt": "2026-11-14T12:39:52.287Z",
+      "artifactIds": [
+        "reader-review",
+        "shot-full",
+        "shot-arch-prefill",
+        "shot-arch-transfer",
+        "shot-arch-placement",
+        "shot-arch-overload",
+        "shot-hit-done",
+        "shot-tiers-end",
+        "shot-cost",
+        "shot-arch-design"
+      ],
+      "reviewer": "owner",
+      "route": "#mooncake (zh, Light, 1440x1180; en/Dark/900/390 cross-checked)",
+      "readingPath": [
+        "Header and subtitle",
+        "Section 1 lead naming the four difficulties and control/data planes",
+        "Lens toggles, step rail, conductor card and prefill/decode/pool cards",
+        "Prefill lens: budgets 372/186 ms and 5.37 GB to 320 MiB",
+        "Transfer lens: RDMA vs TCP load and stream budgets",
+        "Placement lens: A/B table, SLO, policy switch",
+        "Overload lens: rejection and avoided work",
+        "Design-alternative summary (open it)",
+        "Design-alternative comparison",
+        "Section 2 store fetch: replica list, transport strip, PutEnd",
+        "Section 3 L3 integration: trace, pool sizes, L3 gain",
+        "Section 4 economics: per-token crossing, threshold, mediums",
+        "English, Dark, 900 and 390 widths",
+        "Footer and evidence list"
+      ],
+      "retelling": "Mooncake separates prefill, decode and KV storage; that creates four difficulties. The prefill request carries the raw input, prefix block IDs and full-cache block IDs; the decode scheduler double-checks TBT. A 16K prefill would take about 372 ms and hold 5.37 GB on one node, so it is chunked over two prefill nodes (186 ms) with layer-wise load/store, resident KV near 320 MiB per chunk. A 12K prefix needs 4.03 GB loaded and 1.34 GB streamed; the paper calls the service Messenger, the open-source implementation is Transfer Engine, and registered-memory RDMA makes that about 21 + 7 ms instead of 322 + 107 ms on TCP. Placement is a tradeoff: A reuses 12,288 but queues 120 ms and predicts 328 ms, over the 300 ms SLO, while B gives up 1,024 tokens of reuse to land at 300 ms. Under overload both predictions miss the SLO, so the request is rejected before prefill, saving 186 ms and 5.37 GB. The Store serves a fetch through a metadata-only master, registered memory and PutEnd; as HiCache L3 it holds the shared pool where the L2-only hit rate decays. Reuse pays when per-token transfer beats compute: about 10 tokens, 256 tokens as policy, 3.9 GB/s floor. The page draws the paper’s serving form; today’s stack is a prefix-index Conductor plus TE/Store/PG/EP, and the budget note labels the readout assumptions. The design comparison is a collapsed disclosure; opening it shows the monolithic and chunked-in-decode alternatives and the price of separation.",
+      "frictions": [
+        "The queue, SLO and budget numbers are readout assumptions; the budget note says so.",
+        "The page draws the paper’s serving form; today’s open-source stack differs and the evolution note lists it.",
+        "Section 2 is a fixed default-pool reference case.",
+        "The L3-only baseline is a computed counterfactual, not a measured run."
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pass",
+      "observation": "Sources, model and rendered numbers reconcile: 320 KiB/token and 20 MiB pages reproduce the documented 40 GB / 128k-token figure; the hit path sums to 9.16 ms vs 34.9 ms; break-even 9.7 tokens and floor 3.884 GB/s are derived and asserted. The independent reviewer found no P0 and its P1/P2 findings were repaired (policy gate, L3-gain baseline, per-token crossing, replica list, inventory, write-back, slowdown label, SSD caveat). After the owner's second read, section 2 now measures L3 alone against the same request with L2 kept (29.5 ms to 9.16 ms, 3.22x), and publication is attributed to PutEnd rather than the read lease; both are model outputs and asserted. Section 1 was added after the owner asked for Mooncake’s own principles: placement (reuse vs TTFT), chunked pipeline prefill and early rejection are model outputs and asserted, and the paper-vs-open-source Conductor difference is stated. The four difficulty budgets, the placement choice and the rejection are model outputs and asserted; the control/data-plane and design-alternative claims are backed by the paper sections and stated with boundaries.",
+      "artifactIds": [
+        "research",
+        "model-log",
+        "independent-review"
+      ]
+    },
+    {
+      "area": "teaching",
+      "verdict": "pass",
+      "observation": "The owner reconstructed the answer from the page; each central mechanism has a visible observation: cross-instance reuse, capacity decay and L3 gain, the replica-list and prefetch path, the per-token crossing with a separate policy boundary, and the 10GbE failure. Remaining frictions are stated limits. The prefetch step now shows registered memory at both ends, the direct address-to-address copy and NIC path selection on the existing chain. The chapter now opens with Mooncake’s architecture and scheduling, then uses the same pool to show a store hit and its economics. Section 1 now explains the system through the difficulties that force it, the planes and interface payloads that implement it, and the alternative it rejected.",
+      "artifactIds": [
+        "reader-review",
+        "shot-full",
+        "shot-cost"
+      ]
+    },
+    {
+      "area": "interaction",
+      "verdict": "pass",
+      "observation": "Scope, pool, scrubber and playback update every dependent view; section 2 steps drive the replica list, L2/GPU contents, pseudocode highlight and timing; section 3's medium, length and rate drive cards, chart, verdict and floor. Reset and terminal playback stop cleanly; mode changes preserve the request index. Section 1 adds a scenario switch, a placement preference and a step rail; all three drive the canvas, table, metrics and reason together. Button grammar was audited: the step rail is a labelled group with aria-current, the duplicate scrubber and the unexplained disabled policy toggle are gone, and targets/hover states are consistent. The four difficulty lenses share one request walk but switch the challenge card and budget; playback and the step rail stay consistent across lenses.",
+      "artifactIds": [
+        "shot-tiers-end",
+        "shot-pool24",
+        "shot-hit-prefetch",
+        "shot-cost-slow"
+      ]
+    },
+    {
+      "area": "visual",
+      "verdict": "pass",
+      "observation": "Light and Dark surfaces are readable, including the pool, master, transfer arrows and chart; 1440, 900 and 390 widths show no page-level horizontal overflow, no clipped formulas and no KaTeX errors. Page cells, labels and chart ticks were enlarged, the L2 grid reduced to four columns, and the dark chart zone given an explicit light/dark fill; the capture harness reports zero clipped page cells across all 26 captures. The playback group was re-inspected with a 4x crop; icons are centered and the control matches the shared 36px group.",
+      "artifactIds": [
+        "shot-dark-tiers",
+        "shot-dark-cost",
+        "shot-en-900",
+        "shot-390-hit"
+      ]
+    },
+    {
+      "area": "integration",
+      "verdict": "pass",
+      "observation": "Registry, label, icon, group order, learning path, aliases and related chapters are wired; the share schema round-trips with the other 13 chapters; the learning-path test covers 14 chapters; production build and theme compiler pass.",
+      "artifactIds": [
+        "integration-log",
+        "build-log",
+        "shot-share-load"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Pool chips injected the selected page, faking residency at step 0.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F2",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Section 2 displayed a false L2/segment inventory that contradicted section 1.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F3",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The master query and replica list were only a border highlight.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F4",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Section 2 write-back was asserted, not shown; the new page never entered L2.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F5",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The cost chart could never draw its crossing; it now plots per-token time with the crossing and policy boundary.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F6",
+      "severity": "P1",
+      "status": "fixed",
+      "description": "Below the prefetch threshold the verdict said 'pays off' while the page said the engine recomputes.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F7",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Section 1 'saved' was measured against full recompute; replaced by the L3 gain against the same trace without L3.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F8",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The early-round and capacity story did not explain round 1 or the round-5 rebalance drop.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F9",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The loss case displayed 'faster by 0.3x'.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F10",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Dark theme turned large tinted surfaces into saturated blocks.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F11",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The bandwidth-floor unit error returned Infinity on RDMA.",
+      "checkIds": [
+        "model"
+      ]
+    },
+    {
+      "id": "F12",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The SSD bandwidth-only limitation lived only in the research note.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F13",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Pool eviction claimed LRU but was implemented as FIFO.",
+      "checkIds": [
+        "model"
+      ]
+    },
+    {
+      "id": "F14",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Idle state labelled the shared page as the new page; key and prefix counts were ambiguous.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F15",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Share evidence did not show the control or the generated URL.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F16",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Section 2 compared against full recompute, including the local L2 hit; it now compares L2-only vs L2+L3 (29.5 to 9.16 ms, 3.22x).",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F17",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "release(lease) was annotated as publication; PutEnd publishes and the lease protects reads.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F18",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Transport appeared only as a bandwidth number; registered memory, direct copy and NIC path selection were added on the prefetch step.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F19",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Page cells could clip and labels/ticks were small; four-column L2 grid, larger type and wrapping labels.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F20",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "The dark cost chart had a pale shaded zone; it now uses an explicit light/dark fill.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F21",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The chapter covered only Mooncake’s L3 usage and was labelled \"Mooncake L3\".",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F22",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Mooncake’s own placement, chunked prefill and early-rejection principles were missing.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F23",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Paper scheduler vs current open-source prefix-index Conductor was not distinguished.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F24",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The page-chip class collided with the chapter container class, so the whole page inherited chip grid/border/padding.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F25",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Step-rail buttons carried role=listitem with aria-pressed, section 1 had two scrubbers, and the policy toggle was disabled without explanation.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F26",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Page, pool, step and toggle buttons were small and lacked hover feedback.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F27",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Playback icons were not centered: the shared 36px rule lacked content alignment and this chapter omitted the sibling inline-flex classes.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F28",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The chapter did not explain the architecture’s technical difficulties, component relationships or details; the scheduler demo was an add-on to a cache-centric spine.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F29",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "No rejected design alternative (monolithic or chunked prefill in decode) and no interface payloads were stated.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F30",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Placement reason appeared in every lens and the rejection savings were duplicated.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F31",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "After reordering, the store lead referred to a request introduced later.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F32",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "The architecture copy ran tall (long lead, five-row card, four-line design note) and the budget looked measured.",
+      "checkIds": [
+        "browser"
+      ]
+    },
+    {
+      "id": "F33",
+      "severity": "P2",
+      "status": "fixed",
+      "description": "Fidelity wording: the transfer service is Messenger in the paper, resident KV was labelled \"peak KV\", and the decode double-check was missing.",
+      "checkIds": [
+        "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F34",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "The design-alternative note occupied four lines on the default path; it is now a one-line disclosure that opens on demand.",
+      "checkIds": [
+        "browser"
+      ]
+    }
+  ]
+}

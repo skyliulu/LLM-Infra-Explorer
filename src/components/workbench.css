@@ -11,7 +11,8 @@
 #main-content.workbench-content .chapter-header button:disabled{cursor:not-allowed;opacity:.45}
 #main-content.workbench-content .chapter-header :is(button,select,input):focus-visible{outline:2px solid #2563eb;outline-offset:3px}
 #main-content.workbench-content .chapter-playback{display:flex;flex-wrap:nowrap;gap:8px;align-items:center;flex-shrink:0;margin-left:auto}
-#main-content.workbench-content .chapter-playback button{height:36px;width:36px;border-radius:8px}
+#main-content.workbench-content .chapter-playback button{height:36px;width:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0}
+#main-content.workbench-content .chapter-playback button>svg{display:block}
 #main-content.workbench-content .chapter-layout>.grid{gap:var(--chapter-gap)}
 #main-content.workbench-content .chapter-layout>.grid>.bg-white,
 #main-content.workbench-content .chapter-layout>.bg-white:not(.chapter-header),

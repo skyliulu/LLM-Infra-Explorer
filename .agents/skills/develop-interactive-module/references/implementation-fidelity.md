@@ -12,6 +12,14 @@ Source establishes the behavior of that revision, not automatic mathematical cor
 
 Repository orientation tools are useful when needed, not a required full-codebase exercise. Follow a representative vertical slice far enough to establish the claimed relationship: input/metadata → allocation or state lookup → selected operator/collective/kernel → result/state write-back and its dependency. Inspect additional branches when the chapter exposes or generalizes over them. Stop once the central facts are supported; do not display every dependency because it was researched.
 
+## Separate the paper's design from the current implementation
+
+A system that began as a paper usually has three layers that must not be blended: the paper's design (services, scheduler, interfaces), the current implementation (renamed services, new components, a different division of labour), and the deployment or benchmark context. Pin the paper revision and section, and read the actual passage for anything interface-level: who sends what, which IDs or decisions cross a boundary, what the scheduler checks and when. Do not fill those details from plausibility or memory.
+
+When the implementation has moved on — a scheduler becomes an index, a service is renamed, new layers join — state which layer the chapter draws and name the difference where the reader meets the architecture, not only in the run record. A page that draws the paper's serving form must say so; a page that draws today's stack must not attribute the paper's guarantees to it.
+
+A claim added after the first research pass returns to the primary text before it enters the ledger or the page. Record the pinned locator and the paper-versus-implementation boundary in the same claim row; a mechanism name that changed in the implementation is part of the claim, not a naming preference.
+
 ## Plan a faithful descent
 
 Use only the depth needed by the learning question:

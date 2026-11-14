@@ -3,10 +3,10 @@ import {READING_ORDER,LEARNING_PATHS,learningHref} from '../src/lib/chapter-lear
 import {MODULE_GROUPS} from '../src/lib/module-groups.js';
 import {SHARE_SCHEMA} from '../src/lib/experiment-sharing.js';
 
-assert.equal(new Set(READING_ORDER).size,13);
+assert.equal(new Set(READING_ORDER).size,14);
 assert.deepEqual([...READING_ORDER].sort(),Object.keys(SHARE_SCHEMA).sort());
 assert.deepEqual(READING_ORDER,MODULE_GROUPS.flatMap(group=>group.chapters));
-assert.deepEqual(READING_ORDER,['llm','flash','flashdecode','sparseattn','linearattn','quantization','radixcache','parallel','dpattention','speculative','engram','cachearch','deepinfer']);
+assert.deepEqual(READING_ORDER,['llm','flash','flashdecode','sparseattn','linearattn','quantization','radixcache','mooncake','parallel','dpattention','speculative','engram','cachearch','deepinfer']);
 for(const [id,path] of Object.entries(LEARNING_PATHS)) {
   for(const topic of path.before) {
     assert(READING_ORDER.indexOf(topic.chapter)<READING_ORDER.indexOf(id),'Foundations precede their dependent chapter');
@@ -20,4 +20,7 @@ assert(!LEARNING_PATHS.cachearch.before.some(t=>t.chapter==='linearattn'));
 assert.equal(LEARNING_PATHS.parallel.next,'dpattention');
 assert.deepEqual(LEARNING_PATHS.deepinfer.before.map(t=>t.section),['llminference-1','llminference-2'],'Framework entry needs generation/KV foundations; specialized algorithms remain optional deep dives');
 assert.equal(LEARNING_PATHS.cachearch.next,'deepinfer');
-console.log('PASS learning order: 13 unique chapters, forward-only prerequisites/continuations, bilingual section links and CED / DeepInfer dependencies');
+assert.equal(LEARNING_PATHS.radixcache.next,'mooncake','HiCache continues into the shared L3 tier');
+assert.deepEqual(LEARNING_PATHS.mooncake.before.map(t=>t.chapter),['radixcache','llm']);
+assert.equal(LEARNING_PATHS.mooncake.before[0].section,'radix-hicache');
+console.log('PASS learning order: 14 unique chapters, forward-only prerequisites/continuations, bilingual section links and CED / Mooncake / DeepInfer dependencies');

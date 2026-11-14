@@ -14,6 +14,7 @@
     "check:flashdecode": "node scripts/check-flash-decode.mjs",
     "check:engram": "node scripts/check-engram.mjs",
     "check:radix": "node scripts/check-radix-cache.mjs && node scripts/check-hicache.mjs && node scripts/check-hicache-story.mjs && node scripts/check-hicache-engine.mjs",
+    "check:mooncake": "node scripts/check-mooncake.mjs",
     "check:dpa": "node scripts/check-dp-attention.mjs",
     "check:llm": "node scripts/check-llm-inference.mjs && node scripts/check-inference-numerics.mjs && node scripts/check-kv-representation.mjs",
     "check:linear": "node scripts/check-linear-attention.mjs && node scripts/check-linear-comparison.mjs",

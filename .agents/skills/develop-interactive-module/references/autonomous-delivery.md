@@ -7,11 +7,11 @@ Use for new chapters, substantial redesigns or an explicitly requested full deli
 | Gate | Exit evidence | Failure action |
 |---|---|---|
 | Identity/research | resolved topic/version; central claims trace to primary sources; chapter responsibilities and conceptual hierarchy address the user's topic level; conflicts bounded | investigate gaps in the central explanation, relocate dependency internals, bound unsupported claims without silently reducing requested scope; ask only if identity/essential evidence remains unresolved |
-| Teaching contract | question, first view, exploration, prerequisite boundary and change contract in `brief.md` | select a representation that exposes the mechanism |
+| Teaching contract | question, first view, exploration, prerequisite boundary and change contract in `brief.md`; for a system chapter, the difficulty ledger, control/data-plane relationship map, interface payloads and rejected design alternative | select a representation that exposes the relationship and difficulty, not only a component inventory |
 | Model | tested shapes, dependencies, constraints and independent numerical/invariant oracle | repair model before decorating views |
 | Vertical slice | real browser control changes the model and visible evidence | inspect early; change representation if needed |
 | Coverage/integration | affected dimension coverage; navigation, language, sharing and lifecycle exercised | finish missing paths and dependent views |
-| Visual/teaching review | opened screenshots; observable findings at relevant widths/languages/boundaries in light and dark; System resolution recorded | fix clipping, contrast, misleading scales, detached controls, empty space and weak evidence |
+| Visual/teaching review | opened screenshots; observable findings at relevant widths/languages/boundaries in light and dark; System resolution recorded; control geometry checked at ~4x or via computed style and matched against sibling chapters | fix clipping, contrast, misleading scales, detached controls, off-center control content, size/parity mismatches, empty space and weak evidence |
 | Owner reader acceptance | owner personally read the current rendered chapter continuously, explored important branches/returns and reconstructed its answer; actual path, friction and repairs in reader-review.md | autonomously repair the explanation within task scope, then reread the whole; independent approval and local checks cannot waive this gate |
 | Final verification | current-file checks, build, closed P0–P2 issues, QA and valid run record | rerun invalidated checks; keep incomplete work labeled |
 

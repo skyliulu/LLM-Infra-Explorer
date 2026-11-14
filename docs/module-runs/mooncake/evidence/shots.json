@@ -1,0 +1,1376 @@
+{
+  "base": "http://127.0.0.1:5183/",
+  "results": [
+    {
+      "name": "zh-light-1440-arch",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch.png"
+    },
+    {
+      "name": "zh-light-1440-arch-choose",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-choose.png"
+    },
+    {
+      "name": "zh-light-1440-arch-prefill",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-prefill.png"
+    },
+    {
+      "name": "zh-light-1440-arch-placement",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-placement.png"
+    },
+    {
+      "name": "zh-light-1440-arch-transfer",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-transfer.png"
+    },
+    {
+      "name": "zh-light-1440-arch-slo",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-slo.png"
+    },
+    {
+      "name": "zh-light-1440-arch-overload",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3712,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 25,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-overload.png"
+    },
+    {
+      "name": "zh-light-1440-arch-design",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3706,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-design.png"
+    },
+    {
+      "name": "zh-dark-1440-arch",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-arch.png"
+    },
+    {
+      "name": "en-light-1440-arch",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3918,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "en",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake: KVCache-centric serving"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-arch.png"
+    },
+    {
+      "name": "en-dark-900-arch",
+      "metrics": {
+        "viewport": {
+          "width": 900,
+          "height": 1100
+        },
+        "contentHeight": 6373,
+        "documentWidth": 900,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "en",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake: KVCache-centric serving"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-arch.png"
+    },
+    {
+      "name": "zh-light-390-arch",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "contentHeight": 7631,
+        "documentWidth": 390,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-arch.png"
+    },
+    {
+      "name": "zh-light-1440-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers.png"
+    },
+    {
+      "name": "zh-light-1440-tiers-round5",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 46,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-round5.png"
+    },
+    {
+      "name": "zh-light-1440-tiers-end",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 49,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-end.png"
+    },
+    {
+      "name": "zh-light-1440-tiers-instance",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 37,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-instance.png"
+    },
+    {
+      "name": "zh-light-1440-tiers-pool24",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 49,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-pool24.png"
+    },
+    {
+      "name": "zh-light-1440-hit-prefetch",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-hit-prefetch.png"
+    },
+    {
+      "name": "zh-light-1440-hit-done",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3674,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-hit-done.png"
+    },
+    {
+      "name": "zh-light-1440-cost",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-cost.png"
+    },
+    {
+      "name": "zh-light-1440-cost-slow",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3658,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-cost-slow.png"
+    },
+    {
+      "name": "zh-dark-1440-cost-ssd",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-cost-ssd.png"
+    },
+    {
+      "name": "zh-dark-1440-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 48,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-tiers.png"
+    },
+    {
+      "name": "zh-dark-1440-hit",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3672,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-hit.png"
+    },
+    {
+      "name": "zh-dark-1440-cost",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-cost.png"
+    },
+    {
+      "name": "en-light-1440-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3918,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "en",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 48,
+        "title": "Mooncake: KVCache-centric serving"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-tiers.png"
+    },
+    {
+      "name": "en-light-1440-hit",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3918,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "en",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake: KVCache-centric serving"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-hit.png"
+    },
+    {
+      "name": "en-light-1440-cost",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3918,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "en",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake: KVCache-centric serving"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-cost.png"
+    },
+    {
+      "name": "en-dark-900-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 900,
+          "height": 1100
+        },
+        "contentHeight": 6380,
+        "documentWidth": 900,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "en",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 48,
+        "title": "Mooncake: KVCache-centric serving"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-tiers.png"
+    },
+    {
+      "name": "en-dark-900-cost",
+      "metrics": {
+        "viewport": {
+          "width": 900,
+          "height": 1100
+        },
+        "contentHeight": 6373,
+        "documentWidth": 900,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "en",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake: KVCache-centric serving"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-cost.png"
+    },
+    {
+      "name": "zh-light-390-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "contentHeight": 7691,
+        "documentWidth": 390,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 48,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-tiers.png"
+    },
+    {
+      "name": "zh-light-390-hit",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "contentHeight": 7676,
+        "documentWidth": 390,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-hit.png"
+    },
+    {
+      "name": "zh-dark-390-cost",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "contentHeight": 7631,
+        "documentWidth": 390,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-390-cost.png"
+    },
+    {
+      "name": "en-light-390-hit",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "contentHeight": 8517,
+        "documentWidth": 390,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "en",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake: KVCache-centric serving"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-390-hit.png"
+    },
+    {
+      "name": "zh-light-1440-full",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3671,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-full.png"
+    },
+    {
+      "name": "zh-light-1440-share-open",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 860
+        },
+        "contentHeight": 3658,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-share-open.png"
+    },
+    {
+      "name": "zh-light-1440-share-load",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 3658,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clipped": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-hit",
+          "mooncake-tiers",
+          "mooncake-cost"
+        ],
+        "buttons": 30,
+        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-share-load.png"
+    }
+  ],
+  "console": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    }
+  ]
+}
