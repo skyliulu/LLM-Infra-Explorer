@@ -402,3 +402,15 @@
 .mk-facts dt{font-weight:650;color:#334155}
 .mk-facts dd{margin:0;color:#475569}
 @media(max-width:700px){.mk-stack-substrate{grid-template-columns:1fr}.mk-facts dl{grid-template-columns:1fr}}
+/* Interactive node map for the implemented stack */
+.mk-node{display:grid;gap:1px;border:1px solid #cbd5e1;background:#fff;border-radius:7px;padding:9px 11px;text-align:left;min-width:0;transition:border-color .15s,background .15s,box-shadow .15s}
+.mk-node:hover{border-color:#93c5fd;background:#f8fafc}
+.mk-node.on{border-color:#6366f1;background:#eef2ff;box-shadow:inset 0 0 0 1px #6366f1}
+.mk-node b{font-size:12.5px}
+.mk-node small{font-size:9.5px;color:#64748b}
+.mk-stack-flow .mk-node{flex:1 1 200px}
+.mk-inspect{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin-top:10px;padding:7px 9px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;font-size:10.5px;line-height:1.45}
+.mk-inspect b{font-size:11.5px}
+.mk-inspect span{display:flex;gap:5px;align-items:baseline}
+.mk-inspect i{font-style:normal;font-size:9px;color:#64748b}
+.mk-cap{font-size:9.5px}

@@ -24,13 +24,13 @@
   "inputs": {
     "../../../src/components/MooncakeL3.jsx": "b6bc69819e3bc802d365c39f80358887a75798c5280242d127d8bebcda41d9ce",
     "../../../src/components/mooncake/model.js": "1845e348f38ee4019ad676992f8198a3d6095907c0b7919cba28caca322fd3e5",
-    "../../../src/components/mooncake/content.js": "11ecc40396a4d69fac6dd035419a3bc3c4702feba30f16d7ac83ccee7897d1c0",
+    "../../../src/components/mooncake/content.js": "1188c1a207b9a4c5707e04c96c47f1a5ce9ce7b6e5b6d28d8bc10669ddb09978",
     "../../../src/components/mooncake/format.js": "c7bccd01cd070cabf58afc396b0106d1d7a8897001b50472f0362e302f35d69e",
-    "../../../src/components/mooncake/ServingArchitecture.jsx": "3970b8332c7cc27dc46f7732c2338df2851c47c3e2161cd0923b4fd1c84df55d",
+    "../../../src/components/mooncake/ServingArchitecture.jsx": "51c009b879b4e6296858c357bcbe5d7c6c55536217be670a9ec11ca3ba740c0a",
     "../../../src/components/mooncake/TierCanvas.jsx": "6bf46cd8711e60013d86863d57550b1356457104c3ef9c02cbac6c748f8cc40e",
     "../../../src/components/mooncake/HitPath.jsx": "66263b9f1eb4ea55ab7cab5f78fbd8389afa53b2169e680ab40f32cb94166f78",
     "../../../src/components/mooncake/Economics.jsx": "9e501f1732bf5bdec9bc3e576b967b2b514e59a80a7cb78fc091594716a6618a",
-    "../../../src/components/mooncake/mooncake.css": "7a43444252adc3ba6e32c4f8f4099c34924b8c7080942056669118f421be7a14",
+    "../../../src/components/mooncake/mooncake.css": "0a94a79830176dcd05ec1cf92258f6c1c1f812781f111d5142a51e34a01ad4f2",
     "../../../src/components/workbench.css": "157084f682490c66b3b0752804a55668c96de2ee54f9a6c2c8dbe9f78939d916",
     "../../../src/lib/chapter-registry.js": "6c2ee20013a1377e83e739d46cb53846da219ef2827b037cceae77aba9bcd3a7",
     "../../../src/lib/chapter-learning.js": "c2ef57c99b28dd9dd4f5cc9c2851b561e53497ca4e6ab9d07311123cade0df5e",
@@ -43,7 +43,7 @@
     "../../../scripts/check-workbench-sharing.mjs": "d0a1c72aa33fbd8c4ba95c88b29047dc06884f6d4c4227d4bfe8ff8f29667837",
     "../../../package.json": "a36960bc232843b16a490e61217e3e9617efcb88dbae66f47a828eb634e01fd3"
   },
-  "snapshotAt": "2026-11-14T13:26:35.085Z",
+  "snapshotAt": "2026-11-14T13:31:00.525Z",
   "artifacts": [
     {
       "id": "brief",
@@ -219,6 +219,11 @@
       "id": "shot-arch-en",
       "kind": "screenshot",
       "path": "evidence/en-light-1440-arch.png"
+    },
+    {
+      "id": "shot-arch-store",
+      "kind": "screenshot",
+      "path": "evidence/zh-light-1440-arch-store.png"
     }
   ],
   "claims": [
@@ -312,8 +317,8 @@
       "source": "https://github.com/kvcache-ai/Mooncake/tree/504f2ae",
       "locator": "mooncake-conductor/include/conductor/prefixindex; mooncake-store/include/master_client.h; mooncake-transfer-engine/include/topology.h; mooncake-pg, mooncake-ep",
       "boundary": "Component-level; the engine-specific routing call is not shown.",
-      "model": "Section 1 stack map and source facts",
-      "trigger": "Read section 1",
+      "model": "Section 1 interactive stack map and node inspector",
+      "trigger": "Read section 1 and click a node",
       "expected": "The reader can name the router, prefix-index Conductor, engine, TE, Store and PG/EP, and knows which layer is missing from the repo",
       "checkIds": [
         "model",
@@ -395,6 +400,14 @@
       "checkIds": [
         "browser"
       ]
+    },
+    {
+      "id": "J5",
+      "action": "Click Store in the architecture map",
+      "expected": "The Store node becomes selected and the inspector shows its ownership, non-ownership and Source APIs",
+      "checkIds": [
+        "browser"
+      ]
     }
   ],
   "checks": [
@@ -402,7 +415,7 @@
       "id": "research",
       "kind": "research",
       "status": "passed",
-      "startedAt": "2026-11-14T13:28:27.669Z",
+      "startedAt": "2026-11-14T13:32:52.226Z",
       "artifactIds": [
         "research",
         "brief",
@@ -414,7 +427,7 @@
       "id": "model",
       "kind": "model",
       "status": "passed",
-      "startedAt": "2026-11-14T13:26:38.027Z",
+      "startedAt": "2026-11-14T13:31:04.145Z",
       "artifactIds": [
         "model-log"
       ],
@@ -425,7 +438,7 @@
       "id": "conventions",
       "kind": "conventions",
       "status": "passed",
-      "startedAt": "2026-11-14T13:26:38.073Z",
+      "startedAt": "2026-11-14T13:31:04.190Z",
       "artifactIds": [
         "conventions-log"
       ],
@@ -436,7 +449,7 @@
       "id": "build",
       "kind": "build",
       "status": "passed",
-      "startedAt": "2026-11-14T13:26:43.710Z",
+      "startedAt": "2026-11-14T13:31:08.899Z",
       "artifactIds": [
         "build-log"
       ],
@@ -447,7 +460,7 @@
       "id": "integration",
       "kind": "integration",
       "status": "passed",
-      "startedAt": "2026-11-14T13:26:44.133Z",
+      "startedAt": "2026-11-14T13:31:09.307Z",
       "artifactIds": [
         "integration-log"
       ],
@@ -458,7 +471,7 @@
       "id": "browser",
       "kind": "browser",
       "status": "passed",
-      "startedAt": "2026-11-14T13:28:22.776Z",
+      "startedAt": "2026-11-14T13:32:49.422Z",
       "artifactIds": [
         "shot-arch",
         "shot-arch-dark",
@@ -473,14 +486,15 @@
         "shot-hit-done",
         "shot-cost-slow",
         "shot-share-open",
-        "shot-share-load"
+        "shot-share-load",
+        "shot-arch-store"
       ]
     },
     {
       "id": "visual",
       "kind": "visual",
       "status": "passed",
-      "startedAt": "2026-11-14T13:28:22.776Z",
+      "startedAt": "2026-11-14T13:32:49.422Z",
       "artifactIds": [
         "shot-full",
         "shot-arch",
@@ -495,14 +509,15 @@
         "shot-en-cost",
         "shot-390-hit",
         "shot-390-cost",
-        "shot-en-390"
+        "shot-en-390",
+        "shot-arch-store"
       ]
     },
     {
       "id": "reader",
       "kind": "reader",
       "status": "passed",
-      "startedAt": "2026-11-14T13:28:27.668Z",
+      "startedAt": "2026-11-14T13:32:52.225Z",
       "artifactIds": [
         "reader-review",
         "shot-full",
@@ -513,13 +528,15 @@
         "shot-arch-390",
         "shot-hit-done",
         "shot-tiers-end",
-        "shot-cost"
+        "shot-cost",
+        "shot-arch-store"
       ],
       "reviewer": "owner",
       "route": "#mooncake (zh, Light, 1440x1180; en/Dark/900/390 cross-checked)",
       "readingPath": [
         "Header and subtitle",
         "Section 1 title and implemented-stack map",
+        "Click Store in the map (inspector switches)",
         "Source facts (Conductor, Store, Transfer Engine, PG/EP)",
         "Boundary note (paper scheduler/CPP not open)",
         "Section 2 store fetch: replica list, transport strip, PutEnd",
@@ -944,6 +961,15 @@
       "description": "The architecture section still made the paper’s scheduler/CPP the default view even though the system is implemented; the paper design should be a boundary, not the canvas.",
       "checkIds": [
         "model",
+        "browser"
+      ]
+    },
+    {
+      "id": "F39",
+      "severity": "P3",
+      "status": "fixed",
+      "description": "Section 1 was a static map followed by a four-block source-facts text grid; the title also carried a redundant \"(open source)\" qualifier.",
+      "checkIds": [
         "browser"
       ]
     }

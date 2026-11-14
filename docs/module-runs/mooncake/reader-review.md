@@ -9,8 +9,7 @@
 ## Reading path
 
 1. Header and subtitle; sidebar "Mooncake".
-2. §1: title "Mooncake 的现役架构（开源实现）"; lead naming the commit and the components; the map: Conductor (prefix index) → router → engine, with Transfer Engine / Store / PG/EP underneath; the two notes (no global scheduler; the paper's scheduler and CPP pool are not open).
-3. §1 source facts: Conductor, Store, Transfer Engine, PG/EP.
+2. §1: title "Mooncake 的现役架构"; lead naming the commit and the components; the map: Conductor (prefix index) → router → engine, with Transfer Engine / Store / PG/EP underneath; clicking a node switches the one-line inspector (owns / does not / interface), and the caption says no global scheduler and that the paper's scheduler/CPP are not open.
 4. §2: store steps 0–8, replica list, transport strip, L2/segment inventory, write-back and PutEnd.
 5. §3: L1+L2 vs +L3 at round 5 and 48, pool 24, instance mode, L3 gain.
 6. §4: per-token crossing, 256-token threshold, mediums, floor, verdict; share popover and reload.
@@ -26,7 +25,7 @@ A condition where it does not transfer: little cross-request prefix sharing, a m
 
 | Promised understanding | Observed | Remains narrated | Verdict |
 |---|---|---|---|
-| Who decides / executes / stores | Map: Conductor index → router → engine; TE/Store/PG/EP substrate; source facts name each owner | engine-specific routing call | pass |
+| Who decides / executes / stores | Clickable map: Conductor index → router → engine; TE/Store/PG/EP substrate; the inspector names each owner and non-owner | engine-specific routing call | pass |
 | Conductor | Fact says prefix index, KV events, longest match; boundary says no scheduler | HTTP details of the integration | pass |
 | Store and transfer | Fact and §2: master metadata, replicas + lease TTL, PutStart/PutEnd, TE direct read, segment/buffer and topology | exact call chain | pass |
 | L3 integration | Tier trace and L3 gain; Store behind HiCache | — | pass |

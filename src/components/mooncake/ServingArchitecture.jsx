@@ -1,6 +1,22 @@
-import React from 'react';
+import React, {useState} from 'react';
+
+const LABELS = {
+  conductor: 'stackCond',
+  router: 'stackRouter',
+  engine: 'stackEngine',
+  te: 'stackTE',
+  store: 'stackStore',
+  pg: 'stackPG',
+};
 
 export default function ServingArchitecture({t}) {
+  const [selected, setSelected] = useState('conductor');
+  const node = (id, plane) => <button type="button" className={`mk-node ${selected === id ? 'on' : ''}`} aria-pressed={selected === id} onClick={() => setSelected(id)}>
+    {plane && <span className={`mk-plane ${plane === 'data' ? 'data' : ''}`}>{t(plane === 'data' ? 'planeData' : 'planeControl')}</span>}
+    <b>{t(LABELS[id])}</b>
+    <small>{t(`src_${id}`)}</small>
+  </button>;
+
   return (
     <section className="mk-section">
       <h2 data-section-anchor="mooncake-arch">{t('s0Title')}</h2>
@@ -8,42 +24,27 @@ export default function ServingArchitecture({t}) {
 
       <div className="mk-stack-map">
         <div className="mk-stack-flow">
-          <div className="mk-stack-node">
-            <span className="mk-plane">{t('planeControl')}</span>
-            <b>{t('stackCond')}</b>
-            <small>{t('stackCondNote')}</small>
-          </div>
+          {node('conductor', 'control')}
           <div className="mk-stack-link"><span>{t('ifaceQuery')}</span><i aria-hidden="true">→</i></div>
-          <div className="mk-stack-node">
-            <b>{t('stackRouter')}</b>
-            <small>{t('stackRouterNote')}</small>
-          </div>
+          {node('router')}
           <div className="mk-stack-link"><span>{t('ifacePick')}</span><i aria-hidden="true">→</i></div>
-          <div className="mk-stack-node">
-            <span className="mk-plane data">{t('planeData')}</span>
-            <b>{t('stackEngine')}</b>
-            <small>{t('stackEngineNote')}</small>
-          </div>
+          {node('engine', 'data')}
         </div>
 
         <div className="mk-stack-substrate">
-          <div className="mk-stack-node"><b>{t('stackTE')}</b><small>{t('stackTENote')}</small></div>
-          <div className="mk-stack-node"><b>{t('stackStore')}</b><small>{t('stackStoreNote')}</small></div>
-          <div className="mk-stack-node"><b>{t('stackPG')}</b><small>{t('stackPGNote')}</small></div>
+          {node('te')}
+          {node('store')}
+          {node('pg')}
         </div>
 
-        <p className="mk-note">{t('stackNote')}</p>
-        <p className="mk-note mk-warn">{t('unopenedNote')}</p>
-      </div>
+        <div className="mk-inspect" role="status" aria-live="polite">
+          <b>{t(LABELS[selected])}</b>
+          <span><i>{t('roleLabel')}</i>{t(`role_${selected}`)}</span>
+          <span><i>{t('notLabel')}</i>{t(`not_${selected}`)}</span>
+          <span><i>{t('apiLabel')}</i>{t(`api_${selected}`)}</span>
+        </div>
 
-      <div className="mk-facts">
-        <h3>{t('factTitle')}</h3>
-        <dl>
-          <div><dt>Conductor</dt><dd>{t('factConductor')}</dd></div>
-          <div><dt>Store</dt><dd>{t('factStore')}</dd></div>
-          <div><dt>Transfer Engine</dt><dd>{t('factTE')}</dd></div>
-          <div><dt>PG / EP</dt><dd>{t('factPG')}</dd></div>
-        </dl>
+        <p className="mk-note mk-cap">{t('stackNote')}</p>
       </div>
     </section>
   );
