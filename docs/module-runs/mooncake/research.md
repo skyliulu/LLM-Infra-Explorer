@@ -209,3 +209,12 @@ Researched 2026-11-14 against the sources below. Claim IDs are referenced by
   `PutStart`/`PutEnd` complete an object, and Transfer Engine performs the direct read.
 - §3's tier trace and §4's budgets remain teaching models; the page labels the trace and the readout
   assumptions.
+
+
+### C19 — Today's stack strip
+- Revision: `kvcache-ai/Mooncake@504f2ae`.
+- Depiction: a router (vLLM/SGLang) asks the Conductor's prefix index and picks an engine; engines
+  run prefill/decode; Transfer Engine moves data; Store holds shared KV; PG/EP provide elastic
+  execution. Source files: `mooncake-conductor/include/conductor/prefixindex`, `mooncake-store/include/
+  master_client.h`, `mooncake-transfer-engine/include/topology.h`.
+- Boundary: component-level; the exact routing call belongs to the engine integration.

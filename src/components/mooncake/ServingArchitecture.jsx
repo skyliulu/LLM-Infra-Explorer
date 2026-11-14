@@ -153,6 +153,24 @@ export default function ServingArchitecture({t, config, setConfig}) {
             <p>{t('designMono')}</p>
             <p>{t('designChoice')}</p>
           </details>
+
+          <div className="mk-stack">
+            <header>
+              <div><strong>{t('stackTitle')}</strong><small>{t('stackSub')}</small></div>
+              <small>{t('stackBoundary')}</small>
+            </header>
+            <div className="mk-stack-chain">
+              <span className="mk-stack-node"><b>{t('stackRouter')}</b><small>{t('stackRouterNote')}</small></span>
+              <i aria-hidden="true">→</i>
+              <span className="mk-stack-node"><b>{t('stackCond')}</b><small>{t('stackCondNote')}</small></span>
+              <i aria-hidden="true">→</i>
+              <span className="mk-stack-node"><b>{t('stackEngine')}</b><small>{t('stackEngineNote')}</small></span>
+            </div>
+            <div className="mk-stack-base">
+              <span>{t('stackTE')}</span><span>{t('stackStore')}</span><span>{t('stackPG')}</span>
+            </div>
+            <p>{t('stackNote')}</p>
+          </div>
         </div>
 
         <aside className="mk-side">
@@ -193,10 +211,6 @@ export default function ServingArchitecture({t, config, setConfig}) {
           </div>}
 
           {rejected && step >= m.limit && <p className="mk-note mk-warn">{t('reasonOverload')}</p>}
-
-          <div className="mk-notes">
-            <p>{t('evolutionNote')}</p>
-          </div>
         </aside>
       </div>
     </section>

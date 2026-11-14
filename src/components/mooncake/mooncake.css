@@ -371,3 +371,17 @@
 .mk-arch-design p{margin:3px 0 0;font-size:10.2px;line-height:1.45;color:#475569}
 /* Source-level implementation note under the store lead */
 .mk-src{font-size:9.5px;line-height:1.45;color:#64748b}
+/* Today's open-source stack strip */
+.mk-stack{border:1px solid #e2e8f0;border-radius:7px;background:#f8fafc;padding:7px 9px;margin-top:8px;min-width:0}
+.mk-stack header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.mk-stack header>div{display:grid;gap:1px}
+.mk-stack header strong{font-size:11px}
+.mk-stack header small{font-size:8.5px;line-height:1.4;color:#64748b}
+.mk-stack-chain{display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap}
+.mk-stack-node{display:grid;gap:1px;border:1px solid #cbd5e1;background:#fff;border-radius:5px;padding:3px 7px;min-width:0}
+.mk-stack-node b{font-size:10.5px}
+.mk-stack-node small{font-size:8.5px;color:#64748b}
+.mk-stack-chain i{font-style:normal;color:#6366f1;font-size:11px}
+.mk-stack-base{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.mk-stack-base span{font-size:8.5px;color:#475569;border:1px dashed #cbd5e1;border-radius:4px;padding:1px 5px;background:#fff}
+.mk-stack p{font-size:9.5px;line-height:1.45;color:#475569;margin:5px 0 0}
