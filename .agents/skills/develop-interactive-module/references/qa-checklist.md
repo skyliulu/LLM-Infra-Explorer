@@ -47,6 +47,7 @@ For full chapter delivery, apply common checks and the capability sections decla
 - [ ] A real design alternative is named and the reason for choosing this organization is stated; the architecture is not presented as inevitable.
 - [ ] The thesis still answers the user's system-level concern; a subordinate mechanism (cache tier, scheduler policy, format) is a section, not the spine, unless the user asked for that mechanism.
 - [ ] The page states which layer it draws — the paper's design or the current implementation — and names renamed services, a scheduler that became an index, or new layers where the reader meets the architecture.
+- [ ] Each mechanism records its evidence level (pinned code / docs / paper). Where code exists it outranks docs and paper; a paper-only mechanism is labeled as design, not current behavior.
 - [ ] Interface-level claims (who sends what, which IDs or decisions cross a boundary, what is checked and when) come from the pinned paper section or source, not from plausibility; claims added after the first research pass are re-checked and recorded with that locator.
 - [ ] Analytical budgets (time, bytes, SLO) carry their assumptions in the same visible block; only measured values are presented as measurements.
 

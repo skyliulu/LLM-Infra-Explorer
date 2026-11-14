@@ -88,3 +88,25 @@ only in a small note; the design comparison occupied four lines on the default p
 
 This is one trial; it motivated the checks, not a guarantee that every system chapter will be
 source-faithful or visually balanced.
+
+
+## Later trial: source code before docs and paper (2026-11-14)
+
+The owner stated the rule directly: if source exists, source is authoritative; only when no source
+exists should the paper be used. Re-checking the same Mooncake chapter exposed both cases in one
+page. The paper's Conductor scheduler and CPP prefill pool have no source tree in the open repository,
+so the paper is the only evidence and the page must label that layer as the paper's design. Store and
+Transfer Engine behavior does exist in source (`kvcache-ai/Mooncake@504f2ae`: `GetReplicaList`
+returns replica descriptors and a lease TTL, `PutStart`/`PutEnd`, topology-aware transport
+selection), so those claims follow the code and name the revision.
+
+- Added an evidence-precedence section to `implementation-fidelity.md`: pinned code > docs > paper;
+  code wins where it exists; paper-only mechanisms are labeled as design; divergence is stated with
+  the version.
+- The analysis handoff, system-chapter QA checks and a new eval scenario require the evidence level
+  per mechanism rather than one blanket source.
+- The page title and lead now say the architecture is the paper's, and the store section carries a
+  source-level note with the commit.
+
+This is one trial. It establishes the precedence rule for this workflow, not a claim that every
+paper-like system will have this split.

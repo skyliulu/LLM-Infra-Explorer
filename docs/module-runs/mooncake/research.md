@@ -200,3 +200,12 @@ Researched 2026-11-14 against the sources below. Claim IDs are referenced by
   have no source tree in the open repo; only the prefix index, TE, Store and PG/EP are open.
 - Boundary: this is a spot-check of the named files, not a line-by-line trace of the page's
   pseudocode; the page's store steps are a teaching simplification.
+
+
+### C18 — Evidence level per section after the source-first rule
+- §1 is the paper's design: the repo at `504f2ae` has no Conductor scheduler or CPP prefill source,
+  so the paper (v3 §1.1/§3/§5/§6/§7) is the strongest available evidence and the page says so.
+- §2 follows the pinned source: `GetReplicaList` returns replica descriptors and a lease TTL,
+  `PutStart`/`PutEnd` complete an object, and Transfer Engine performs the direct read.
+- §3's tier trace and §4's budgets remain teaching models; the page labels the trace and the readout
+  assumptions.

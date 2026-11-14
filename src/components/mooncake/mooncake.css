@@ -369,3 +369,5 @@
 .mk-arch-design summary::before{content:'▸ ';color:#6366f1}
 .mk-arch-design[open] summary::before{content:'▾ '}
 .mk-arch-design p{margin:3px 0 0;font-size:10.2px;line-height:1.45;color:#475569}
+/* Source-level implementation note under the store lead */
+.mk-src{font-size:9.5px;line-height:1.45;color:#64748b}

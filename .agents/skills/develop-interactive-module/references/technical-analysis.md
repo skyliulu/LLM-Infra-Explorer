@@ -20,6 +20,8 @@ The chapter's first useful view should expose that relationship map (who decides
 
 The handoff also states which layer the chapter draws: the paper's design or the current implementation. Pin the paper section for interface-level facts, name renamed services or a scheduler that became an index, and carry the boundary into the page where the reader meets the architecture. A claim added after the first analysis pass returns to the primary text before it enters the brief.
 
+For each mechanism, record the strongest evidence level available: **pinned source code, then docs, then the paper**. Code wins wherever it exists; a paper-only mechanism is labeled as design, not current behavior.
+
 For real implementation-level claims, inspect the matching path at a pinned revision and context as required by [implementation-fidelity.md](implementation-fidelity.md), not only when an obvious doubt arises. The installed Codebase Knowledge Builder can help with orientation/tracing; it is not required for every explanation. Design docs and papers establish motivation and abstractions; executable source checks actual behavior and constraints. Keep this evidence behind a principle-led explanation. Neither source paths nor API names should determine the reader's hierarchy.
 
 Keep research broader than the page. Deep implementation notes can remain in the run without turning into visible navigation. For broad topics use overview → responsibility → mechanism as meaningful levels, with a parent context and return path. A flat list of eleven detailed features plus a breadcrumb is not a hierarchy.

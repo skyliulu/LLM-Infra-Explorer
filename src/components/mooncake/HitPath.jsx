@@ -58,6 +58,7 @@ export default function HitPath({t}) {
       <h2 data-section-anchor="mooncake-hit">{t('s2Title')}</h2>
       <p className="mk-lead">{t('s2Lead')}</p>
       <p className="mk-note">{t('referenceCase')}</p>
+      <p className="mk-note mk-src">{t('implNote')}</p>
 
       <div className="mk-controls">
         <div className="mk-step-label" aria-live="polite" data-phase={phase}>

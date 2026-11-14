@@ -2,6 +2,16 @@
 
 Use when a chapter explains a real framework, runtime, kernel or model-specific execution path, or when feedback questions its correctness or distance from implementation. This is evidence work behind the explanation; it does not require exposing a repository tour, code panel or extra controls on the page.
 
+## Evidence precedence
+
+For behavior, **pinned source code outranks documentation, and documentation outranks a paper's design description**. Use the strongest level available for each claim:
+
+- **Source code at a pinned revision** — APIs, ownership, ordering, publication, leases, transfer paths, allocation. If code exists for the mechanism, do not base an implementation-level claim on a paper or design doc alone.
+- **Official design or deployment docs** — use for context, intent and parts the source does not cover. A doc claim contradicted by code loses.
+- **Paper** — use for the design and its rationale when the implementation is unavailable, or when the chapter explicitly explains the paper's design. Then label it as design, not current behavior.
+
+When code and paper/docs diverge, teach the code and note the divergence and the version. Record the evidence level in the claim row; “the paper says” is not a substitute for a source check when the source exists.
+
 ## Choose the evidence level for the claim
 
 Primary papers can establish a mathematical algorithm and design motivation. Official architecture documents can establish a deployment design. Claims about actual allocation, tensor layout/dtype, routing, buffer use, dispatch, synchronization, state updates or implemented constraints require the matching implementation source. A README feature list, kernel name or plausible pseudocode is insufficient.

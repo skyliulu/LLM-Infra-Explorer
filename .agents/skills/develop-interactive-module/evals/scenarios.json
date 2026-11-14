@@ -218,6 +218,17 @@
         "After adding depth, re-read the default path for text load; move a supporting comparison into a disclosure whose summary states the conclusion, without hiding the core argument",
         "Keep the canvas at least as prominent as the prose; a wall of card rows and notes is not depth"
       ]
+    },
+    {
+      "id": "code-before-paper",
+      "prompt": "这个系统章节用论文解释架构，但仓库里其实有源码。请判断应该以哪个为准，并检查页面。",
+      "criteria": [
+        "Check whether a pinned implementation exists for each claim; where it does, source code outranks docs and paper and the page follows the code",
+        "Use the paper only when no implementation exists or the chapter is explicitly about the design; label paper-only mechanisms as design",
+        "If code and paper/docs diverge, state the divergence and the version rather than blending them",
+        "Record the evidence level per mechanism (code/docs/paper) in the claim record",
+        "Do not present a paper-only scheduler or pool as the deployed implementation"
+      ]
     }
   ]
 }
