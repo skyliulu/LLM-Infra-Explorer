@@ -1,18 +1,18 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Pause, Play, RotateCcw, SkipForward} from 'lucide-react';
-import {LEASE_SECONDS, deriveHitScenario} from './model';
+import {LEASE_SECONDS, PAGE_BYTES, deriveHitScenario} from './model';
 import {fmtBytes, fmtMs, fmtTokens, shortHash} from './format';
 
 const STEPS = ['match', 'query', 'replica', 'prefetch', 'load', 'compute', 'write', 'done'];
 const CODE = [
   {id: 'match', text: 'prefix   = local_match(tokens)        # L1 first, then L2'},
   {id: 'query', text: 'keys     = [prefix_hash(page) for page in run]'},
-  {id: 'replica', text: 'replicas = master.get_replica_list(keys)\nlease    = replicas.acquire(10s)'},
+  {id: 'replica', text: 'replicas = master.get_replica_list(keys)\n# grants 10s read lease TTL on master'},
   {id: 'prefetch', text: 'te.read(replica.segment -> l2.slot)   # zero-copy RDMA'},
   {id: 'load', text: 'load_layers(l2.slots -> gpu)          # overlapped with compute'},
   {id: 'compute', text: 'prefill(tokens[prefix_tokens:])'},
-  {id: 'write', text: 'master.put_start(new_key, page_bytes)\nte.write(l2.slot -> segment)\nmaster.put_end(new_key)        # object becomes readable'},
-  {id: 'done', text: 'release(lease)                  # read protection ends; object persists'},
+  {id: 'write', text: 'dst = master.put_start(new_key, page_bytes)\nte.write(l2.slot -> dst.segment)\nmaster.put_end(new_key)        # object becomes readable'},
+  {id: 'done', text: '# read complete; lease TTL expires naturally on master'},
 ];
 const TIMING_STEPS = {lookup: ['query', 'replica'], prefetch: ['prefetch'], load: ['load'], compute: ['compute']};
 
@@ -52,13 +52,16 @@ export default function HitPath({t}) {
     {id: 'compute', ms: scenario.ms.compute, key: 'compute'},
   ];
   const isActive = id => (TIMING_STEPS[id] || []).includes(active);
+  const cellClass = id => {
+    if (newPages.includes(id)) return 'new';
+    if (remotePages.includes(id)) return 'pool-hit';
+    return 'l2-hit';
+  };
 
   return (
     <section className="mk-section">
       <h2 data-section-anchor="mooncake-hit">{t('s2Title')}</h2>
       <p className="mk-lead">{t('s2Lead')}</p>
-      <p className="mk-note">{t('referenceCase')}</p>
-      <p className="mk-note mk-src">{t('implNote')}</p>
 
       <div className="mk-controls">
         <div className="mk-step-label" aria-live="polite" data-phase={phase}>
@@ -66,9 +69,9 @@ export default function HitPath({t}) {
           <span>{step}/{limit}</span>
         </div>
         <div className="chapter-playback mk-playback">
-          <button onClick={reset} aria-label={t('reset')} title={t('reset')}><RotateCcw size={17}/></button>
-          <button onClick={togglePlay} aria-label={isPlaying && !done ? t('pause') : t('play')} title={isPlaying && !done ? t('pause') : t('play')}>{isPlaying && !done ? <Pause size={17}/> : <Play size={17}/>}</button>
-          <button onClick={handleNextStep} disabled={done} aria-label={t('next')} title={t('next')}><SkipForward size={17}/></button>
+          <button type="button" onClick={reset} aria-label={t('reset')} title={t('reset')}><RotateCcw size={17}/></button>
+          <button type="button" onClick={togglePlay} aria-label={isPlaying && !done ? t('pause') : t('play')} title={isPlaying && !done ? t('pause') : t('play')}>{isPlaying && !done ? <Pause size={17}/> : <Play size={17}/>}</button>
+          <button type="button" onClick={handleNextStep} disabled={done} aria-label={t('next')} title={t('next')}><SkipForward size={17}/></button>
         </div>
       </div>
 
@@ -79,9 +82,11 @@ export default function HitPath({t}) {
             <small>{t('masterNote')}</small>
             <div className="mk-replicas" aria-live="polite">
               <small>{t('replicaTitle')}</small>
-              {scenario.objects.map(object => <span key={object.id} className={step >= 3 ? 'ready' : 'pending'}>
-                {step >= 3 ? `${object.id} · ${t('segment')} ${object.segment} · ${fmtBytes(object.bytes)}` : '—'}
-              </span>)}
+              {scenario.objects.map(object => (
+                <span key={object.id} className={step >= 3 ? 'ready' : 'pending'}>
+                  {step >= 3 ? `${object.id} · ${t('segment')} ${object.segment} · ${fmtBytes(object.bytes)}` : '—'}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -89,10 +94,12 @@ export default function HitPath({t}) {
             <div className={`mk-seg-node ${active === 'prefetch' ? 'on' : ''}`}>
               <header><strong>{t('segmentRole')}</strong><span>{scenario.objects.length}/{scenario.segmentAll.length} {t('pagesUnit')}</span></header>
               <ul>
-                {scenario.objects.map(object => <li key={object.id}>
-                  <b>{object.id}</b>
-                  <small>{fmtBytes(object.bytes)}</small>
-                </li>)}
+                {scenario.objects.map(object => (
+                  <li key={object.id}>
+                    <b>{object.id}</b>
+                    <small>{fmtBytes(object.bytes)}</small>
+                  </li>
+                ))}
               </ul>
               {scenario.segmentMore > 0 && <em>{scenario.segmentMore} {t('segmentMore')}</em>}
             </div>
@@ -108,9 +115,15 @@ export default function HitPath({t}) {
               <div className={`mk-l2box ${['match', 'prefetch', 'load'].includes(active) ? 'on' : ''}`}>
                 <small>{t('l2Role')}</small>
                 <div className="mk-cells">
-                  {relevant.map(id => <span key={id} className={`mk-cell filled ${newPages.includes(id) ? 'new' : ''} ${id === 'S0' ? 'shared' : ''}`}>{id}</span>)}
-                  {Array.from({length: others}, (_, index) => <span key={`other-${index}`} className="mk-cell other" title={t('l2Other')}>·</span>)}
-                  {Array.from({length: Math.max(0, 12 - relevant.length - others)}, (_, index) => <span key={`empty-${index}`} className="mk-cell empty">·</span>)}
+                  {relevant.map(id => (
+                    <span key={id} className={`mk-cell filled ${cellClass(id)}`}>{id}</span>
+                  ))}
+                  {Array.from({length: others}, (_, index) => (
+                    <span key={`other-${index}`} className="mk-cell other" title={t('l2Other')}>·</span>
+                  ))}
+                  {Array.from({length: Math.max(0, 12 - relevant.length - others)}, (_, index) => (
+                    <span key={`empty-${index}`} className="mk-cell empty">·</span>
+                  ))}
                 </div>
                 <em>{scenario.l2Slots.length}/12 · {relevant.length} {t('l2Relevant')}</em>
               </div>
@@ -121,24 +134,28 @@ export default function HitPath({t}) {
               </div>
               <div className={`mk-gpubox ${['compute', 'load'].includes(active) ? 'on' : ''}`}>
                 <small>{t('gpuRole')}</small>
-                <div className="mk-cells">{gpu.length ? gpu.map(id => <span key={id} className={`mk-cell filled ${newPages.includes(id) ? 'new' : ''}`}>{id}</span>) : <span className="mk-off">—</span>}</div>
+                <div className="mk-cells">
+                  {gpu.length
+                    ? gpu.map(id => <span key={id} className={`mk-cell filled ${cellClass(id)}`}>{id}</span>)
+                    : <span className="mk-off">—</span>}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className={`mk-transport ${prefetched ? 'ready' : ''}`}>
+          <div className={`mk-transport ${active === 'prefetch' ? 'on' : prefetched ? 'ready' : ''}`}>
             <div className="mk-transport-head"><small>{t('transport')}</small><span className="mk-zero">{t('cpuCopies')}</span></div>
             <div className="mk-transport-rows">
-              <span><b>{t('srcMR')}</b><code>mr#0 · 4 × 20 MiB</code></span>
-              <span><b>{t('dstMR')}</b><code>mr#1 · slot 1–4</code></span>
-              <span><b>{t('pathSel')}</b><code>4 × NIC</code></span>
+              <span><b>{t('srcMR')}</b><code>{`mr#${scenario.segment} · ${scenario.objects.length} × ${fmtBytes(PAGE_BYTES)}`}</code></span>
+              <span><b>{t('dstMR')}</b><code>{`mr#${scenario.request.instance} · slot 1–${scenario.objects.length}`}</code></span>
+              <span><b>{t('pathSel')}</b><code>{`${scenario.nicLinks} × NIC`}</code></span>
             </div>
             <p>{t('mrNote')}</p>
           </div>
 
           <div className={`mk-writeback ${active === 'write' ? 'on' : ''} ${published ? 'done' : ''}`}>
             <small>{t('writeback')}</small>
-            <span>{newPages.join(', ')} → {t('segment')} 1 {t('segmentUnit')}</span>
+            <span>{newPages.join(', ')} → {t('segment')} {scenario.writeSegment} {t('segmentUnit')}</span>
             {published && <em>{t('readable')}</em>}
             <b>{fmtBytes(scenario.bytes.write)}</b>
           </div>
@@ -166,11 +183,13 @@ export default function HitPath({t}) {
           <div className="mk-timing">
             <h3>{t('timing')}</h3>
             <div className="mk-stack">
-              {segments.map(segment => <div key={segment.id} className={`mk-stack-row ${isActive(segment.id) ? 'on' : ''}`}>
-                <small>{t(segment.key)}</small>
-                <div className="mk-bar"><i className={segment.id} style={{width: `${totalMs ? (segment.ms / totalMs) * 100 : 0}%`}}/></div>
-                <b>{fmtMs(segment.ms)}</b>
-              </div>)}
+              {segments.map(segment => (
+                <div key={segment.id} className={`mk-stack-row ${isActive(segment.id) ? 'on' : ''}`}>
+                  <small>{t(segment.key)}</small>
+                  <div className="mk-bar"><i className={segment.id} style={{width: `${totalMs ? (segment.ms / totalMs) * 100 : 0}%`}}/></div>
+                  <b>{fmtMs(segment.ms)}</b>
+                </div>
+              ))}
             </div>
             <div className="mk-compare">
               <div><small>{t('thisRequest')} · L2+L3</small><strong>{fmtMs(totalMs)}</strong></div>

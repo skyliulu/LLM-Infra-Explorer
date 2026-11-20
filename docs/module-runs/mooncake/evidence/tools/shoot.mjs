@@ -88,7 +88,8 @@ async function shot(session, plan) {
       overflowX: Math.max(doc.scrollWidth, body.scrollWidth) > innerWidth + 1,
       theme: doc.dataset.theme, lang: doc.lang,
       katexErrors: document.querySelectorAll('.katex-error').length,
-      clipped: [...document.querySelectorAll('.mk-cell')].filter(el => el.textContent.trim() !== '·' && el.scrollWidth > el.clientWidth + 1).length,
+      clippedCells: [...document.querySelectorAll('.mk-cell')].filter(el => el.textContent.trim() !== '·' && el.scrollWidth > el.clientWidth + 1).length,
+      clippedNodes: [...document.querySelectorAll('.mk-node')].filter(el => el.scrollWidth > el.clientWidth + 2).length,
       sections: [...document.querySelectorAll('[data-section-anchor]')].map(el => el.dataset.sectionAnchor),
       buttons: document.querySelectorAll('[data-chapter] button').length,
       title: document.querySelector('[data-chapter] h1')?.textContent?.trim()
@@ -103,7 +104,7 @@ async function shot(session, plan) {
   const file = path.join(OUT, `${name}.png`);
   fs.writeFileSync(file, Buffer.from(data, 'base64'));
   await session.send('Emulation.setDeviceMetricsOverride', {width, height, deviceScaleFactor: 1, mobile: width < 500});
-  console.log(JSON.stringify({name, viewport: metrics.viewport, overflowX: metrics.overflowX, clippedCells: metrics.clipped, theme: metrics.theme, buttons: metrics.buttons, bytes: fs.statSync(file).size}));
+  console.log(JSON.stringify({name, viewport: metrics.viewport, overflowX: metrics.overflowX, clippedCells: metrics.clippedCells, clippedNodes: metrics.clippedNodes, theme: metrics.theme, katexErrors: metrics.katexErrors, bytes: fs.statSync(file).size}));
   return {name, metrics, file};
 }
 
@@ -112,49 +113,71 @@ const setRange = (section, index, value) => `(() => {
   const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
   setter.call(input, '${value}');
   input.dispatchEvent(new Event('input', {bubbles: true}));
+  input.dispatchEvent(new Event('change', {bubbles: true}));
 })()`;
 const clickNext = (section, times) => Array.from({length: times}, () => `document.querySelectorAll('.mk-section')[${section}].querySelectorAll('.mk-playback button')[2].click()`);
 const clickToggle = (section, group, index) => `document.querySelectorAll('.mk-section')[${section}].querySelectorAll('.mk-toggle')[${group}].querySelectorAll('button')[${index}].click()`;
 
-const SHARE_HASH = `#mooncake?section=mooncake-cost&setup=${encodeURIComponent(JSON.stringify({v: 1, values: {'Mooncake.mode': 'instance', 'Mooncake.poolPages': 48, 'Mooncake.serving': {scenario: 'overload', policy: 'slo'}, 'Mooncake.cost': {medium: 'slow', hitTokens: 512, prefillRate: 24000}}}))}`;
+const SHARE_HASH = `#mooncake?section=mooncake-cost&setup=${encodeURIComponent(JSON.stringify({v: 1, values: {'Mooncake.mode': 'instance', 'Mooncake.poolPages': 48, 'Mooncake.cost': {medium: 'slow', hitTokens: 512, prefillRate: 24000}}}))}`;
 
+// Section indices: 0 = arch, 1 = tiers, 2 = hit, 3 = cost
 const PLAN = [
   {name: 'zh-light-1440-arch', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]'},
-  {name: 'zh-light-1440-arch-store', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]', actions: ["document.querySelectorAll('.mk-node')[4].click()"]},
-  {name: 'zh-light-1440-arch-step5', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]', actions: clickNext(0, 4)},
+  {name: 'zh-light-1440-arch-local', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]', actions: [clickToggle(0, 0, 1)]},
+  {name: 'zh-light-1440-arch-proxy', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]', actions: [clickToggle(0, 0, 2)]},
+  {name: 'zh-light-1440-arch-step7', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]', actions: ["document.querySelectorAll('.mk-arch-steps button')[6].click()"]},
   {name: 'zh-dark-1440-arch', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-arch"]'},
+  {name: 'zh-system-1440-arch', width: 1440, height: 1180, lang: 'zh', theme: 'system', scrollTo: '[data-section-anchor="mooncake-arch"]'},
   {name: 'en-light-1440-arch', width: 1440, height: 1180, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]'},
   {name: 'en-dark-900-arch', width: 900, height: 1100, lang: 'en', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-arch"]'},
   {name: 'zh-light-390-arch', width: 390, height: 844, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-arch"]'},
+
   {name: 'zh-light-1440-tiers', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]'},
-  {name: 'zh-light-1440-tiers-round5', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(2, 1, 25)]},
-  {name: 'zh-light-1440-tiers-end', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(2, 1, 48)]},
-  {name: 'zh-light-1440-tiers-instance', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [clickToggle(2, 0, 0), setRange(2, 1, 48)]},
-  {name: 'zh-light-1440-tiers-pool24', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(2, 0, 24), setRange(2, 1, 48)]},
-  {name: 'zh-light-1440-hit-prefetch', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(1, 4)},
-  {name: 'zh-light-1440-hit-done', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(1, 8)},
+  {name: 'zh-light-1440-tiers-round5', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: ["document.querySelector('.mk-jump-btn').click()"]},
+  {name: 'zh-light-1440-tiers-end', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(1, 1, 48)]},
+  {name: 'zh-light-1440-tiers-instance', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [clickToggle(1, 0, 0), setRange(1, 1, 48)]},
+  {name: 'zh-light-1440-tiers-pool24', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(1, 0, 24), setRange(1, 1, 48)]},
+  {name: 'zh-dark-1440-tiers', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(1, 1, 40)]},
+  {name: 'en-light-1440-tiers', width: 1440, height: 1180, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(1, 1, 40)]},
+  {name: 'en-dark-900-tiers', width: 900, height: 1100, lang: 'en', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(1, 1, 40)]},
+  {name: 'zh-light-390-tiers', width: 390, height: 844, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(1, 1, 40)]},
+
+  {name: 'zh-light-1440-hit', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]'},
+  {name: 'zh-light-1440-hit-prefetch', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(2, 4)},
+  {name: 'zh-light-1440-hit-done', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(2, 8)},
+  {name: 'zh-dark-1440-hit', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(2, 6)},
+  {name: 'en-light-1440-hit', width: 1440, height: 1180, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(2, 4)},
+  {name: 'zh-light-390-hit', width: 390, height: 844, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(2, 4)},
+  {name: 'en-light-390-hit', width: 390, height: 844, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(2, 8)},
+
   {name: 'zh-light-1440-cost', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-cost"]'},
   {name: 'zh-light-1440-cost-slow', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-cost"]', actions: [clickToggle(3, 0, 3)]},
-  {name: 'zh-dark-1440-cost-ssd', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-cost"]', actions: [clickToggle(3, 0, 2)]},
-  {name: 'zh-dark-1440-tiers', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(2, 1, 40)]},
-  {name: 'zh-dark-1440-hit', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(1, 6)},
+  {name: 'zh-light-1440-cost-ssd-lookup', width: 1440, height: 1180, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-cost"]', actions: [clickToggle(3, 0, 2), setRange(3, 0, 5), setRange(3, 1, 18000)]},
   {name: 'zh-dark-1440-cost', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-cost"]'},
-  {name: 'en-light-1440-tiers', width: 1440, height: 1180, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(2, 1, 40)]},
-  {name: 'en-light-1440-hit', width: 1440, height: 1180, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(1, 4)},
+  {name: 'zh-dark-1440-cost-ssd', width: 1440, height: 1180, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-cost"]', actions: [clickToggle(3, 0, 2)]},
   {name: 'en-light-1440-cost', width: 1440, height: 1180, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-cost"]'},
-  {name: 'en-dark-900-tiers', width: 900, height: 1100, lang: 'en', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(2, 1, 40)]},
   {name: 'en-dark-900-cost', width: 900, height: 1100, lang: 'en', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-cost"]'},
-  {name: 'zh-light-390-tiers', width: 390, height: 844, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-tiers"]', actions: [setRange(2, 1, 40)]},
-  {name: 'zh-light-390-hit', width: 390, height: 844, lang: 'zh', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(1, 4)},
   {name: 'zh-dark-390-cost', width: 390, height: 844, lang: 'zh', theme: 'dark', scrollTo: '[data-section-anchor="mooncake-cost"]'},
-  {name: 'en-light-390-hit', width: 390, height: 844, lang: 'en', theme: 'light', scrollTo: '[data-section-anchor="mooncake-hit"]', actions: clickNext(1, 8)},
+
   {name: 'zh-light-1440-full', width: 1440, height: 1180, lang: 'zh', theme: 'light', full: true},
   {name: 'zh-light-1440-share-open', width: 1440, height: 860, lang: 'zh', theme: 'light', actions: [clickToggle(3, 0, 3), `document.querySelector('.site-share-button').click()`]},
   {name: 'zh-light-1440-share-load', width: 1440, height: 1180, lang: 'zh', theme: 'light', hash: SHARE_HASH, scrollTo: '[data-section-anchor="mooncake-cost"]'},
 ];
 
-const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run', '--no-default-browser-check', '--disable-extensions', '--force-device-scale-factor=1', `--remote-debugging-port=${PORT}`, `--user-data-dir=${USER_DATA}`, '--window-size=1440,1180', 'about:blank'], {stdio: 'ignore'});
+const waitForUrl = async (url, timeout = 25000) => {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    try { const response = await fetch(url); if (response.ok) return true; } catch {}
+    await sleep(200);
+  }
+  throw new Error(`Timed out waiting for ${url}`);
+};
+
+const vite = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', '5183', '--strictPort'], {stdio: 'ignore'});
+let chrome = null;
 try {
+  await waitForUrl(BASE);
+  chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run', '--no-default-browser-check', '--disable-extensions', '--force-device-scale-factor=1', `--remote-debugging-port=${PORT}`, `--user-data-dir=${USER_DATA}`, '--window-size=1440,1180', 'about:blank'], {stdio: 'ignore'});
   const version = await waitForJson(`http://127.0.0.1:${PORT}/json/version`);
   const socket = new WebSocket(version.webSocketDebuggerUrl);
   await new Promise((resolve, reject) => { socket.addEventListener('open', resolve); socket.addEventListener('error', reject); });
@@ -181,5 +204,6 @@ try {
   await session.send('Target.closeTarget', {targetId});
   socket.close();
 } finally {
-  chrome.kill();
+  if (chrome) chrome.kill();
+  vite.kill();
 }

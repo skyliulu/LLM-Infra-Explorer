@@ -8,6 +8,10 @@ const H = 212;
 const box = {left: 40, right: 330, top: 16, bottom: 148};
 const xFor = tokens => box.left + ((Math.log2(tokens) - Math.log2(SERIES_TOKENS[0])) / (Math.log2(SERIES_TOKENS.at(-1)) - Math.log2(SERIES_TOKENS[0]))) * (box.right - box.left);
 const fmtBandwidth = value => `${value >= 10 ? value.toFixed(0) : value.toFixed(1)} GB/s`;
+const fmtFactor = ratio => {
+  const factor = ratio >= 1 ? ratio : (ratio > 0 ? 1 / ratio : 0);
+  return `${factor < 1.1 ? factor.toFixed(2) : factor.toFixed(1)}×`;
+};
 
 export default function Economics({t, config, setConfig}) {
   const m = deriveEconomics(config);
@@ -18,7 +22,15 @@ export default function Economics({t, config, setConfig}) {
   const current = m.series.find(point => point.tokens === config.hitTokens) || {compute: m.computeUs, fetch: m.fetchUs};
   const floor = Number.isFinite(m.bandwidthFloor) ? m.bandwidthFloor : Infinity;
   const labels = {gain: t('verdictGain'), marginal: t('verdictMarginal'), loss: t('verdictLoss'), skipped: t('verdictSkipped')};
+  const verdictDesc = m.verdict === 'loss'
+    ? t(m.lossCause === 'lookup' ? 'verdict_loss_lookup' : 'verdict_loss')
+    : t(`verdict_${m.verdict}`);
   const set = patch => setConfig({...config, ...patch});
+
+  const xThresh = xFor(256);
+  const xBreak = crossing ? xFor(m.breakEvenTokens) : -999;
+  const nearThreshold = crossing && Math.abs(xBreak - xThresh) < 108;
+  const nearRight = crossing && xBreak > box.right - 95;
 
   return (
     <section className="mk-section">
@@ -27,7 +39,11 @@ export default function Economics({t, config, setConfig}) {
 
       <div className="mk-controls">
         <div className="mk-toggle" role="group" aria-label={t('medium')}>
-          {MEDIA.map(item => <button key={item.id} aria-pressed={config.medium === item.id} onClick={() => set({medium: item.id})}>{t(`medium_${item.id}`)}</button>)}
+          {MEDIA.map(item => (
+            <button key={item.id} type="button" aria-pressed={config.medium === item.id} onClick={() => set({medium: item.id})}>
+              {t(`medium_${item.id}`)}
+            </button>
+          ))}
         </div>
         <label className="mk-slider">
           <span>{t('hitTokens')}</span>
@@ -47,28 +63,41 @@ export default function Economics({t, config, setConfig}) {
             <div><small>{t('computeLabel')}</small><strong>{fmtMs(m.computeMs)}</strong></div>
             <div><small>{t('fetchLabel')}</small><strong>{fmtMs(m.fetchMs)}</strong></div>
             <div className={m.savingMs >= 0 ? 'gain' : 'loss'}><small>{t('savingLabel')}</small><strong>{m.savingMs >= 0 ? '+' : '−'}{fmtMs(Math.abs(m.savingMs))}</strong></div>
-            <div><small>{m.ratio >= 1 ? t('speedupLabel') : t('slowdownLabel')}</small><strong>{m.ratio >= 1 ? `${m.ratio.toFixed(1)}×` : `${(1 / m.ratio).toFixed(1)}×`}</strong></div>
+            <div><small>{m.ratio >= 1 ? t('speedupLabel') : t('slowdownLabel')}</small><strong>{fmtFactor(m.ratio)}</strong></div>
           </div>
 
           <div className="mk-chart">
             <h3>{t('formulaTitle')}</h3>
             <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${t('axisX')} / ${t('axisY')}`}>
-              <rect className="mk-zone" x={box.left} y={box.top} width={Math.max(0, xFor(256) - box.left)} height={box.bottom - box.top}/>
+              <rect className="mk-zone" x={box.left} y={box.top} width={Math.max(0, xThresh - box.left)} height={box.bottom - box.top}/>
               {[0, 0.5, 1].map(part => {
                 const value = max * part;
-                return <g key={part}>
-                  <line className="mk-gridline" x1={box.left} x2={box.right} y1={yFor(value)} y2={yFor(value)}/>
-                  <text className="mk-axis" x={4} y={yFor(value) + 4}>{Math.round(value)} µs</text>
-                </g>;
+                return (
+                  <g key={part}>
+                    <line className="mk-gridline" x1={box.left} x2={box.right} y1={yFor(value)} y2={yFor(value)}/>
+                    <text className="mk-axis" x={4} y={yFor(value) + 4}>{Math.round(value)} µs</text>
+                  </g>
+                );
               })}
-              {[8, 64, 512, 4096, 8192].map(tokens => <text className="mk-axis" key={tokens} x={xFor(tokens)} y={H - 34} textAnchor="middle">{tokens}</text>)}
+              {[8, 64, 512, 4096, 8192].map(tokens => (
+                <text className="mk-axis" key={tokens} x={xFor(tokens)} y={H - 34} textAnchor="middle">{tokens}</text>
+              ))}
               <text className="mk-axis" x={box.left} y={H - 18}>{t('axisX')}</text>
-              <line className="mk-marker threshold" x1={xFor(256)} x2={xFor(256)} y1={box.top} y2={box.bottom}/>
-              <text className="mk-axis" x={xFor(256) + 4} y={box.top + 9}>{t('thresholdLine')}</text>
-              {crossing && <g>
-                <line className="mk-marker break-even" x1={xFor(m.breakEvenTokens)} x2={xFor(m.breakEvenTokens)} y1={box.top} y2={box.bottom}/>
-                <text className="mk-axis" x={xFor(m.breakEvenTokens) + 3} y={box.top + 9}>{`${t('breakEven')} ≈ ${Math.round(m.breakEvenTokens)}`}</text>
-              </g>}
+              <line className="mk-marker threshold" x1={xThresh} x2={xThresh} y1={box.top} y2={box.bottom}/>
+              <text className="mk-axis" x={xThresh + 4} y={box.top + 9}>{t('thresholdLine')}</text>
+              {crossing && (
+                <g>
+                  <line className="mk-marker break-even" x1={xBreak} x2={xBreak} y1={box.top} y2={box.bottom}/>
+                  <text
+                    className="mk-axis"
+                    x={nearRight ? xBreak - 4 : xBreak + 3}
+                    y={nearThreshold ? box.top + 22 : box.top + 9}
+                    textAnchor={nearRight ? 'end' : 'start'}
+                  >
+                    {`${t('breakEven')} ≈ ${Math.round(m.breakEvenTokens)}`}
+                  </text>
+                </g>
+              )}
               <path className="mk-line compute" d={path('compute')}/>
               <path className="mk-line fetch" d={path('fetch')}/>
               <line className="mk-cursor" x1={xFor(config.hitTokens)} x2={xFor(config.hitTokens)} y1={box.top} y2={box.bottom}/>
@@ -87,7 +116,7 @@ export default function Economics({t, config, setConfig}) {
           <div className={`mk-verdict ${m.verdict}`} role="status">
             <small>{t('verdict')}</small>
             <strong>{labels[m.verdict]}</strong>
-            <p>{t(`verdict_${m.verdict}`)}</p>
+            <p>{verdictDesc}</p>
           </div>
 
           <div className="mk-math">
@@ -107,18 +136,12 @@ export default function Economics({t, config, setConfig}) {
             <div><dt>{t('breakEven')}</dt><dd>{Number.isFinite(m.breakEvenTokens) ? `${Math.round(m.breakEvenTokens)} ${t('tokensUnit')}` : '—'}{Number.isFinite(m.breakEvenTokens) && m.breakEvenTokens < PAGE_TOKENS ? ` · ${t('belowPage')}` : ''}</dd></div>
             <div><dt>{t('bandwidthFloorLabel')}</dt><dd>{Number.isFinite(floor) ? fmtBandwidth(floor) : '—'}</dd></div>
           </dl>
-          <p className="mk-note">{t('breakEvenNote')}</p>
-          <p className={`mk-note ${m.bandwidth < floor ? 'mk-warn' : ''}`}>{t('bandwidthFloor')}</p>
-
-          <div className="mk-notes">
-            {m.belowDefaultThreshold && <p className="mk-warn">{t('thresholdNote')}</p>}
-            <p>{t('poolSizing')}</p>
-            <p>{t('scopeNote')}</p>
-            <p className="mk-muted">{t('assumptions')}</p>
-          </div>
+          {m.bandwidth < floor && <p className="mk-warn">{t('bandwidthFloor')}</p>}
+          {m.belowDefaultThreshold && <p className="mk-warn">{t('thresholdNote')}</p>}
+          <p className="mk-note">{t('poolSizing')}</p>
+          <p className="mk-note mk-muted">{t('assumptions')}</p>
         </aside>
       </div>
-      <p className="mk-closing">{t('closing')}</p>
     </section>
   );
 }

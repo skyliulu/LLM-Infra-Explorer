@@ -1,5 +1,12 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-20 — Visual-first refactor & review repairs: Mooncake (`#mooncake`)
+
+- Rebuilt §1 (`ServingArchitecture.jsx` + `stack.js` + `model.js#deriveTopologyComparison`) around an interactive 3-topology counterfactual canvas (`Mooncake · 分离 + RDMA` 9.16 ms vs `仅单机 L1/L2` 29.5 ms vs `中心代理 + 10GbE TCP` 75.8 ms) with calibrated clickable bars, live bottleneck highlights (`0 B 数据` vs `转发 80.0 MiB` / `重算 5 页`), synchronized 7-step multi-line pseudocode (step 7 -> line 11 `engine.decode()`), and zero audit-template prose cards above the diagram.
+- Aligned chapter & section titles with neighboring chapters (`Mooncake` → `请求的数据路径` / `共享 KV 池与跨实例命中` / `一次跨节点取数` / `搬运与重算的成本边界`), cut verbose prose across all four sections, and moved source snapshot provenance (`@504f2ae` & paper boundary) cleanly into the collapsed footer disclosure.
+- Fixed all P1/P2 review findings: removed dead/duplicate i18n keys, fixed 4 `` `n `` CSS syntax errors and removed dead CSS classes (0 Vite build warnings), resolved `.mk-code` and `.mk-master` collisions, fixed 390px mobile stacking, aligned L2 (blue) / L3 (purple) chart and cell colors, made L1/L2 cells clickable, fixed `l2ShareNote` causality, aligned `8 × NIC` with `190 GB/s`, fixed TTL lease wording, and fixed `deriveEconomics` lookup-loss verdict (`ssd @ 18k / 256` -> `loss` / `lookup`) with staggered SVG labels.
+- Verification: `npm run check:mooncake` (incl. `deriveTopologyComparison`, stack steps/lines, i18n parity & lookup-loss regressions), `npm run check:workbench`, `node scripts/check-theme.mjs`, `npm run build` (0 warnings, `Unused CSS: []`), and live sidebar browser verification across all three topologies (`http://127.0.0.1:5173/#mooncake`, 0 console errors).
+
 ### 2026-11-14 — New chapter: Mooncake as the shared L3 KV tier
 
 - Added `#mooncake` ("Mooncake", Memory & Precision, after Radix HiCache). The chapter explains Mooncake's KVCache-centric design through its technical difficulties: §1 draws the implemented stack (router, prefix-index Conductor, engine, TE/Store/PG/EP) with source facts and the paper design only as a boundary; §2 steps through one store fetch (replica list → RDMA → load → suffix prefill → PutEnd); §3 shows the store as HiCache's shared L3 with the 8-round trace and L3 gain; §4 prices reuse across RDMA / 100GbE / SSD / 10GbE.

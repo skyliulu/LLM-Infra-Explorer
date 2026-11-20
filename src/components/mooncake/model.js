@@ -168,16 +168,17 @@ export function simulateTrace(mode = 'cluster', poolPages = POOL_DEFAULT, second
     totals.poolReadBytes += poolPagesHit * PAGE_BYTES;
     totals.newObjectBytes += newPages * PAGE_BYTES;
     totals.writeBytes += (computedPages + poolPagesHit) * PAGE_BYTES;
+    const baselineMs = (request.pages.length * PAGE_TOKENS) / seconds.prefillRate * 1000;
     totals.timeMs += timing.total;
-    totals.baselineMs += (request.pages.length * PAGE_TOKENS) / READOUT.prefillRate * 1000;
-    totals.savedMs += (request.pages.length * PAGE_TOKENS) / READOUT.prefillRate * 1000 - timing.total;
+    totals.baselineMs += baselineMs;
+    totals.savedMs += baselineMs - timing.total;
 
     const round = roundStats[request.round - 1];
     round.requests += 1;
     round.reused += (poolPagesHit + localPagesHit) * PAGE_TOKENS;
     round.computed += computedPages * PAGE_TOKENS;
     round.time += timing.total;
-    round.baseline += (request.pages.length * PAGE_TOKENS) / READOUT.prefillRate * 1000;
+    round.baseline += baselineMs;
 
     snapshots.push({
       step: request.index + 1,
@@ -256,6 +257,7 @@ export function deriveHitScenario(poolPages = POOL_DEFAULT) {
   const segmentOf = id => snapshot.segments.findIndex(row => row.includes(id));
   const objects = remote.map(entry => ({id: entry.id, segment: segmentOf(entry.id), bytes: PAGE_BYTES}));
   const segment = objects[0]?.segment ?? 0;
+  const writeSegment = computed[0] ? Math.max(0, segmentOf(computed[0].id)) : request.instance;
   const segmentAll = (snapshot.segments[segment] || []).filter(Boolean);
   const l2Slots = [...snapshot.l2[request.instance]];
   const prefetchMs = (objects.length * PAGE_BYTES) / 1e9 / READOUT.fabricGBps * 1000;
@@ -271,6 +273,8 @@ export function deriveHitScenario(poolPages = POOL_DEFAULT) {
     request,
     objects,
     segment,
+    writeSegment,
+    nicLinks: 8,
     segmentAll,
     segmentMore: Math.max(0, segmentAll.length - objects.length),
     l2Slots,
@@ -282,6 +286,59 @@ export function deriveHitScenario(poolPages = POOL_DEFAULT) {
     ms: {lookup: lookupMs, prefetch: prefetchMs, load: loadMs, compute: computeMs, total: totalMs, baseline: baselineMs, withoutL3: withoutL3Ms, l3Saved: withoutL3Ms - totalMs},
     ratio: totalMs > 0 ? baselineMs / totalMs : 0,
     ratioL3: totalMs > 0 ? withoutL3Ms / totalMs : 0,
+  };
+}
+
+// Architecture-level counterfactuals on the same Round-5 cross-node request
+// (1 local page S0 + 4 remote pages C0R1..C0R4 + 1 new page C0R5).
+export function deriveTopologyComparison(poolPages = POOL_DEFAULT) {
+  const hit = deriveHitScenario(poolPages);
+  const remoteBytes = hit.bytes.prefetch;
+  const slowGBps = MEDIA.find(item => item.id === 'slow').gbps;
+  const proxyTransferMs = (remoteBytes / 1e9 / slowGBps) * 1000;
+  const proxyTotalMs = hit.ms.lookup + proxyTransferMs + hit.ms.load + hit.ms.compute;
+  const localLoadMs = (hit.local.length * PAGE_BYTES) / 1e9 / READOUT.hostGBps * 1000;
+  const localComputeMs = (hit.request.pages.length - hit.local.length) * PAGE_TOKENS / READOUT.prefillRate * 1000;
+  return {
+    mooncake: {
+      id: 'mooncake',
+      masterBytes: 0,
+      transferBytes: remoteBytes,
+      transferMs: hit.ms.prefetch,
+      computePages: hit.computed.length,
+      computeMs: hit.ms.compute,
+      loadMs: hit.ms.load,
+      lookupMs: hit.ms.lookup,
+      totalMs: hit.ms.total,
+      cpuCopies: 0,
+      bottleneck: null,
+    },
+    local: {
+      id: 'local',
+      masterBytes: 0,
+      transferBytes: 0,
+      transferMs: 0,
+      computePages: hit.request.pages.length - hit.local.length,
+      computeMs: localComputeMs,
+      loadMs: localLoadMs,
+      lookupMs: 0,
+      totalMs: hit.ms.withoutL3,
+      cpuCopies: 0,
+      bottleneck: 'compute',
+    },
+    proxy: {
+      id: 'proxy',
+      masterBytes: remoteBytes,
+      transferBytes: remoteBytes,
+      transferMs: proxyTransferMs,
+      computePages: hit.computed.length,
+      computeMs: hit.ms.compute,
+      loadMs: hit.ms.load,
+      lookupMs: hit.ms.lookup,
+      totalMs: proxyTotalMs,
+      cpuCopies: 2,
+      bottleneck: 'proxy',
+    },
   };
 }
 
@@ -301,7 +358,14 @@ export function deriveEconomics({medium = 'rdma', hitTokens = 2048, prefillRate 
   const bandwidthFloor = computeUs > hostOnlyUs
     ? 1 / ((computeUs * 1e-6) / (KV_BYTES_PER_TOKEN / 1e9) - 1 / READOUT.hostGBps)
     : Infinity;
-  const verdict = hitTokens < DEFAULT_PREFETCH_TOKENS ? 'skipped' : fetchUs >= computeUs ? 'loss' : ratio < 1.25 ? 'marginal' : 'gain';
+  const verdict = hitTokens < DEFAULT_PREFETCH_TOKENS
+    ? 'skipped'
+    : (fetchUs >= computeUs || savingMs <= 0)
+      ? 'loss'
+      : ratio < 1.25
+        ? 'marginal'
+        : 'gain';
+  const lossCause = verdict === 'loss' ? (fetchUs >= computeUs ? 'bandwidth' : 'lookup') : null;
   // Per-token view: the lookup is amortized over the hit while the transfer stays flat.
   const series = SERIES_TOKENS.map(tokens => ({tokens, compute: computeUs, fetch: (READOUT.lookupMs * 1000) / tokens + fetchUs}));
   const maxUs = Math.max(...series.map(point => Math.max(point.compute, point.fetch)));
@@ -320,6 +384,7 @@ export function deriveEconomics({medium = 'rdma', hitTokens = 2048, prefillRate 
     breakEvenTokens,
     bandwidthFloor,
     verdict,
+    lossCause,
     belowDefaultThreshold: hitTokens < DEFAULT_PREFETCH_TOKENS,
     series,
     maxUs,

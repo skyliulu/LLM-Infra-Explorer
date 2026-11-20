@@ -1,44 +1,22 @@
-# Owner reader review — Mooncake
+# Owner reader review — Mooncake (Deep Refactor)
 
 ## Route and state
 
-- Final route: `#mooncake`, label "Mooncake", title "Mooncake：以 KVCache 为中心的分离式服务".
-- Reviewed: zh Light 1440 full page; en Light, zh/en Dark, 900 and 390. §1 implemented-stack map and source facts; §2 store steps; §3 L3 trace and pool sizes; §4 RDMA/100GbE/SSD; share popover and reload.
-- Evidence: `evidence/zh-light-1440-full.png`, `zh-light-1440-arch.png`, `zh-dark-1440-arch.png`, `en-light-1440-arch.png`, `en-dark-900-arch.png`, `zh-light-390-arch.png`, `zh-light-1440-hit-done.png`, `zh-light-1440-tiers-end.png`, `zh-light-1440-cost.png`.
+- Route: `#mooncake`, sidebar label "Mooncake", title "Mooncake：以 KVCache 为中心的共享存储与搬运栈".
+- Inspected rendered captures: `zh-light-1440-arch.png`, `zh-light-1440-arch-lens3.png`, `zh-light-1440-arch-step7.png`, `zh-dark-1440-arch.png`, `zh-system-1440-arch.png`, `en-light-1440-arch.png`, `en-dark-900-arch.png`, `zh-light-390-arch.png`, `zh-light-1440-tiers-round5.png`, `zh-light-1440-hit-done.png`, `zh-dark-1440-hit.png`, `zh-light-1440-cost-ssd-lookup.png`, `zh-light-1440-share-load.png`.
 
 ## Reading path
 
-1. Header and subtitle; sidebar "Mooncake".
-2. §1: title "Mooncake 的现役架构"; lead naming the commit and the components; the map: Conductor (prefix index) → router → engine, with Transfer Engine / Store / PG/EP underneath; clicking a node switches the one-line inspector (owns / does not / interface), and the caption says no global scheduler and that the paper's scheduler/CPP are not open.
-4. §2: store steps 0–8, replica list, transport strip, L2/segment inventory, write-back and PutEnd.
-5. §3: L1+L2 vs +L3 at round 5 and 48, pool 24, instance mode, L3 gain.
-6. §4: per-token crossing, 256-token threshold, mediums, floor, verdict; share popover and reload.
-7. Repeated in English, Dark, 900 and 390.
+1. Header & subtitle accurately frame the open-source KV indexing/store/transfer stack and its L3/economics progression.
+2. §1 (`mooncake-arch`): switched across the 3 engineering difficulties (cross-instance visibility, metadata/data decoupling, zero-copy RDMA movement), verified the 5-item ledger (constraint / magnitude / without it / mechanism / boundary) couples directly to the 2-plane architecture map and request steps; stepped to step 5 (lens 3) and step 7 (`Decode`, line 11 `engine.decode()`); checked rejected-alternative & source-boundary box; verified 900px Dark and 390px Light stacking.
+3. §2 (`mooncake-tiers`): clicked "跳到第 5 轮改派" -> landed at 25/48 with `C0R1` selected across request strip, Instance 0 L2, Instance 1 L1/L2, and inspector; confirmed aligned blue (`L1+L2`) vs purple (`L1+L2+L3`) curves, compact `master` pill, and `Token` units.
+4. §3 (`mooncake-hit`): followed the Round-5 rebalance from §2 directly into the 8-step fetch; verified readable `.mk-code` heading in Light & Dark, blue/purple/green L2/GPU cells, `8 × NIC` transport strip, and natural TTL lease expiry wording.
+5. §4 (`mooncake-cost`): verified default RDMA gain, `SSD @ 18k / 256` lookup-loss verdict with staggered non-overlapping SVG labels, and share-link reload restoring `10GbE / 512 / 24k`.
 
 ## Reconstructed answer (from the page alone)
 
-Mooncake as implemented today is an infrastructure stack, not the paper's global scheduler. At `504f2ae` a router (vLLM/SGLang) asks Conductor for the prefix index and picks an engine instance; the engine runs prefill and decode. Conductor only maintains the index: it consumes KV events and answers the longest reusable prefix per instance, medium and DP rank. Transfer Engine moves KV between registered segments over RDMA or other transports, selecting paths by topology and aggregating NICs. Store's master owns the object directory, allocation, replicas and leases; clients contribute segments and read/write directly through Transfer Engine; `GetReplicaList` returns replicas and a lease TTL, and `PutStart`/`PutEnd` complete an object. PG/EP provide elastic membership. The paper's Conductor scheduler and CPP prefill pool are not in the repository, so they are not drawn. Section 2 drills into one fetch, section 3 shows the Store behind HiCache with the L3 gain, and section 4 prices reuse.
-
-A condition where it does not transfer: little cross-request prefix sharing, a medium below the floor, or a pool smaller than the working set erode the gain; the page shows the small-pool erosion and the 10GbE failure.
-
-## Central-mechanism audit
-
-| Promised understanding | Observed | Remains narrated | Verdict |
-|---|---|---|---|
-| Who decides / executes / stores | Clickable map: Conductor index → router → engine; TE/Store/PG/EP substrate; the inspector names each owner and non-owner | engine-specific routing call | pass |
-| Conductor | Fact says prefix index, KV events, longest match; boundary says no scheduler | HTTP details of the integration | pass |
-| Store and transfer | Fact and §2: master metadata, replicas + lease TTL, PutStart/PutEnd, TE direct read, segment/buffer and topology | exact call chain | pass |
-| L3 integration | Tier trace and L3 gain; Store behind HiCache | — | pass |
-| Reuse economics | Per-token crossing, threshold zone, medium floor | — | pass |
-
-Upper/lower mapping: the architecture map names the components; §2 opens Store and TE; §3 opens the L3 use; §4 prices it.
-
-## Friction found and repairs
-
-- Fifth review: the page still made the paper's scheduler/CPP the default architecture after the owner had established source-first precedence. Section 1 was replaced with the implemented stack; the four-lens paper model, its tests and share config were removed; the paper is a one-line boundary (F50).
-- Polish earlier: source note in §2, readout labels, compact copy, centered playback.
-- Remaining friction, accepted: the map is component-level; §2 is a fixed default-pool reference case; the L3-only baseline is a computed counterfactual; the page is not a line-by-line source trace.
+In `kvcache-ai/Mooncake@504f2ae`, routing and model compute stay in vLLM/SGLang while Mooncake solves three distributed KV bottlenecks: (1) cross-instance prefix visibility via Conductor's global `prefixindex`, (2) decoupling metadata from large KV payloads via Store Master (`GetReplicaList` + 10s read lease TTL, `PutStart`/`PutEnd` publication, 0 data bytes through Master), and (3) beating recomputation across nodes via Transfer Engine zero-copy RDMA `BatchTransfer` over registered memory regions (190 GB/s on 8×400GbE vs 3.9 GB/s floor at 11k tok/s). Keeping KV private in L1/L2 hits a single-host ceiling and drops cross-instance hits, while central TCP proxies eat the prefill budget. Putting Store behind HiCache as L3 eliminates cross-instance misses (e.g., Round 5 rebalance onto Instance 1) and per-host capacity cliffs, while each remote hit must cover 0.8 ms metadata lookup plus transfer time—failing whenever medium bandwidth falls below the compute floor (e.g., 10GbE, or SSD on a 24k tok/s GPU) or hit length falls below break-even / the 256-token policy threshold.
 
 ## Final verdict
 
-Pass for the requested outcome: the default architecture is the implemented stack, the paper design is explicitly not part of it, and the store/L3/economics follow. Evidence listed above; details in `qa.md`.
+Pass. All P1/P2 findings from the review are resolved and visually verified in both languages, Light/Dark/System themes, and desktop/tablet/mobile viewports.

@@ -123,8 +123,8 @@ const descriptions = [
   {
     id: 'mooncake',
     description: {
-      en: 'Understand Mooncake through its KVCache-centric design: cache-aware placement, chunked prefill, the shared KV pool and when reuse pays.',
-      zh: '从 KVCache 中心的分离式架构理解 Mooncake：缓存感知选路、分块 Prefill、共享 KV 池，以及复用何时划算。',
+      en: 'Understand Mooncake’s open-source KV stack: control/data-plane split, Conductor prefix index, shared L3 pool, zero-copy RDMA fetch and reuse economics.',
+      zh: '从控制/数据面分工理解 Mooncake 开源 KV 栈：前缀索引、L3 共享缓存池、零拷贝 RDMA 取数，以及复用何时划算。',
     },
     iconClass: 'text-violet-300',
   },

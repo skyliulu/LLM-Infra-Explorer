@@ -8,73 +8,76 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch.png"
     },
     {
-      "name": "zh-light-1440-arch-store",
+      "name": "zh-light-1440-arch-lens3",
       "metrics": {
         "viewport": {
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-store.png"
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-lens3.png"
     },
     {
-      "name": "zh-light-1440-arch-step5",
+      "name": "zh-light-1440-arch-step7",
       "metrics": {
         "viewport": {
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-step5.png"
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-arch-step7.png"
     },
     {
       "name": "zh-dark-1440-arch",
@@ -83,23 +86,50 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "dark",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-arch.png"
+    },
+    {
+      "name": "zh-system-1440-arch",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 4013,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-system-1440-arch.png"
     },
     {
       "name": "en-light-1440-arch",
@@ -108,21 +138,22 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3869,
+        "contentHeight": 4284,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "en",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake: KVCache-centric serving"
+        "buttons": 34,
+        "title": "Mooncake: KVCache-centric shared store and transfer stack"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-arch.png"
     },
@@ -133,21 +164,22 @@
           "width": 900,
           "height": 1100
         },
-        "contentHeight": 5963,
+        "contentHeight": 6914,
         "documentWidth": 900,
         "overflowX": false,
         "theme": "dark",
         "lang": "en",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake: KVCache-centric serving"
+        "buttons": 34,
+        "title": "Mooncake: KVCache-centric shared store and transfer stack"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-arch.png"
     },
@@ -158,21 +190,22 @@
           "width": 390,
           "height": 844
         },
-        "contentHeight": 7157,
+        "contentHeight": 8499,
         "documentWidth": 390,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-arch.png"
     },
@@ -183,21 +216,22 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers.png"
     },
@@ -208,21 +242,22 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 46,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 86,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-round5.png"
     },
@@ -233,21 +268,22 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 49,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 98,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-end.png"
     },
@@ -258,21 +294,22 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 37,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 86,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-instance.png"
     },
@@ -283,23 +320,154 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 49,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 98,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-tiers-pool24.png"
+    },
+    {
+      "name": "zh-dark-1440-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 4013,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 96,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-tiers.png"
+    },
+    {
+      "name": "en-light-1440-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 4284,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "en",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 96,
+        "title": "Mooncake: KVCache-centric shared store and transfer stack"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-tiers.png"
+    },
+    {
+      "name": "en-dark-900-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 900,
+          "height": 1100
+        },
+        "contentHeight": 6973,
+        "documentWidth": 900,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "en",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 96,
+        "title": "Mooncake: KVCache-centric shared store and transfer stack"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-tiers.png"
+    },
+    {
+      "name": "zh-light-390-tiers",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "contentHeight": 8595,
+        "documentWidth": 390,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 96,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-tiers.png"
+    },
+    {
+      "name": "zh-light-1440-hit",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 4013,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-hit.png"
     },
     {
       "name": "zh-light-1440-hit-prefetch",
@@ -308,21 +476,22 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-hit-prefetch.png"
     },
@@ -333,23 +502,128 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3624,
+        "contentHeight": 4017,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-hit-done.png"
+    },
+    {
+      "name": "zh-dark-1440-hit",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 4016,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-hit.png"
+    },
+    {
+      "name": "en-light-1440-hit",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 1180
+        },
+        "contentHeight": 4284,
+        "documentWidth": 1440,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "en",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 34,
+        "title": "Mooncake: KVCache-centric shared store and transfer stack"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-hit.png"
+    },
+    {
+      "name": "zh-light-390-hit",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "contentHeight": 8516,
+        "documentWidth": 390,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "zh-CN",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-hit.png"
+    },
+    {
+      "name": "en-light-390-hit",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "contentHeight": 9346,
+        "documentWidth": 390,
+        "overflowX": false,
+        "theme": "light",
+        "lang": "en",
+        "katexErrors": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
+        "sections": [
+          "mooncake-arch",
+          "mooncake-tiers",
+          "mooncake-hit",
+          "mooncake-cost"
+        ],
+        "buttons": 34,
+        "title": "Mooncake: KVCache-centric shared store and transfer stack"
+      },
+      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-390-hit.png"
     },
     {
       "name": "zh-light-1440-cost",
@@ -358,21 +632,22 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-cost.png"
     },
@@ -383,98 +658,50 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3608,
+        "contentHeight": 4000,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-cost-slow.png"
     },
     {
-      "name": "zh-dark-1440-cost-ssd",
+      "name": "zh-light-1440-cost-ssd-lookup",
       "metrics": {
         "viewport": {
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
-        "theme": "dark",
+        "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-cost-ssd.png"
-    },
-    {
-      "name": "zh-dark-1440-tiers",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3621,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "dark",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 48,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-tiers.png"
-    },
-    {
-      "name": "zh-dark-1440-hit",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3622,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "dark",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-hit.png"
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-cost-ssd-lookup.png"
     },
     {
       "name": "zh-dark-1440-cost",
@@ -483,73 +710,50 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "dark",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-cost.png"
     },
     {
-      "name": "en-light-1440-tiers",
+      "name": "zh-dark-1440-cost-ssd",
       "metrics": {
         "viewport": {
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3869,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
-        "theme": "light",
-        "lang": "en",
+        "theme": "dark",
+        "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 48,
-        "title": "Mooncake: KVCache-centric serving"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
-      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-tiers.png"
-    },
-    {
-      "name": "en-light-1440-hit",
-      "metrics": {
-        "viewport": {
-          "width": 1440,
-          "height": 1180
-        },
-        "contentHeight": 3869,
-        "documentWidth": 1440,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "en",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake: KVCache-centric serving"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-hit.png"
+      "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-1440-cost-ssd.png"
     },
     {
       "name": "en-light-1440-cost",
@@ -558,48 +762,24 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3869,
+        "contentHeight": 4284,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "en",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake: KVCache-centric serving"
+        "buttons": 34,
+        "title": "Mooncake: KVCache-centric shared store and transfer stack"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-light-1440-cost.png"
-    },
-    {
-      "name": "en-dark-900-tiers",
-      "metrics": {
-        "viewport": {
-          "width": 900,
-          "height": 1100
-        },
-        "contentHeight": 5971,
-        "documentWidth": 900,
-        "overflowX": false,
-        "theme": "dark",
-        "lang": "en",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 48,
-        "title": "Mooncake: KVCache-centric serving"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-tiers.png"
     },
     {
       "name": "en-dark-900-cost",
@@ -608,73 +788,24 @@
           "width": 900,
           "height": 1100
         },
-        "contentHeight": 5963,
+        "contentHeight": 6914,
         "documentWidth": 900,
         "overflowX": false,
         "theme": "dark",
         "lang": "en",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake: KVCache-centric serving"
+        "buttons": 34,
+        "title": "Mooncake: KVCache-centric shared store and transfer stack"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\en-dark-900-cost.png"
-    },
-    {
-      "name": "zh-light-390-tiers",
-      "metrics": {
-        "viewport": {
-          "width": 390,
-          "height": 844
-        },
-        "contentHeight": 7217,
-        "documentWidth": 390,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 48,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-tiers.png"
-    },
-    {
-      "name": "zh-light-390-hit",
-      "metrics": {
-        "viewport": {
-          "width": 390,
-          "height": 844
-        },
-        "contentHeight": 7202,
-        "documentWidth": 390,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "zh-CN",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-390-hit.png"
     },
     {
       "name": "zh-dark-390-cost",
@@ -683,48 +814,24 @@
           "width": 390,
           "height": 844
         },
-        "contentHeight": 7157,
+        "contentHeight": 8499,
         "documentWidth": 390,
         "overflowX": false,
         "theme": "dark",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-dark-390-cost.png"
-    },
-    {
-      "name": "en-light-390-hit",
-      "metrics": {
-        "viewport": {
-          "width": 390,
-          "height": 844
-        },
-        "contentHeight": 7997,
-        "documentWidth": 390,
-        "overflowX": false,
-        "theme": "light",
-        "lang": "en",
-        "katexErrors": 0,
-        "clipped": 0,
-        "sections": [
-          "mooncake-arch",
-          "mooncake-hit",
-          "mooncake-tiers",
-          "mooncake-cost"
-        ],
-        "buttons": 30,
-        "title": "Mooncake: KVCache-centric serving"
-      },
-      "file": "docs\\module-runs\\mooncake\\evidence\\en-light-390-hit.png"
     },
     {
       "name": "zh-light-1440-full",
@@ -733,21 +840,22 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3621,
+        "contentHeight": 4013,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-full.png"
     },
@@ -758,21 +866,22 @@
           "width": 1440,
           "height": 860
         },
-        "contentHeight": 3608,
+        "contentHeight": 4000,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-share-open.png"
     },
@@ -783,26 +892,63 @@
           "width": 1440,
           "height": 1180
         },
-        "contentHeight": 3608,
+        "contentHeight": 4000,
         "documentWidth": 1440,
         "overflowX": false,
         "theme": "light",
         "lang": "zh-CN",
         "katexErrors": 0,
-        "clipped": 0,
+        "clippedCells": 0,
+        "clippedNodes": 0,
         "sections": [
           "mooncake-arch",
-          "mooncake-hit",
           "mooncake-tiers",
+          "mooncake-hit",
           "mooncake-cost"
         ],
-        "buttons": 30,
-        "title": "Mooncake：以 KVCache 为中心的分离式服务"
+        "buttons": 34,
+        "title": "Mooncake：以 KVCache 为中心的共享存储与搬运栈"
       },
       "file": "docs\\module-runs\\mooncake\\evidence\\zh-light-1440-share-load.png"
     }
   ],
   "console": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    },
     {
       "type": "debug",
       "text": "[vite] connecting..."
