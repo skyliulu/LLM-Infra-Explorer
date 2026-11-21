@@ -30,16 +30,18 @@ export function KernelBuffers({lang='zh'}) {
  </div>;
 }
 
-function RankLoads({model,t}) {
+function RankLoads({model,t,active,onSelect}) {
  const i=model.before.findIndex(g=>g.id===model.target),before=model.before[i],after=model.after[i];
- return <section className="mp-routing-board" data-policy={model.method} data-target={model.target}><h4>{t(model.method)} <strong>→ GPU {model.target}</strong></h4><p>{t(model.method==='count'?'reasonCount':model.request==='short'?'reasonShort':'reasonLong')}</p><div className="mp-route-result"><span>{t('requests')} <b>{before.requests} → {after.requests}</b></span><span>{t('kv')} <b>{before.kv} → {after.kv}K</b></span></div></section>;
+ return <button type="button" className={`mp-routing-board ${active?'active':''}`} data-policy={model.method} data-target={model.target} aria-pressed={active} onClick={onSelect}><h4>{t(model.method)} <strong>→ GPU {model.target}</strong></h4><p>{t(model.method==='count'?'reasonCount':model.request==='short'?'reasonShort':'reasonLong')}</p><div className="mp-route-result"><span>{t('requests')} <b>{before.requests} → {after.requests}</b></span><span>{t('kv')} <b>{before.kv} → {after.kv}K</b></span></div></button>;
 }
 
 export function SchedulingLab({lang='zh'}) {
- const t=key=>i18n[lang][key],[request,setRequest]=useExperimentState('DeepInfer.routeRequest','long'),models=['count','dual'].map(method=>getDecodeRouting(request,method));
+ const t=key=>i18n[lang][key],[request,setRequest]=useExperimentState('DeepInfer.routeRequest','long'),[policy,setPolicy]=useState('dual'),models=['count','dual'].map(method=>getDecodeRouting(request,method));
+ const activeModel=models.find(m=>m.method===policy)||models[1];
  return <div className="mp-panel" data-testid="scheduling-lab" data-request={request}>
-  <div className="mp-request-choice" role="group" aria-label={t('scheduleLabel')}>{['short','long'].map(id=><button key={id} aria-pressed={request===id} onClick={()=>setRequest(id)}>{t(id)}</button>)}</div>
-  <div className="mp-load-grid mp-shared-load">{models[0].before.map(gpu=><div className="mp-gpu" key={gpu.id}><strong>GPU {gpu.id}</strong><small>{t('before')}</small>{[['requests',10],['kv',160]].map(([metric,scale])=><div className="mp-meter" key={metric}><div><span>{t(metric)}</span><b>{gpu[metric]}{metric==='kv'?'K':''}</b></div><div className="mp-meter-track"><i className="mp-meter-after" style={{width:`${gpu[metric]/scale*100}%`}}/></div></div>)}</div>)}</div><div className="mp-routing-pair">{models.map(m=><RankLoads key={m.method} model={m} t={t}/>)}</div><p className="mp-note">{t('legend')}</p><p className="mp-note">{t('routingNote')}</p>
+  <div className="mp-request-choice" role="group" aria-label={t('scheduleLabel')}>{['short','long'].map(id=><button type="button" key={id} aria-pressed={request===id} onClick={()=>setRequest(id)}>{t(id)}</button>)}</div>
+  <div className="mp-load-grid mp-shared-load">{activeModel.before.map((gpu,idx)=>{const after=activeModel.after[idx],chosen=gpu.id===activeModel.target;return <div className={`mp-gpu ${chosen?'selected':''}`} key={gpu.id}><strong>GPU {gpu.id}</strong><small>{chosen?t('selected'):t('before')}</small>{[['requests',10],['kv',160]].map(([metric,scale])=>{const delta=after[metric]-gpu[metric];return <div className="mp-meter" key={metric}><div><span>{t(metric)}</span><b>{chosen?`${gpu[metric]} → ${after[metric]}${metric==='kv'?'K':''}`:`${gpu[metric]}${metric==='kv'?'K':''}`}</b></div><div className="mp-meter-track"><i className="mp-meter-before" style={{width:`${gpu[metric]/scale*100}%`}}/>{delta>0&&<i className="mp-meter-after" style={{width:`${after[metric]/scale*100}%`}}/>}</div></div>;})}</div>;})}</div>
+  <div className="mp-routing-pair">{models.map(m=><RankLoads key={m.method} model={m} t={t} active={policy===m.method} onSelect={()=>setPolicy(m.method)}/>)}</div><p className="mp-note">{t('routingNote')}</p>
   <section className="mp-prefill"><h4>{t('prefillTitle')}</h4><div className="mp-quota-flow">{['bucket','quota','chunk','min'].map((key,i)=><React.Fragment key={key}>{i>0&&<span aria-hidden="true">→</span>}<b>{t(key)}</b></React.Fragment>)}</div><div className="mp-budget"><MathFormula>{BUDGET}</MathFormula><p>{t('budgetNote')}</p></div></section>
  </div>;
 }

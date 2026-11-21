@@ -1,5 +1,13 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-21 — Targeted polish & cleanup: DeepInfer (`#deepinfer`)
+
+- Upgraded `#di-layout` (`ParallelPath`) from 4 static boxes to an interactive Prefill (EP2–8 · large local batch) vs Decode (EP64–128 · wide batch gathering) switcher.
+- Upgraded `#di-scheduling` (`SchedulingLab`) so clicking either policy card highlights the target GPU card above with `.selected` and renders before→after two-tone delta bars (`requests` & `KV`) directly on the GPU card.
+- Upgraded `#di-cache` (`CacheLab` + `CacheView`): stage pills (`1–4`) are now clickable buttons, added standard icon playback controls (`reset/play/next`), started at step 1 so `next` is active on arrival, and replaced the fragile `.cx-cache > p:first-of-type { display: none }` CSS hack with an explicit `compact` prop.
+- Removed duplicate disclaimer paragraphs in `#di-kernel` (`kernelAfter` repeated `kernelNote`) and unused `mapInterfaces`, and deleted 13 unmounted legacy files in `src/components/deepinfer/`.
+- Verification: `npm run check:deepinfer`, `npm run check:workbench`, `node scripts/check-theme.mjs`, `npm run build` (0 warnings), and live browser verification of `http://127.0.0.1:5173/#deepinfer` across `#di-layout`, `#di-cache`, `#di-scheduling`, and `#di-kernel`.
+
 ### 2026-11-20 — Visual-first refactor & review repairs: Mooncake (`#mooncake`)
 
 - Rebuilt §1 (`ServingArchitecture.jsx` + `stack.js` + `model.js#deriveTopologyComparison`) around an interactive 3-topology counterfactual canvas (`Mooncake · 分离 + RDMA` 9.16 ms vs `仅单机 L1/L2` 29.5 ms vs `中心代理 + 10GbE TCP` 75.8 ms) with calibrated clickable bars, live bottleneck highlights (`0 B 数据` vs `转发 80.0 MiB` / `重算 5 页`), synchronized 7-step multi-line pseudocode (step 7 -> line 11 `engine.decode()`), and zero audit-template prose cards above the diagram.

@@ -14,3 +14,4 @@
 .mp-track-axis{display:block;position:relative;height:15px}.mp-track-axis>span{position:absolute;transform:translateX(-50%)}.mp-track-axis>span:first-child{transform:none}.mp-track-axis>span:last-child{transform:translateX(-100%)}.mp-block-track>div{background:repeating-linear-gradient(to right,#e2e8f0 0,#e2e8f0 1px,transparent 1px,transparent 28.5714%)}
 
 .mp-block-track>div>button{padding:0;white-space:nowrap;line-height:22px}
+button.mp-routing-board{text-align:left;cursor:pointer;width:100%;transition:border-color .15s,box-shadow .15s}button.mp-routing-board:hover{border-color:#8b5cf6}button.mp-routing-board.active{border:2px solid #6d28d9;padding:11px;box-shadow:0 2px 10px rgba(109,40,217,.14)}
