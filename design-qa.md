@@ -1826,3 +1826,16 @@ Skill reader-review新增实际邻章对照的判断，并给owner场景补标�
 新增来源约束的回归全部通过，独立来源复核确认两项P2关闭。实际dev和production检查中文浅色桌面、英文暗色桌面、中文暗色900及390、英文浅色390的受影响区域；900标签换行经缩短条内字及nowrap修复，最终再看。System当前解析dark；没有声称全12组合重跑。主作者整章通读至页尾，最终短标签修正后再复读；播放自然到14停、检查器路径/块、热点开关/低负载/闲置副本、总览进入和返回通过。最终控制台无warn/error。
 
 check:deepinfer、workbench、theme、约定9/9及production build通过。三项发现关闭，证据和明确限制见 docs/module-runs/deepinfer/fidelity-repair-2026-11-13/qa.md、independent.md。范围是这次聚焦修复，未复现真实GPU并行执行、数值精度、吞吐或经济收益，未提交、推送、部署。
+
+
+## 2026-11-21 — Cross-Chapter Audit & Targeted Repairs (Remaining 12 Chapters)
+
+- **Scope**: Automated model suite, static reachability / sharing-schema / anchor audit, and headless Chrome rendered audit (Desktop 1440×900 Light/Dark + EN + Mobile 390×844) across all 12 remaining chapters (`llm`, `parallel`, `flash`, `sparseattn`, `cachearch`, `flashdecode`, `speculative`, `quantization`, `engram`, `radixcache`, `linearattn`, `dpattention`).
+- **Fixes applied**:
+  - `Quantization` sharing validator (`src/lib/experiment-sharing.js`): aligned `Quantization.algorithm` from `'smoothquant'` to `'smooth'` (matching `quantization/model.js` `ALGORITHMS`) and added SmoothQuant round-trip coverage in `scripts/check-workbench-sharing.mjs`.
+  - `RadixCache` persistence & sharing (`HiCacheStory.jsx`, `HiCacheLayout.jsx`, `experiment-sharing.js`): wired `RadixCache.story`, `RadixCache.layoutPool`, and `RadixCache.layout` through `useExperimentState` and `SHARE_SCHEMA.radixcache`.
+  - `LLMInference` dark-mode SVG (`src/components/llm-inference/TensorWorkbench.jsx`): replaced hardcoded `stroke="#e2e8f0"` and `stroke="white"` in `SamplingCurve` with theme-adaptive `currentColor` + opacity strokes.
+  - `ParallelStrategies` semantics (`src/components/ParallelStrategies.jsx`): removed 6× duplicated `data-section-anchor="parallelstrategies-2"` inside `.map()`, placed it once on the strategy grid container, and promoted main section headings (`parallelstrategies-1`, `parallelstrategies-3`) from `<h3>` to `<h2>`.
+  - `DpAttention` semantics (`src/components/DpAttention.jsx`): added bilingual `<h2>` (`dpattention-architecture`) for the primary Attention & MoE flow canvas.
+  - Dead code & stale script cleanup: deleted 3 unreferenced files (`linear-attention/VisualPrimitives.jsx`, `radix-cache/RadixTreeView.jsx`, `radix-cache/hicache-code.js`) and updated `scripts/check-navigation.mjs` to match the 14-chapter `MODULE_LABELS` / `getModuleLabel` architecture.
+- **Verification**: All affected `npm run check:*` suites (`workbench`, `quantization`, `radix`, `llm`, `parallel`, `dpa`, `linear`), `node scripts/check-theme.mjs`, `node scripts/check-navigation.mjs`, `npm run build` (0 warnings), and headless Chrome rendered checks across all 5 modified chapters (share-link restoration, anchor uniqueness, `h2` hierarchy, dark-mode SVG strokes, 0 console errors, 0 horizontal overflow) passed.

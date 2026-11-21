@@ -1316,10 +1316,10 @@ const App = () => {
       <div className="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200 flex flex-col gap-2 relative overflow-hidden h-full">
         {/* 修复：移除 xl:flex-row 和 justify-between，始终保持 flex-col 上下排列 */}
         <div className="flex flex-col items-start border-b border-slate-200 pb-3 mb-2 gap-2.5">
-          <h3 data-section-anchor="parallelstrategies-1" className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800">
+          <h2 data-section-anchor="parallelstrategies-1" className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800">
             <Network className="text-cyan-600" size={20} />
             {t('logicalTitle')}
-          </h3>
+          </h2>
 
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap gap-1.5 text-[9px] font-mono">
@@ -1930,7 +1930,7 @@ const App = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2 lg:gap-3">
+        <div data-section-anchor="parallelstrategies-2" className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2 lg:gap-3">
           {STRATEGIES.map((strat) => {
             const currentVal = degrees[strat.id];
             const Icon = strat.icon;
@@ -1942,7 +1942,7 @@ const App = () => {
 
                 <div className="flex items-center gap-1.5 lg:gap-2 mb-2">
                   <Icon size={16} className={`shrink-0 ${active ? getColorClass(strat.color, 'text') : 'text-slate-400'}`} />
-                  <h3 data-section-anchor="parallelstrategies-2" className={`font-bold text-[12px] md:text-[13px] whitespace-nowrap tracking-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{t(`${strat.id}Name`)}</h3>
+                  <h3 className={`font-bold text-[12px] md:text-[13px] whitespace-nowrap tracking-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{t(`${strat.id}Name`)}</h3>
                 </div>
 
                 <div className="flex gap-1 mb-2.5 lg:mb-3">
@@ -2093,10 +2093,10 @@ const App = () => {
 
           <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm lg:col-span-5 xl:col-span-4" data-testid="gpu-map-column">
              <div className="mb-3 flex items-center justify-between gap-2">
-               <h3 data-section-anchor="parallelstrategies-3" className="flex items-center gap-1.5 text-sm font-bold leading-tight text-slate-800 md:text-base">
+               <h2 data-section-anchor="parallelstrategies-3" className="flex items-center gap-1.5 text-sm font-bold leading-tight text-slate-800 md:text-base">
                  <ServerIcon className="text-emerald-500" />
                  {t(servingMode === 'pdDisaggregated' ? 'physGpuMapPd' : mappingModel === 'dcpReuse' ? 'physGpuMapDcp' : 'physGpuMap')} ({totalGpus} {t('cards')})
-               </h3>
+               </h2>
                {totalGpus === 1 && <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded border border-slate-200">{t('singleCard')}</span>}
              </div>
 

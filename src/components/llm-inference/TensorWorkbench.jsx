@@ -170,8 +170,8 @@ const SamplingCurve = ({ sampling, t }) => {
 
   return (
     <div data-testid="sampling-curve" data-kept-count={sampling.keptCount} data-total-count={sampling.totalCount} className="min-w-0">
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={t('samplingCurve')} className="h-28 w-full overflow-visible">
-        {[0.25, 0.5, 0.75, 1].map((value) => <line key={value} x1={plot.left} x2={width - plot.right} y1={y(value)} y2={y(value)} stroke="#e2e8f0" strokeWidth="1" />)}
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={t('samplingCurve')} className="h-28 w-full overflow-visible text-slate-400">
+        {[0.25, 0.5, 0.75, 1].map((value) => <line key={value} x1={plot.left} x2={width - plot.right} y1={y(value)} y2={y(value)} stroke="currentColor" strokeOpacity="0.25" strokeWidth="1" />)}
         <line x1={plot.left} x2={width - plot.right} y1={y(sampling.topP)} y2={y(sampling.topP)} stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4 3" />
         <polyline points={points('temperatureProbability')} fill="none" stroke="#a855f7" strokeWidth="2" />
         <polyline points={points('cumulativeProbability')} fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3 2" />
@@ -181,7 +181,7 @@ const SamplingCurve = ({ sampling, t }) => {
           const compactLabel = tokenLabel.length > 8 ? `${tokenLabel.slice(0, 7)}…` : tokenLabel;
           return (
           <g key={`${candidate.t}-${index}`}>
-            <circle cx={x(index)} cy={y(candidate.finalProbability)} r={candidate.accepted ? 4 : 3} fill={candidate.accepted ? '#10b981' : '#cbd5e1'} stroke="white" strokeWidth="1.5" />
+            <circle cx={x(index)} cy={y(candidate.finalProbability)} r={candidate.accepted ? 4 : 3} fill={candidate.accepted ? '#10b981' : '#94a3b8'} stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.2" />
             <text x={x(index)} y={height - 10} textAnchor="middle" className="fill-slate-500 text-[8px]">{compactLabel}</text>
           </g>
           );

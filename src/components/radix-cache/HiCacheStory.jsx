@@ -1,4 +1,5 @@
 import React,{useState,useEffect,useMemo} from 'react';
+import {useExperimentState} from '../../lib/ExperimentContext';
 import {Play,Pause,RotateCcw,SkipForward,Lock} from 'lucide-react';
 import {REQUESTS,PAGE_TOKENS,TOKENS_PER_PAGE,requestSharedPrefix,sharedPage} from './hicache-story';
 import {deriveHiCacheEngineState,ENGINE_DEFAULTS} from './hicache-engine';
@@ -41,13 +42,14 @@ function EngineScene({lang,pool,selected,setSelected,options,settings}){
 }
 
 export default function HiCacheStory({lang,pool,selected,setSelected}){
- const [options,setOptions]=useState({...ENGINE_DEFAULTS,concurrent:false});
+ const [storyOpts,setStoryOpts]=useExperimentState('RadixCache.story',{prefetch:ENGINE_DEFAULTS.prefetch,write:ENGINE_DEFAULTS.write,fault:ENGINE_DEFAULTS.fault});
+ const options={...ENGINE_DEFAULTS,concurrent:false,...storyOpts};
  const t=k=>engineCopy[lang][k]||hcCopy[lang][k];
  const settings=<details className="hc-engine-settings" open><summary>{t('settings')}</summary><div className="hc-controls">{[
   ['prefetch','prefetchSetting',['wait_complete','timeout','best_effort']],
   ['write','writeSetting',['write_through','write_through_selective','write_back']],
   ['fault','faultSetting',['none','host_pressure','gpu_pressure','partial_read','rank_lag']],
- ].map(([key,label,values])=><label key={key}>{t(label)}<select value={options[key]} onChange={e=>setOptions({...options,[key]:e.target.value})}>{values.map(v=><option key={v} value={v}>{t(v)}</option>)}</select></label>)}</div></details>;
+ ].map(([key,label,values])=><label key={key}>{t(label)}<select value={storyOpts[key]} onChange={e=>setStoryOpts({...storyOpts,[key]:e.target.value})}>{values.map(v=><option key={v} value={v}>{t(v)}</option>)}</select></label>)}</div></details>;
  return <EngineScene key={JSON.stringify({...options,pool})} {...{lang,pool,selected,setSelected,options,settings}}/>;
 }
 

@@ -10,6 +10,7 @@ const i18n = {
   zh: {
     title: 'DP Attention 推理并行解析',
     subtitle: 'Decode 视角：MLA KV 归属与 MoE 通信桥接',
+    flowTitle: 'Attention 与 MoE 跨卡数据流',
     langToggle: 'EN',
     standard: '标准 TP (Standard TP)',
     dp: 'DP Attention (混合并行)',
@@ -140,6 +141,7 @@ const i18n = {
   en: {
     title: 'DP Attention Inference Parallelism',
     subtitle: 'Decode view: MLA KV ownership and the MoE communication bridge',
+    flowTitle: 'Attention & MoE Cross-Rank Data Flow',
     langToggle: '中文',
     standard: 'Standard TP',
     dp: 'DP Attention',
@@ -526,6 +528,10 @@ const DpAttentionVisualizer = () => {
 
           {/* Left Column: Flow Diagram (Tensor view) */}
           <div className="xl:col-span-7 bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 flex flex-col relative overflow-hidden h-full">
+            <h2 data-section-anchor="dpattention-architecture" className="mb-3 flex items-center gap-2 text-base font-bold text-slate-800">
+              <Network size={18} className="text-indigo-600" />
+              {t('flowTitle')}
+            </h2>
 
             {/* Status Bar inside the Viz */}
             <div className="relative z-20 mb-4 grid gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)]">

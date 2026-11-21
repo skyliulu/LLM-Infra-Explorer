@@ -1,4 +1,5 @@
 import React,{useState,useEffect,useMemo} from 'react';
+import {useExperimentState} from '../../lib/ExperimentContext';
 import {Play,Pause,RotateCcw,SkipForward} from 'lucide-react';
 import {deriveHiCacheLayoutState} from './hicache-layout-model';
 import {layoutCopy} from './hicache-layout-content';
@@ -24,8 +25,8 @@ function LayoutScene({lang,page,pool,setPool,config,setConfig}){
  </section>;
 }
 export default function HiCacheLayout({lang,page}){
- const [pool,setPool]=useState('mha');
- const [config,setConfig]=useState({layout:'layer_first',operation:'layer',layer:1,backend:'kernel',storage:'scatter',registered:true,copyTime:3,computeTime:4});
+ const [pool,setPool]=useExperimentState('RadixCache.layoutPool','mha');
+ const [config,setConfig]=useExperimentState('RadixCache.layout',{layout:'layer_first',operation:'layer',layer:1,backend:'kernel',storage:'scatter',registered:true,copyTime:3,computeTime:4});
  return <LayoutScene key={JSON.stringify({...config,page,pool})} {...{lang,page,pool,setPool,config,setConfig}}/>;
 }
 

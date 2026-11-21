@@ -14,9 +14,10 @@ const examples={
  linearattn:{'LinearAttention.detailMode':'exact','LinearAttention.contextLength':16384},
  sparseattn:{'SparseAttention.input':{mode:'hca',tokens:64,query:1,topK:2,window:8,csaRatio:4,hcaRatio:8,inspect:2,channel:0,budgetKiB:64}},
  cachearch:{'CacheArchitecture.tokens':1000000,'CacheArchitecture.phase':'decode','CacheArchitecture.layer':39},
- quantization:{'Quantization.config':{mode:'fp4',batch:8,context:8192,kv:'fp4',prefill:true},'quantization/SGLangWorkbench.preset':'saved-static'},
+ quantization:{'Quantization.config':{mode:'fp4',batch:8,context:8192,kv:'fp4',prefill:true},'quantization/SGLangWorkbench.preset':'saved-static','Quantization.algorithm':'smooth'},
  speculative:{'SpeculativeDecoding.config':{algorithm:'dspark',depth:3,width:2,budget:8,blockSize:8}},
- engram:{'Engram.systemMode':'training','Engram.samplePreset':'collision','Engram.sampleQuery':'orthogonal'},radixcache:{},
+ engram:{'Engram.systemMode':'training','Engram.samplePreset':'collision','Engram.sampleQuery':'orthogonal'},
+ radixcache:{'RadixCache.story':{prefetch:'timeout',write:'write_back',fault:'host_pressure'},'RadixCache.layoutPool':'mla','RadixCache.layout':{layout:'page_first_direct',operation:'page',layer:2,backend:'direct',storage:'direct_file',registered:true,copyTime:4,computeTime:6}},
  mooncake:{'Mooncake.mode':'instance','Mooncake.poolPages':48,'Mooncake.cost':{medium:'ssd',hitTokens:4096,prefillRate:12000}},
  deepinfer:lessonSettings,
 };
