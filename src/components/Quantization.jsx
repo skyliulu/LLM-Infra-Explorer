@@ -22,6 +22,7 @@ function Overview({ config, setConfig, t, lang }) {
   const rooflineTokens = config.prefill ? Math.min(2048, config.batch * config.context) : config.batch;
   const roof = deriveQuantRoofline(rooflineTokens >= 512 ? 512 : rooflineTokens >= 128 ? 128 : rooflineTokens >= 32 ? 32 : rooflineTokens >= 8 ? 8 : 1);
   const roofNames = { bf16: 'rooflineBf16', w4a16: 'rooflineW4a16', block_fp8: 'rooflineFp8', nvfp4: 'rooflineNvfp4' };
+  const roofModes = { bf16: 'bf16', w4a16: 'w4', block_fp8: 'fp8', nvfp4: 'fp4' };
   const kvVariables = [
     ['2', 'kvPair', null], ['L', 'kvLayers', m.shape.layers], ['B', 'kvBatch', m.shape.batch],
     ['T', 'kvContext', m.shape.context], [String.raw`H_{\mathrm{KV}}`, 'kvHeads', m.shape.heads],
@@ -40,7 +41,11 @@ function Overview({ config, setConfig, t, lang }) {
           <button type="button" aria-pressed={config.prefill} onClick={() => setConfig({...config, prefill: true})}>{t('prefill')}</button>
         </div>
       </div>
-      <div className="q-rf-grid">{roof.rows.map(row => <div key={row.id} className={`q-roofline-mini ${row.id===roof.bestId?'best':''}`}><span>{t(roofNames[row.id])}</span><div className="q-rf-track"><div className={`q-rf-fill ${row.speedup<1?'slow':row.id===roof.bestId?'best':'ok'}`} style={{width:`${Math.min(100,row.speedup/3.8*100)}%`}}/><i className="q-rf-baseline" style={{left:`${1/3.8*100}%`}}/></div><b className={row.speedup<1?'slow':''}>{row.speedup.toFixed(2)}×</b></div>)}</div>
+      <div className="q-rf-grid">{roof.rows.map(row => {
+        const targetMode = roofModes[row.id];
+        const isCurrent = config.mode === targetMode;
+        return <button key={row.id} type="button" onClick={() => setConfig({...config, mode: targetMode})} aria-pressed={isCurrent} className={`q-roofline-mini ${row.id===roof.bestId?'best':''} ${isCurrent?'selected':''}`}><span>{t(roofNames[row.id])}</span><div className="q-rf-track"><div className={`q-rf-fill ${row.speedup<1?'slow':row.id===roof.bestId?'best':'ok'}`} style={{width:`${Math.min(100,row.speedup/3.8*100)}%`}}/><i className="q-rf-baseline" style={{left:`${1/3.8*100}%`}}/></div><b className={row.speedup<1?'slow':''}>{row.speedup.toFixed(2)}×</b></button>;
+      })}</div>
     </div>
     <details><summary>{t('formulas')}</summary><p>{t('capacityNote')}</p><p>{t(config.mode==='fp4'||config.kv==='fp4'?'fp4Metadata':'metadataNote')}</p><div className="q-capacity-formula"><h4>{t('kvCountTitle')}</h4><MathFormula block>{FORMULAS.kvElements}</MathFormula><MathFormula block>{FORMULAS.kv}</MathFormula><dl className="q-variable-grid">{kvVariables.map(([symbol,label,value]) => <div key={symbol}><dt><MathFormula>{symbol}</MathFormula>{value !== null && <strong>{value}</strong>}</dt><dd>{t(label)}</dd></div>)}</dl><div className="q-metrics"><Metric t={t} label="kvPayload" value={bytes(m.kvPayload)}/><Metric t={t} label="metadata" value={bytes(m.kvScales)}/><Metric t={t} label="kvTotal" value={bytes(m.kvBytes)}/></div></div><p>{t('perToken')}: {bytes(m.weightBytesPerToken)}</p><p>{t('performanceNote')}</p></details>
     {selected==='kv' && config.kv==='fp4' && <details><summary>{t('kvExample')}</summary><FP4CacheWorkbench lang={lang} example/></details>}

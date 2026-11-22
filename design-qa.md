@@ -1,5 +1,17 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-22 — Wave 1 v4 跨模式视觉一致性与分块 FP8 可视化补强 + Skill 更新
+
+- **Skill 迭代**（`content-and-math.md`、`visual-grammar.md`、`reader-review.md`、`qa-checklist.md`）：补充跨模式视觉一致性通用规则——同一工作台内切换模式页签时，必须保持 `h2` 标题、概览目录项、控件栏文法、页面骨架与原子单位粒度（如逐词 Token 芯片、槽位格）一致，只突出真实的算法/架构差异，禁止在页签背后挂载另一套截然不同的设计语言。
+- **`RadixCache` §1 统一设计语言**：
+  - 固定 §1 标题为 `连续请求 · 前缀树与物理池`（`纯 Transformer KV · 三层存储` ↔ `混合 Mamba / Linear 状态 · 双物理池` 切换时 `h2` 与概览下拉菜单完全稳定不变）。
+  - 混合模式完全复用 `.hc-engine-settings`、`.hc-token-stream`（单行请求标签 + 逐词 `.hc-word-pair` 芯片）、`.hc-play-row` 进度条、`.hc-story-canvas`（`.hc-graph-node` 逐词芯片 + 绿色检查点 / 红色虚线仅 KV 节点 + 回退虚线弧 + `.hc-tier` / `.hc-slots` 双物理池）与 `.hc-story-bottom` 匹配路由与可点击追踪检查器。
+  - 修复渲染截图中发现的两个细节：`.hc-graph svg` 收紧为 `.hc-graph > svg` 避免节点内状态图标错位，调高混合节点盒高使检查点徽标完全落于边框内。
+- **`Quantization` 补齐可视化分块 FP8（Block-wise FP8）**：
+  - Card 01 Roofline 4 方案条升级为可点击按钮（点击 `分块 FP8` / `NVFP4 W4A4` 直接切换顶栏精度模式）。
+  - Card 02 在 `W(FP8)/A(FP8)` 下新增可视化 `BlockFP8Panel`，在同一份激活/权重样本上直观展示 `1×128` 激活行分块（`Tile 0` 隔离 `4.375` 离群尖峰，`Tile 1` 保持更紧 scale）、`128×128` 权重二维分块、`Per-Tensor FP8 (0.024)` vs `Block-wise FP8 (0.019)` 实时 MSE 对照与 `WGMMA → FP32` 累加说明。
+- **验证**：`check:radix`、`check:quantization`、`check-theme`、`npm run build` 全过；Headless Chrome 验证 `radixSameH2 === true`、`radixSameOpts === true`、混合树内 8 个逐词芯片、Block-wise FP8 4 个 Tile 块、Light/Dark 与 EN `cjkLeak = 0`、0 console error、0 KaTeX error，并逐张核验截图。本地提交，待用户确认后推送。
+
 ### 2026-11-22 — Wave 1 v3 深度融合重构（顶层模式化 + 零名词卡片 + 折叠清理）与 Skill 提炼
 
 - **Skill 规则沉淀**（`.agents/skills/develop-interactive-module/references/content-and-math.md`、`reader-review.md`、`qa-checklist.md`）：提炼 5 条可迁移通用准则——① 禁止只列名称与静态数字的“宣传卡片条”，所有引入的算法/架构变体必须进入画布展示真实机制；② 同一核心机制下的架构/状态变体优先升格为顶层/主工作台切换，独立正交机制（如调度、布局）单开小节；③ 保持跨模式可读领域实例一致，拒绝抽象占位符（`T1..T8`）或裸坐标；④ 新增能力在同级入口可见，不藏于非默认脚注；⑤ 清理短内容无意义 `<details>` 折叠，1–2 行解释或单行公式直接展示。

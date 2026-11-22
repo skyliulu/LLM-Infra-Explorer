@@ -2,7 +2,7 @@ import {useExperimentState} from '../../lib/ExperimentContext';
 import React, { useMemo, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { MathFormula } from '../linear-attention/MathFormula';
-import { deriveNumericModel, maxAbs } from './model';
+import { deriveNumericModel, maxAbs, quantize, linear, mse } from './model';
 import { Card, Choice, Range, Metric, Matrix, fmt, bytes } from './primitives';
 import { FORMULAS } from './content';
 import './numeric.css';
@@ -72,13 +72,69 @@ function Reconstruction({m,t}) {
   </div>;
 }
 
+function BlockFP8Panel({ m, t }) {
+  const actRow = m.x[0];
+  const ref = linear([actRow], m.w);
+  const ptX = quantize([actRow], { format: 'fp8', group: 'tensor' });
+  const ptW = quantize(m.w, { format: 'fp8', group: 'tensor' });
+  const ptMse = mse(ref, linear(ptX.values, ptW.values));
+
+  const blkX = quantize([actRow], { format: 'fp8', group: 4 });
+  // 2D weight blocks: 3x4 left block (cols 0..3) and 3x4 right block (cols 4..7)
+  const leftW = m.w.map(r => r.slice(0, 4));
+  const rightW = m.w.map(r => r.slice(4, 8));
+  const qLeftW = quantize(leftW, { format: 'fp8', group: 'tensor' });
+  const qRightW = quantize(rightW, { format: 'fp8', group: 'tensor' });
+  const blkWValues = m.w.map((_, r) => [...qLeftW.values[r], ...qRightW.values[r]]);
+  const blkMse = mse(ref, linear(blkX.values, blkWValues));
+
+  const sX0 = blkX.params[0].scale, sX1 = blkX.params[1].scale;
+  const sW0 = qLeftW.params[0].scale, sW1 = qRightW.params[0].scale;
+
+  return <div className="qn-block-fp8" data-testid="block-fp8-note">
+    <div className="qn-bfp8-head">
+      <strong>{t('blockFp8Title')}</strong>
+      <small>{t('blockFp8Note')}</small>
+    </div>
+    <div className="qn-bfp8-grid">
+      <div className="qn-bfp8-box">
+        <div className="qn-bfp8-label"><span>{t('blockFp8Act')}</span><code>1×128</code></div>
+        <div className="qn-bfp8-tiles">
+          {[0, 1].map(ti => <div key={ti} className={`qn-bfp8-tile ${ti===0?'hot':''}`}>
+            <small>Tile {ti} · s = {fmt(ti===0?sX0:sX1)}</small>
+            <div>{actRow.slice(ti*4, ti*4+4).map((v, j) => <i key={j} className={ti===0 && j===2 ? 'spike' : ''}>{fmt(v)}</i>)}</div>
+          </div>)}
+        </div>
+      </div>
+      <div className="qn-bfp8-box">
+        <div className="qn-bfp8-label"><span>{t('blockFp8Weight')}</span><code>128×128</code></div>
+        <div className="qn-bfp8-tiles">
+          {[0, 1].map(bi => <div key={bi} className="qn-bfp8-tile">
+            <small>Block {bi} · s = {fmt(bi===0?sW0:sW1)}</small>
+            <div className="qn-bfp8-wgrid">{(bi===0?leftW:rightW).flat().slice(0, 8).map((v, j) => <i key={j}>{fmt(v)}</i>)}</div>
+          </div>)}
+        </div>
+      </div>
+      <div className="qn-bfp8-box compare">
+        <div className="qn-bfp8-label"><span>{t('blockFp8Compare')}</span><code>WGMMA → FP32</code></div>
+        <div className="qn-bfp8-metrics">
+          <div><small>{t('blockFp8PerTensor')}</small><strong>{fmt(ptMse)}</strong></div>
+          <div className="good"><small>{t('blockFp8Blockwise')}</small><strong>{fmt(blkMse)}</strong></div>
+        </div>
+        <small>{t('blockFp8Accum')}</small>
+      </div>
+    </div>
+  </div>;
+}
+
 export default function Numeric({mode,outliers,setOutliers,t}) {
   const [group,setGroup]=useExperimentState('quantization/NumericWorkbench.group', '8'),[clip,setClip]=useExperimentState('quantization/NumericWorkbench.clip', 100),[affine,setAffine]=useExperimentState('quantization/NumericWorkbench.affine', false),[selected,setSelected]=useState(2);
   const [floatSource,setFloatSource]=useExperimentState('quantization/NumericWorkbench.floatSource', 'example'),[floatFormat,setFloatFormat]=useExperimentState('quantization/NumericWorkbench.floatFormat', 'bf16');
   const m=useMemo(()=>deriveNumericModel({mode,group:group==='tensor'?group:Number(group),clip:clip/100,affine,outliers,selected,floatSource,floatFormat}),[mode,group,clip,affine,outliers,selected,floatSource,floatFormat]);
   return <Card id="quant-numeric" number="02" title="numeric" hint="numericHint" t={t}>
     <div className="q-controls"><Choice label="floatCompare" value={floatFormat} options={[['bf16','formatBF16'],['fp16','formatFP16']]} onChange={setFloatFormat} t={t}/></div><div className="qn-main"><Storage m={m} onSelect={setSelected} floatSource={floatSource} onFloatSource={setFloatSource} t={t}/><Reconstruction m={m} t={t}/></div>
-    {m.low && <div className="qn-group-experiment"><div><h3>{t('groupQuestion')}</h3><p>{t('groupAnswer')}</p>{mode === 'fp8' && <p className="q-insight" data-testid="block-fp8-note">{t('blockFp8Note')}</p>}</div><Choice label="group" value={group} options={[['tensor','tensor'],['8','channel'],['4','group4'],['2','group2']]} onChange={setGroup} t={t}/><div className="qn-group-result"><strong>{m.groupCount} {t('sharedRulers')} · {bytes(m.storage.scaleBytes)}{m.affine && <> + {bytes(m.storage.zeroBytes)} {t('zero')}</>}</strong><small>{m.p.count} {t('weightsPerRuler')} · {t('scale')} {fmt(m.p.scale)}</small></div></div>}
+    {m.low && <div className="qn-group-experiment"><div><h3>{t('groupQuestion')}</h3><p>{t('groupAnswer')}</p></div><Choice label="group" value={group} options={[['tensor','tensor'],['8','channel'],['4','group4'],['2','group2']]} onChange={setGroup} t={t}/><div className="qn-group-result"><strong>{m.groupCount} {t('sharedRulers')} · {bytes(m.storage.scaleBytes)}{m.affine && <> + {bytes(m.storage.zeroBytes)} {t('zero')}</>}</strong><small>{m.p.count} {t('weightsPerRuler')} · {t('scale')} {fmt(m.p.scale)}</small></div></div>}
+    {mode === 'fp8' && <BlockFP8Panel m={m} t={t}/>}
     <details className="qn-detail"><summary>{t('matricesAndSettings')}</summary>
       {m.low && <div className="q-controls"><Range label="clip" value={clip} min={30} max={100} step={5} suffix="%" onChange={setClip} t={t}/>{mode!=='fp8' && <Choice label="scheme" value={affine?'affine':'symmetric'} options={['symmetric','affine'].map(v=>[v,v])} onChange={v=>setAffine(v==='affine')} t={t}/>}<Metric label="weightError" value={fmt(m.q.error)} t={t}/></div>}
       <p>{t('rowMeaning')}{m.low && <> {t('sharedScale')}</>}</p><div className="q-columns"><Matrix values={m.w} label="original" symbol="W" t={t} selected={m.selected} onSelect={setSelected} ids={m.low?m.q.ids:undefined} highlightedGroup={m.selectedGroup}/><Matrix values={m.q.values} label="restored" symbol={String.raw`\hat W`} t={t} selected={m.selected} onSelect={setSelected} ids={m.low?m.q.ids:undefined} highlightedGroup={m.selectedGroup} range={maxAbs(m.w)}/></div>

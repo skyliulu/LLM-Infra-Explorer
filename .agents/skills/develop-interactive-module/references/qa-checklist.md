@@ -149,7 +149,7 @@ A control can be functionally correct and still look wrong. Downscaled full-page
 - [ ] Compare full and miniature overviews: node topology, ordering, selected record and connections remain consistent; dense detail remains inspectable at a larger scale.
 - [ ] Inspect principal tradeoffs without opening hidden tabs. Check baseline, units, improvement direction, and the boundary between bytes, latency and context capacity.
 - [ ] Switch every affected format and independently vary object settings. Relevant content appears in its existing teaching region, and unrelated settings retain their values.
-- [ ] Compare corresponding regions across formats at the same viewport. Check shared style and placement, then verify sample counts, bit labels and dimensions against the active model.
+- [ ] Compare corresponding regions across sibling modes at the same viewport: toggling a mode tab keeps the section heading (`h2`), jump-menu label, layout skeleton, control-bar grammar, surface styling, and atomic unit granularity (e.g., per-token chips / slot tiles) consistent—only real structural differences change, never mounting an alien second UI behind a tab. Verify sample counts, bit labels and dimensions against the active model.
 - [ ] Review both empty space inside modules and clearance between them. Surface grouping, matrix readability and connection endpoints must all remain clear after compression.
 
 ## Autonomous delivery review

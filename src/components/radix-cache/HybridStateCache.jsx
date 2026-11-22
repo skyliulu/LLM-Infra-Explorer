@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Play, Pause, RotateCcw, SkipForward, ArrowDownLeft, Copy, AlertTriangle, CheckCircle2, Layers } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, ArrowDownLeft, Copy, AlertTriangle, CheckCircle2, Lock } from 'lucide-react';
 import { useExperimentState } from '../../lib/ExperimentContext';
 import { MathFormula } from '../linear-attention/MathFormula';
 import {
@@ -13,22 +13,51 @@ import { hybridCopy } from './hybrid-state-content';
 
 const HYBRID_FORMULA = String.raw`L_{\mathrm{hit}}^{\mathrm{hybrid}} = \max\{t \le L_{\mathrm{hit}}^{\mathrm{KV}} : S_t \in \mathrm{MambaPool}\}`;
 
-const NODE_POS = {
-  root: { col: 1, row: 0 },
-  n4: { col: 1, row: 1 },
-  n6: { col: 1, row: 2 },
-  n8a: { col: 0, row: 3 },
-  n8b: { col: 1, row: 3 },
-  n8c: { col: 2, row: 3 },
+const HYBRID_PAGE_TOKENS = {
+  K0: ['You', 'are'],
+  K1: ['a', 'helpful'],
+  K2: ['coding', 'assistant'],
+  K3: ['Explain', 'caching'],
+  K4: ['Write', 'tests'],
+  K5: ['Fix', 'bugs'],
 };
+
+const SHARED_PAGES = new Set(['K0', 'K1', 'K2']);
+
+function layoutHybridTree(nodes) {
+  let leaf = 0;
+  const out = [];
+  const heights = [];
+  const visit = (n, depth) => {
+    const children = nodes.filter((c) => c.parent === n.id);
+    const xs = children.map((c) => visit(c, depth + 1));
+    const x = xs.length ? (xs[0] + xs.at(-1)) / 2 : leaf++ * 204 + 12;
+    const height = n.pages.length ? 46 + n.pages.length * 52 : 36;
+    heights[depth] = Math.max(heights[depth] || 0, height);
+    out.push({ ...n, x, depth, height });
+    return x;
+  };
+  visit(nodes[0], 0);
+  out.forEach((n) => {
+    n.y = 12 + heights.slice(0, n.depth).reduce((sum, h) => sum + h + 30, 0);
+  });
+  return {
+    nodes: out,
+    width: Math.max(360, leaf * 204 + 24),
+    height: Math.max(...out.map((n) => n.y + n.height)) + 20,
+  };
+}
 
 export function HybridStatePanel({ lang }) {
   const [cfg, setCfg] = useExperimentState('RadixCache.hybrid', { mode: 'align', sched: 'fcfs' });
   const [step, setStep] = useState(0);
   const [isPlaying, setPlaying] = useState(false);
+  const [selectedPage, setSelectedPage] = useState('K0');
 
   const t = (key) => hybridCopy[lang][key] || key;
   const m = useMemo(() => deriveHybridState(cfg.mode, step), [cfg.mode, step]);
+  const graph = useMemo(() => layoutHybridTree(m.nodes), [m.nodes]);
+  const activeReq = HYBRID_REQUESTS[m.requestIndex] || HYBRID_REQUESTS[0];
 
   useEffect(() => {
     if (!isPlaying || m.done) return undefined;
@@ -45,80 +74,90 @@ export function HybridStatePanel({ lang }) {
   const togglePlay = () => { if (m.done) setStep(0); setPlaying((v) => !v); };
   const handleNextStep = () => { setPlaying(false); setStep((s) => Math.min(m.limit, s + 1)); };
 
-  const nodeCoords = useMemo(() => {
-    const colX = [8, 212, 416];
-    const rowY = [8, 68, 166, 264];
-    return Object.fromEntries(
-      m.nodes.map((n) => {
-        const pos = n.id === 'n8a' && !m.nodes.some((x) => x.id === 'n6')
-          ? { col: 1, row: 2 }
-          : (NODE_POS[n.id] || { col: 1, row: 0 });
-        return [n.id, { x: colX[pos.col], y: rowY[pos.row], w: 194, h: n.id === 'root' ? 38 : 78 }];
-      })
-    );
-  }, [m.nodes]);
+  const reqStartStep = (idx) => {
+    const found = m.history.findIndex((h) => h.requestIndex === idx && h.step > 0);
+    return found >= 0 ? found : 0;
+  };
 
-  const graphHeight = m.nodes.some((n) => n.id === 'n6') ? 356 : 262;
-  const trunkWords = HYBRID_REQUESTS[0].tokens;
+  const relatedPages = m.nodes.find((n) => n.pages.includes(selectedPage))?.pages || [selectedPage];
+  const selectedNode = m.nodes.find((n) => n.pages.includes(selectedPage));
+  const selectedKvIdx = m.kvPool.findIndex((slot) => slot?.id === selectedPage);
+  const selectedMambaSlot = selectedNode && selectedNode.mambaSlot !== null ? m.mambaPool[selectedNode.mambaSlot] : null;
+
+  const pageAction = (pageId, pageIdx) => {
+    if (step === 0) return { cls: '', label: t('routeCompute') };
+    if (m.requestIndex === 0) return { cls: 'miss', label: t('routeCompute') };
+    const tokEnd = (pageIdx + 1) * 2;
+    if (tokEnd <= m.metrics.hybridHit) return { cls: 'gpu', label: t('routeReuse') };
+    if (tokEnd <= m.metrics.kvMatched) return { cls: 'miss', label: t('routeRollback') };
+    return { cls: 'host', label: t('routeCompute') };
+  };
+
+  const fromNode = m.rollback ? graph.nodes.find((n) => n.id === m.rollback.fromNode) : null;
+  const toNode = m.rollback ? graph.nodes.find((n) => n.id === m.rollback.toNode) : null;
 
   return (
-    <div className="hc-hybrid" data-testid="hybrid-state-cache">
-      <p>{t('intro')}</p>
-
-      {/* Root Conflict Contrast Strip */}
-      <div className="hc-conflict-grid" aria-label={t('contrastTitle')}>
-        <div className="hc-conflict-card kv">
-          <div className="hc-conflict-head">
-            <strong>{t('kvImmutable')}</strong>
-            <span>[K₀, K₁, K₂, K₃]</span>
-          </div>
-          <div className="hc-token-strip">
-            {trunkWords.map((word, i) => (
-              <span key={`${word}-${i}`} className={i < m.mutabilityPos ? 'written' : ''}>
-                {word}
-              </span>
-            ))}
-          </div>
-          <small>{t('kvImmutableNote')}</small>
+    <div data-testid="hybrid-state-cache">
+      {/* Same .hc-engine-settings control bar as Pure KV mode */}
+      <details className="hc-engine-settings" open>
+        <summary>{t('modeLabel')}</summary>
+        <div className="hc-controls">
+          <label>
+            {t('modeLabel')}
+            <select value={cfg.mode} onChange={(e) => setMode(e.target.value)}>
+              {HYBRID_MODES.map((mode) => (
+                <option key={mode} value={mode}>{t(mode)}</option>
+              ))}
+            </select>
+          </label>
+          <p className="hc-hybrid-policy-note">{t(`modeHint_${cfg.mode}`)}</p>
         </div>
+      </details>
 
-        <div className="hc-conflict-card state">
-          <div className="hc-conflict-head">
-            <strong>{t('stateMutable')}</strong>
-            <span>Sₜ ← f(Sₜ₋₁, xₜ)</span>
+      {/* Same .hc-sequences / .hc-token-stream per-token chip strip as Pure KV mode */}
+      <div className="hc-sequences">
+        <h3>{t('sequenceTitle')}</h3>
+        <div className="hc-sequence-scroll">
+          <div className="hc-stream hc-token-stream" aria-label={t('sequenceTitle')}>
+            {HYBRID_REQUESTS.map((r, i) => {
+              const sharedPages = Math.floor(r.branchAt / 2);
+              const isCurrent = m.requestIndex === i && step > 0;
+              const isPassed = i < m.requestIndex;
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  className={isPassed ? 'passed' : isCurrent ? 'current' : ''}
+                  onClick={() => { setPlaying(false); setStep(reqStartStep(i)); }}
+                  aria-pressed={isCurrent}
+                >
+                  <span className="hc-request-label"><b>0{i + 1} · {t(r.key)}</b></span>
+                  {r.pages.map((pid, index) => (
+                    <span
+                      key={pid}
+                      className={`hc-request-page ${index < sharedPages ? 'shared' : 'suffix'} ${index === sharedPages && i > 0 ? 'branch-boundary' : ''} ${relatedPages.includes(pid) ? 'linked' : ''}`}
+                    >
+                      <span className="hc-word-pair">
+                        {(HYBRID_PAGE_TOKENS[pid] || []).map((word, j) => (
+                          <i key={j}>{word}</i>
+                        ))}
+                      </span>
+                    </span>
+                  ))}
+                  <span className="hc-prefix-count">{r.branchAt} Token</span>
+                </button>
+              );
+            })}
           </div>
-          <div className="hc-state-strip">
-            <span className="hc-live-slot">
-              {m.mutabilityPos > 0 ? `S@${m.mutabilityPos}` : 'S@0'}
-            </span>
-            <span className="hc-state-arrow">← in-place</span>
-            <span className="hc-ckpt-pills">
-              {m.mambaPool.filter(Boolean).length > 0
-                ? m.mambaPool.filter(Boolean).map((s) => (
-                    <b key={s.id} className={s.role === 'extra_checkpoint' ? 'extra' : ''}>
-                      {s.id}:{s.label}
-                    </b>
-                  ))
-                : <em>—</em>}
-            </span>
-          </div>
-          <small>{t('stateMutableNote')}</small>
         </div>
+        <small>{t('tokenNote')}</small>
       </div>
 
-      {/* Mode Switch + Local Playback */}
-      <div className="hc-hybrid-toolbar">
-        <div className="hc-mode-tabs" role="group" aria-label={t('modeLabel')}>
-          {HYBRID_MODES.map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              aria-pressed={cfg.mode === mode}
-              onClick={() => setMode(mode)}
-            >
-              {t(mode)}
-            </button>
-          ))}
+      {/* Same .hc-play-row playback bar as Pure KV mode */}
+      <div className="hc-play-row">
+        <div>
+          <strong>{t(activeReq.key)}</strong>
+          <progress value={step} max={m.limit} aria-label={t('modeLabel')} />
         </div>
         <div className="chapter-playback hc-playback">
           <button type="button" onClick={reset} aria-label={lang === 'zh' ? '重置' : 'Reset'}>
@@ -142,81 +181,47 @@ export function HybridStatePanel({ lang }) {
         </div>
       </div>
 
-      <p className="hc-hybrid-mode-hint">{t(`modeHint_${cfg.mode}`)}</p>
+      {/* Same .hc-story-canvas layout: Action bar + Left Tree + Right Pools + Bottom Route & Inspector */}
+      <div className="hc-story-canvas">
+        <div className="hc-canvas-action" aria-live="polite">
+          <strong>{step} / {m.limit} · {t(activeReq.key)}</strong>
+          <span>{t('kvMatched')}: {m.metrics.kvMatched} Token · {t('hybridHit')}: {m.metrics.hybridHit} Token</span>
+          {m.rollback && (
+            <span className="hc-flag rollback">
+              <ArrowDownLeft size={13} /> {t('rollbackBadge')}: {m.rollback.fromTokens} → {m.rollback.toTokens}
+            </span>
+          )}
+          {m.cow && (
+            <span className="hc-flag cow">
+              <Copy size={13} /> {t('cowBadge')}: M{m.cow.from} → M{m.cow.to}
+            </span>
+          )}
+          <small className="hc-op-note">{t(m.kind)}</small>
+        </div>
 
-      {/* Request Strip + Step Banner */}
-      <div className="hc-hybrid-reqs">
-        {HYBRID_REQUESTS.map((r, idx) => (
-          <div
-            key={r.id}
-            className={`hc-hybrid-req ${m.requestIndex === idx && step > 0 ? 'current' : idx < m.requestIndex ? 'passed' : ''}`}
-          >
-            <strong>{t(r.key)}</strong>
-            <div className="hc-req-tokens">
-              {r.tokens.map((word, ti) => (
-                <i
-                  key={`${r.id}-${ti}`}
-                  className={
-                    r.branchAt > 0 && ti < 4
-                      ? 'grid-hit'
-                      : r.branchAt > 0 && ti < r.branchAt
-                        ? 'mid-prefix'
-                        : 'suffix'
-                  }
-                >
-                  {word}
-                </i>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="hc-hybrid-banner" aria-live="polite">
-        <span className="hc-step-pill">
-          {step} / {m.limit}
-        </span>
-        <p>{t(m.kind)}</p>
-        {m.rollback && (
-          <span className="hc-flag rollback">
-            <ArrowDownLeft size={13} /> {t('rollbackBadge')}: {m.rollback.fromTokens} → {m.rollback.toTokens}
-          </span>
-        )}
-        {m.cow && (
-          <span className="hc-flag cow">
-            <Copy size={13} /> {t('cowBadge')}: M{m.cow.from} → M{m.cow.to}
-          </span>
-        )}
-      </div>
-
-      {/* Main Hybrid Canvas: Tree + Dual Physical Pools */}
-      <div className="hc-hybrid-canvas">
-        <div className="hc-hybrid-tree-box">
-          <h3>
-            <Layers size={15} /> {t('treeTitle')}
-          </h3>
+        {/* Left: Logical Radix Tree using the EXACT same .hc-graph-node + .hc-word-pair token chips */}
+        <div className="hc-story-tree">
+          <h3>{t('treeTitle')}</h3>
+          <small>{t('treeHint')}</small>
           <div className="hc-graph-scroll">
-            <div className="hc-hybrid-graph" style={{ width: 618, height: graphHeight }}>
-              <svg width={618} height={graphHeight} aria-hidden="true">
-                {m.nodes
-                  .filter((n) => n.parent && nodeCoords[n.parent] && nodeCoords[n.id])
-                  .map((n) => {
-                    const p = nodeCoords[n.parent];
-                    const c = nodeCoords[n.id];
-                    const midY = p.y + p.h + (c.y - (p.y + p.h)) / 2;
-                    return (
-                      <path
-                        key={n.id}
-                        d={`M${p.x + p.w / 2},${p.y + p.h} V${midY} H${c.x + c.w / 2} V${c.y}`}
-                        fill="none"
-                        stroke={m.activeNodeIds.includes(n.id) ? '#6366f1' : '#94a3b8'}
-                        strokeWidth="2.2"
-                      />
-                    );
-                  })}
-                {m.rollback && nodeCoords[m.rollback.fromNode] && nodeCoords[m.rollback.toNode] && (
+            <div className="hc-graph" style={{ width: graph.width, height: graph.height }}>
+              <svg width={graph.width} height={graph.height} aria-hidden="true">
+                {graph.nodes.filter((n) => n.parent).map((n) => {
+                  const p = graph.nodes.find((x) => x.id === n.parent);
+                  if (!p) return null;
+                  return (
+                    <path
+                      key={n.id}
+                      d={`M${p.x + 90},${p.y + p.height} V${p.y + p.height + 15} H${n.x + 90} V${n.y}`}
+                      fill="none"
+                      stroke={m.activeNodeIds.includes(n.id) ? '#6366f1' : '#94a3b8'}
+                      strokeWidth="2.5"
+                    />
+                  );
+                })}
+                {fromNode && toNode && (
                   <path
-                    d={`M${nodeCoords[m.rollback.fromNode].x + 194},${nodeCoords[m.rollback.fromNode].y + 34} C${nodeCoords[m.rollback.fromNode].x + 232},${nodeCoords[m.rollback.fromNode].y + 10} ${nodeCoords[m.rollback.toNode].x + 232},${nodeCoords[m.rollback.toNode].y + 55} ${nodeCoords[m.rollback.toNode].x + 194},${nodeCoords[m.rollback.toNode].y + 38}`}
+                    d={`M${fromNode.x + 180},${fromNode.y + fromNode.height / 2} C${fromNode.x + 216},${fromNode.y} ${toNode.x + 216},${toNode.y + toNode.height} ${toNode.x + 180},${toNode.y + toNode.height / 2}`}
                     fill="none"
                     stroke="#e11d48"
                     strokeWidth="2.5"
@@ -225,129 +230,150 @@ export function HybridStatePanel({ lang }) {
                 )}
               </svg>
 
-              {m.nodes.map((n) => {
-                const pos = nodeCoords[n.id];
-                if (!pos) return null;
-                return (
-                  <div
-                    key={n.id}
-                    className={`hc-hybrid-node ${n.stateStatus} ${m.activeNodeIds.includes(n.id) ? 'active' : ''}`}
-                    style={{ left: pos.x, top: pos.y, width: pos.w, minHeight: pos.h }}
-                  >
-                    <div className="hc-hn-top">
-                      <strong>{n.label}</strong>
-                      {n.pages.length > 0 && <span className="hc-hn-kv">{n.pages.join(', ')}</span>}
-                    </div>
-                    {n.id !== 'root' && (
-                      <div className="hc-hn-state">
-                        {n.stateStatus === 'checkpoint' ? (
-                          <span className="hc-state-ok">
-                            <CheckCircle2 size={12} /> {t('checkpointBadge')} M{n.mambaSlot}
-                          </span>
-                        ) : n.stateStatus === 'evicted' ? (
-                          <span className="hc-state-evicted">
-                            <AlertTriangle size={12} /> {t('evictedBadge')}
-                          </span>
-                        ) : (
-                          <span className="hc-state-miss">
-                            <AlertTriangle size={12} /> {t('kvOnlyBadge')}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {graph.nodes.map((n) => (
+                <button
+                  key={n.id}
+                  type="button"
+                  className={`hc-graph-node ${n.pages.includes(selectedPage) ? 'selected' : ''} ${m.activeNodeIds.includes(n.id) ? 'active' : ''} ${n.stateStatus === 'kv_only' ? 'hc-node-kvonly' : n.stateStatus === 'evicted' ? 'hc-node-evicted' : ''}`}
+                  style={{ left: n.x, top: n.y, height: n.height }}
+                  onClick={() => n.pages.length && setSelectedPage(n.pages[0])}
+                >
+                  {!n.pages.length && <strong>{t('root')}</strong>}
+                  {n.pages.map((pid) => (
+                    <span className="hc-token-node-row" key={pid}>
+                      <span className={`hc-word-pair ${SHARED_PAGES.has(pid) ? 'shared' : 'suffix'}`}>
+                        {(HYBRID_PAGE_TOKENS[pid] || []).map((word, j) => (
+                          <i key={j}>{word}</i>
+                        ))}
+                      </span>
+                      <span className="hc-residency">
+                        <b>{pid}</b>
+                        <i className="gpu">KV</i>
+                        {n.kvRef > 0 && <Lock size={10} />}
+                      </span>
+                    </span>
+                  ))}
+                  {n.id !== 'root' && (
+                    <span className="hc-hn-state">
+                      {n.stateStatus === 'checkpoint' ? (
+                        <span className="hc-state-ok"><CheckCircle2 size={11} /> {t('checkpointBadge')} M{n.mambaSlot}</span>
+                      ) : n.stateStatus === 'evicted' ? (
+                        <span className="hc-state-evicted"><AlertTriangle size={11} /> {t('evictedBadge')}</span>
+                      ) : (
+                        <span className="hc-state-miss"><AlertTriangle size={11} /> {t('kvOnlyBadge')}</span>
+                      )}
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
+          {m.nodes.length === 1 && <p>{t('idle')}</p>}
         </div>
 
-        <div className="hc-hybrid-pools-box">
-          <h3>{t('poolsTitle')}</h3>
-
-          {/* Pool 1: TokenToKVPool */}
-          <div className="hc-pool-card kv">
-            <div className="hc-pool-head">
-              <strong>{t('kvPoolTitle')}</strong>
-              <b>{m.kvUsed} / {m.kvCapacity}</b>
+        {/* Right: Dual Physical Pools using the EXACT same .hc-tier / .hc-slots language */}
+        <div className="hc-story-pools">
+          <div className="hc-tier gpu">
+            <div className="hc-tier-heading">
+              <span><strong>{t('kvPoolTitle')}</strong><small>{t('kvScope')}</small></span>
+              <b>{m.kvUsed}/{m.kvCapacity}</b>
             </div>
-            <div className="hc-pool-grid kv-grid">
-              {m.kvPool.map((slot, i) => (
-                <div key={i} className={`hc-pool-slot ${slot ? 'filled' : 'empty'}`}>
-                  {slot ? (
-                    <>
-                      <strong>{slot.id}</strong>
-                      <small>{slot.tokens}</small>
-                    </>
-                  ) : (
-                    <span>·</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Pool 2: MambaPool */}
-          <div className="hc-pool-card mamba">
-            <div className="hc-pool-head">
-              <strong>{t('mambaPoolTitle')}</strong>
-              <b>{m.mambaUsed} / {m.mambaCapacity}</b>
-            </div>
-            <div className="hc-pool-grid mamba-grid">
-              {m.mambaPool.map((slot, i) => (
-                <div
+            <div className="hc-slots">
+              {m.kvPool.map((slot, i) => slot ? (
+                <button
                   key={i}
-                  className={`hc-pool-slot ${slot ? `filled ${slot.role}` : 'empty'} ${m.cow && m.cow.to === i ? 'cow-target' : ''}`}
+                  type="button"
+                  onClick={() => setSelectedPage(slot.id)}
+                  className={`${relatedPages.includes(slot.id) ? 'selected' : ''}`}
+                  title={slot.tokens}
                 >
-                  {slot ? (
-                    <>
-                      <small className="hc-slot-idx">{slot.id}</small>
-                      <strong>{slot.label}</strong>
-                      {slot.clonedFrom !== undefined && <small>← M{slot.clonedFrom}</small>}
-                    </>
-                  ) : (
-                    <>
-                      <small className="hc-slot-idx">M{i}</small>
-                      <span>·</span>
-                    </>
-                  )}
-                </div>
+                  <strong>{slot.id}</strong>
+                  <small>G{i}</small>
+                  {slot.locked && <Lock size={10} />}
+                </button>
+              ) : (
+                <span className="hc-slot-empty" key={i}>·</span>
               ))}
             </div>
           </div>
 
-          <div className="hc-hybrid-formula">
+          <div className={`hc-transfer ${m.cow || m.rollback ? 'moving' : ''}`}>
+            {t('transferBridge')}
+          </div>
+
+          <div className="hc-tier host">
+            <div className="hc-tier-heading">
+              <span><strong>{t('mambaPoolTitle')}</strong><small>{t('mambaScope')}</small></span>
+              <b>{m.mambaUsed}/{m.mambaCapacity}</b>
+            </div>
+            <div className="hc-slots hc-slots-3">
+              {m.mambaPool.map((slot, i) => slot ? (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => {
+                    const owner = m.nodes.find((n) => n.id === slot.nodeId);
+                    if (owner?.pages.length) setSelectedPage(owner.pages[0]);
+                  }}
+                  className={`${selectedMambaSlot?.id === slot.id ? 'selected' : ''} ${m.cow && m.cow.to === i ? 'arrived' : ''}`}
+                >
+                  <strong>{slot.label}</strong>
+                  <small>{slot.id}{slot.clonedFrom !== undefined ? ` ←M${slot.clonedFrom}` : ''}</small>
+                  {slot.locked && <Lock size={10} />}
+                </button>
+              ) : (
+                <span className="hc-slot-empty" key={i}>M{i} ·</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="hc-hybrid-formula" style={{ marginTop: 10 }}>
             <MathFormula block>{HYBRID_FORMULA}</MathFormula>
             <small>{t('formulaCaption')}</small>
           </div>
         </div>
+
+        {/* Bottom: Same .hc-story-bottom route strip + metrics + clickable inspector */}
+        <div className="hc-story-bottom">
+          <div>
+            <h3>{t('planTitle')}</h3>
+            <div className="hc-route-strip">
+              {activeReq.pages.map((pid, idx) => {
+                const act = pageAction(pid, idx);
+                return (
+                  <button key={pid} type="button" className={act.cls} onClick={() => setSelectedPage(pid)}>
+                    <b>{pid} · {(HYBRID_PAGE_TOKENS[pid] || []).join(' ')}</b>
+                    <span>{act.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="hc-story-metrics" data-testid="hybrid-metrics">
+              <span>{t('kvMatched')} <b>{m.metrics.kvMatched}</b> {t('tokensUnit')}</span>
+              <span>{t('hybridHit')} <b>{m.metrics.hybridHit}</b> {t('tokensUnit')}</span>
+              <span>{t('rollbackWork')} <b>{m.metrics.rollbackRecompute}</b> {t('tokensUnit')}</span>
+              <span>{t('cowCount')} <b>{m.metrics.cowClones}</b> {t('timesUnit')}</span>
+            </div>
+          </div>
+          <div className="hc-inspector" aria-live="polite">
+            <h3>{t('selectedTitle')} · {(HYBRID_PAGE_TOKENS[selectedPage] || []).join(' ')} · {selectedPage}</h3>
+            <p>
+              {selectedKvIdx >= 0
+                ? `${t('kvPoolTitle')} [G${selectedKvIdx}] · ${
+                    selectedNode?.stateStatus === 'checkpoint'
+                      ? `${t('checkpointBadge')} M${selectedNode.mambaSlot} (${selectedMambaSlot?.label || ''})`
+                      : selectedNode?.stateStatus === 'evicted'
+                        ? t('evictedBadge')
+                        : t('kvOnlyBadge')
+                  }`
+                : t('notResident')}
+            </p>
+            <small>{t('traceHint')}</small>
+          </div>
+        </div>
       </div>
 
-      {/* Live Hybrid Metrics */}
-      <div className="hc-hybrid-metrics" data-testid="hybrid-metrics">
-        <div>
-          <span>{t('kvMatched')}</span>
-          <strong>{m.metrics.kvMatched} {t('tokensUnit')}</strong>
-        </div>
-        <div>
-          <span>{t('hybridHit')}</span>
-          <strong>{m.metrics.hybridHit} {t('tokensUnit')}</strong>
-        </div>
-        <div className={m.metrics.rollbackRecompute > 0 ? 'warn' : 'good'}>
-          <span>{t('rollbackWork')}</span>
-          <strong>{m.metrics.rollbackRecompute} {t('tokensUnit')}</strong>
-        </div>
-        <div>
-          <span>{t('cumReuse')} / {t('cumRollback')}</span>
-          <strong>{m.metrics.totalHybridHit} / {m.metrics.totalRollback} {t('tokensUnit')}</strong>
-        </div>
-        <div>
-          <span>{t('cowCount')}</span>
-          <strong>{m.metrics.cowClones} {t('timesUnit')}</strong>
-        </div>
-      </div>
-
-      <p className="hc-hybrid-scope">{t('scopeNote')}</p>
+      <p>{t('scopeNote')}</p>
     </div>
   );
 }
@@ -382,14 +408,12 @@ export function CacheAwareScheduling({ lang }) {
         </div>
       </div>
 
-      {/* Legend of the 2 competing system prompts */}
       <div className="hc-sched-legend">
         <span className="hc-prefix-pill prefix-A">{t('schedPrefixA')} (A0, A1)</span>
         <span className="hc-prefix-pill prefix-B">{t('schedPrefixB')} (B0, B1)</span>
         <small>{t('schedQueueLabel')}</small>
       </div>
 
-      {/* Execution timeline (clickable step cards) */}
       <div className="hc-sched-trace">
         {sched.trace.map((item, idx) => (
           <button
@@ -416,7 +440,6 @@ export function CacheAwareScheduling({ lang }) {
         ))}
       </div>
 
-      {/* Live GPU Pool Residency for selected step */}
       {current && (
         <div className="hc-sched-gpu" aria-live="polite">
           <div className="hc-sched-gpu-head">

@@ -44,7 +44,7 @@ For every mode switch, review the layers it claims to affect:
 - data movement and direction;
 - execution stages and implementation evidence.
 
-Change all affected layers, not merely the label, color, or explanatory paragraph. Keep unaffected layers stable so the real difference remains legible.
+Change all affected layers, not merely the label, color, or explanatory paragraph. Keep unaffected layers—including the section heading, control bar placement, surface styling, and atomic unit granularity (per-token chips, cell grids, slot tiles)—identical across sibling modes so the viewer isolates the real algorithmic difference rather than re-learning a second UI.
 
 ## Reuse semantic objects
 

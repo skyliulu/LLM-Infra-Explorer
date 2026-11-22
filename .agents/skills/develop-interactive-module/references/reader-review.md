@@ -17,6 +17,7 @@ Look for these demonstrated failure modes:
 - **Reading friction:** awkward Chinese, repeated headings, dense caveats, unexplained symbols, weak visual hierarchy and sources/process language interrupting the main explanation. Necessary assumptions stay readable and subordinate; do not remove limitations to make the story smoother.
 - **Brochure/name-drop cards & unmotivated add-ons:** static cards that merely list algorithm or architecture names without showing their mechanism in the canvas, or lower panels dropped onto the page without an observable causal bridge from the preceding mode—especially when they switch from concrete readable examples to opaque placeholder IDs or bare coordinate lists.
 - **Unnecessary disclosure click-tax & buried additions:** collapsed `<details>` toggles that expand to only 1–2 short lines or a single formula, or newly added first-class formats/features hidden inside non-default sub-states where a scanning reader cannot discover them.
+- **Broken cross-mode visual unity:** toggling a mode tab inside a section mutates the section's `h2` heading, swaps in an unrelated UI layout or CSS design language, or degrades atomic granularity (for example, collapsing per-token chips into continuous text strings).
 
 Judge these against the chapter's actual teaching claim. A structural selector or count-only experiment can be sufficient when that relationship is the learning object; this pass does not require animation, a simulation or more controls in every section.
 
