@@ -2191,7 +2191,7 @@ const App = () => {
              <div className="mb-3 flex items-center justify-between gap-2">
                <h2 data-section-anchor="parallelstrategies-3" className="flex items-center gap-1.5 text-sm font-bold leading-tight text-slate-800 md:text-base">
                  <ServerIcon className="text-emerald-500" />
-                 {t(servingMode === 'pdDisaggregated' ? 'physGpuMapPd' : mappingModel === 'dcpReuse' ? 'physGpuMapDcp' : 'physGpuMap')} ({totalGpus} {t('cards')})
+                 {t(servingMode === 'pdDisaggregated' ? 'physGpuMapPd' : mappingModel === 'dcpReuse' ? 'physGpuMapDcp' : 'physGpuMap')}<span data-anchor-ignore> ({totalGpus} {t('cards')})</span>
                </h2>
                {totalGpus === 1 && <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded border border-slate-200">{t('singleCard')}</span>}
              </div>

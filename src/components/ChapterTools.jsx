@@ -11,6 +11,23 @@ const copy = {
   zh: {before:'建议先了解',continue:'继续学习',branches:'相关分支',jump:'本章定位', top:'概览', share:'分享配置', copy:'复制链接', copied:'已复制', manual:'请选中链接手动复制', close:'关闭', related:'相关章节', note:'配置保留 · 返回时播放从头开始', retention:'本次浏览中切换章节会保留配置；需要刷新后恢复时，请使用分享链接。', hint:'分享当前章节、位置和主要配置，不包含播放进度与检查器选择。', link:'分享链接'},
 };
 const headingsIn = content => [...(content?.querySelectorAll('[data-section-anchor]') || [])].filter(el => el.getClientRects().length);
+const sectionLabel = el => {
+  const explicit = el.dataset.sectionLabel?.trim();
+  if (explicit) return explicit.replace(/\s+/g, ' ');
+  const clone = el.cloneNode(true);
+  clone.querySelectorAll('[data-anchor-ignore]').forEach(node => node.remove());
+  let out = '', prevParent = null;
+  const walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    const text = node.textContent.replace(/\s+/g, ' ');
+    if (!text.trim()) continue;
+    if (out && prevParent !== node.parentNode && !out.endsWith(' ') && !text.startsWith(' ')) out += ' ';
+    out += text;
+    prevParent = node.parentNode;
+  }
+  return out.replace(/\s+/g, ' ').replace(/\s+([,.:;!?，。：；！？、）)])/g, '$1').replace(/([（(])\s+/g, '$1').trim();
+};
 
 export default function ChapterTools({chapter, session}) {
   const [lang] = useLanguage(), t = key => copy[lang][key];
@@ -50,7 +67,7 @@ export default function ChapterTools({chapter, session}) {
       const list = headings.filter(el => {
         if (seen.has(el.dataset.sectionAnchor)) return false;
         seen.add(el.dataset.sectionAnchor); return true;
-      }).map(el => ({id:el.dataset.sectionAnchor, label:el.textContent.trim()}));
+      }).map(el => ({id:el.dataset.sectionAnchor, label:sectionLabel(el)}));
       setSections(old => JSON.stringify(old) === JSON.stringify(list) ? old : list);
       setSection(old => list.some(item => item.id === old) ? old : '');
       if (target) {
@@ -65,7 +82,7 @@ export default function ChapterTools({chapter, session}) {
     const observer = new MutationObserver(() => {
       cancelAnimationFrame(frame); frame = requestAnimationFrame(update);
     });
-    observer.observe(content, {childList:true, subtree:true, characterData:true});
+    observer.observe(content, {childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['data-section-label']});
     update();
     return () => {observer.disconnect(); cancelAnimationFrame(frame);cancelAnimationFrame(scrollFrame);window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onScroll);};
   }, [chapter.id, lang]);

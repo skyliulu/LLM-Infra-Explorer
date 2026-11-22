@@ -72,7 +72,7 @@ Where the claim concerns matrix operations, show compact dimension-labeled input
 - Keep labels close to their objects and dimension annotations on the corresponding edge.
 - Reduce empty containers, large causal grids, and decorative cards that do not carry proportionate information.
 - Let a short panel fill its column vertically when adjacent panels are taller.
-- On narrow screens, preserve reading order and avoid page-level horizontal overflow.
+- On narrow and intermediate screens (including desktop viewports narrowed by an open sidebar or split pane), preserve reading order and avoid both page-level horizontal overflow and flex-wrap title squeezing: give title/summary blocks in wrapping headers a bounded readable minimum width so wide control groups wrap cleanly onto the next row instead of crushing text into narrow vertical ribbons.
 - Test component-level overflow as well as page overflow. Dense cards, labels, tracks, formulas, and code blocks must keep `clientWidth` and `scrollWidth` compatible with the intended scrolling behavior.
 - Check representative sparse and dense states. A layout that works for one item may fail at maximum count or with longer translated labels.
 - Preserve the main teaching region when space tightens; compress secondary controls and metadata before shrinking the core evidence below readability.

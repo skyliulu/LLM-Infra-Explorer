@@ -591,7 +591,7 @@ const App = () => {
                 <div className="flex items-center gap-2">
                   <Cpu className="text-indigo-500" size={20} /> {t('modelPipeline')}
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full font-mono ${modelType === 'moe' ? 'bg-teal-100 text-teal-800 border border-teal-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
+                <span data-anchor-ignore className={`text-xs px-2 py-1 rounded-full font-mono ${modelType === 'moe' ? 'bg-teal-100 text-teal-800 border border-teal-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
                   {modelType === 'moe' ? t('moeArch') : t('denseArch')}
                 </span>
               </h2>
@@ -612,7 +612,7 @@ const App = () => {
                  <div className="flex items-center gap-2">
                    <Code className="text-emerald-400" size={20} /> {t('codeTitle')} <span className="text-xs text-slate-400 font-normal ml-2">{t('pyCode')}</span>
                  </div>
-                 {modelType === 'moe' && <span className="text-xs bg-teal-900/50 text-teal-400 px-2 py-1 rounded border border-teal-800">{t('moeEnabled')}</span>}
+                 {modelType === 'moe' && <span data-anchor-ignore className="text-xs bg-teal-900/50 text-teal-400 px-2 py-1 rounded border border-teal-800">{t('moeEnabled')}</span>}
               </h2>
               <div className="font-mono text-[10px] md:text-xs xl:text-sm overflow-x-auto bg-[#0d1117] p-4 rounded-lg border border-slate-800 flex-1 leading-relaxed">
                 <div className={`transition-all duration-500 whitespace-pre block`}>

@@ -446,8 +446,8 @@ const App = () => {
       <div className="chapter-layout max-w-[90rem] mx-auto space-y-6">
 
         {/* 顶部控制栏 */}
-        <div className="chapter-header bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row md:flex-wrap items-center justify-between gap-4">
-          <div className="min-w-0 flex-1">
+        <div className="chapter-header bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row md:flex-wrap items-start md:items-center justify-between gap-4">
+          <div className="min-w-[min(100%,280px)] flex-1">
             <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2 text-indigo-900"><ChapterIcon chapter="flashdecode"/>
 
               {t('title')}
@@ -768,7 +768,7 @@ const App = () => {
                <div className="flex items-center gap-2">
                  <Code className="text-emerald-400" size={20} /> {t('pythonCode')}
                </div>
-               <span className={`text-xs px-2 py-1 rounded border ${snapshot.isSplit && algorithm === 'optimized' ? 'bg-teal-900/50 text-teal-400 border-teal-800' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+               <span data-anchor-ignore className={`text-xs px-2 py-1 rounded border ${snapshot.isSplit && algorithm === 'optimized' ? 'bg-teal-900/50 text-teal-400 border-teal-800' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
                  {snapshot.isSplit ? (algorithm === 'optimized' ? t('algOptimized') : t('algSimple')) : t('executionUnsplit')}
                </span>
             </h2>

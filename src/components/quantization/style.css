@@ -11,13 +11,14 @@
 .quant-page p { color:#526174; margin:6px 0; }
 .quant-page small { font-size:11px; color:#526174; }
 .q-top { padding:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start; border-bottom:1px solid #e2e8f0; background:#fff; }
-.q-top>div:first-child { flex:1; min-width:260px; }
+.q-top>div:first-child { flex:1 1 280px; min-width:min(100%,280px); }
 .q-top-tools { max-width:100%; display:flex; flex-direction:column; gap:5px; }
-.q-top-actions { display:flex; align-items:center; gap:8px; }
-.q-top-actions .q-tabs { gap:2px; }
+.q-top-actions { display:flex; align-items:center; gap:8px; max-width:100%; }
+.q-top-actions .q-tabs { gap:2px; max-width:100%; }
 .q-top-actions .q-tabs button { padding:6px 8px; font-size:12px; white-space:nowrap; }
 .q-top-actions .q-language { flex-shrink:0; }
 .q-mode-scope { text-align:right; }
+@media(max-width:1200px) { .q-mode-scope { text-align:left; } }
 .quant-page .chapter-body { max-width:1500px; margin:auto; padding:14px; display:grid; gap:12px; }
 .q-card { background:white; border:1px solid #dfe5ee; border-radius:13px; padding:14px; min-width:0; }
 .q-heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }

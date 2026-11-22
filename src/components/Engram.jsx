@@ -30,11 +30,13 @@ const i18n = {
     replay: "重新播放",
     langToggle: "EN",
     sampleSummary: "补充实验：算一遍检索与门控",
+    sampleNav: "补充实验：检索与门控",
     sampleHint: "看完主图后，可展开小数值例子核对查表、碰撞和门控。",
     topoTitle: "网络拓扑结构",
     flowTitle: "Engram微观张量流图",
     codeTitle: "Demo 对齐",
     timelineTitle: "系统级内存访问与通信时间轴",
+    timelineNav: "内存访问与通信时间轴",
     mathTitle: "Engram 数学原理与维度推导",
     inferenceMode: "推理",
     trainingMode: "训练",
@@ -145,6 +147,7 @@ const i18n = {
   },
   en: {
     sampleSummary: "Optional experiment: calculate retrieval and gating",
+    sampleNav: "Hands-on Retrieval & Gating",
     sampleHint: "After the main diagram, explore a small example of lookup, collisions and gating.",
     title: "DeepSeek Engram Architecture",
     subtitle: "Conditional Memory Retrieval, Micro Tensor Flow & System Data Movement",
@@ -159,6 +162,7 @@ const i18n = {
     flowTitle: "Engram Micro Tensor Flow",
     codeTitle: "Demo-aligned",
     timelineTitle: "System Memory Access & Communication Timeline",
+    timelineNav: "Memory & Communication Timeline",
     mathTitle: "Engram Math Principles & Dimensions",
     inferenceMode: "Inference",
     trainingMode: "Training",
@@ -1165,7 +1169,7 @@ const App = () => {
         {/* ======================================================= */}
         <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative mt-6 overflow-x-auto" data-testid="engram-system-timeline">
             <div className="flex items-center justify-between gap-4 mb-6 pb-3 border-b border-slate-100 min-w-[700px]">
-               <h2 data-section-anchor="engram-3" className="text-lg font-bold flex items-center gap-2 text-slate-800">
+               <h2 data-section-anchor="engram-3" data-section-label={t('timelineNav')} className="text-lg font-bold flex items-center gap-2 text-slate-800">
                  <Clock className="text-blue-500" size={20}/>
                  {t('timelineTitle')}
                </h2>
@@ -1301,7 +1305,7 @@ const App = () => {
           <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl p-4 text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 [&::-webkit-details-marker]:hidden">
             <Calculator size={18} className="shrink-0 text-indigo-500" />
             <div className="min-w-0 flex-1">
-              <h2 data-section-anchor="engram-sample" className="text-sm font-semibold">{t('sampleSummary')}</h2>
+              <h2 data-section-anchor="engram-sample" data-section-label={t('sampleNav')} className="text-sm font-semibold">{t('sampleSummary')}</h2>
               <p className="mt-1 text-xs leading-relaxed text-slate-500">{t('sampleHint')}</p>
             </div>
             <ChevronDown size={18} className="shrink-0 transition-transform group-open:rotate-180" />

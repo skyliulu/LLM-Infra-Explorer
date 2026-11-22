@@ -30,7 +30,7 @@ const i18n = {
     more:'领先', less:'落后', tied:'输出持平', tokens:'Token', finished:'时间预算结束', waiting:'等待开始',
     actualRate:'实际接受率（候选利用率）', cumulative:'累计候选利用率', meanLength:'平均每轮新增', rateHint:'已接受 / 已送验 Draft；含旁支和首拒后后缀，不含锚点与 Target 补发。比例更高不一定更快。',
     unknown:'待验证', noDraft:'未送验 Draft', actual:'实际', accepted:'已接受 Draft', verified:'已送验 Draft',
-    architecture:'协作验证与实现', architectureHint:'具体怎样运行？左侧看 Draft–Target 与 KV 的交互，右侧看算法轨迹，下方代码跟随同一轮执行。',
+    architecture:'协作验证与实现', architectureNav:'协作验证与实现', architectureHint:'具体怎样运行？左侧看 Draft–Target 与 KV 的交互，右侧看算法轨迹，下方代码跟随同一轮执行。',
     overview:'模型关系总览', target:'Target 原模型', transformer:'Transformer 层堆叠', targetHint:'完整原权重 · 候选带正确位置与 Mask 穿过所有层',
     featurePort:'特征 / 锚点 → Draft', returnPort:'候选 + Mask → Target', draft:'Draft 旁路模型',
     shared:'共享冻结权重', learned:'Draft 权重', runtime:'运行时逻辑', activation:'请求张量',
@@ -117,7 +117,7 @@ const i18n = {
     more:'Ahead by',less:'Behind by',tied:'Same output count',tokens:'tokens',finished:'Time budget reached',waiting:'Ready',
     actualRate:'Observed acceptance (candidate utilization)',cumulative:'Cumulative candidate utilization',meanLength:'Mean new tokens / round',rateHint:'Accepted / verified drafts, including branches and rejected suffixes, excluding the anchor and Target bonus. A higher ratio need not be faster.',
     unknown:'Not verified',noDraft:'No draft verified',actual:'Observed',accepted:'Accepted drafts',verified:'Verified drafts',
-    architecture:'Collaboration, Verification and Implementation',architectureHint:'How does it run? Follow Draft–Target and KV interactions on the left, the algorithm trace on the right, and the same round in the code below.',
+    architecture:'Collaboration, Verification and Implementation',architectureNav:'Verification & Implementation',architectureHint:'How does it run? Follow Draft–Target and KV interactions on the left, the algorithm trace on the right, and the same round in the code below.',
     overview:'Model relationships',target:'Original Target',transformer:'Transformer layer stack',targetHint:'Original full weights · candidates traverse every layer with correct positions and masks',
     featurePort:'Features / anchor → Draft',returnPort:'Candidates + mask → Target',draft:'Draft sidecar',
     shared:'Shared frozen weights',learned:'Draft weights',runtime:'Runtime logic',activation:'Request activations',
@@ -418,7 +418,7 @@ function Verification({s,t}) {
 }
 function Workbench({s,t,playing,onPlay,onNext,onReset,onRound,onSeek,selectedNode,setSelectedNode}) {
   return <section className="spec-card" data-testid="speculative-architecture">
-    <h2 data-section-anchor="speculativedecoding-2" className="text-lg font-bold">{t('architecture')}</h2><p className="mb-4 mt-1 text-xs leading-relaxed text-slate-500">{t('architectureHint')}</p>
+    <h2 data-section-anchor="speculativedecoding-2" data-section-label={t('architectureNav')} className="text-lg font-bold">{t('architecture')}</h2><p className="mb-4 mt-1 text-xs leading-relaxed text-slate-500">{t('architectureHint')}</p>
     <div className="grid min-w-0 items-start gap-3 xl:grid-cols-[310px_minmax(0,1fr)]">
       <Relation s={s} t={t}/>
       <div className="spec-workbench min-w-0 space-y-3" data-testid="algorithm-workbench">

@@ -46,7 +46,7 @@ export const canvasI18n = {
     shortHistory: '当前历史较短：局部与全局合读可能比全量读取更多条记录。收益取决于长度与参数。',
     boundaries: '实验边界与技术来源', boundariesText: '单层因果 decode 快照，当前 token 已写入。二维固定数值用于说明路由、门控与归一化，省略 RoPE、归一化、attention sink、量化和输出投影。条目计数不包含压缩器工作区，不代表真实速度或质量评测；这些机制需要相应训练，不能把已有模型直接切换成另一种结构。',
     sourceDetail: 'DSA、CSA 与 HCA 的原理分别参考下列技术报告。这里缩小窗口、压缩组与 Top-K，便于逐条检查；不展示某个模型的完整层配置。',
-    allRead: '全局全部读取', scoreDetail: '所选记录的索引分数', mainKey: '主 key', mainValue: '主 value', indexKey: '索引 key', currentRecord: '当前记录',
+    allRead: '全局全部读取', scoreDetail: '所选记录的索引分数', mainKey: '主 key', mainValue: '主 value', indexKey: '索引 key', currentRecord: '当前记录', navStructure: '缓存来源与查询路径',
   },
   en: {
     outcome_better: 'Better', outcome_worse: 'Worse', outcome_same: 'Unchanged', direction_up: 'Increase', direction_down: 'Decrease', direction_same: 'No change',
@@ -95,6 +95,6 @@ export const canvasI18n = {
     shortHistory: 'For this short history, combined global and local reads may exceed full attention. Benefits depend on length and parameters.',
     boundaries: 'Experiment scope and sources', boundariesText: 'A causal single-layer decode snapshot with the current token already written. Fixed 2D examples illustrate routing, gating and normalization; RoPE, normalization, attention sinks, quantization and output projections are omitted. Record counts exclude compressor workspace and are not speed or quality measurements. These mechanisms require appropriate training; an existing model cannot simply switch structures.',
     sourceDetail: 'The reports below describe DSA, CSA and HCA. Smaller windows, groups and Top-K make individual records inspectable here; this is not a full model layer configuration.',
-    allRead: 'Read all global records', scoreDetail: 'Selected record index score', mainKey: 'Main key', mainValue: 'Main value', indexKey: 'Index key', currentRecord: 'Selected record',
+    allRead: 'Read all global records', scoreDetail: 'Selected record index score', mainKey: 'Main key', mainValue: 'Main value', indexKey: 'Index key', currentRecord: 'Selected record', navStructure: 'Cache origin & query path',
   },
 };

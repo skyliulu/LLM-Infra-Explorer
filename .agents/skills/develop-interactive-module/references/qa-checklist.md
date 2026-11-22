@@ -116,7 +116,8 @@ A control can be functionally correct and still look wrong. Downscaled full-page
 
 - [ ] Selected text, small formulas, matrix cells, sliders, and pale panels have readable contrast.
 - [ ] Meaning does not rely on color alone.
-- [ ] Desktop, tablet, and mobile preserve logical reading order.
+- [ ] Desktop, intermediate (sidebar-open / split-screen / tablet), and mobile widths preserve logical reading order without squeezing wrapping header titles into narrow vertical columns beside wide control bars.
+- [ ] The rendered section-jump / overview dropdown was inspected in both languages: every option corresponds to a top-level section heading with concise, clean text—no container body dumps, glued badges, dynamic counter noise, raw line breaks, or disproportionately wide options.
 - [ ] No page-level horizontal overflow appears.
 - [ ] Dense components have no unintended internal overflow in sparse, representative, and maximum-content states.
 - [ ] Both languages preserve readable proportions and control labels.
