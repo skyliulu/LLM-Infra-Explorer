@@ -20,7 +20,7 @@
     "check:linear": "node scripts/check-linear-attention.mjs && node scripts/check-linear-comparison.mjs && node scripts/check-linear-modern.mjs",
     "check:deepinfer": "node scripts/check-deepinfer-lesson.mjs && node scripts/check-deepinfer-mechanisms.mjs",
     "check:speculative": "node scripts/check-speculative-decoding.mjs && node scripts/check-speculative-serving.mjs",
-    "check:quantization": "node scripts/check-quantization.mjs && node scripts/check-sglang-quantization.mjs && node scripts/check-fp4-cache.mjs",
+    "check:quantization": "node scripts/check-quantization.mjs && node scripts/check-sglang-quantization.mjs && node scripts/check-fp4-cache.mjs && node scripts/check-quantization-frontier.mjs",
     "check:visual": "node scripts/visual-check.js",
     "check:visual:module": "node scripts/visual-check.js --module",
     "check:workbench": "node scripts/check-workbench-sharing.mjs && node scripts/check-learning-paths.mjs"

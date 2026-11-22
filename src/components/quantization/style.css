@@ -167,3 +167,22 @@
 .qe-warning { border-left:3px solid #f59e0b; padding:6px 8px; background:#fffbeb; color:#92400e!important; }
 @media(max-width:1000px) { .qe-workbench { grid-template-columns:minmax(0,1fr); } .qe-controls .q-field { min-width:190px; flex:1; } }
 @media(max-width:500px) { .qe-controls .q-field { min-width:0; flex-basis:100%; } .qe-phases button { flex:1 1 42%; font-size:11px; padding:6px; } }
+
+.q-frontier-subcard { background:white; border:1px solid #e2e8f0; border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:8px; min-width:0; }
+.q-frontier-subhead { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px; }
+.q-badge-warn { font-size:11px; font-weight:700; padding:2px 7px; border-radius:5px; background:#ffe4e6; color:#9f1239; }
+.q-badge-good { font-size:11px; font-weight:700; padding:2px 7px; border-radius:5px; background:#d1fae5; color:#065f46; }
+.q-roofline-bars { display:grid; gap:7px; background:white; border:1px solid #e2e8f0; border-radius:8px; padding:10px; }
+.q-roofline-row { display:grid; grid-template-columns:190px minmax(0,1fr) 54px 90px; gap:10px; align-items:center; font-size:12px; padding:4px 6px; border-radius:6px; }
+.q-roofline-row.best { background:#eff6ff; }
+.q-rf-name { font-weight:600; color:#1e293b; }
+.q-rf-track { position:relative; height:16px; background:#f1f5f9; border-radius:4px; overflow:hidden; }
+.q-rf-fill { height:100%; border-radius:4px; transition:width .25s; }
+.q-rf-fill.ok { background:#3b82f6; }
+.q-rf-fill.best { background:#059669; }
+.q-rf-fill.slow { background:#e11d48; }
+.q-rf-baseline { position:absolute; top:0; bottom:0; border-left:2px dashed #475569; }
+.q-rf-val { text-align:right; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:#0f172a; }
+.q-rf-val.slow { color:#be123c; }
+.q-rf-bound { text-align:right; font-size:10px; color:#64748b; }
+@media(max-width:700px) { .q-roofline-row { grid-template-columns:1fr 54px; } .q-rf-track { grid-column:1 / -1; } .q-rf-bound { text-align:left; } }
