@@ -38,7 +38,7 @@ const i18n = {
     splitSizeMetric: '每 Split tokens',
     fullRangeMetric: '完整 KV tokens',
     ctaBatchesMetric: 'CTA 批次',
-    workspaceMetric: 'Workspace 条目',
+    workspaceMetric: 'Workspace 条目 (单 Q 头)',
     kvReadMetric: 'KV 读取元素',
     blockTable: 'KV 寻址',
     contiguousAddress: '连续基址 + token 偏移',
@@ -104,13 +104,13 @@ const i18n = {
     clickPlay: '请点击顶部的“播放”按钮观察动态调度过程。',
     step1Title: '步骤 1',
     step1Name: '矩阵切块 (Tiling)',
-    step1Desc: 'KV Cache 在 HBM 中建立 6 个代表性逻辑 Split；这一步创建视图与元数据，不复制 KV。页面用 4 个 CTA 工作位演示分批调度，真实数量由后端与形状决定。',
+    step1Desc: 'KV Cache 在 HBM 中建立 {splits} 个逻辑 Split 视图；这一步只创建视图与元数据，不复制 KV。页面用 4 个 CTA 工作位演示分批调度，真实数量由后端与形状决定。',
     step21Title: '步骤 2.1',
     step21Name: '局部计算 (批次 1)',
-    step21Desc: '四个代表性 CTA 同时处理 Split 0~3，读取共享 Query 与各自的 KV 视图，并把局部输出和 Softmax 统计量写入 HBM Workspace。CTA 到物理 SM 的映射由运行时调度。',
+    step21Desc: '{activeBatch1} 个代表性 CTA 同时处理 Split 0~{batch1End}，读取共享 Query 与各自的 KV 视图，并把局部输出和 Softmax 统计量写入 HBM Workspace。CTA 到物理 SM 的映射由运行时调度。',
     step22Title: '步骤 2.2',
     step22Name: '动态调度 (批次 2)',
-    step22Desc: '第二批代表性 CTA 处理 Split 4 和 5，其余工作位待命。这里演示的是逻辑工作分配，不表示 Split 固定绑定某个 SM，也不意味着上下文长度没有实现上限。',
+    step22Desc: '第二批 {activeBatch2} 个代表性 CTA 处理 Split {batch2Start}~{batch2End}。这里演示的是逻辑工作分配，不表示 Split 固定绑定某个 SM，也不意味着上下文长度没有实现上限。',
     step3Title: '步骤 3',
     step3Name: 'Kernel 同步与状态归约',
     step3Desc1: '[重要转折点]：Kernel 1 的所有 CTA 完成后，运行时跨过 Kernel 边界并启动独立归约 Kernel。它读取 HBM Workspace 中的局部结果并统一 Softmax 尺度，但不绑定固定物理 SM。',
@@ -120,7 +120,7 @@ const i18n = {
     step4Name: '最终合并 (Merge)',
     step4Desc: '独立归约 Kernel 利用统一后的全局比例尺，对 HBM Workspace 中的局部结果进行加权合并；无需重新读取全量 KV，即可在数学上恢复完整 Attention（实际数值仍受浮点舍入影响）。',
     doneTitle: 'Flash Decoding 完成',
-    doneDesc: '最终结果已写回。通过“切分-局部计算-同步-全局归约”的四步走策略，我们成功把内存密集型的 Decoding 任务，转化为了计算与显存高效平衡的流水线。'
+    doneDesc: '最终结果已写回。Decode 本质上仍受限于显存带宽（并未提高算术强度），Split-K 的关键收益是沿 KV 序列展开并行度，消除小 batch 下的 SM 空转，从而更充分地打满 HBM 带宽。'
   },
   en: {
     title: 'Flash Decoding Visualization',
@@ -153,7 +153,7 @@ const i18n = {
     splitSizeMetric: 'Tokens per split',
     fullRangeMetric: 'Full-KV tokens',
     ctaBatchesMetric: 'CTA batches',
-    workspaceMetric: 'Workspace entries',
+    workspaceMetric: 'Workspace entries (per Q head)',
     kvReadMetric: 'KV elements read',
     blockTable: 'KV addressing',
     contiguousAddress: 'Contiguous base + token offset',
@@ -219,13 +219,13 @@ const i18n = {
     clickPlay: 'Please click the "Play" button at the top to observe the dynamic scheduling process.',
     step1Title: 'Step 1',
     step1Name: 'Matrix Tiling',
-    step1Desc: 'The KV cache exposes six representative logical split views in HBM; no KV copy occurs. Four CTA slots illustrate batched scheduling, while real counts depend on the backend and shape.',
+    step1Desc: 'The KV cache exposes {splits} logical split views in HBM; no KV copy occurs. Four CTA slots illustrate batched scheduling, while real counts depend on the backend and shape.',
     step21Title: 'Step 2.1',
     step21Name: 'Local Compute (Batch 1)',
-    step21Desc: 'Four representative CTAs process Splits 0~3, read the shared Query and their KV views, and write local outputs plus Softmax statistics to the HBM workspace. Runtime scheduling maps CTAs to physical SMs.',
+    step21Desc: '{activeBatch1} representative CTAs process Splits 0~{batch1End}, read the shared Query and their KV views, and write local outputs plus Softmax statistics to the HBM workspace. Runtime scheduling maps CTAs to physical SMs.',
     step22Title: 'Step 2.2',
     step22Name: 'Dynamic Scheduling (Batch 2)',
-    step22Desc: 'The second representative batch processes Splits 4 and 5 while the remaining work slots wait. This is logical work assignment, not fixed SM binding or a claim of unbounded context length.',
+    step22Desc: 'The second batch of {activeBatch2} representative CTAs processes Splits {batch2Start}~{batch2End}. This is logical work assignment, not fixed SM binding or a claim of unbounded context length.',
     step3Title: 'Step 3',
     step3Name: 'Kernel Sync & State Reduction',
     step3Desc1: '[Critical Point]: After every Kernel 1 CTA completes, the runtime crosses a kernel boundary and launches an independent reduction kernel. It reads the HBM workspace to unify Softmax scales without binding to a fixed physical SM.',
@@ -235,7 +235,7 @@ const i18n = {
     step4Name: 'Final Merge',
     step4Desc: 'The independent reduction kernel merges the local HBM-workspace results on a unified global scale. It recovers full Attention mathematically without rereading all KV, subject to ordinary floating-point rounding.',
     doneTitle: 'Flash Decoding Done',
-    doneDesc: 'Final result written back. Through the 4-step "Split - Local Compute - Sync - Global Reduce" strategy, we successfully transformed a memory-intensive Decoding task into a highly balanced pipeline of compute and memory.'
+    doneDesc: 'Final result written back. Decoding remains memory-bandwidth-bound (Split-K does not raise arithmetic intensity); the key win is exposing sequence-level parallelism across SMs so small-batch, long-context decoding saturates HBM bandwidth instead of stalling on low occupancy.'
   }
 };
 
@@ -259,7 +259,11 @@ const App = () => {
   const [phase, setPhase] = useState('idle');
   const [isPlaying, setIsPlaying] = useState(false);
   const [lang] = useLanguage();
-  const t = (k) => i18n[lang][k] ?? k;
+  const t = (k, vars = {}) => {
+    let str = i18n[lang][k] ?? k;
+    Object.keys(vars).forEach((key) => { str = str.split(`{${key}}`).join(vars[key]); });
+    return str;
+  };
   const snapshot = useMemo(() => deriveFlashDecodeSnapshot({
     algorithm,
     execution,
@@ -337,7 +341,7 @@ const App = () => {
     if (algorithm === 'simple') {
       return (
         <div className="font-mono text-[10px] md:text-xs xl:text-sm overflow-x-auto bg-[#0d1117] p-4 rounded-lg border border-slate-800 flex-1 leading-relaxed whitespace-pre text-slate-400 block">
-          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_decoding_simple</span>(q, k, v, block_size):</div>
+          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_decoding_simple</span>(q, k, v, block_size, q_head, q_per_kv_head, block_table):</div>
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
             <div>  kv_head = q_head // q_per_kv_head <span className="text-slate-500">{t('pyHeadMap')}</span></div>
             <div>  k, v = resolve_kv(k, v, block_table) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
@@ -345,7 +349,7 @@ const App = () => {
 
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
             <div className="text-indigo-400 font-bold text-[10px] mb-1">{t('py1Step1')}</div>
-            <div>  num_blocks = seq_len_kv // block_size</div>
+            <div>  num_blocks = ceil(seq_len_kv / block_size)</div>
             <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(num_blocks):</div>
           </div>
 
@@ -382,7 +386,7 @@ const App = () => {
     } else {
       return (
         <div className="font-mono text-[10px] md:text-xs xl:text-sm overflow-x-auto bg-[#0d1117] p-4 rounded-lg border border-slate-800 flex-1 leading-relaxed whitespace-pre text-slate-400 block">
-          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_decoding_lse</span>(q, k, v, num_splits):</div>
+          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_decoding_lse</span>(q, k, v, num_splits, q_head, q_per_kv_head, block_table):</div>
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
             <div>  kv_head = q_head // q_per_kv_head <span className="text-slate-500">{t('pyHeadMap')}</span></div>
             <div>  k, v = resolve_kv(k, v, block_table) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
@@ -641,8 +645,8 @@ const App = () => {
                   {snapshot.outputReady && (
                     <div className="flex items-center gap-3 w-full mt-2 animate-fade-in border-t border-slate-200 pt-3">
                       <span className="text-xs font-bold text-slate-600 w-10 text-right">Output</span>
-                      <div className="px-4 py-1.5 bg-emerald-500 border-2 border-emerald-600 text-white font-mono text-xs font-bold rounded shadow-md w-28 text-center">
-                        <MathFormula>{String.raw`O\,[1,d]`}</MathFormula>
+                      <div className="px-4 py-1.5 bg-emerald-500 border-2 border-emerald-600 text-white font-mono text-xs font-bold rounded shadow-md w-32 text-center">
+                        <MathFormula>{String.raw`O\,[1,H_q,d]`}</MathFormula>
                       </div>
                       <span className="text-[10px] text-emerald-600 font-bold ml-2">{t('globalResultWriteback')}</span>
                     </div>
@@ -717,7 +721,7 @@ const App = () => {
                             <>
                               <div className={formulaTone}><MathFormula>{String.raw`m_{${blockId}}=\max(A),\quad \ell_{${blockId}}=\sum e^{A-m}`}</MathFormula></div>
                               <div className={isComputingLocal ? 'text-amber-700 font-bold bg-amber-100/50 rounded px-1' : 'text-slate-500'}><MathFormula>{String.raw`L_{${blockId}}=m_{${blockId}}+\log\ell_{${blockId}}`}</MathFormula></div>
-                              <div className={isComputingLocal ? 'text-amber-700 font-bold bg-amber-100/50 rounded px-1' : 'text-slate-500'}><MathFormula>{String.raw`O_{${blockId}}=\widetilde O_{${blockId}}/\ell_{${blockId}}`}</MathFormula></div>
+                              <div className={isComputingLocal ? 'text-amber-700 font-bold bg-amber-100/50 rounded px-1' : 'text-slate-500'}><MathFormula>{String.raw`O_{${blockId}}=\operatorname{softmax}(A_{${blockId}})V_{${blockId}}`}</MathFormula></div>
                             </>
                           )}
                         </div>
@@ -792,7 +796,7 @@ const App = () => {
                   <span className="bg-indigo-500 text-white px-2 py-0.5 rounded text-xs">{t('step1Title')}</span>
                   <SplitSquareHorizontal size={18}/> {t('step1Name')}
                 </h4>
-                <p className="opacity-90 text-indigo-50">{t('step1Desc')}</p>
+                <p className="opacity-90 text-indigo-50">{t('step1Desc', { splits: snapshot.effectiveSplitCount })}</p>
               </div>
             )}
 
@@ -802,7 +806,7 @@ const App = () => {
                   <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-xs">{t('step21Title')}</span>
                   <Cpu size={18}/> {t('step21Name')}
                 </h4>
-                <p className="opacity-90">{t('step21Desc')}</p>
+                <p className="opacity-90">{t('step21Desc', { activeBatch1: Math.min(NUM_WORK_UNITS, snapshot.effectiveSplitCount), batch1End: Math.min(NUM_WORK_UNITS, snapshot.effectiveSplitCount) - 1 })}</p>
               </div>
             )}
 
@@ -812,7 +816,7 @@ const App = () => {
                   <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-xs">{t('step22Title')}</span>
                   <Cpu size={18}/> {t('step22Name')}
                 </h4>
-                <p className="opacity-90">{t('step22Desc')}</p>
+                <p className="opacity-90">{t('step22Desc', { activeBatch2: Math.max(0, snapshot.effectiveSplitCount - NUM_WORK_UNITS), batch2Start: NUM_WORK_UNITS, batch2End: snapshot.effectiveSplitCount - 1 })}</p>
               </div>
             )}
 
