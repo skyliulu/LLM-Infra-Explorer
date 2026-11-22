@@ -17,7 +17,7 @@
     "check:mooncake": "node scripts/check-mooncake.mjs",
     "check:dpa": "node scripts/check-dp-attention.mjs",
     "check:llm": "node scripts/check-llm-inference.mjs && node scripts/check-inference-numerics.mjs && node scripts/check-kv-representation.mjs",
-    "check:linear": "node scripts/check-linear-attention.mjs && node scripts/check-linear-comparison.mjs",
+    "check:linear": "node scripts/check-linear-attention.mjs && node scripts/check-linear-comparison.mjs && node scripts/check-linear-modern.mjs",
     "check:deepinfer": "node scripts/check-deepinfer-lesson.mjs && node scripts/check-deepinfer-mechanisms.mjs",
     "check:speculative": "node scripts/check-speculative-decoding.mjs",
     "check:quantization": "node scripts/check-quantization.mjs && node scripts/check-sglang-quantization.mjs && node scripts/check-fp4-cache.mjs",

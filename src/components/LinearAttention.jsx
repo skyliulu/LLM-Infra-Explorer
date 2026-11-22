@@ -9,6 +9,7 @@ import { getAttentionState, TRACKS } from './linear-attention/model';
 import { ArchitectureComparison } from './linear-attention/ArchitectureComparison';
 import { Inspector } from './linear-attention/Inspector';
 import { StageCanvas } from './linear-attention/StageCanvas';
+import ChunkDeltaWorkbench from './linear-attention/ChunkDeltaWorkbench';
 
 const CONTEXT_OPTIONS = [16, 64, 256, 1024, 4096, 16384];
 const D_OPTIONS = [16, 32, 64, 128];
@@ -248,6 +249,8 @@ function LinearAttention() {
             </div>
           </section>
         )}
+
+        <ChunkDeltaWorkbench lang={lang} contextLength={contextLength} dk={dk} dv={dv} />
 
         <div className="flex flex-col gap-2 px-1 pb-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <span>{t('sampledDimensions')}</span>

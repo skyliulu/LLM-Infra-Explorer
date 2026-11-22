@@ -11,7 +11,7 @@ const examples={
  flash:{'FlashAttention.config':{modelType:'flash',version:'v4',direction:'forward',causal:true,sequenceLength:8192,headDim:128,dtype:'bf16'}},
  flashdecode:{'FlashDecode.algorithm':'optimized','FlashDecode.splitSetting':'4'},
  dpattention:{'DpAttention.modelType':'dp','DpAttention.moeTopology':'ep'},
- linearattn:{'LinearAttention.detailMode':'exact','LinearAttention.contextLength':16384},
+ linearattn:{'LinearAttention.detailMode':'exact','LinearAttention.contextLength':16384,'LinearAttention.modern':{chunkSize:128,alpha:.9,beta:1,ratio:'hybrid_7_1',batchSize:32}},
  sparseattn:{'SparseAttention.input':{mode:'hca',tokens:64,query:1,topK:2,window:8,csaRatio:4,hcaRatio:8,inspect:2,channel:0,budgetKiB:64}},
  cachearch:{'CacheArchitecture.tokens':1000000,'CacheArchitecture.phase':'decode','CacheArchitecture.layer':39},
  quantization:{'Quantization.config':{mode:'fp4',batch:8,context:8192,kv:'fp4',prefill:true},'quantization/SGLangWorkbench.preset':'saved-static','Quantization.algorithm':'smooth'},
