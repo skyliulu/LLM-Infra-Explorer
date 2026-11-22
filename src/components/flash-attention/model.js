@@ -176,9 +176,9 @@ const PIPELINES = {
         ['ummaQKL', 'umma', 3, 3],
         ['softmaxL', 'softmaxL', 6, 3],
         ['ummaPVH', 'umma', 6, 3],
-        ['correctH', 'correction', 8, 2],
+        ['correctH', 'correction', 9, 2],
         ['ummaPVL', 'umma', 9, 3],
-        ['correctL', 'correction', 11, 2],
+        ['correctL', 'correction', 12, 2],
       ],
     },
     backward: {

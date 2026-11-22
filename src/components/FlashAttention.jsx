@@ -143,7 +143,7 @@ const i18n = {
     innerAsync: 'KV stage：异步 MMA、Softmax 与修正重叠',
     standardLoop: '三个独立 kernel 顺序执行并经过 HBM',
     standardBackwardLoop: '从 HBM 读取前向保存量，依次执行 dV、dP、Softmax backward、dQ 与 dK kernel',
-    bwdOuterV1: 'Q/KV tile 对：由 LSE 重算 score 与 probability',
+    bwdOuterV1: 'Q/KV tile 对：由前向保存的 (m, ℓ) 重算 score 与 probability',
     bwdInnerV1: '梯度 tile：分别累加 dQ、dK 与 dV',
     bwdOuterV2: 'KV tile / CTA：持有 dK、dV 局部累加器',
     bwdInnerV2: 'Q tile：流式进入并将局部 dQ 原子累加到 HBM',
@@ -172,7 +172,7 @@ const i18n = {
     yes: '是',
     no: '否',
     savedStandard: 'P 与 Q/K/V；S 已物化但反向不依赖',
-    savedFlash: 'O 与逐行 LSE，不保存完整 S/P',
+    savedFlash: 'Q/K/V/O 与逐行统计量（V1 为 m,ℓ；V2–V4 合并为 LSE），不保存完整 S/P',
     scheduleStandard: '独立梯度 kernel',
     scheduleV1: '分块重计算与梯度累加',
     scheduleV2: 'KV-column CTA + dQ 原子累加',
@@ -198,7 +198,7 @@ const i18n = {
     v1Boundary: '前向保留在线归一化；反向先重建 P，再生成 dP、dS 和 dQ/dK。这里是代表性 tile 依赖，不是特定 GPU 的计时轨迹。',
     v2Summary: 'V2：重排循环与 GPU 工作划分，让长序列也能产生足够 CTA，并以 split-Q 避免 warp 间归约。',
     v2Observe: 'Q tile 由 CTA 持有，K/V 逐块流入；每个 warp 拥有不同 Q 行和对应 O 行，不再合并 split-K 的部分输出。',
-    v2Boundary: '核心优化面向 A100 级执行模型；流量接近 V1 并不意味着吞吐相同。V2 的主要收益来自占用率、非矩阵 FLOPs 与通信。',
+    v2Boundary: '核心优化面向 A100 级执行模型：改为 Q 外循环大幅减少 O 与统计量的 HBM 反复读写，端到端吞吐提升还来自更高的 CTA 占用率、更少的非矩阵 FLOPs 与 split-Q 消除 warp 归约。',
     v3Summary: 'V3：利用 Hopper 的 TMA、WGMMA 与 warp specialization，把搬运、矩阵乘和 Softmax 交叠。',
     v3Observe: 'TMA 为下一 tile 预取时，WGMMA 与 Softmax 在其他 warpgroup 工作；流水线的重叠而非再次降低二次方中间内存构成主要提升。',
     v3Boundary: '默认显示 H100 BF16 路径；FP8 的 incoherent processing 是可选低精度路径，本画布不把它混入 BF16 主流程。',
@@ -256,9 +256,9 @@ const i18n = {
     op_onlineSoftmax: '在线 Softmax 与重缩放',
     op_writeState: '写回输出与在线统计量',
     op_nextQ: '推进下一个 Q tile',
-    op_loadBackward: '加载 Q/K/V/O/dO/LSE',
+    op_loadBackward: '加载 Q/K/V/O/dO 与前向统计量',
     op_recomputeS: '重计算 S',
-    op_recomputeP: '由 LSE 重建 P',
+    op_recomputeP: '由前向统计量重建 P',
     op_dvdp: '计算 dV / dP',op_dqdk:'使用 dS 计算 dQ / dK',stage_bwdGradInput:'先生成 dV 与 dP',
     op_atomicGrad: '累加并写回梯度',
     op_assignQ: '分配 Q-row CTA',
@@ -417,7 +417,7 @@ const i18n = {
     innerAsync: 'KV stage: overlap asynchronous MMA, softmax, and correction',
     standardLoop: 'Three separate kernels execute sequentially through HBM',
     standardBackwardLoop: 'Read forward-saved state from HBM, then run dV, dP, softmax-backward, dQ, and dK kernels in sequence',
-    bwdOuterV1: 'Q/KV tile pair: recompute scores and probabilities from LSE',
+    bwdOuterV1: 'Q/KV tile pair: recompute scores and probabilities from saved (m, ℓ)',
     bwdInnerV1: 'Gradient tile: accumulate dQ, dK, and dV separately',
     bwdOuterV2: 'KV tile / CTA: retain local dK and dV accumulators',
     bwdInnerV2: 'Q tile: stream through and atomically accumulate partial dQ to HBM',
@@ -446,7 +446,7 @@ const i18n = {
     yes: 'Yes',
     no: 'No',
     savedStandard: 'P and Q/K/V; S is materialized but not needed by backward',
-    savedFlash: 'O and row-wise LSE; no full S/P',
+    savedFlash: 'Q/K/V/O and row-wise stats (m,ℓ in V1; LSE in V2–V4); no full S/P',
     scheduleStandard: 'Separate gradient kernels',
     scheduleV1: 'Tiled recompute and gradient accumulation',
     scheduleV2: 'KV-column CTA + atomic dQ',
@@ -472,7 +472,7 @@ const i18n = {
     v1Boundary: 'Forward retains online normalization; backward reconstructs P, then produces dP, dS and dQ/dK. This is a representative tile dependency graph, not a measured GPU trace.',
     v2Summary: 'V2: reordered loops and GPU work partitioning create enough CTAs for long sequences and use split-Q to avoid warp reductions.',
     v2Observe: 'A CTA owns a Q tile while K/V stream through it. Each warp owns distinct Q rows and matching O rows, so split-K partial outputs do not need merging.',
-    v2Boundary: 'The key design targets an A100-class execution model. Similar HBM bytes do not imply similar throughput: occupancy, non-matmul FLOPs, and communication drive the gain.',
+    v2Boundary: 'The key design targets an A100-class execution model: the Q-outer loop cuts repeated O and statistics HBM traffic, while higher CTA occupancy, fewer non-matmul FLOPs, and split-Q avoiding warp reductions drive end-to-end throughput.',
     v3Summary: 'V3: Hopper TMA, WGMMA, and warp specialization overlap movement, matmul, and softmax.',
     v3Observe: 'While TMA prefetches the next tile, WGMMA and softmax execute in other warpgroups. Pipeline overlap—not another reduction in quadratic intermediate memory—is the main advance.',
     v3Boundary: 'The default view is the H100 BF16 path. FP8 incoherent processing is an optional low-precision path and is not mixed into the BF16 main flow here.',
@@ -530,9 +530,9 @@ const i18n = {
     op_onlineSoftmax: 'Online softmax and rescale',
     op_writeState: 'Write output and online statistics',
     op_nextQ: 'Advance to next Q tile',
-    op_loadBackward: 'Load Q/K/V/O/dO/LSE',
+    op_loadBackward: 'Load Q/K/V/O/dO and saved stats',
     op_recomputeS: 'Recompute S',
-    op_recomputeP: 'Rebuild P from LSE',
+    op_recomputeP: 'Rebuild P from saved stats',
     op_dvdp:'Compute dV / dP',op_dqdk:'Use dS for dQ / dK',stage_bwdGradInput:'Produce dV and dP first',
     op_atomicGrad: 'Accumulate and write gradients',
     op_assignQ: 'Assign a Q-row CTA',
@@ -586,11 +586,22 @@ const CODE_BY_OPERATION = {
   assignQ: 'cta = grid[batch, head, q_tile]', splitQQK: 'warp_rows = mma(Q_warp, K.T)', leanSoftmax: 'O_tilde, LSE = online_update_unscaled(...)', splitQPV: 'O_warp += mma(P_warp, V)', nextKV: 'pipeline.advance(kv_stage)', writeOLSE: 'hbm.store(O, LSE)',
   assignKV: 'cta = grid[batch, head, kv_tile]', gradMma: 'recompute_QK_then_run_5_mmas()', atomicDQ: 'atomic_add(global_dQ, partial_dQ)', writeGrad: 'hbm.store(dK, dV)',
   tmaK0:'producer.tma_load(K0); publish_ready(K0)',tmaV0:'producer.tma_load(V0); publish_ready(V0)', wgmmaQK0: 'consumer.wait(K0); S0 = wgmma(Q, K0.T) / sqrt(d)', tmaK1:'producer.tma_load(K1); publish_ready(K1)',tmaV1:'producer.tma_load(V1); publish_ready(V1)', softmax0: 'softmax_wg.update(S0)', wgmmaPV0: 'consumer.wait(P0, V0); wgmma(P0, V0)', wgmmaQK1: 'consumer.wait(K1); S1 = wgmma(Q, K1.T) / sqrt(d)', softmax1: 'softmax_wg.update(S1)', rescaleO:'wait(PV0); rescale(O, old_max, new_max)',wgmmaPV1:'consumer.wgmma(P1, V1); commit()',waitPV1:'consumer.wait_group(PV1)',commitO:'normalize(O); store(O, LSE)',
-  tmaBackward: 'producer.tma_load(backward_tiles)', recomputeWgmma: 'wgmma(Q, K.T)  // recompute S', recomputeSoftmax: 'P = exp(S - LSE)', gradWgmma0: 'wgmma_group.run(dV, dP)', gradSoftmax: 'cuda_core.compute(dS)', gradWgmma1: 'wgmma_group.run(dQ, dK)', commitGrad: 'tma_store(dQ, dK, dV)',
+  tmaBackward: 'producer.tma_load(backward_tiles)', recomputeWgmma: 'wgmma(Q, K.T)  // recompute S', recomputeSoftmax: 'P = exp(S - LSE)', gradWgmma0: 'wgmma_group.run(dV, dP)', gradSoftmax: 'D = rowsum(dO * O); dS = P * (dP - D)', gradWgmma1: 'wgmma_group.run(dQ, dK)', commitGrad: 'tma_reduce(dQ); tma_store(dK, dV)',
   ummaQKH: 'umma_async(Q_high, K.T, tmem.S_high)', softmaxH: 'softmax_wg_high.exp_and_reduce(tmem.S_high)', ummaQKL: 'umma_async(Q_low, K.T, tmem.S_low)', softmaxL: 'softmax_wg_low.exp_and_reduce(tmem.S_low)', ummaPVH: 'umma_async(tmem.P_high, V, tmem.O_high)', correctH: 'correction_wg.conditional_rescale(O_high)', ummaPVL: 'umma_async(tmem.P_low, V, tmem.O_low)', correctL: 'correction_wg.conditional_rescale(O_low)',
   recomputeTranspose: 'umma_async(K, Q.T, tmem.S_T)', storeTmem: 'tmem.alias(S_T, P_T, dP_T, dS_T)', softmaxTile: 'cuda_core.compute(P_T, dS_T)', gradPrevious: 'umma_async(dK_prev, dQ_prev)', twoCtaMma: 'cluster.umma_2cta(operand_A, operand_B)', dsmemExchange: 'cluster.dsmem_exchange(dS_shard)', reduceGrad: 'tmem.reduce_and_store(gradients)',
 };
 
+
+const getOperationCode = (operationId, config) => {
+  if (config.modelType === 'flash' && config.version === 'v1' && config.direction === 'backward') {
+    if (operationId === 'loadBackward') return 'stage(Q, K, V, O, dO, m, l)';
+    if (operationId === 'recomputeP') return 'P = diag(l)^-1 * exp(S - m)';
+  }
+  if (config.modelType === 'flash' && config.direction === 'backward' && operationId === 'softmaxBwd') {
+    return 'D = rowsum(dO * O); dS = P * (dP - D)';
+  }
+  return CODE_BY_OPERATION[operationId];
+};
 
 const formatBytes = (bytes) => {
   if (bytes === 0) return '0 B';
@@ -870,7 +881,12 @@ function BackwardHbmCanvas({ snapshot, config, t }) {
       <div className="mb-2 text-[9px] font-black uppercase tracking-wider text-slate-500">{t('backwardInputs')}</div>
       <p className="mb-2 text-[8px] leading-relaxed text-slate-500">{t('backwardTileLegend')}</p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {inputKeys.map((key) => <FlashHbmTensorCard key={key} name={key} label={BACKWARD_TENSOR_LABELS[key]} state={hbm[key]} shape={shapeFor(key)} activeTileIndex={tileIndexFor(key)} current={snapshot.displayTiles.active} t={t} />)}
+        {inputKeys.map((key) => {
+          const isV1Stats = key === 'LSE' && config.version === 'v1';
+          const label = isV1Stats ? String.raw`m,\ell` : BACKWARD_TENSOR_LABELS[key];
+          const shape = isV1Stats ? String.raw`2\times${config.sequenceLength}` : shapeFor(key);
+          return <FlashHbmTensorCard key={key} name={key} label={label} state={hbm[key]} shape={shape} activeTileIndex={tileIndexFor(key)} current={snapshot.displayTiles.active} t={t} />;
+        })}
       </div>
       <div className="mt-3 text-[9px] font-black uppercase tracking-wider text-slate-500">{t('gradientOutputs')}</div>
       <div className="mt-2 grid grid-cols-3 gap-2">
@@ -883,16 +899,31 @@ function BackwardHbmCanvas({ snapshot, config, t }) {
   );
 }
 
-function FlashStageVisual({ visual, operationIds = [], direction }) {
+function FlashStageVisual({ visual, operationIds = [], direction, version = 'v2' }) {
+  const statsSym = version === 'v1' ? String.raw`m_i,\ell_i` : String.raw`\mathrm{LSE}_i`;
   const formulas = {
-    tiles: String.raw`Q_i,\ K_j,\ V_j\ \longrightarrow\ \mathrm{SMEM}`,
-    state: String.raw`(O_i,m_i,\ell_i)\ \mathrm{resident}`,
-    score: String.raw`S_{ij}=Q_iK_j^{\top}/\sqrt d+M_{ij}`,
-    softmax: direction === 'backward' ? String.raw`\mathrm{d}S=P\odot(\mathrm{d}P-\operatorname{rowsum}(\mathrm{d}P\odot P))` : String.raw`(m_i,\ell_i,O_i)\leftarrow\operatorname{online\_update}(S_{ij},V_j)`,
-    output: String.raw`O_i\leftarrow O_i+P_{ij}V_j`,
-    commit: direction === 'backward' ? String.raw`\operatorname{accumulate/store}_{\mathrm{HBM}}(\mathrm{d}Q,\mathrm{d}K,\mathrm{d}V)` : String.raw`\operatorname{store}_{\mathrm{HBM}}(O,\mathrm{LSE})`,
-    scheduler: String.raw`\mathrm{CTA}_i\ \owns\ (Q_i,O_i)`,
-    gradient: String.raw`dQ,\ dK,\ dV\leftarrow\mathrm{MMA}`,
+    tiles: direction === 'backward'
+      ? String.raw`Q_i,K_j,V_j,O_i,\mathrm{d}O_i,${statsSym}\longrightarrow\mathrm{SMEM}`
+      : String.raw`Q_i,\ K_j,\ V_j\ \longrightarrow\ \mathrm{SMEM}`,
+    state: direction === 'backward'
+      ? String.raw`\mathrm{TMEM}\leftarrow(S^{\top},P^{\top},\mathrm{d}P^{\top},\mathrm{d}S^{\top})`
+      : String.raw`(O_i,m_i,\ell_i)\ \mathrm{resident}`,
+    score: direction === 'backward'
+      ? (version === 'v1'
+        ? String.raw`S_{ij}=Q_iK_j^{\top}/\sqrt d,\ P_{ij}=\operatorname{diag}(\ell_i)^{-1}e^{S_{ij}-m_i}`
+        : String.raw`S_{ij}=Q_iK_j^{\top}/\sqrt d,\ P_{ij}=e^{S_{ij}-\mathrm{LSE}_i}`)
+      : String.raw`S_{ij}=Q_iK_j^{\top}/\sqrt d+M_{ij}`,
+    softmax: direction === 'backward'
+      ? String.raw`D_i=\operatorname{rowsum}(\mathrm{d}O_i\odot O_i),\ \mathrm{d}S_{ij}=P_{ij}\odot(\mathrm{d}P_{ij}-D_i)`
+      : String.raw`(m_i,\ell_i,O_i)\leftarrow\operatorname{online\_update}(S_{ij},V_j)`,
+    output: String.raw`O_i\leftarrow\operatorname{diag}(e^{m_i^{\mathrm{old}}-m_i^{\mathrm{new}}})O_i+\tilde{P}_{ij}V_j`,
+    commit: direction === 'backward'
+      ? String.raw`\operatorname{accumulate/store}_{\mathrm{HBM}}(\mathrm{d}Q,\mathrm{d}K,\mathrm{d}V)`
+      : (version === 'v1' ? String.raw`\operatorname{store}_{\mathrm{HBM}}(O,m,\ell)` : String.raw`\operatorname{store}_{\mathrm{HBM}}(O,\mathrm{LSE})`),
+    scheduler: direction === 'backward'
+      ? String.raw`\mathrm{CTA}_j\ \owns\ (K_j,V_j,\mathrm{d}K_j,\mathrm{d}V_j)`
+      : String.raw`\mathrm{CTA}_i\ \owns\ (Q_i,O_i)`,
+    gradient: String.raw`\mathrm{d}Q,\ \mathrm{d}K,\ \mathrm{d}V\leftarrow\mathrm{MMA}`,
     high: String.raw`Q_H\to S_H\to P_H\to O_H`,
     low: String.raw`Q_L\to S_L\to P_L\to O_L`,
     correction: String.raw`O_i\leftarrow\alpha_iO_i+\Delta O_i`,
@@ -922,7 +953,7 @@ function FlashOnChipFlow({ snapshot, config, onChipKeys, t }) {
       { role: 'v', name: 'V_j', range: snapshot.tile.kvRange, sourceTile: snapshot.displayTiles.kv },
     ]
     : [
-      { role: 'q', name: String.raw`Q_i,O_i,\mathrm{d}O_i,\mathrm{LSE}_i`, range: snapshot.tile.qRange, sourceTile: snapshot.displayTiles.q },
+      { role: 'q', name: config.version === 'v1' ? String.raw`Q_i,O_i,\mathrm{d}O_i,m_i,\ell_i` : String.raw`Q_i,O_i,\mathrm{d}O_i,\mathrm{LSE}_i`, range: snapshot.tile.qRange, sourceTile: snapshot.displayTiles.q },
       { role: 'kv', name: String.raw`K_j,V_j`, range: snapshot.tile.kvRange, sourceTile: snapshot.displayTiles.kv },
       { role: 'grad', name: String.raw`\mathrm{d}Q_i\mid\mathrm{d}K_j,\mathrm{d}V_j`, range: null, sourceTile: null },
     ];
@@ -968,7 +999,7 @@ function FlashOnChipFlow({ snapshot, config, onChipKeys, t }) {
           return (
             <div key={stage.id} data-flash-stage={stage.id} className={`min-w-0 rounded-lg border p-2 transition ${active ? 'border-amber-300 bg-amber-400/15 shadow-[0_0_12px_rgba(251,191,36,0.25)] ring-1 ring-amber-300' : passed ? 'border-emerald-600 bg-emerald-500/10' : 'border-indigo-700 bg-indigo-900/70'}`}>
               <div className="flex items-start gap-1.5"><span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[7px] font-black ${active ? 'bg-amber-300 text-amber-950' : passed ? 'bg-emerald-500 text-white' : 'bg-indigo-800 text-indigo-300'}`}>{index + 1}</span><div className="min-w-0 text-[8px] font-black leading-tight text-white">{t(`stage_${stage.id}`)}</div></div>
-              <FlashStageVisual visual={stage.visual} operationIds={stage.operationIds} direction={config.direction} />
+              <FlashStageVisual visual={stage.visual} operationIds={stage.operationIds} direction={config.direction} version={config.version} />
             </div>
           );
         })}
@@ -1177,7 +1208,7 @@ function FlashAttention() {
               <>
                 <MetricCard label={t('mmaMetric')} value={snapshot.mmaPerTile} detail={config.modelType === 'flash' ? 'QK + dV + dP + dQ + dK' : 'dV + dP + dQ + dK'} tone="indigo" />
                 <MetricCard label={t('recomputeMetric')} value={config.modelType === 'flash' ? t('yes') : t('no')} detail={config.modelType === 'flash' ? t('exactAttention') : undefined} tone={config.modelType === 'flash' ? 'amber' : 'emerald'} />
-                <MetricCard label={t('savedMetric')} value={config.modelType === 'flash' ? 'O + LSE' : 'P + Q/K/V'} detail={config.modelType === 'flash' ? t('savedFlash') : t('savedStandard')} tone="emerald" />
+                <MetricCard label={t('savedMetric')} value={config.modelType === 'flash' ? (config.version === 'v1' ? 'Q/K/V/O + m,ℓ' : 'Q/K/V/O + LSE') : 'P + Q/K/V'} detail={config.modelType === 'flash' ? t('savedFlash') : t('savedStandard')} tone="emerald" />
                 <MetricCard label={t('scheduleMetric')} value={t(scheduleKey)} tone="rose" />
               </>
             )}
@@ -1240,7 +1271,7 @@ function FlashAttention() {
                   <div className="mt-3 text-[9px] font-black uppercase tracking-wider text-slate-500">{t('hbmOutputs')}</div>
                   <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <FlashHbmTensorCard name="O" state={snapshot.flashHbm.O} shape={String.raw`${config.sequenceLength}\times${config.headDim}`} activeTileIndex={snapshot.displayTiles.q} current={snapshot.displayTiles.active && snapshot.flashHbm.O.access === 'write'} t={t} />
-                    <FlashHbmTensorCard name="\mathrm{LSE}" state={snapshot.flashHbm.LSE} shape={String.raw`${config.sequenceLength}`} activeTileIndex={snapshot.displayTiles.q} current={snapshot.displayTiles.active && snapshot.flashHbm.LSE.access === 'write'} t={t} />
+                    <FlashHbmTensorCard name={config.version === 'v1' ? String.raw`m,\ell` : String.raw`\mathrm{LSE}`} state={snapshot.flashHbm.LSE} shape={config.version === 'v1' ? String.raw`2\times${config.sequenceLength}` : String.raw`${config.sequenceLength}`} activeTileIndex={snapshot.displayTiles.q} current={snapshot.displayTiles.active && snapshot.flashHbm.LSE.access === 'write'} t={t} />
                   </div>
                   <div className="relative mt-3 overflow-hidden rounded-xl border-2 border-dashed border-emerald-300 bg-emerald-50 p-3">
                     <div className="flex items-start justify-between gap-3"><div><div className="text-[9px] font-black uppercase tracking-wider text-emerald-800">{t('noQuadraticWorkspace')}</div><p className="mt-1 text-[8px] leading-relaxed text-emerald-700">{t('noQuadraticWorkspaceDesc')}</p></div><span className="shrink-0 rounded-full bg-white px-2 py-1 text-[8px] font-black text-emerald-700">{t('noHbmAllocation')}</span></div>
@@ -1289,7 +1320,9 @@ function FlashAttention() {
               <div className="mt-2 overflow-x-auto rounded-lg border border-indigo-700 bg-white p-2 text-center text-xs text-slate-900">
                 <MathFormula block>{config.direction === 'forward'
                   ? String.raw`O=\operatorname{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d}}+M\right)V`
-                  : String.raw`dS=P\odot\left(dP-\operatorname{rowsum}(dP\odot P)\right)`}</MathFormula>
+                  : config.modelType === 'flash'
+                    ? String.raw`D_i=\operatorname{rowsum}(\mathrm{d}O_i\odot O_i),\qquad \mathrm{d}S_{ij}=P_{ij}\odot(\mathrm{d}P_{ij}-D_i)`
+                    : String.raw`\mathrm{d}S=P\odot\left(\mathrm{d}P-\operatorname{rowsum}(\mathrm{d}P\odot P)\right)`}</MathFormula>
               </div>
             </div>
           </div>
@@ -1331,7 +1364,7 @@ function FlashAttention() {
               <div className="mb-3 text-slate-500">kernel {selectedVersion}_{config.direction}(metadata, Q, K, V):</div>
               {snapshot.pipeline.operations.map((operation, index) => (
                 <div key={operation.id} className={`min-w-max rounded px-2 py-1 transition ${snapshot.operation?.id === operation.id ? 'bg-emerald-900/60 text-emerald-100 ring-1 ring-emerald-600' : operation.index < (snapshot.operation?.index ?? -1) || phase === 'done' ? 'text-slate-300' : 'text-slate-600'}`}>
-                  <span className="mr-3 inline-block w-4 text-right text-slate-700">{index + 1}</span>{CODE_BY_OPERATION[operation.id]}
+                  <span className="mr-3 inline-block w-4 text-right text-slate-700">{index + 1}</span>{getOperationCode(operation.id, config)}
                 </div>
               ))}
             </div>

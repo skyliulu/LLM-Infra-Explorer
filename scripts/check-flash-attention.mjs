@@ -177,4 +177,6 @@ const v1FirstGrad=deriveFlashSnapshot({version:'v1',direction:'backward'},{phase
 assert.equal(v1FirstGrad.backwardHbm.dV.status,'producing');
 assert.equal(v1FirstGrad.backwardHbm.dK.status,'pending');
 assert.equal(v1FirstGrad.backwardHbm.dQ.status,'pending');
-console.log('PASS source dependency oracles: V1 dP/dS/gradients; V3 separate K/V readiness, rescaling and final PV drain.');
+assert.ok(end(byId(v4Forward,'ummaPVH'))<=byId(v4Forward,'correctH').start,'V4 high correction waits for high PV UMMA');
+assert.ok(end(byId(v4Forward,'ummaPVL'))<=byId(v4Forward,'correctL').start,'V4 low correction waits for low PV UMMA');
+console.log('PASS source dependency oracles: V1 dP/dS/gradients; V3 separate K/V readiness, rescaling and final PV drain; V4 correction ordering.');
