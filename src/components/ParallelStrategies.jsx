@@ -4,6 +4,7 @@ import {useLanguage} from '../lib/LanguageContext';
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Layers, Grid, Boxes, SplitSquareHorizontal, BrainCircuit, Cpu, Network, RotateCcw, Info, ArrowDown, ArrowRight, Pin, Play, Pause, SkipForward } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
+import PrefillSequenceAndPdPanel from './parallel-strategies/PrefillSequenceAndPdPanel';
 import {
   MAX_GPUS,
   getAttentionArchitectureState,
@@ -2221,6 +2222,8 @@ const App = () => {
           </div>
 
         </div>
+
+        <PrefillSequenceAndPdPanel lang={lang} />
       </div>
     </div>
   );

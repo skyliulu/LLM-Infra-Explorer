@@ -23,6 +23,7 @@ import { MathFormula } from './linear-attention/MathFormula';
 import {
   DEFAULT_FLASH_CONFIG,
   FLASH_VERSIONS,
+  deriveCausalScheduleComparison,
   deriveFlashSnapshot,
   normalizeFlashConfig,
 } from './flash-attention/model';
@@ -201,7 +202,7 @@ const i18n = {
     v2Boundary: '核心优化面向 A100 级执行模型：改为 Q 外循环大幅减少 O 与统计量的 HBM 反复读写，端到端吞吐提升还来自更高的 CTA 占用率、更少的非矩阵 FLOPs 与 split-Q 消除 warp 归约。',
     v3Summary: 'V3：利用 Hopper 的 TMA、WGMMA 与 warp specialization，把搬运、矩阵乘和 Softmax 交叠。',
     v3Observe: 'TMA 为下一 tile 预取时，WGMMA 与 Softmax 在其他 warpgroup 工作；流水线的重叠而非再次降低二次方中间内存构成主要提升。',
-    v3Boundary: '默认显示 H100 BF16 路径；FP8 的 incoherent processing 是可选低精度路径，本画布不把它混入 BF16 主流程。',
+    v3Boundary: '默认显示 H100 BF16 路径；可在上方数据类型切换 FP8，观察非相干处理（Incoherent Processing）与 HBM 流量降幅。',
     v4Summary: 'V4：针对 Blackwell 中 Tensor Core 快于指数单元和共享内存扩展的失衡，重新协同算法与 kernel 流水线。',
     v4Observe: '前向在高位/低位 Q tile 间 ping-pong，Softmax warpgroups 错峰使用指数单元，correction warpgroup 承担条件重缩放；反向使用 TMEM 与 2-CTA。',
     v4Boundary: '主流程锚定论文中的 B200 BF16 设计。官方 CuTeDSL 实现支持范围会演进，不能把这一张画布当作所有设备和 shape 的调度承诺。',
@@ -301,6 +302,15 @@ const i18n = {
     op_twoCtaMma: '2-CTA 协作 MMA',
     op_dsmemExchange: 'DSMEM 交换 dS 分片',
     op_reduceGrad: 'TMEM 归约并提交梯度',
+    fp8IncoherentTitle: 'FP8 非相干处理（Incoherent Processing）与块量化',
+    fp8IncoherentDesc: '用正交随机 Hadamard 矩阵 H 旋转 Q/K 打散离群通道而不改变精确内积，配合块级缩放与 V 转置布局满足 FP8 WGMMA 约束。',
+    fp8OnlyV34: 'V3/V4 支持 FP8',
+    causalSchedTitle: 'Causal 下三角负载调度（8 个 Q 块 → 4 个 SM）',
+    causalSchedStatic: '静态网格',
+    causalSchedPersistent: '持久化对称配对',
+    causalSchedIdle: '尾部 SM 空转',
+    causalSchedBalanced: '负载均衡 · 0% 尾波浪费',
+    causalSchedNote: '下三角早期 Q 块只算 1 块 KV 而末行算 8 块；静态网格拖出 12 块长尾，持久化调度按 (q, T_r-1-q) 对称配对令每 SM 均摊 9 块。',
   },
   en: {
     title: 'FlashAttention',
@@ -475,7 +485,7 @@ const i18n = {
     v2Boundary: 'The key design targets an A100-class execution model: the Q-outer loop cuts repeated O and statistics HBM traffic, while higher CTA occupancy, fewer non-matmul FLOPs, and split-Q avoiding warp reductions drive end-to-end throughput.',
     v3Summary: 'V3: Hopper TMA, WGMMA, and warp specialization overlap movement, matmul, and softmax.',
     v3Observe: 'While TMA prefetches the next tile, WGMMA and softmax execute in other warpgroups. Pipeline overlap—not another reduction in quadratic intermediate memory—is the main advance.',
-    v3Boundary: 'The default view is the H100 BF16 path. FP8 incoherent processing is an optional low-precision path and is not mixed into the BF16 main flow here.',
+    v3Boundary: 'Defaults to the H100 BF16 path; switch dtype to FP8 above to inspect incoherent processing and reduced HBM traffic.',
     v4Summary: 'V4: algorithm/kernel co-design addresses Blackwell scaling where tensor cores outpace exponent units and shared-memory bandwidth.',
     v4Observe: 'Forward ping-pongs high/low Q tiles, staggers softmax warpgroups on the exponent units, and delegates conditional rescaling to a correction warpgroup; backward uses TMEM and 2-CTA.',
     v4Boundary: 'The main flow is anchored to the paper’s B200 BF16 design. Official CuTeDSL support evolves, so this canvas is not a scheduling promise for every device and shape.',
@@ -575,6 +585,15 @@ const i18n = {
     op_twoCtaMma: '2-CTA cooperative MMA',
     op_dsmemExchange: 'Exchange dS shards through DSMEM',
     op_reduceGrad: 'Reduce in TMEM and commit gradients',
+    fp8IncoherentTitle: 'FP8 Incoherent Processing & Block Scaling',
+    fp8IncoherentDesc: 'Random orthogonal Hadamard H spreads outlier channels across Q/K without changing dot products, paired with per-block scales and transposed V layout for FP8 WGMMA.',
+    fp8OnlyV34: 'FP8 on V3/V4',
+    causalSchedTitle: 'Causal Triangle Tile Scheduling (8 Q tiles → 4 SMs)',
+    causalSchedStatic: 'Static Grid',
+    causalSchedPersistent: 'Persistent Paired',
+    causalSchedIdle: 'Tail SM idle',
+    causalSchedBalanced: 'Balanced · 0% tail waste',
+    causalSchedNote: 'Lower-triangle Q rows span 1 to 8 KV tiles; static grids create a 12-tile tail wave, while persistent (q, T_r-1-q) pairing balances every SM to 9 tiles.',
   },
 };
 
@@ -1015,6 +1034,8 @@ function FlashAttention() {
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [causalSchedule, setCausalSchedule] = useState('persistent');
+  const causalSched = useMemo(() => deriveCausalScheduleComparison(causalSchedule), [causalSchedule]);
   const [lang] = useLanguage();
   const t = (key) => i18n[lang][key] ?? key;
   const snapshot = useMemo(() => deriveFlashSnapshot(config, { phase, step }), [config, phase, step]);
@@ -1181,8 +1202,26 @@ function FlashAttention() {
                   {[64, 128].map((value) => <option key={value} value={value}>{value}</option>)}
                 </select>
               </label>
-              <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[11px] font-bold text-slate-600">
-                {t('dtype')} <span className="text-indigo-800">BF16</span>
+              <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-bold text-slate-600" data-testid="flash-dtype-control">
+                <span>{t('dtype')}</span>
+                {config.modelType === 'flash' && (config.version === 'v3' || config.version === 'v4') ? (
+                  <div className="flex rounded border border-slate-200 bg-white p-0.5">
+                    {['bf16', 'fp8'].map((dt) => (
+                      <button
+                        key={dt}
+                        type="button"
+                        data-testid={`flash-dtype-${dt}`}
+                        aria-pressed={config.dtype === dt}
+                        onClick={() => changeConfig({ dtype: dt })}
+                        className={`rounded px-2 py-0.5 text-[10px] font-black uppercase transition ${config.dtype === dt ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-800'}`}
+                      >
+                        {dt}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-indigo-800">BF16</span>
+                )}
               </div>
             </div>
           </div>
@@ -1236,6 +1275,18 @@ function FlashAttention() {
             </div>
           )}
 
+          {config.modelType === 'flash' && config.dtype === 'fp8' && (
+            <div className="mt-3 rounded-xl border border-purple-200 bg-purple-50/70 p-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" data-testid="flash-fp8-banner">
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-bold text-purple-900">{t('fp8IncoherentTitle')}</div>
+                <p className="mt-0.5 text-[11px] leading-relaxed text-purple-800">{t('fp8IncoherentDesc')}</p>
+              </div>
+              <div className="shrink-0 rounded-lg border border-purple-200 bg-white px-3 py-1.5 text-center text-xs text-purple-900">
+                <MathFormula>{String.raw`(QH)(KH)^{\top}=Q(HH^{\top})K^{\top}=QK^{\top}`}</MathFormula>
+              </div>
+            </div>
+          )}
+
           <div className="mt-5 grid min-h-[22rem] grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.18fr)_5rem_minmax(0,1fr)]">
             <div data-memory-panel="hbm" className="min-w-0 rounded-2xl border-2 border-slate-300 bg-slate-100 p-3 md:p-4">
               <div className="mb-3 flex items-center justify-between gap-2">
@@ -1261,7 +1312,7 @@ function FlashAttention() {
                 </>
               ) : config.modelType === 'flash' && config.direction === 'forward' ? (
                 <>
-                  <div className="mb-2 flex items-center justify-between gap-2"><div className="text-[9px] font-black uppercase tracking-wider text-slate-500">{t('hbmInputs')}</div><span className="rounded-full bg-indigo-50 px-2 py-1 text-[8px] font-black text-indigo-700">BF16</span></div>
+                  <div className="mb-2 flex items-center justify-between gap-2"><div className="text-[9px] font-black uppercase tracking-wider text-slate-500">{t('hbmInputs')}</div><span className={`rounded-full px-2 py-1 text-[8px] font-black ${config.dtype === 'fp8' ? 'bg-purple-100 text-purple-800' : 'bg-indigo-50 text-indigo-700'}`}>{config.dtype === 'fp8' ? 'FP8 · Incoherent' : 'BF16'}</span></div>
                   <p className="mb-2 text-[8px] leading-relaxed text-slate-500">{t('tileColorLegend')}</p>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                     <FlashHbmTensorCard name="Q" state={snapshot.flashHbm.Q} shape={String.raw`${config.sequenceLength}\times${config.headDim}`} activeTileIndex={snapshot.displayTiles.q} current={snapshot.displayTiles.active} t={t} />
@@ -1353,6 +1404,53 @@ function FlashAttention() {
               ))}
             </div>
             {snapshot.operation && <p className="mt-3 text-xs leading-relaxed text-slate-600" data-testid="flash-dependencies">{snapshot.operation.waitFor ? `${t('waitingFor')}: ${t(`op_${snapshot.operation.waitFor}`)}` : snapshot.operation.dependsOn.length ? `${t('dependencies')}: ${snapshot.operation.dependsOn.map(id=>t(`op_${id}`)).join(' · ')}` : t(`op_${snapshot.operation.id}`)}</p>}
+
+            {config.modelType === 'flash' && config.causal && (
+              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2" data-testid="flash-causal-schedule">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-slate-800">{t('causalSchedTitle')}</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border ${causalSched.idlePct > 0 ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'}`}>
+                      {causalSched.idlePct > 0 ? `${t('causalSchedIdle')}: ${causalSched.idlePct}%` : t('causalSchedBalanced')}
+                    </span>
+                    <div className="flex rounded-md border border-slate-200 bg-white p-0.5">
+                      {['static', 'persistent'].map((schedMode) => (
+                        <button
+                          key={schedMode}
+                          type="button"
+                          data-testid={`causal-sched-${schedMode}`}
+                          aria-pressed={causalSched.mode === schedMode}
+                          onClick={() => setCausalSchedule(schedMode)}
+                          className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${causalSched.mode === schedMode ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-800'}`}
+                        >
+                          {t(schedMode === 'static' ? 'causalSchedStatic' : 'causalSchedPersistent')}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  {causalSched.lanes.map((lane) => (
+                    <div key={lane.sm} className="grid grid-cols-[3.2rem_1fr_3.5rem] items-center gap-2 text-[10px]">
+                      <span className="font-mono font-bold text-slate-600">SM {lane.sm}</span>
+                      <div className="h-5 rounded bg-slate-200/80 overflow-hidden flex">
+                        {lane.tiles.map((tile, idx) => (
+                          <div
+                            key={tile.q}
+                            className={`h-full flex items-center justify-center text-[9px] font-bold text-white border-r border-white/40 ${idx === 0 ? 'bg-indigo-500' : 'bg-emerald-500'}`}
+                            style={{ width: `${(tile.kv / 12) * 100}%` }}
+                          >
+                            Q{tile.q}({tile.kv})
+                          </div>
+                        ))}
+                      </div>
+                      <span className={`text-right font-mono font-bold ${lane.total === 12 ? 'text-rose-700' : 'text-slate-700'}`}>{lane.total} KV</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10.5px] leading-relaxed text-slate-500">{t('causalSchedNote')}</p>
+              </div>
+            )}
           </div>
 
           <div className="min-w-0 rounded-2xl border border-slate-800 bg-[#0d1117] p-4 text-slate-300 shadow-lg md:p-5">

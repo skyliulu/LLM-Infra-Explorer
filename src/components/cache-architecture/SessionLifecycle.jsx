@@ -4,6 +4,7 @@ import {motion, useReducedMotion} from 'framer-motion';
 import {MathFormula} from '../linear-attention/MathFormula';
 import {buildCedSession, deriveCedSession} from './session-model';
 import {sessionCopy} from './session-content';
+import ReplayAndChunkPanel from './ReplayAndChunkPanel';
 import './session.css';
 
 const number = n => n.toLocaleString('en-US');
@@ -77,6 +78,7 @@ export default function SessionLifecycle({tokens,lang}) {
       <p className="cs-approximation">{t('approximate')}</p>
     </aside></div>
     <input className="cs-scrub" aria-label={t('scrub')} type="range" min={0} max={trace.frames.length-1} value={m.step} onChange={e=>{setStep(Number(e.target.value));setIsPlaying(false);setSelection(null);}}/>
+    <ReplayAndChunkPanel tokens={trace.initial} lang={lang}/>
     <details className="cs-boundary"><summary>{t('boundary')}</summary><p>{t('boundaryNote')}</p><a href="https://www.lmsys.org/blog/2026-09-10-deepseek-v41" target="_blank" rel="noreferrer">{t('source')} ↗</a><a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/517ef625df97ec57aadc91b67506a57c20fdc5bb/DeepSeek_V41_Tech_Report.pdf" target="_blank" rel="noreferrer">{t('report')} ↗</a></details>
   </section>;
 }

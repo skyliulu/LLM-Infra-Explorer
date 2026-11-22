@@ -2,7 +2,7 @@ import React,{useEffect,useState} from 'react';
 import {Play,Pause,RotateCcw,SkipForward,ArrowRight} from 'lucide-react';
 import {useExperimentState} from '../../lib/ExperimentContext';
 import {MathFormula} from '../linear-attention/MathFormula';
-import {getKernelBuffers,getDecodeRouting} from './mechanism-model';
+import {getKernelBuffers,getDecodeRouting,PREFILL_BUDGET_OPTIONS,PREFILL_PREFIX_OPTIONS,solvePrefillChunkBudget,deriveEplbShift} from './mechanism-model';
 import './mechanism-panels.css';
 
 const BUDGET=String.raw`q^*=\max\{q:\operatorname{cost}(q,c)\leq B,\;q\leq32768\}`;
@@ -35,13 +35,47 @@ function RankLoads({model,t,active,onSelect}) {
  return <button type="button" className={`mp-routing-board ${active?'active':''}`} data-policy={model.method} data-target={model.target} aria-pressed={active} onClick={onSelect}><h4>{t(model.method)} <strong>→ GPU {model.target}</strong></h4><p>{t(model.method==='count'?'reasonCount':model.request==='short'?'reasonShort':'reasonLong')}</p><div className="mp-route-result"><span>{t('requests')} <b>{before.requests} → {after.requests}</b></span><span>{t('kv')} <b>{before.kv} → {after.kv}K</b></span></div></button>;
 }
 
+export function EplbShiftPanel({lang='zh'}) {
+ const copy={
+  zh:{title:'动态 EPLB：流量切换时的滑动窗口重映射',code:'代码流量（E1 热）',math:'数学流量（E4 突发）',staticBtn:'静态副本表',dynBtn:'动态 EPLB 重映射',peak:'最忙卡负载',noteStatic:'静态副本只给 E1 留了冗余；流量切到数学后 E4 打爆 GPU 3（2.08× 失衡），整组被迫等最慢卡。',noteDyn:'动态 EPLB 基于滑动窗口直方图把 E4 冗余副本迁移至同机内空闲槽，峰值回落至 1.04×，代价是异步权重搬运与副本显存。'},
+  en:{title:'Dynamic EPLB: Sliding-Window Remapping on Traffic Shift',code:'Code traffic (E1 hot)',math:'Math traffic (E4 spike)',staticBtn:'Static replicas',dynBtn:'Dynamic EPLB',peak:'Peak GPU load',noteStatic:'Static replicas only protect E1; once traffic shifts to math, E4 overloads GPU 3 (2.08× skew) and stalls the whole EP group.',noteDyn:'Dynamic EPLB uses sliding-window histograms to replicate E4 intra-node, cutting skew to 1.04× at the cost of async weight migration and replica memory.'}
+ }[lang];
+ const [traffic,setTraffic]=useState('math'),[dynamic,setDynamic]=useState(true);
+ const m=deriveEplbShift({traffic,dynamic});
+ return <div className="mp-eplb" data-testid="deepinfer-eplb">
+  <div className="mp-eplb-head"><strong>{copy.title}</strong><div className="mp-eplb-controls">
+   <div className="mp-seg"><button type="button" aria-pressed={traffic==='code'} onClick={()=>setTraffic('code')}>{copy.code}</button><button type="button" aria-pressed={traffic==='math'} onClick={()=>setTraffic('math')}>{copy.math}</button></div>
+   <div className="mp-seg"><button type="button" data-testid="eplb-static" aria-pressed={!dynamic} onClick={()=>setDynamic(false)}>{copy.staticBtn}</button><button type="button" data-testid="eplb-dynamic" aria-pressed={dynamic} onClick={()=>setDynamic(true)}>{copy.dynBtn}</button></div>
+  </div></div>
+  <div className="mp-eplb-bars">{m.loads.map((v,i)=><div key={i} className={`mp-eplb-gpu ${v>35?'hot':''}`}><span>GPU {i}</span><div><i style={{width:`${v/55*100}%`}}/></div><b>{v}%</b></div>)}</div>
+  <div className="mp-eplb-foot"><span className={m.imbalance>1.3?'hot':'ok'}>{copy.peak}: {m.imbalance}×</span><p>{m.dynamic||traffic==='code'?copy.noteDyn:copy.noteStatic}</p></div>
+ </div>;
+}
+
 export function SchedulingLab({lang='zh'}) {
  const t=key=>i18n[lang][key],[request,setRequest]=useExperimentState('DeepInfer.routeRequest','long'),[policy,setPolicy]=useState('dual'),models=['count','dual'].map(method=>getDecodeRouting(request,method));
+ const [prefixK,setPrefixK]=useState(64),[budget,setBudget]=useState(40);
+ const solver=solvePrefillChunkBudget({prefixK,budget});
+ const prefillCopy={
+  zh:{prefix:'已命中前缀 c',budget:'单步时间预算 B',solved:'本卡可塞入新块 q*',dpAlign:'DP 组 MIN 时间对齐',zosTitle:'ZOS 设备侧零同步调度（zos.cpp）',zosDesc:'GPU 采样（含 nextn=3 变长接受）后直接在设备侧原地修补复用 CUDA Graph 的 Token 与 KV Slot 缓冲，免去 cudaStreamSynchronize。'},
+  en:{prefix:'Cached prefix c',budget:'Step time budget B',solved:'Solved chunk q*',dpAlign:'DP-group MIN alignment',zosTitle:'Zero-Overhead Scheduling (zos.cpp)',zosDesc:'After GPU sampling (including variable nextn=3 accepts), device kernels patch token IDs and KV slots in-place inside reused CUDA Graphs without cudaStreamSynchronize.'}
+ }[lang];
  const activeModel=models.find(m=>m.method===policy)||models[1];
  return <div className="mp-panel" data-testid="scheduling-lab" data-request={request}>
   <div className="mp-request-choice" role="group" aria-label={t('scheduleLabel')}>{['short','long'].map(id=><button type="button" key={id} aria-pressed={request===id} onClick={()=>setRequest(id)}>{t(id)}</button>)}</div>
   <div className="mp-load-grid mp-shared-load">{activeModel.before.map((gpu,idx)=>{const after=activeModel.after[idx],chosen=gpu.id===activeModel.target;return <div className={`mp-gpu ${chosen?'selected':''}`} key={gpu.id}><strong>GPU {gpu.id}</strong><small>{chosen?t('selected'):t('before')}</small>{[['requests',10],['kv',160]].map(([metric,scale])=>{const delta=after[metric]-gpu[metric];return <div className="mp-meter" key={metric}><div><span>{t(metric)}</span><b>{chosen?`${gpu[metric]} → ${after[metric]}${metric==='kv'?'K':''}`:`${gpu[metric]}${metric==='kv'?'K':''}`}</b></div><div className="mp-meter-track"><i className="mp-meter-before" style={{width:`${gpu[metric]/scale*100}%`}}/>{delta>0&&<i className="mp-meter-after" style={{width:`${after[metric]/scale*100}%`}}/>}</div></div>;})}</div>;})}</div>
   <div className="mp-routing-pair">{models.map(m=><RankLoads key={m.method} model={m} t={t} active={policy===m.method} onSelect={()=>setPolicy(m.method)}/>)}</div><p className="mp-note">{t('routingNote')}</p>
-  <section className="mp-prefill"><h4>{t('prefillTitle')}</h4><div className="mp-quota-flow">{['bucket','quota','chunk','min'].map((key,i)=><React.Fragment key={key}>{i>0&&<span aria-hidden="true">→</span>}<b>{t(key)}</b></React.Fragment>)}</div><div className="mp-budget"><MathFormula>{BUDGET}</MathFormula><p>{t('budgetNote')}</p></div></section>
+  <section className="mp-prefill" data-testid="deepinfer-prefill-solver">
+   <h4>{t('prefillTitle')}</h4>
+   <div className="mp-quota-flow">{['bucket','quota','chunk','min'].map((key,i)=><React.Fragment key={key}>{i>0&&<span aria-hidden="true">→</span>}<b>{t(key)}</b></React.Fragment>)}</div>
+   <div className="mp-budget"><MathFormula>{BUDGET}</MathFormula><p>{t('budgetNote')}</p></div>
+   <div className="mp-solver-controls">
+    <div className="mp-solver-group"><span>{prefillCopy.prefix}</span><div className="mp-seg">{PREFILL_PREFIX_OPTIONS.map(v=><button key={v} type="button" data-testid={`prefill-c-${v}`} aria-pressed={prefixK===v} onClick={()=>setPrefixK(v)}>{v}K</button>)}</div></div>
+    <div className="mp-solver-group"><span>{prefillCopy.budget}</span><div className="mp-seg">{PREFILL_BUDGET_OPTIONS.map(v=><button key={v} type="button" data-testid={`prefill-b-${v}`} aria-pressed={budget===v} onClick={()=>setBudget(v)}>B={v}</button>)}</div></div>
+    <span className="mp-solved-pill">{prefillCopy.solved}: <b>{solver.qStarK}K tok</b> · {prefillCopy.dpAlign}: <b>{solver.minAlignedK}K</b></span>
+   </div>
+   <div className="mp-dp-min-row">{solver.dpRanks.map(r=><div key={r.rank} className={r.qStarK===solver.minAlignedK?'bottleneck':''}><small>Rank {r.rank} (c={r.prefixK}K)</small><b>q*={r.qStarK}K</b></div>)}</div>
+   <div className="mp-zos"><strong>{prefillCopy.zosTitle}</strong><span>{prefillCopy.zosDesc}</span></div>
+  </section>
  </div>;
 }

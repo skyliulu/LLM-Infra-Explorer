@@ -5,7 +5,7 @@ import {MathFormula} from '../linear-attention/MathFormula';
 import {CacheView,OverlapView} from './LessonExplorer';
 import {deriveLesson,LESSON_DEFAULTS,LESSON_SOURCE,GEMM_SOURCE} from './lesson-model';
 import ExpertComparison from './ExpertComparison';
-import {KernelBuffers,SchedulingLab} from './MechanismPanels';
+import {EplbShiftPanel,KernelBuffers,SchedulingLab} from './MechanismPanels';
 import {i18n} from './lesson-content';
 import './connected.css';
 import SystemAtlas,{BenefitPath} from './SystemAtlas';
@@ -79,7 +79,7 @@ export default function ConnectedReport({lang}){
 
  return <article className="cx-report"><p className="cx-lead">{t('lead')}</p><button className="da-evidence-link" onClick={()=>go('results')}><span>{t('evidenceTitle')}</span><span>EP8 <b>≈200 / 12.5k</b> → EP64 <b>≈250 / 16k</b></span><small>{t('evidenceUnits')}</small></button><BenefitPath lang={lang} config={config} go={go}/><SystemAtlas lang={lang} config={config} selected={selected} select={setSelected} go={go} mapRef={mapRef}/>
  <ReportSection t={t} back={back} id="layout" parent="Prefill / Decode"><p>{t('layoutText')}</p><ParallelPath t={t}/><p className="cx-caption">{t('layoutNote')}</p></ReportSection>
- <ReportSection t={t} back={back} id="experts" parent="Decode › MoE"><p>{t('expertsText')}</p><ExpertComparison lang={lang} config={config} setConfig={setConfig}/><p>{t('expertsAfter')}</p></ReportSection>
+ <ReportSection t={t} back={back} id="experts" parent="Decode › MoE"><p>{t('expertsText')}</p><ExpertComparison lang={lang} config={config} setConfig={setConfig}/><EplbShiftPanel lang={lang}/><p>{t('expertsAfter')}</p></ReportSection>
  <ReportSection t={t} back={back} id="kernel" parent="Decode › MoE › Mega MoE"><p>{t('kernelText')}</p><KernelBuffers lang={lang}/><a className="cx-source" href={GEMM_SOURCE} target="_blank" rel="noreferrer">{t('source')}</a></ReportSection>
  <ReportSection t={t} back={back} id="cache" parent="Prefill / KV"><p>{t('cacheText')}</p><CacheLab lang={lang} config={config} setConfig={setConfig}/><p>{t('cacheAfter')}</p><a className="cx-source" href="#cachearch">{t('ced')} →</a></ReportSection>
  <ReportSection t={t} back={back} id="scheduling" parent="Prefill / Decode"><p>{t('schedulingText')}</p><SchedulingLab lang={lang}/><p>{t('schedulingAfter')}</p><details onToggle={e=>setOverlap(e.currentTarget.open)}><summary>{t('overlap')}</summary>{overlap&&<OverlapView model={deriveLesson(config)} t={k=>i18n[lang][k]} update={(k,v)=>setConfig({...config,[k]:v})}/>}</details></ReportSection>

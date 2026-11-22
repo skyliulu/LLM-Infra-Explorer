@@ -16,20 +16,20 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 | Area | Workbench | What you can investigate |
 | :--- | :--- | :--- |
-| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/decode, per-layer KV, Dense/MoE, temperature and sampling. |
-| Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard vs V1–V4; tiles, SRAM/HBM and IO traffic. |
-| Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K, paged KV, head sharing and parallel reduction. |
-| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA, CSA, HCA, local windows, record provenance and query execution. |
-| Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax, kernelization, recurrent state and GLA gates. |
-| Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16, INT4/INT8, FP8/FP4; offline algorithms and engine execution. |
+| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/decode, Roofline arithmetic intensity, per-layer KV, Dense/MoE, sampling, and Continuous Batching + Chunked Prefill. |
+| Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard vs V1–V4; tiles, SRAM/HBM IO, FA3/FA4 FP8 Incoherent Processing, and Causal persistent tile scheduling. |
+| Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K, paged KV, GQA Tensor Core packing, SM occupancy crossover, and FlashMLA shared latent decoding. |
+| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA, CSA, HCA, local windows, record provenance, NSA/MoBA block sparsity, and Attention Sinks. |
+| Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax, kernelization, Chunkwise Prefill, GLA, Gated DeltaNet, and Hybrid Linear/Full layer stacks. |
+| Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16, INT4/INT8, Block-wise FP8, NVFP4/MXFP4 W4A4, Roofline crossover, QuaRot Hadamard rotation, and runtime scaling. |
 | Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | One prefix tree across GPU, host and external storage, Hybrid Mamba/Linear state checkpoints, LPM scheduling, and KV layouts. |
-| Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | Control/data-plane split, Conductor prefix index, shared L3 KV pool, zero-copy RDMA fetch and reuse economics. |
-| Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP, tensor shards, GPU ranks and runtime topology. |
-| Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV ownership and the communication paths into FFN/MoE. |
-| Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target verification, rejection correction, EAGLE-2 and DSpark. |
-| Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram retrieval, context-aware gates and memory movement. |
-| Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | Causal Encoder-Decoder, CSA2 sharing, FP4 byte budgets, hierarchical indexing, continuous generation and session recovery. |
-| Advanced Inference | [**DeepInfer ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#deepinfer) | Trace performance and cost through expert batching, fixed replica capacity, communication overlap, shared history and scheduling, with pinned source evidence. |
+| Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | Control/data-plane split, Conductor prefix index, shared L3 KV pool with hot replication, zero-copy RDMA fetch, and KV-footprint economics. |
+| Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP, tensor shards, GPU ranks, SP/Ulysses/ZigZag-Ring prefill, and asymmetric P/D KV resharding. |
+| Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV ownership, MoE bridges, workload skew + Dummy Forward, P/D barrier collision, and TBO micro-batch overlap. |
+| Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target verification, load crossover, rejection correction, EAGLE-2, DSpark, and native MTP. |
+| Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram retrieval, context-aware gates, Zipf prefetch hiding budget, and U-shaped MoE/Engram allocation law. |
+| Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | Causal Encoder-Decoder, CSA2 sharing, FP4 byte budgets, hierarchical indexing, 20×128 SWA receptive cone, and chunked 2:1 parity. |
+| Advanced Inference | [**DeepInfer ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#deepinfer) | Wide-EP reuse, dynamic EPLB, Mega MoE overlap, shared 3FS history, prefill time-quota chunking, and ZOS device patching. |
 
 ### A path into DeepSeek CED
 

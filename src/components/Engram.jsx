@@ -9,6 +9,7 @@ import {
   Clock, MemoryStick, HardDrive, Calculator, Boxes, Grid, SplitSquareHorizontal, FunctionSquare, FileCode2, ChevronDown, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import LookupSample from './engram/LookupSample';
+import EngramBudgetPanel from './engram/EngramBudgetPanel';
 import {
   ENGRAM_DEMO_CONFIG,
   ENGRAM_MAX_STEP,
@@ -1245,6 +1246,7 @@ const App = () => {
                  {t(systemMode === 'inference' ? 'inferenceBoundary' : 'trainingBoundary')}
                </div>
             </div>
+            <EngramBudgetPanel lang={lang} />
         </div>
 
         {/* ======================================================= */}

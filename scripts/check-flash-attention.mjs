@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {
   FLASH_VERSIONS,
+  deriveCausalScheduleComparison,
   deriveFlashSnapshot,
   estimateForwardResources,
   getMaskKind,
@@ -151,6 +152,14 @@ assert.equal(standardBackwardWrite.backwardHbm.dK.status, 'writing');
 assert.equal(standardBackwardWrite.backwardHbm.dV.status, 'writing');
 
 console.log('FlashAttention model checks passed.');
+
+const v3Bf16 = estimateForwardResources({ modelType: 'flash', version: 'v3', sequenceLength: 2048, headDim: 128, dtype: 'bf16' });
+const v3Fp8 = estimateForwardResources({ modelType: 'flash', version: 'v3', sequenceLength: 2048, headDim: 128, dtype: 'fp8' });
+assert(v3Fp8.flashTrafficBytes < v3Bf16.flashTrafficBytes, 'FA3 FP8 reduces forward HBM tensor traffic vs BF16');
+assert.equal(normalizeFlashConfig({ modelType: 'flash', version: 'v2', dtype: 'fp8' }).dtype, 'bf16', 'V2 falls back from fp8 to bf16');
+const staticSched = deriveCausalScheduleComparison('static');
+const persistSched = deriveCausalScheduleComparison('persistent');
+assert(staticSched.idlePct > 0 && persistSched.idlePct === 0, 'Persistent pairing eliminates causal tail SM idle');
 
 // Source-derived producer/consumer oracles, independent of the dependency metadata.
 const v1b=getPipeline({version:'v1',direction:'backward'});

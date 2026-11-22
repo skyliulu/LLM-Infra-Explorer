@@ -268,6 +268,8 @@ export function normalizeFlashConfig(input = {}) {
   const modelType = input.modelType === 'standard' ? 'standard' : 'flash';
   const version = FLASH_VERSIONS.includes(input.version) ? input.version : DEFAULT_FLASH_CONFIG.version;
   const direction = DIRECTIONS.includes(input.direction) ? input.direction : DEFAULT_FLASH_CONFIG.direction;
+  const supportsFp8 = modelType === 'flash' && (version === 'v3' || version === 'v4');
+  const dtype = input.dtype === 'fp8' && supportsFp8 ? 'fp8' : input.dtype === 'fp16' ? 'fp16' : 'bf16';
   return {
     modelType,
     version,
@@ -275,8 +277,30 @@ export function normalizeFlashConfig(input = {}) {
     causal: input.causal !== false,
     sequenceLength: clampChoice(input.sequenceLength, [512, 2048, 8192], DEFAULT_FLASH_CONFIG.sequenceLength),
     headDim: clampChoice(input.headDim, [64, 128], DEFAULT_FLASH_CONFIG.headDim),
-    dtype: input.dtype === 'fp16' ? 'fp16' : 'bf16',
+    dtype,
   };
+}
+
+export function deriveCausalScheduleComparison(schedule = 'persistent') {
+  // 8 Q-tiles under causal lower-triangle have KV work [1, 2, 3, 4, 5, 6, 7, 8] (36 KV-tile ops across 4 SMs).
+  const staticLanes = [
+    { sm: 0, tiles: [{ q: 0, kv: 1 }, { q: 4, kv: 5 }], total: 6 },
+    { sm: 1, tiles: [{ q: 1, kv: 2 }, { q: 5, kv: 6 }], total: 8 },
+    { sm: 2, tiles: [{ q: 2, kv: 3 }, { q: 6, kv: 7 }], total: 10 },
+    { sm: 3, tiles: [{ q: 3, kv: 4 }, { q: 7, kv: 8 }], total: 12 },
+  ];
+  const persistentLanes = [
+    { sm: 0, tiles: [{ q: 7, kv: 8 }, { q: 0, kv: 1 }], total: 9 },
+    { sm: 1, tiles: [{ q: 6, kv: 7 }, { q: 1, kv: 2 }], total: 9 },
+    { sm: 2, tiles: [{ q: 5, kv: 6 }, { q: 2, kv: 3 }], total: 9 },
+    { sm: 3, tiles: [{ q: 4, kv: 5 }, { q: 3, kv: 4 }], total: 9 },
+  ];
+  const safeMode = schedule === 'static' ? 'static' : 'persistent';
+  const lanes = safeMode === 'static' ? staticLanes : persistentLanes;
+  const maxWork = Math.max(...lanes.map((l) => l.total));
+  const avgWork = 9;
+  const idlePct = Math.round(((maxWork * 4 - 36) / (maxWork * 4)) * 100);
+  return { mode: safeMode, lanes, maxWork, avgWork, idlePct };
 }
 
 export function getVersionProfile(version) {
@@ -316,10 +340,10 @@ export function estimateForwardResources(configInput) {
   const grid = getTileGrid(config);
   const n = config.sequenceLength;
   const d = config.headDim;
-  const elementBytes = 2;
+  const elementBytes = config.dtype === 'fp8' ? 1 : 2;
   const accumulatorBytes = 4;
   const tensorBytes = n * d * elementBytes;
-  const standardTrafficBytes = 4 * tensorBytes + 4 * n * n * accumulatorBytes;
+  const standardTrafficBytes = 4 * (n * d * 2) + 4 * n * n * accumulatorBytes;
   const standardMaterializedBytes = 2 * n * n * accumulatorBytes;
 
   const qBytes = profile.qTile * d * elementBytes;

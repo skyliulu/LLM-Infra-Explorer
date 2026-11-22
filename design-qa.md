@@ -1,5 +1,23 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-22 — Wave 3 全站 14 章收口（FlashAttention / SparseAttention / ParallelStrategies / Engram / DeepSeek CED / DeepInfer + README 同步）
+
+- **`FlashAttention`（`#flash`）**：
+  - 内存与分块控制栏新增 **`数据类型: BF16 | FP8`** 交互切换（V3/V4 启用，V1/V2/Standard 回退 BF16）：切至 FP8 时，HBM 流量模型按 1 B/元素重新计算，并内联展示 **FP8 非相干处理** $(QH)(KH)^\top=QK^\top$ 与块级缩放说明（同步更新 V3 `v3Boundary` 文案消除旧边界矛盾）。
+  - 流水线卡片在 `Causal` 模式下内联 **`Causal 下三角负载调度（8 Q 块 → 4 SM）`**（`静态网格 25% 尾部空转` vs `持久化对称配对 0% 尾波浪费`）。
+- **`SparseAttention`（`#sparseattn`）**：
+  - 新增与原 `sc-*` 视觉体系一致的 **`硬件落地 · 块稀疏与 Attention Sink`**（`HardwareSparsePanel.jsx`）：① 对比 `逐 Token 独立选行`（4 个 GQA 头读放大 `2.0×`、Tensor Core 填充 `25%`）与 `连续块 + GQA 组共享 (NSA/MoBA)`（`1.0×` 合并访存、`100%` 块填充与三分支门控公式）；② 对比 `纯滑动窗口` 与 `Pinned Sink + 滑动窗口`（42% 首位权重吸收与长文困惑度稳态）及三种稀疏范式边界。
+- **`ParallelStrategies`（`#parallel`）**：
+  - 新增 **`长序列 Prefill 并行与非对称 P/D 重排`**（`PrefillSequenceAndPdPanel.jsx`）：① 交互切换 `Megatron SP`、`Ulysses All-to-All` 与 `ZigZag-Ring`（顺序切分 `5.0×` 失衡 vs ZigZag `(i, 2P-1-i)` `1.0×` 均衡）；② 切换 `RAG (16K→256, 3P:1D)` 与 `CoT (4K→8K, 1P:3D)` 观察异构 P/D 池拓扑、RDMA/NIXL 跨池 KV 重排与机内 NVLink / 机间 IB 边界。
+- **`Engram`（`#engram`）**：
+  - 在 `内存访问与通信时间轴` 卡片内联 **`预取掩盖预算与 Zipf 分层`**（`Layer 2/15` × `Zipf HBM+DRAM / Host DRAM / NVMe SSD` × `Decode/Prefill`，直观呈现 $T_{\text{prefetch}} > T_{\text{compute}}$ 时的真实 GPU 停顿）与 **`为什么 MoE 还需要 Engram？U 型稀疏分配律`**（交互滑动 $\rho\in[0\%,80\%]$ 查看约 `22%` 最优区）。
+- **`DeepSeek CED`（`#cachearch`）**：
+  - 在 `SessionLifecycle` 内联 **`20 层 SWA 感受野锥体 · 精确 vs 有界重放`**（SVG 锥体对照 `精确 2560 tok` vs `有界 128 tok`）与 **`多块 Chunked Prefill 与 2:1 奇偶边界`**（非末块跳过 Decoder L21–L40、末块仅尾 128 进 Decoder、奇数命中 / MTP 回滚仅清半对暂存不污染全局记录）。
+- **`DeepInfer`（`#deepinfer`）**：
+  - `#di-experts` 内联 **`动态 EPLB：流量切换时的滑动窗口重映射`**（代码→数学流量切换下静态副本 `2.08×` 失衡 vs 动态 EPLB `1.04×`）；`#di-scheduling` 的 `mp-prefill` 升级为交互式 **`Prefill 时间配额分块求解器`**（$c\in\{0,16,64,128\}\text{K}$、$B\in\{20,40,80\}$ 实时求解 $q^*$ 与 4-Rank `DP 组 MIN 对齐`）并附 **ZOS 设备侧零同步调度（`zos.cpp`）** 说明。
+- **双语 README 同步**：更新 `README.md` 与 `README.zh-CN.md` 14 章总表，准确覆盖 Wave 1–3 全部新增交互能力。
+- **全站验证**：全部 14 章 `npm run check:*`、`check:workbench`、`check-theme`、`check-navigation`、`npm run build` 一次性全过；Headless Chrome 覆盖 Wave 3 全部 6 章 Light/Dark × ZH/EN × 1360/390：0 console error、0 KaTeX error、EN `cjkLeak = 0`、390px `overflowX = 0`，14 张实机截图逐张核验通过。本地提交，待用户确认后推送。
+
 ### 2026-11-22 — Wave 2 现代推理覆盖补全（Mooncake / FlashDecode / DpAttention / LLMInference）
 
 - **结构与一致性遵循**：四章均将新能力直接融入原工作台控件、画布与伪代码，不追加文末杂项附录，保持跨模式 `h2` 标题稳定、单句标题与单层精简说明，且无不必要 `<details>` 折叠。

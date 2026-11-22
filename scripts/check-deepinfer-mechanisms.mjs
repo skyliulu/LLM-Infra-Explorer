@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {getKernelBuffers,getDecodeRouting,DECODE_CANDIDATES} from '../src/components/deepinfer/mechanism-model.js';
+import {getKernelBuffers,getDecodeRouting,DECODE_CANDIDATES,solvePrefillChunkBudget,deriveEplbShift} from '../src/components/deepinfer/mechanism-model.js';
 
 const t3=getKernelBuffers(3),serial=t3.paths[0],fused=t3.paths[1];
 assert.equal(serial.blocks[1].input,'readable','B has arrived but waits for shared compute');
@@ -44,4 +44,11 @@ assert.equal(getDecodeRouting('long','dual').target,'B');
 assert.equal(getDecodeRouting('short','dual').target,'A');
 assert.equal(getDecodeRouting('long','count').after[0].kv,160);
 assert.equal(getDecodeRouting('long','dual').after[1].kv,88);
-console.log('PASS DeepInfer mechanism panels: partial-writeback / owner-ready / peer-wait / reduction source oracles at 15 times, same-input routing conservation and long/short counterexamples.');
+const shortPref = solvePrefillChunkBudget({ prefixK: 0, budget: 40 });
+const longPref = solvePrefillChunkBudget({ prefixK: 128, budget: 40 });
+assert.ok(longPref.qStarK < shortPref.qStarK, 'longer cached prefix c leaves smaller new chunk q* under equal time budget B');
+assert.equal(longPref.minAlignedK, longPref.qStarK, 'DP-group MIN aligns to the most prefix-heavy rank');
+const staticShift = deriveEplbShift({ traffic: 'math', dynamic: false });
+const dynShift = deriveEplbShift({ traffic: 'math', dynamic: true });
+assert.ok(dynShift.imbalance < staticShift.imbalance, 'dynamic EPLB cuts GPU skew on traffic shift');
+console.log('PASS DeepInfer mechanism panels: partial-writeback / owner-ready / peer-wait / reduction source oracles at 15 times, same-input routing conservation, prefill time-quota solver, dynamic EPLB and long/short counterexamples.');

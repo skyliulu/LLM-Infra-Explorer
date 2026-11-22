@@ -16,20 +16,20 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 | 方向 | 工作台 | 可以探索什么 |
 | :--- | :--- | :--- |
-| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/Decode、逐层 KV、Dense/MoE、温度与采样。 |
-| Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard 与 V1–V4、分块、SRAM/HBM 与 IO。 |
-| Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K、分页 KV、Head 共享与并行归约。 |
-| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA、CSA、HCA、局部窗口、记录来源和单次 Query 执行。 |
-| Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax、核函数、递归状态与 GLA 门控。 |
-| Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16、INT4/INT8、FP8/FP4、离线算法与引擎执行。 |
+| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/Decode、Roofline 算术强度、逐层 KV、Dense/MoE、采样与 Continuous Batching / Chunked Prefill。 |
+| Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard 与 V1–V4、分块与 HBM IO、FA3/FA4 FP8 非相干处理与 Causal 持久化调度。 |
+| Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K、分页 KV、GQA Tensor Core 打包、SM 占用拐点与 FlashMLA 潜向量解码。 |
+| Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA、CSA、HCA、局部窗口、记录来源、NSA/MoBA 块稀疏与 Attention Sink。 |
+| Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax、核函数、Chunkwise Prefill、GLA、Gated DeltaNet 与混合层栈。 |
+| Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16、INT4/INT8、分块 FP8、NVFP4/MXFP4 W4A4、Roofline 拐点、QuaRot 旋转与引擎执行。 |
 | Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | 同一棵前缀树上的 GPU／主机／外部存储、混合 Mamba/线性状态检查点与 CoW、LPM 调度与 KV layout。 |
-| Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | 控制/数据面解耦、Conductor 前缀索引、L3 共享 KV 池、零拷贝 RDMA 取数与搬运经济边界。 |
-| Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank 与运行时拓扑。 |
-| Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权，以及连接 FFN/MoE 的通信路径。 |
-| Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、拒绝修正、EAGLE-2 与 DSpark。 |
-| Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram 检索、上下文门控和数据移动。 |
-| Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | 因果编码器—解码器、CSA2 共享、FP4 字节账本、分层索引、连续生成与会话恢复。 |
-| Advanced Inference | [**DeepInfer ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#deepinfer) | 从专家批量、固定副本容量、通信交叠、共享历史与调度，理解性能和成本，并对照固定版本源码。 |
+| Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | 控制/数据面解耦、Conductor 前缀索引、L3 共享池与热点多副本、零拷贝 RDMA 与 KV 体积经济边界。 |
+| Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank、SP/Ulysses/ZigZag-Ring 与非对称 P/D 重排。 |
+| Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权、MoE 桥接、负载倾斜与空卡 Dummy、P/D 屏障碰撞及 TBO 双微批交叠。 |
+| Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、高并发负载拐点、拒绝修正、EAGLE-2、DSpark 与原生 MTP。 |
+| Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram 检索、上下文门控、Zipf 预取掩盖预算与 MoE/Engram U 型分配律。 |
+| Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | 因果编码器—解码器、CSA2 共享、FP4 字节账本、分层索引、20×128 SWA 感受野锥体与分块 2:1 奇偶边界。 |
+| Advanced Inference | [**DeepInfer ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#deepinfer) | 宽 EP 复用、动态 EPLB、Mega MoE 交叠、共享 3FS 历史、Prefill 时间配额分块与 ZOS 设备侧调度。 |
 
 ### 深入 DeepSeek CED
 
