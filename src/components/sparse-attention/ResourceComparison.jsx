@@ -29,7 +29,7 @@ export function ResourceComparison({ model: m, t, update, onFocus }) {
     </div>
     <div className="sc-benefit-tools"><span>{t('linkHint')}</span><button aria-expanded={trendsOpen} onClick={()=>setTrendsOpen(v=>!v)}>{t(trendsOpen?'trendClose':'trendToggle')}</button></div>
     <small className="sc-assumption-visible">{t('compactAssumption')}</small>
-    <details className="sc-estimate-detail"><summary>{t('formulaDetail')}</summary><p>{t('estimateNotice')} {t('budgetNotice')}</p><div className="sc-estimate-columns">{m.benefits.map(item=><div key={item.id}><h3>{t(`metric_${item.id}`)}</h3><p>{t(`${item.id}Meaning`)}</p><MathFormula block>{FORMULAS[item.id]}</MathFormula><p>{t(`${item.id}Variables`)}</p></div>)}</div><MathFormula block>{`${m.compressed?'G=\\lfloor N/r\\rfloor':'G=N'},\\quad ${m.hasWindow?'L=\\min(N,W)':'L=0'},\\quad ${m.indexed?'I=G':'I=0'}`}</MathFormula></details>
+    <details className="sc-estimate-detail"><summary>{t('formulaDetail')}</summary><p>{t('estimateNotice')} {t('budgetNotice')}</p><div className="sc-estimate-columns">{m.benefits.map(item=><div key={item.id}><h3>{t(`metric_${item.id}`)}</h3><p>{t(`${item.id}Meaning`)}</p><MathFormula block>{FORMULAS[item.id]}</MathFormula><p>{t(`${item.id}Variables`)}</p></div>)}</div><MathFormula block>{`${m.compressed?'G=\\lfloor N/r\\rfloor':'G=N'},\\quad ${m.indexed?'R_G=\\min(k,G)':'R_G=G'},\\quad ${m.hasWindow?'L=\\min(N,W)':'L=0'},\\quad ${m.indexed?'I=G':'I=0'}`}</MathFormula></details>
   </section>;
 }
 

@@ -68,7 +68,7 @@ export default function AttentionComparison({model:m,lang,update,onFocus}){
           <small>{t('axisHint')}</small>
           <div className="am-equation am-source-equation">
             {[4,2].map((width,index)=><React.Fragment key={width}>
-              {index===1&&<div className="am-shape-arrow"><small>{t('project')}</small><MathFormula>{'\\xrightarrow{W_K:4\\times2}'}</MathFormula><small>{t('featureChange')}</small></div>}
+              {index===1&&<div className="am-shape-arrow"><small>{t('project')}</small><MathFormula>{'\\xrightarrow{W_K^T:2\\times4}'}</MathFormula><small>{t('featureChange')}</small></div>}
               <div className="am-shape-matrix"><small>{t(index?'project':'hidden')}</small><MathFormula>{index?'K_{\\mathrm{hist}}^T':'H^T'}</MathFormula>
                 <div className="am-shape-grid" style={{gridTemplateColumns:`repeat(${m.tokens},${Math.min(7,150/m.tokens)}px)`}}>{Array.from({length:width*m.tokens},(_,i)=><i key={i} data-boundary={i%m.tokens%m.ratio===0}/>)}</div>
                 <MathFormula>{`${width}\\times${m.tokens}`}</MathFormula>
@@ -93,7 +93,7 @@ export default function AttentionComparison({model:m,lang,update,onFocus}){
             const rows=records=>records.length?transpose(records.map(r=>r[channel])):Array.from({length:width},()=>[]);
             return <div className="am-join-equation" key={channel} data-channel={channel}>
               <div className="am-join-part"><small className="am-origin-label">{t('compressedRows')} · {compressed.length}</small><Matrix label={`\\bar ${symbol}${m.indexed?'_S':''}^T`} data={rows(compressed)} cellW={6} cellH={7} split={compressed.length} ready={e.gathered} ids={compressed.map(r=>r.id)}/></div>
-              <Formula>{'+'}</Formula>
+              <Formula>{'\\mathbin{\\|}'}</Formula>
               <div className="am-join-part"><small className="am-origin-label" data-origin="local">{t('localRows')} · {local.length}</small><Matrix label={`${symbol}_W^T`} data={rows(local)} cellW={6} cellH={7} split={0} ids={local.map(r=>r.id)}/></div>
               <Formula active={e.phase==='gather'}>{'\\longrightarrow'}</Formula>
               <div className="am-join-part"><small>{t('joined')}</small><Matrix label={`${symbol}_R^T`} data={rows(joined)} cellW={6} cellH={7} split={compressed.length} ready={e.gathered} ids={joined.map(r=>r.id)}/></div>

@@ -25,11 +25,11 @@ export function NodeMicroscope({model:m,t,update,chooseRecord,onFocus,projection
       <h3>{t('latentFrom')}</h3><p><MathFormula>{'h_t'}</MathFormula> {t('hiddenDefinition')}</p>
       <MathFormula block>{'c^Q=\\operatorname{RMSNorm}(W_{\\mathrm{down}}h_t)'}</MathFormula>
       <p>{t('downDefinition')}</p>
-      <MathFormula block>{'h_t\\in\\mathbb R^d,\\quad W_{\\mathrm{down}}\\in\\mathbb R^{r\\times d},\\quad c^Q\\in\\mathbb R^r'}</MathFormula>
-      <p><MathFormula>{'d'}</MathFormula> · {t('dimHidden')}；<MathFormula>{'r<d'}</MathFormula> · {t('dimLatent')}</p>
+      <MathFormula block>{'h_t\\in\\mathbb R^d,\\quad W_{\\mathrm{down}}\\in\\mathbb R^{d_c\'\\times d},\\quad c^Q\\in\\mathbb R^{d_c\'}'}</MathFormula>
+      <p><MathFormula>{'d'}</MathFormula> · {t('dimHidden')}；<MathFormula>{'d_c\'<d'}</MathFormula> · {t('dimLatent')}</p>
       <h3>{t('latentTo')}</h3><p>{t('branchDefinition')}</p><p>{t('weightRelation')}</p>
-      <div className="sc-head-example"><strong>{t('mainQueryLabel')}</strong><MathFormula block>{'q=W_{\\mathrm{main}}c^Q'}</MathFormula><MathFormula block>{'W_{\\mathrm{main}}\\in\\mathbb R^{d_q\\times r}'}</MathFormula></div>
-      {[1,2].map(head=><div className="sc-head-example" key={head}><strong>{t('indexHeadLabel')} {head}</strong><MathFormula block>{`q^I_{${head}}=W^I_{${head}}c^Q`}</MathFormula><MathFormula block>{`W^I_{${head}}\\in\\mathbb R^{d_I\\times r}`}</MathFormula></div>)}
+      <div className="sc-head-example"><strong>{t('mainQueryLabel')}</strong><MathFormula block>{'q=W_{\\mathrm{main}}c^Q'}</MathFormula><MathFormula block>{'W_{\\mathrm{main}}\\in\\mathbb R^{d_q\\times d_c\'}'}</MathFormula></div>
+      {[1,2].map(head=><div className="sc-head-example" key={head}><strong>{t('indexHeadLabel')} {head}</strong><MathFormula block>{`q^I_{${head}}=W^I_{${head}}c^Q`}</MathFormula><MathFormula block>{`W^I_{${head}}\\in\\mathbb R^{d_I\\times d_c'}`}</MathFormula></div>)}
       <p>{t('weightStack')}</p><MathFormula block>{'\\begin{bmatrix}q^I_1\\\\q^I_2\\end{bmatrix}=\\underbrace{\\begin{bmatrix}W^I_1\\\\W^I_2\\end{bmatrix}}_{W^I}c^Q'}</MathFormula><p>{t('weightNotScore')}</p>
       <p><MathFormula>{'d_q'}</MathFormula> · {t('dimMain')}；<MathFormula>{'d_I'}</MathFormula> · {t('dimIndex')}</p>
       <p>{t('projectionScope')}</p><a className="sc-inline-link" href="https://huggingface.co/deepseek-ai/DeepSeek-V3.2/blob/main/inference/model.py" target="_blank" rel="noreferrer">{t('projectionSource')}</a>
