@@ -17,7 +17,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | 方向 | 工作台 | 可以探索什么 |
 | :--- | :--- | :--- |
 | Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/Decode、Roofline 算术强度、逐层 KV、Dense/MoE、采样与 Continuous Batching / Chunked Prefill。 |
-| Foundations | [**GPU & CUDA Graph ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#gpucudagraph) | 小 Batch CPU 发射墙、Eager / 全图 / 分段 CUDA Graph（vLLM V1）、算子融合 HBM 读写节省与 H100/B200 Roofline 拐点。 |
+| Foundations | [**GPU & CUDA Graph ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#gpucudagraph) | SM 占用率与 Warp 延迟隐藏、访存合并与 Tensor Core 分块、CUDA Graph 发射墙、算子融合、A100–B200 Roofline 与 Nsight 诊断，以及 Volta–Rubin 代际演进。 |
 | Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard 与 V1–V4、分块与 HBM IO、FA3/FA4 FP8 非相干处理与 Causal 持久化调度。 |
 | Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K、分页 KV、GQA Tensor Core 打包、SM 占用拐点与 FlashMLA 潜向量解码。 |
 | Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA、CSA、HCA、局部窗口、记录来源、NSA/MoBA 块稀疏与 Attention Sink。 |

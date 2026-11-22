@@ -1,13 +1,122 @@
 export const LAUNCH_MODES = ['eager', 'full_graph', 'piecewise_graph'];
 export const LAUNCH_BATCHES = [1, 8, 64];
 export const FUSION_MODES = ['unfused', 'fused'];
+
+export const REG_OPTIONS = [32, 64, 128, 255];
+export const SMEM_OPTIONS = [16, 48, 96, 164];
+export const BLOCK_SIZE_OPTIONS = [128, 256, 512];
+export const MEM_VIEWS = ['coalescing', 'tiling'];
+export const ARCH_GENS = ['volta', 'ampere', 'hopper', 'blackwell', 'rubin'];
+export const DIAG_IDS = ['low_tc_high_hbm', 'decode_slow', 'high_occ_slow', 'multi_gpu_slow'];
+
 export const GPU_SPECS = {
-  h100: { id: 'h100', name: 'H100 SXM', bf16Tflops: 989, fp8Tflops: 1979, hbmTBps: 3.35, smCount: 132, sramMB: 33 },
-  b200: { id: 'b200', name: 'B200 SXM', bf16Tflops: 2250, fp8Tflops: 4500, hbmTBps: 8.0, smCount: 160, sramMB: 40 },
+  a100: {
+    id: 'a100',
+    name: 'A100 SXM',
+    bf16Tflops: 312,
+    fp8Tflops: null,
+    fp4Tflops: null,
+    hbmTBps: 2.0,
+    smCount: 108,
+    sramMB: 20,
+    maxSmemPerSmKB: 164,
+  },
+  h100: {
+    id: 'h100',
+    name: 'H100 SXM',
+    bf16Tflops: 989,
+    fp8Tflops: 1979,
+    fp4Tflops: null,
+    hbmTBps: 3.35,
+    smCount: 132,
+    sramMB: 33,
+    maxSmemPerSmKB: 228,
+  },
+  b200: {
+    id: 'b200',
+    name: 'B200 SXM',
+    bf16Tflops: 2250,
+    fp8Tflops: 4500,
+    fp4Tflops: 9000,
+    hbmTBps: 8.0,
+    smCount: 160,
+    sramMB: 40,
+    maxSmemPerSmKB: 228,
+  },
 };
 
+export const GPU_GENERATIONS = [
+  {
+    id: 'volta',
+    year: '2017',
+    chip: 'GV100 · V100',
+    peakTf: 125,
+    peakLabel: '125 TF (FP16)',
+    hbmGBps: 900,
+    nvlinkGBps: 300,
+    tcGen: 'Gen 1 TC',
+    precision: 'FP16 / FP32 Acc',
+    isPlatformSpec: false,
+  },
+  {
+    id: 'ampere',
+    year: '2020',
+    chip: 'GA100 · A100',
+    peakTf: 312,
+    peakLabel: '312 TF (BF16/TF32)',
+    hbmGBps: 2039,
+    nvlinkGBps: 600,
+    tcGen: 'Gen 3 TC',
+    precision: 'BF16 / TF32 / 2:4',
+    isPlatformSpec: false,
+  },
+  {
+    id: 'hopper',
+    year: '2022',
+    chip: 'GH100 · H100',
+    peakTf: 1979,
+    peakLabel: '1979 TF (FP8)',
+    hbmGBps: 3350,
+    nvlinkGBps: 900,
+    tcGen: 'Gen 4 TC',
+    precision: 'FP8 + TE',
+    isPlatformSpec: false,
+  },
+  {
+    id: 'blackwell',
+    year: '2024',
+    chip: 'B200 / GB200 NVL72',
+    peakTf: 9000,
+    peakLabel: '9000 TF (FP4)',
+    hbmGBps: 8000,
+    nvlinkGBps: 1800,
+    tcGen: 'Gen 5 TC',
+    precision: 'NVFP4 / MXFP4',
+    isPlatformSpec: false,
+  },
+  {
+    id: 'rubin',
+    year: '2026+',
+    chip: 'Vera Rubin NVL72',
+    peakTf: 18000,
+    peakLabel: 'System-Scale NVFP4',
+    hbmGBps: 13000,
+    nvlinkGBps: 3600,
+    tcGen: 'Rack Platform',
+    precision: 'NVFP4 / FP6 / HBM4',
+    isPlatformSpec: true,
+  },
+];
+
+export const MEMORY_TIERS = [
+  { id: 'reg', cap: '256 KB / SM', bw: '~80+ TB/s', lat: '~1 cyc', scope: 'thread' },
+  { id: 'smem', cap: '228 KB / SM', bw: '~33 TB/s', lat: '~25 cyc', scope: 'block' },
+  { id: 'l2', cap: '50 MB', bw: '~12 TB/s', lat: '~200 cyc', scope: 'gpu' },
+  { id: 'hbm', cap: '80–192 GB', bw: '3.35–8.0 TB/s', lat: '~400 cyc', scope: 'gpu' },
+  { id: 'host', cap: 'TB-class', bw: '64–900 GB/s', lat: 'µs-class', scope: 'system' },
+];
+
 // One representative Transformer Decode layer (8 logical operators).
-// GPU durations (µs) scale with batch size; CPU launch overhead is ~13 µs per eager kernel launch.
 export const LAYER_KERNELS = [
   { id: 'norm1', label: 'RMSNorm', shortLabel: 'N1', kind: 'elementwise', baseGpuUs: { 1: 3.5, 8: 4.5, 64: 9.0 }, piece: 1 },
   { id: 'qkv', label: 'QKV GEMM', shortLabel: 'QKV', kind: 'gemm', baseGpuUs: { 1: 8.5, 8: 11.0, 64: 28.0 }, piece: 1 },
@@ -24,14 +133,147 @@ export const GRAPH_REPLAY_LAUNCH_US = 11.0;
 export const PIECE_REPLAY_LAUNCH_US = 8.5;
 
 export function normalizeGpuRuntimeConfig(input = {}) {
+  const regsPerThread = REG_OPTIONS.includes(Number(input.regsPerThread)) ? Number(input.regsPerThread) : 64;
+  const smemKB = SMEM_OPTIONS.includes(Number(input.smemKB)) ? Number(input.smemKB) : 48;
+  const blockSize = BLOCK_SIZE_OPTIONS.includes(Number(input.blockSize)) ? Number(input.blockSize) : 256;
+  const divergent = Boolean(input.divergent);
+  const memView = MEM_VIEWS.includes(input.memView) ? input.memView : 'coalescing';
+  const stride = Number(input.stride) === 32 ? 32 : 1;
+  const tiled = input.tiled !== undefined ? Boolean(input.tiled) : true;
   const launchMode = LAUNCH_MODES.includes(input.launchMode) ? input.launchMode : 'eager';
   const batchSize = LAUNCH_BATCHES.includes(Number(input.batchSize)) ? Number(input.batchSize) : 1;
   const fusionMode = FUSION_MODES.includes(input.fusionMode) ? input.fusionMode : 'unfused';
   const gpu = GPU_SPECS[input.gpu] ? input.gpu : 'h100';
-  const dtype = input.dtype === 'fp8' ? 'fp8' : 'bf16';
-  return { launchMode, batchSize, fusionMode, gpu, dtype };
+  const dtype = ['bf16', 'fp8', 'fp4'].includes(input.dtype) ? input.dtype : 'bf16';
+  const diagId = DIAG_IDS.includes(input.diagId) ? input.diagId : 'low_tc_high_hbm';
+  const archGen = ARCH_GENS.includes(input.archGen) ? input.archGen : 'hopper';
+  return {
+    regsPerThread,
+    smemKB,
+    blockSize,
+    divergent,
+    memView,
+    stride,
+    tiled,
+    launchMode,
+    batchSize,
+    fusionMode,
+    gpu,
+    dtype,
+    diagId,
+    archGen,
+  };
 }
 
+// §1 SM Occupancy, Register Pressure, Warp Latency Hiding & SIMT Divergence (anchored to H100 SM)
+export function deriveSmOccupancy({ regsPerThread = 64, smemKB = 48, blockSize = 256, divergent = false } = {}) {
+  const maxWarpsPerSm = 64;
+  const maxBlocksPerSm = 32;
+  const regFilePerSm = 65536; // 64K 32-bit registers per SM
+  const maxSmemPerSmKB = 228; // H100 max configurable shared mem per SM
+  const schedulersPerSm = 4;
+
+  const warpsPerBlock = Math.max(1, Math.round(blockSize / 32));
+  const regsPerBlock = blockSize * regsPerThread;
+
+  const blocksByReg = Math.max(1, Math.floor(regFilePerSm / regsPerBlock));
+  const blocksBySmem = Math.max(1, Math.floor(maxSmemPerSmKB / smemKB));
+  const blocksByWarpCap = Math.max(1, Math.floor(maxWarpsPerSm / warpsPerBlock));
+
+  const activeBlocks = Math.min(maxBlocksPerSm, blocksByReg, blocksBySmem, blocksByWarpCap);
+  const activeWarps = Math.min(maxWarpsPerSm, activeBlocks * warpsPerBlock);
+  const occupancyPct = Math.round((activeWarps / maxWarpsPerSm) * 100);
+  const warpsPerScheduler = Number((activeWarps / schedulersPerSm).toFixed(1));
+
+  let limiter = 'warp_cap';
+  if (activeBlocks === blocksByReg && blocksByReg < blocksBySmem && blocksByReg < blocksByWarpCap) {
+    limiter = 'registers';
+  } else if (activeBlocks === blocksBySmem && blocksBySmem < blocksByReg && blocksBySmem < blocksByWarpCap) {
+    limiter = 'smem';
+  } else if (blocksByReg === blocksBySmem && blocksByReg < blocksByWarpCap) {
+    limiter = 'registers';
+  }
+
+  const registerSpill = regsPerThread >= 255;
+
+  // Build an 8-cycle timeline for 1 Warp Scheduler showing how resident warps hide a 4-cycle HBM load stall
+  const residentSlots = Math.max(1, Math.min(5, Math.floor(activeWarps / schedulersPerSm)));
+  const cycles = Array.from({ length: 8 }, (_, c) => {
+    if (c === 0) return { cycle: c + 1, warp: 'W0', state: 'issue', label: 'W0 LDG' };
+    if (c === 5) return { cycle: c + 1, warp: 'W0', state: 'compute', label: 'W0 FMA' };
+    if (c >= 1 && c <= 4) {
+      if (c <= residentSlots - 1) {
+        return { cycle: c + 1, warp: `W${c}`, state: 'hide', label: `W${c} FMA` };
+      }
+      return { cycle: c + 1, warp: null, state: 'stall', label: 'Stall' };
+    }
+    // cycles 6..7
+    const idx = (c - 5) % residentSlots;
+    return { cycle: c + 1, warp: `W${idx}`, state: 'compute', label: `W${idx} FMA` };
+  });
+
+  const stallCycles = cycles.filter((x) => x.state === 'stall').length;
+  const simtEfficiencyPct = divergent ? 50 : 100;
+  const effectiveThroughputPct = Math.round(((8 - stallCycles) / 8) * simtEfficiencyPct);
+
+  return {
+    regsPerThread,
+    smemKB,
+    blockSize,
+    divergent,
+    warpsPerBlock,
+    activeBlocks,
+    activeWarps,
+    maxWarpsPerSm,
+    occupancyPct,
+    warpsPerScheduler,
+    blocksByReg,
+    blocksBySmem,
+    blocksByWarpCap,
+    limiter,
+    registerSpill,
+    cycles,
+    stallCycles,
+    simtEfficiencyPct,
+    effectiveThroughputPct,
+  };
+}
+
+// §2 Memory Hierarchy, Coalescing & Tensor Core Tiling Dataflow
+export function deriveMemoryDataflow({ memView = 'coalescing', stride = 1, tiled = true } = {}) {
+  const isCoalesced = stride === 1;
+  // 32 threads in 1 warp each load 1 FP32 (4 bytes) = 128 B useful data
+  const usefulBytes = 128;
+  const transactions = isCoalesced ? 1 : 32; // 1 x 128B cache line vs 32 separate 128B cache lines
+  const fetchedBytes = transactions * 128;
+  const busEfficiencyPct = Number(((usefulBytes / fetchedBytes) * 100).toFixed(1));
+
+  // Tiled GEMM 1024x1024x1024 (FP16/BF16 = 2B) with tile B_M=B_N=128, B_K=32
+  // Naive: each C[i,j] reads K elements of A + K elements of B directly from HBM -> 2*M*N*K*2B = 4 GB
+  // Tiled (128x128 tile): each A/B tile reused 128x across block -> HBM traffic = (M*K*(N/128) + K*N*(M/128))*2B = 32 MB
+  const naiveHbmMB = 4096;
+  const tiledHbmMB = 32;
+  const activeHbmMB = tiled ? tiledHbmMB : naiveHbmMB;
+  const reuseFactor = tiled ? 128 : 1;
+
+  return {
+    memView,
+    stride: isCoalesced ? 1 : 32,
+    isCoalesced,
+    usefulBytes,
+    transactions,
+    fetchedBytes,
+    busEfficiencyPct,
+    tiled,
+    naiveHbmMB,
+    tiledHbmMB,
+    activeHbmMB,
+    reuseFactor,
+    tiers: MEMORY_TIERS,
+  };
+}
+
+// §3 CPU Launch Wall & CUDA Graph Capture
 function simulateLaunchMode(mode, batchSize) {
   const cpuOps = [];
   const gpuOps = [];
@@ -62,7 +304,6 @@ function simulateLaunchMode(mode, batchSize) {
       gpuCursor = gpuEnd;
     });
   } else {
-    // Piecewise CUDA Graph: Piece 1 (norm1, qkv, rope) -> Eager PagedAttn -> Piece 2 (oproj, norm2, ffn_up, ffn_down)
     cpuOps.push({ id: 'cpu_p1', kernelId: 'piece1', label: 'Graph Piece 1 (3 ops)', shortLabel: 'P1', start: 0, end: PIECE_REPLAY_LAUNCH_US, kind: 'graph', stepIndex: 1 });
     cpuCursor = PIECE_REPLAY_LAUNCH_US;
     gpuCursor = PIECE_REPLAY_LAUNCH_US;
@@ -93,104 +334,125 @@ function simulateLaunchMode(mode, batchSize) {
 
   const totalUs = gpuOps.at(-1).end;
   const activeGpuUs = gpuOps.reduce((sum, op) => sum + (op.end - op.start), 0);
-  const idleUs = Math.max(0, totalUs - activeGpuUs);
-  const idlePct = totalUs > 0 ? Math.round((idleUs / totalUs) * 100) : 0;
-  const hostCalls = cpuOps.length;
-  return { mode, batchSize, cpuOps, gpuOps, totalUs: Number(totalUs.toFixed(1)), activeGpuUs: Number(activeGpuUs.toFixed(1)), idleUs: Number(idleUs.toFixed(1)), idlePct, hostCalls };
-}
-
-export function deriveLaunchComparison(configInput = {}, step = 0) {
-  const config = normalizeGpuRuntimeConfig(configInput);
-  const runs = Object.fromEntries(LAUNCH_MODES.map((m) => [m, simulateLaunchMode(m, config.batchSize)]));
-  const active = runs[config.launchMode];
-  const eager = runs.eager;
-  const maxStep = LAYER_KERNELS.length;
-  const safeStep = Math.max(0, Math.min(maxStep, Math.trunc(Number(step) || 0)));
-  const horizonUs = Math.max(eager.totalUs, runs.full_graph.totalUs, runs.piecewise_graph.totalUs);
+  const idleGpuUs = Math.max(0, totalUs - activeGpuUs);
+  const idlePct = Math.round((idleGpuUs / totalUs) * 100);
 
   return {
-    ...config,
-    step: safeStep,
-    maxStep,
-    phase: safeStep === 0 ? 'idle' : safeStep === maxStep ? 'done' : 'running',
+    mode,
+    batchSize,
+    cpuOps,
+    gpuOps,
+    totalUs: Number(totalUs.toFixed(1)),
+    activeGpuUs: Number(activeGpuUs.toFixed(1)),
+    idleGpuUs: Number(idleGpuUs.toFixed(1)),
+    idlePct,
+    hostCalls: cpuOps.length,
+  };
+}
+
+export function deriveLaunchComparison(config, step = 8) {
+  const { launchMode, batchSize } = normalizeGpuRuntimeConfig(config);
+  const eager = simulateLaunchMode('eager', batchSize);
+  const full = simulateLaunchMode('full_graph', batchSize);
+  const piecewise = simulateLaunchMode('piecewise_graph', batchSize);
+  const runs = { eager, full_graph: full, piecewise_graph: piecewise };
+  const active = runs[launchMode];
+  const horizonUs = Math.max(eager.totalUs, full.totalUs, piecewise.totalUs);
+  const clampedStep = Math.max(0, Math.min(LAYER_KERNELS.length, Math.trunc(Number(step) || 0)));
+
+  return {
+    launchMode,
+    batchSize,
+    step: clampedStep,
+    maxStep: LAYER_KERNELS.length,
+    phase: clampedStep === 0 ? 'idle' : clampedStep === LAYER_KERNELS.length ? 'done' : 'running',
     active,
     runs,
     horizonUs,
     speedupVsEager: Number((eager.totalUs / active.totalUs).toFixed(2)),
-    activeKernel: safeStep > 0 ? active.gpuOps[safeStep - 1] : null,
   };
 }
 
-// §2 Operator Fusion HBM traffic on one Decode step for B tokens (H=4096, F=14336, BF16=2B)
-export function deriveFusionModel({ fusionMode = 'unfused', batchSize = 16 } = {}) {
-  const safeMode = FUSION_MODES.includes(fusionMode) ? fusionMode : 'unfused';
-  const B = Math.max(1, Number(batchSize) || 16);
-  const H = 4096;
-  const F = 14336;
-  const elemBytes = 2; // BF16
+// §4 Operator Fusion HBM traffic model
+export function deriveFusionModel({ fusionMode = 'unfused', batchSize = 8 } = {}) {
+  const tokens = Math.max(1, Number(batchSize) || 8);
+  const hiddenBytes = tokens * 4096 * 2;
+  const ffnBytes = tokens * 14336 * 2;
 
-  // SwiGLU epilogue + Residual RMSNorm elementwise HBM traffic:
-  // Unfused (4 separate kernels):
-  //   1. SiLU(gate): read gate [B,F], write s [B,F]
-  //   2. Mul(s, up): read s [B,F], read up [B,F], write act [B,F]
-  //   3. Residual Add: read x [B,H], read down [B,H], write r [B,H]
-  //   4. RMSNorm: read r [B,H], write norm [B,H]
   const unfusedStages = [
-    { id: 'silu', label: 'SiLU(gate)', reads: B * F * elemBytes, writes: B * F * elemBytes, sramOnly: false },
-    { id: 'mul', label: 'Mul(s, up)', reads: 2 * B * F * elemBytes, writes: B * F * elemBytes, sramOnly: false },
-    { id: 'res', label: 'Residual Add', reads: 2 * B * H * elemBytes, writes: B * H * elemBytes, sramOnly: false },
-    { id: 'norm', label: 'RMSNorm', reads: B * H * elemBytes, writes: B * H * elemBytes, sramOnly: false },
+    { id: 'silu', label: 'SiLU(gate)', reads: ffnBytes, writes: ffnBytes, sramOnly: false },
+    { id: 'mul', label: 'Mul(s, up)', reads: ffnBytes * 2, writes: ffnBytes, sramOnly: false },
+    { id: 'res', label: 'Residual Add', reads: hiddenBytes * 2, writes: hiddenBytes, sramOnly: false },
+    { id: 'rms', label: 'RMSNorm', reads: hiddenBytes, writes: hiddenBytes, sramOnly: false },
   ];
-
-  // Fused (2 kernels: Fused SiLU*Mul + Fused Add+RMSNorm):
-  //   1. Fused SiLU*Mul: read gate [B,F] + up [B,F], write act [B,F] (s stays in registers!)
-  //   2. Fused Add+RMSNorm: read x [B,H] + down [B,H], write r [B,H] + norm [B,H] (eliminates extra r read)
   const fusedStages = [
-    { id: 'fused_swiglu', label: 'Fused SiLU ⊙ up', reads: 2 * B * F * elemBytes, writes: B * F * elemBytes, sramOnly: true },
-    { id: 'fused_addnorm', label: 'Fused Add + RMSNorm', reads: 2 * B * H * elemBytes, writes: 2 * B * H * elemBytes, sramOnly: true },
+    { id: 'swiglu', label: 'Fused SiLU ⊙ up', reads: ffnBytes * 2, writes: ffnBytes, sramOnly: true },
+    { id: 'add_rms', label: 'Fused Add + RMSNorm', reads: hiddenBytes * 2, writes: hiddenBytes * 2, sramOnly: true },
   ];
 
-  const sumTraffic = (list) => list.reduce((acc, s) => acc + s.reads + s.writes, 0);
-  const unfusedBytes = sumTraffic(unfusedStages);
-  const fusedBytes = sumTraffic(fusedStages);
-  const activeStages = safeMode === 'fused' ? fusedStages : unfusedStages;
-  const activeBytes = safeMode === 'fused' ? fusedBytes : unfusedBytes;
+  const unfusedBytes = unfusedStages.reduce((sum, s) => sum + s.reads + s.writes, 0);
+  const fusedBytes = fusedStages.reduce((sum, s) => sum + s.reads + s.writes, 0);
+  const isFused = fusionMode === 'fused';
+  const savedPct = Math.round(((unfusedBytes - fusedBytes) / unfusedBytes) * 100);
 
   return {
-    fusionMode: safeMode,
-    batchSize: B,
-    stages: activeStages,
+    fusionMode: isFused ? 'fused' : 'unfused',
+    stages: isFused ? fusedStages : unfusedStages,
+    kernelCount: isFused ? fusedStages.length : unfusedStages.length,
     unfusedBytes,
     fusedBytes,
-    activeBytes,
-    savedPct: Math.round(((unfusedBytes - fusedBytes) / unfusedBytes) * 100),
-    kernelCount: activeStages.length,
-    unfusedKernels: unfusedStages.length,
-    fusedKernels: fusedStages.length,
+    activeBytes: isFused ? fusedBytes : unfusedBytes,
+    savedPct,
   };
 }
 
-// §3 H100 / B200 Roofline model
-export function deriveRooflineModel({ gpu = 'h100', dtype = 'bf16', batchSize = 16 } = {}) {
+// §5 Hardware Roofline & Precision (A100 / H100 / B200 × BF16 / FP8 / FP4)
+export function deriveRooflineModel({ gpu = 'h100', dtype = 'bf16', batchSize = 1 } = {}) {
   const spec = GPU_SPECS[gpu] || GPU_SPECS.h100;
-  const safeDtype = dtype === 'fp8' ? 'fp8' : 'bf16';
-  const peakTflops = safeDtype === 'fp8' ? spec.fp8Tflops : spec.bf16Tflops;
-  const hbmTBps = spec.hbmTBps;
-  const ridgeAi = Number((peakTflops / hbmTBps).toFixed(0));
-  const elemBytes = safeDtype === 'fp8' ? 1 : 2;
-  const B = Math.max(1, Number(batchSize) || 16);
+  let effectiveDtype = dtype;
+  let fallback = false;
+  if (effectiveDtype === 'fp4' && !spec.fp4Tflops) {
+    effectiveDtype = spec.fp8Tflops ? 'fp8' : 'bf16';
+    fallback = true;
+  } else if (effectiveDtype === 'fp8' && !spec.fp8Tflops) {
+    effectiveDtype = 'bf16';
+    fallback = true;
+  }
 
-  // Linear GEMM AI ≈ (2 * B) / elemBytes (2 FLOPs per weight per token / elemBytes per weight)
+  const peakTflops = effectiveDtype === 'fp4'
+    ? spec.fp4Tflops
+    : effectiveDtype === 'fp8'
+      ? spec.fp8Tflops
+      : spec.bf16Tflops;
+  const hbmTBps = spec.hbmTBps;
+  const ridgeAi = Math.round(peakTflops / hbmTBps);
+  const bytesPerElem = effectiveDtype === 'fp4' ? 0.5 : effectiveDtype === 'fp8' ? 1 : 2;
+  const b = Math.max(1, Number(batchSize) || 1);
+
   const kernels = [
     { id: 'rmsnorm', label: 'RMSNorm / RoPE', ai: 0.5, kind: 'elementwise' },
-    { id: 'decode_b1', label: 'Decode GEMV (B=1)', ai: Number((2 / elemBytes).toFixed(1)), kind: 'memory' },
-    { id: 'decode_cur', label: `Decode GEMM (B=${B})`, ai: Number(((2 * B) / elemBytes).toFixed(1)), kind: 'active' },
-    { id: 'prefill', label: 'Prefill GEMM (T=1024)', ai: Number(((2 * 1024) / elemBytes).toFixed(0)), kind: 'compute' },
+    { id: 'decode_gemv', label: 'Decode GEMV (B=1)', ai: Number((2 / bytesPerElem).toFixed(1)), kind: 'memory' },
+    { id: 'active_decode', label: `Decode GEMM (B=${b})`, ai: Number(((2 * b) / bytesPerElem).toFixed(1)), kind: 'active' },
+    { id: 'prefill_gemm', label: 'Prefill GEMM (T=1024)', ai: Math.round((2 * 1024) / bytesPerElem), kind: 'compute' },
   ].map((k) => {
     const achievedTflops = Math.min(peakTflops, k.ai * hbmTBps);
-    const utilPct = Math.round((achievedTflops / peakTflops) * 100);
-    return { ...k, achievedTflops: Number(achievedTflops.toFixed(1)), utilPct, bound: k.ai >= ridgeAi ? 'compute' : 'memory' };
+    const bound = k.ai >= ridgeAi ? 'compute' : 'memory';
+    return {
+      ...k,
+      achievedTflops: Number(achievedTflops.toFixed(1)),
+      utilPct: Math.round((achievedTflops / peakTflops) * 100),
+      bound,
+    };
   });
 
-  return { spec, dtype: safeDtype, peakTflops, hbmTBps, ridgeAi, kernels };
+  return {
+    spec,
+    requestedDtype: dtype,
+    dtype: effectiveDtype,
+    fallback,
+    peakTflops,
+    hbmTBps,
+    ridgeAi,
+    kernels,
+  };
 }

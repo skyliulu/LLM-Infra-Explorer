@@ -5,16 +5,22 @@ import { useLanguage } from '../lib/LanguageContext';
 import { useExperimentState } from '../lib/ExperimentContext';
 import { MathFormula } from './linear-attention/MathFormula';
 import {
+  DIAG_IDS,
   FUSION_MODES,
   GPU_SPECS,
   LAUNCH_BATCHES,
   LAUNCH_MODES,
   deriveFusionModel,
   deriveLaunchComparison,
+  deriveMemoryDataflow,
   deriveRooflineModel,
+  deriveSmOccupancy,
   normalizeGpuRuntimeConfig,
 } from './gpu-runtime/model';
 import { i18n } from './gpu-runtime/content';
+import SmOccupancySection from './gpu-runtime/SmOccupancySection';
+import MemoryTilingSection from './gpu-runtime/MemoryTilingSection';
+import ArchEvolutionSection from './gpu-runtime/ArchEvolutionSection';
 import './gpu-runtime/gpu-runtime.css';
 
 const fmtKB = (bytes) => (bytes >= 1024 ** 2 ? `${(bytes / 1024 ** 2).toFixed(2)} MiB` : `${(bytes / 1024).toFixed(0)} KiB`);
@@ -24,11 +30,20 @@ export default function GpuCudaGraph() {
   const t = (key) => i18n[lang]?.[key] ?? i18n.en[key] ?? key;
 
   const [rawConfig, setConfig] = useExperimentState('GpuCudaGraph.config', {
+    regsPerThread: 64,
+    smemKB: 48,
+    blockSize: 256,
+    divergent: false,
+    memView: 'coalescing',
+    stride: 1,
+    tiled: true,
     launchMode: 'eager',
     batchSize: 1,
     fusionMode: 'unfused',
     gpu: 'h100',
     dtype: 'bf16',
+    diagId: 'low_tc_high_hbm',
+    archGen: 'hopper',
   });
   const config = useMemo(() => normalizeGpuRuntimeConfig(rawConfig), [rawConfig]);
   const update = (patch) => setConfig((prev) => normalizeGpuRuntimeConfig({ ...(prev || config), ...patch }));
@@ -36,9 +51,28 @@ export default function GpuCudaGraph() {
   const [step, setStep] = useState(8);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const sm = useMemo(
+    () => deriveSmOccupancy({
+      regsPerThread: config.regsPerThread,
+      smemKB: config.smemKB,
+      blockSize: config.blockSize,
+      divergent: config.divergent,
+    }),
+    [config.regsPerThread, config.smemKB, config.blockSize, config.divergent]
+  );
+  const mem = useMemo(
+    () => deriveMemoryDataflow({ memView: config.memView, stride: config.stride, tiled: config.tiled }),
+    [config.memView, config.stride, config.tiled]
+  );
   const launch = useMemo(() => deriveLaunchComparison(config, step), [config, step]);
-  const fusion = useMemo(() => deriveFusionModel({ fusionMode: config.fusionMode, batchSize: Math.max(8, config.batchSize) }), [config.fusionMode, config.batchSize]);
-  const roof = useMemo(() => deriveRooflineModel({ gpu: config.gpu, dtype: config.dtype, batchSize: config.batchSize }), [config.gpu, config.dtype, config.batchSize]);
+  const fusion = useMemo(
+    () => deriveFusionModel({ fusionMode: config.fusionMode, batchSize: Math.max(8, config.batchSize) }),
+    [config.fusionMode, config.batchSize]
+  );
+  const roof = useMemo(
+    () => deriveRooflineModel({ gpu: config.gpu, dtype: config.dtype, batchSize: config.batchSize }),
+    [config.gpu, config.dtype, config.batchSize]
+  );
 
   const done = launch.phase === 'done';
   const reset = () => { setIsPlaying(false); setStep(0); };
@@ -69,10 +103,10 @@ export default function GpuCudaGraph() {
           { line: 'cudaGraphLaunch(piece_2_oproj_ffn[bucket], stream) # 4 ops', active: launch.step >= 5 },
         ];
 
-  // Log-log Roofline SVG mapping: AI in [0.25 .. 4096], TFLOP/s in [1 .. 5000]
-  const rBox = { left: 42, right: 342, top: 24, bottom: 132 };
-  const xAi = (ai) => rBox.left + ((Math.log2(Math.max(0.25, ai)) - Math.log2(0.25)) / (Math.log2(4096) - Math.log2(0.25))) * (rBox.right - rBox.left);
-  const yTf = (tf) => rBox.bottom - ((Math.log10(Math.max(1, tf)) - Math.log10(1)) / (Math.log10(5000) - Math.log10(1))) * (rBox.bottom - rBox.top);
+  // Log-log Roofline SVG mapping: AI in [0.25 .. 8192], TFLOP/s in [1 .. 10000]
+  const rBox = { left: 44, right: 342, top: 24, bottom: 132 };
+  const xAi = (ai) => rBox.left + ((Math.log2(Math.max(0.25, ai)) - Math.log2(0.25)) / (Math.log2(8192) - Math.log2(0.25))) * (rBox.right - rBox.left);
+  const yTf = (tf) => rBox.bottom - ((Math.log10(Math.max(1, tf)) - Math.log10(1)) / (Math.log10(10000) - Math.log10(1))) * (rBox.bottom - rBox.top);
   const ridgeX = xAi(roof.ridgeAi);
   const peakY = yTf(roof.peakTflops);
   const roofPath = `M${rBox.left},${yTf(0.25 * roof.hbmTBps).toFixed(1)} L${ridgeX.toFixed(1)},${peakY.toFixed(1)} L${rBox.right},${peakY.toFixed(1)}`;
@@ -87,7 +121,13 @@ export default function GpuCudaGraph() {
       </header>
 
       <div className="chapter-layout chapter-body">
-        {/* §1 Launch Wall & CUDA Graph */}
+        {/* §1 SM Anatomy, Warp Latency Hiding & Occupancy */}
+        <SmOccupancySection config={config} sm={sm} update={update} t={t} />
+
+        {/* §2 Memory Hierarchy, Coalescing & Tensor Core Tiling */}
+        <MemoryTilingSection config={config} mem={mem} update={update} t={t} />
+
+        {/* §3 Launch Wall & CUDA Graph */}
         <section className="gr-section" data-testid="gpu-launch-section">
           <h2 data-section-anchor="gpucudagraph-launch">{t('s1Title')}</h2>
           <p className="gr-lead">{t('s1Lead')}</p>
@@ -212,7 +252,7 @@ export default function GpuCudaGraph() {
           </div>
         </section>
 
-        {/* §2 Operator Fusion */}
+        {/* §4 Operator Fusion */}
         <section className="gr-section" data-testid="gpu-fusion-section">
           <h2 data-section-anchor="gpucudagraph-fusion">{t('s2Title')}</h2>
           <p className="gr-lead">{t('s2Lead')}</p>
@@ -255,7 +295,7 @@ export default function GpuCudaGraph() {
           </div>
         </section>
 
-        {/* §3 Hardware Roofline */}
+        {/* §5 Multi-Gen Roofline & Nsight Bottleneck Diagnosis */}
         <section className="gr-section" data-testid="gpu-roofline-section">
           <h2 data-section-anchor="gpucudagraph-roofline">{t('s3Title')}</h2>
           <p className="gr-lead">{t('s3Lead')}</p>
@@ -269,7 +309,7 @@ export default function GpuCudaGraph() {
               ))}
             </div>
             <div className="gr-toggle" role="group" aria-label={t('dtypeLabel')}>
-              {['bf16', 'fp8'].map((dt) => (
+              {['bf16', 'fp8', 'fp4'].map((dt) => (
                 <button key={dt} type="button" data-testid={`gpu-dtype-${dt}`} aria-pressed={config.dtype === dt} onClick={() => update({ dtype: dt })}>
                   {dt.toUpperCase()}
                 </button>
@@ -280,21 +320,27 @@ export default function GpuCudaGraph() {
             </span>
           </div>
 
+          {roof.fallback && (
+            <div className="gr-fallback-note">
+              {t('fallbackNote')} {roof.dtype.toUpperCase()} ({roof.spec.name})
+            </div>
+          )}
+
           <div className="gr-roof-grid">
             <div className="gr-roof-chart">
               <svg viewBox="0 0 360 166" role="img" aria-label={t('s3Title')}>
-                {[10, 100, 1000, 4000].map((tf) => (
+                {[10, 100, 1000, 9000].map((tf) => (
                   <g key={tf}>
                     <line className="gr-roof-gridline" x1={rBox.left} x2={rBox.right} y1={yTf(tf)} y2={yTf(tf)} />
-                    <text className="gr-roof-axis" x={36} y={yTf(tf) + 3} textAnchor="end">{tf}</text>
+                    <text className="gr-roof-axis" x={38} y={yTf(tf) + 3} textAnchor="end">{tf}</text>
                   </g>
                 ))}
-                {[1, 16, 256, 2048].map((ai) => (
+                {[1, 16, 256, 4096].map((ai) => (
                   <text className="gr-roof-axis" key={ai} x={xAi(ai)} y={146} textAnchor="middle">{ai}</text>
                 ))}
                 <text className="gr-roof-axis" x={(rBox.left + rBox.right) / 2} y={160} textAnchor="middle">{t('axisX')}</text>
                 <line className="gr-roof-ridge" x1={ridgeX} x2={ridgeX} y1={rBox.top} y2={rBox.bottom} />
-                <text className="gr-roof-axis" x={ridgeX} y={14} textAnchor="middle">{t('ridgeLabel')}: {roof.ridgeAi}</text>
+                <text className="gr-roof-axis" x={Math.min(300, Math.max(84, ridgeX))} y={14} textAnchor="middle">{t('ridgeLabel')}: {roof.ridgeAi}</text>
                 <path className="gr-roof-line" d={roofPath} />
                 {roof.kernels.map((k) => (
                   <g key={k.id}>
@@ -327,7 +373,37 @@ export default function GpuCudaGraph() {
               </table>
             </div>
           </div>
+
+          <div className="gr-diag-box" data-testid="gpu-diag-box">
+            <h3 className="gr-diag-title">{t('diagTitle')}</h3>
+            <div className="gr-toggle" role="group" aria-label={t('diagTitle')}>
+              {DIAG_IDS.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  data-testid={`gpu-diag-${id}`}
+                  aria-pressed={config.diagId === id}
+                  onClick={() => update({ diagId: id })}
+                >
+                  {t(`diag_${id}`)}
+                </button>
+              ))}
+            </div>
+            <div className="gr-diag-detail">
+              <div className="gr-diag-card">
+                <small>{t(`diagStall_${config.diagId}`)}</small>
+                <p>{t(`diagRoot_${config.diagId}`)}</p>
+              </div>
+              <div className="gr-diag-card">
+                <small>Nsight Compute / Systems</small>
+                <p>{t(`diagFix_${config.diagId}`)}</p>
+              </div>
+            </div>
+          </div>
         </section>
+
+        {/* §6 NVIDIA GPU Architecture Evolution: Volta -> Rubin */}
+        <ArchEvolutionSection config={config} update={update} t={t} />
 
         <details className="gr-evidence">
           <summary>{t('evidence')}</summary>

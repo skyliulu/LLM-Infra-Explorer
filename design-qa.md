@@ -7,10 +7,13 @@
   - `Parallelism`（`并行策略`）新增 **`Collective Comm`**（`#commcollective`）。
   - 新建第 6 分组 **`Serving Systems`**（`在线服务系统`），承接 **`PD Disaggregation`**（`#pdrouter`）。
   - 全站同步注册 `module-groups.js`、`module-titles.js`、`chapter-icons.js`、`chapter-learning.js`（全部前向依赖无环且精确锚点）、`chapter-registry.js`、`experiment-sharing.js`、`README.md` 与 `README.zh-CN.md`。
-- **`GPU & CUDA Graph`（`#gpucudagraph`）**：
-  - §1 **CPU 发射墙与 CUDA Graph 捕获**：CPU/GPU 双轨时间轴 + 单步/播放控制 + 引擎伪代码，对比 `Eager 逐个发射`（`B=1` 52% GPU 空泡）、`Full CUDA Graph`（静态分桶 0 µs 空泡）与 `Piecewise Graph (vLLM V1)`（动态 Attention Eager、其余分段图捕获）。
-  - §2 **算子融合与 HBM 往返消除**：对比 4 个未融合逐元素 Kernel（`1.41 MiB` HBM 读写）与 2 个融合 Kernel（`928 KiB`，`-36%` 流量、中间张量留驻片上寄存器/SRAM）。
-  - §3 **H100 / B200 Roofline 与硬件层级**：对数 Roofline SVG 曲线（`H100 SXM` / `B200 SXM` × `BF16` / `FP8`），实时标注拐点 $I^*$ 与算子瓶颈区切换。
+- **`GPU & CUDA Graph`（`#gpucudagraph` · 参照 `gpu-architecture` 深度扩充为 6 节）**：
+  - §1 **SM 解剖、Warp 延迟隐藏与 Occupancy 约束**：以 H100 SM（64K 寄存器 / 228 KB SMEM / 64 Warps）为锚，调节寄存器数（`32–255` 触发 Register Spill 告警）、SMEM、Block 尺寸与分支形态（`Uniform` vs `50/50 Divergent` 50% SIMT 折损），联动 8 周期 Warp Scheduler 延迟隐藏流水与资源瓶颈拆解。
+  - §2 **存储层级、访存合并与 Tensor Core 分块数据流**：对比 `Stride=1`（1×128B 事务 / 100%）与 `Stride=32`（32×128B 事务 / 3.1% 利用率），切换朴素 GEMM（`4096 MB`）与 `SMEM Tiling + TMA/MMA`（`32 MB` / `128×` 复用），并对照 5 级单卡存储金字塔。
+  - §3 **CPU 发射墙与 CUDA Graph 捕获**：CPU/GPU 双轨时间轴 + 单步/播放 + 引擎伪代码，对比 `Eager 逐个发射`、`Full CUDA Graph` 与 `Piecewise Graph (vLLM V1)`。
+  - §4 **算子融合与 HBM 往返消除**：对比 4 个未融合逐元素 Kernel（`1.41 MiB`）与 2 个融合 Kernel（`928 KiB`，`-36%`）。
+  - §5 **多代 GPU Roofline 与 Nsight 瓶颈归因**：扩展为 `A100 / H100 / B200` × `BF16 / FP8 / FP4`（不支持的低精度显式回退提示），并内联 4 类 Nsight Compute 典型症状排查器（主 Stall 原因与首检抓手）。
+  - §6 **NVIDIA GPU 架构代际演进（Volta → Rubin）**：交互切换 5 代 AI 架构（Volta / Ampere / Hopper / Blackwell / Rubin），展示算力/HBM/NVLink 演进、解决的瓶颈、硬件与 CUDA 软件栈，以及“不应误解为”边界卡片（Rubin 严格标为公开系统级平台规格）。
 - **`Collective Comm`（`#commcollective`）**：
   - §1 **集合通信原语与逐跳分片流转**：4-GPU 单步演练 `All-Reduce (Ring)`（6 跳 `1.50×M`）、`Reduce-Scatter`（3 跳 `0.75×M`）、`All-Gather`（3 跳 `0.75×M`）与 `All-to-All (MoE EP)`（均匀 vs GPU 1 热点 `2.50×` 倾斜告警）。
   - §2 **机内 NVLink 与机间 IB / RoCE 带宽断层**：$\alpha\text{-}\beta$ 延迟/带宽模型对比 `NVL72 (900 GB/s)`、`NVLink 4.0 (450 GB/s)`、`8×400GbE IB (200 GB/s)` 与 `单口 400GbE IB (50 GB/s)`，随消息量 `1..128 MB` 直观呈现延迟受限向带宽受限切换。
