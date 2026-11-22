@@ -1,5 +1,32 @@
 export const RANK_COUNT = 4;
 
+export const DP_LOAD_PROFILES = ['balanced', 'skewed_empty', 'pd_collision'];
+export const TBO_MODES = ['off', 'on'];
+
+export const LOAD_PROFILE_CONFIG = {
+  balanced: {
+    rankTokens: [4, 4, 4, 4],
+    rankKinds: ['decode', 'decode', 'decode', 'decode'],
+    hasDummy: false,
+    hasBarrierStall: false,
+    barrierWaitRatio: 1,
+  },
+  skewed_empty: {
+    rankTokens: [8, 4, 2, 0],
+    rankKinds: ['decode', 'decode', 'decode', 'dummy'],
+    hasDummy: true,
+    hasBarrierStall: false,
+    barrierWaitRatio: 4,
+  },
+  pd_collision: {
+    rankTokens: [2048, 4, 4, 4],
+    rankKinds: ['prefill', 'decode', 'decode', 'decode'],
+    hasDummy: false,
+    hasBarrierStall: true,
+    barrierWaitRatio: 32,
+  },
+};
+
 export const DP_ATTENTION_CONFIGS = {
   tp: {
     tpSize: 4,
@@ -73,6 +100,9 @@ export const deriveDpAttentionSnapshot = (input = {}) => {
   const communicationOperation = ['gather', 'reduceScatter', 'expertDispatch', 'expertCombine'].includes(operation)
     ? operation
     : null;
+  const loadProfile = isDp && DP_LOAD_PROFILES.includes(input.loadProfile) ? input.loadProfile : 'balanced';
+  const workloadConfig = LOAD_PROFILE_CONFIG[loadProfile];
+  const tboEnabled = isDp && moeTopology === 'ep' && input.tbo === 'on';
 
   return {
     ...normalized,
@@ -84,6 +114,23 @@ export const deriveDpAttentionSnapshot = (input = {}) => {
     historyLength:Math.max(1,Math.trunc(Number(input.historyLength)||128)),
     isDp,
     communicationOperation,
+    loadProfile,
+    workload: {
+      profile: loadProfile,
+      rankTokens: workloadConfig.rankTokens,
+      rankKinds: workloadConfig.rankKinds,
+      hasDummy: workloadConfig.hasDummy,
+      hasBarrierStall: workloadConfig.hasBarrierStall,
+      barrierWaitRatio: workloadConfig.barrierWaitRatio,
+    },
+    tboEnabled,
+    tboTimeline: [
+      { slot: 'T1', compute: 'MB0 Attn', comm: '—' },
+      { slot: 'T2', compute: 'MB1 Attn', comm: 'MB0 A2A Dispatch' },
+      { slot: 'T3', compute: 'MB0 EP-MoE', comm: 'MB1 A2A Dispatch' },
+      { slot: 'T4', compute: 'MB1 EP-MoE', comm: 'MB0 A2A Combine' },
+      { slot: 'T5', compute: 'Next Layer', comm: 'MB1 A2A Combine' },
+    ],
     statusKey: `status.${operation}`,
     assumptionKey: isDp
       ? moeTopology === 'ep' ? 'assumption.dpEp' : 'assumption.dpTp'

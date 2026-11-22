@@ -163,6 +163,9 @@ button.mk-cell.clickable:hover{border-color:#2563eb}
 .mk-pool>header strong{font-size:12px;color:#4c1d95}
 .mk-pool>header>span:last-child{margin-left:auto;font-size:10.5px;color:#5b21b6;font-variant-numeric:tabular-nums}
 .mk-master-pill{font-size:9.5px;color:#5b21b6;background:#ede9fe;border:1px solid #c4b5fd;border-radius:4px;padding:1px 6px}
+.mk-fanout-pill{font-size:9.5px;font-weight:650;border-radius:4px;padding:1px 6px;font-variant-numeric:tabular-nums}
+.mk-fanout-pill.warn{color:#92400e;background:#fef3c7;border:1px solid #fcd34d}
+.mk-fanout-pill.ok{color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0}
 .mk-segments{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .mk-segment{background:#fff;border:1px solid #e9d5ff;border-radius:6px;padding:6px;min-width:0}
 .mk-segment small{display:block;font-size:9.5px;color:#6d28d9;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

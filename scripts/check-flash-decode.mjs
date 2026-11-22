@@ -22,6 +22,7 @@ assert.deepEqual(normalizeFlashDecodeState({
   kvLayout: 'other',
   headMode: 'other',
   splitSetting: 'other',
+  batchSize: 999,
   step: 99,
 }), {
   algorithm: 'optimized',
@@ -29,6 +30,7 @@ assert.deepEqual(normalizeFlashDecodeState({
   kvLayout: 'contiguous',
   headMode: 'gqa',
   splitSetting: 'auto',
+  batchSize: 1,
   step: 6,
 });
 
@@ -91,11 +93,20 @@ const headSnapshots = Object.fromEntries(FLASH_DECODE_HEAD_MODES.map((headMode) 
 assert.equal(headSnapshots.mha.kvHeads, 8);
 assert.equal(headSnapshots.gqa.kvHeads, 2);
 assert.equal(headSnapshots.mqa.kvHeads, 1);
+assert.equal(headSnapshots.mla.kvHeads, 1);
+assert.equal(headSnapshots.mla.qkDim, 576);
+assert.equal(headSnapshots.mla.vDim, 512);
+assert.equal(headSnapshots.mla.sharedLatent, true);
 assert.equal(headSnapshots.mha.queryHeadsPerKvHead, 1);
 assert.equal(headSnapshots.gqa.queryHeadsPerKvHead, 4);
 assert.equal(headSnapshots.mqa.queryHeadsPerKvHead, 8);
+assert.equal(headSnapshots.mla.queryHeadsPerKvHead, 8);
 assert(headSnapshots.mha.metrics.kvElementsRead > headSnapshots.gqa.metrics.kvElementsRead);
 assert(headSnapshots.gqa.metrics.kvElementsRead > headSnapshots.mqa.metrics.kvElementsRead);
+const largeBatchGqa = deriveFlashDecodeSnapshot({ headMode: 'gqa', batchSize: 128, execution: 'split' });
+assert.equal(largeBatchGqa.occupancy.splitOverheadDominates, true, 'B=128 with GQA saturates 132 SMs so Split-K overhead dominates');
+const smallBatchGqa = deriveFlashDecodeSnapshot({ headMode: 'gqa', batchSize: 1, execution: 'split' });
+assert.equal(smallBatchGqa.occupancy.splitOverheadDominates, false, 'B=1 underutilizes SMs so Split-K helps');
 
 const scores = [1.2, -0.4, 0.8, 2.1];
 const values = [[1, 0], [0, 1], [2, 1], [-1, 3]];

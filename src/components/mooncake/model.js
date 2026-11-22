@@ -33,6 +33,15 @@ export const MEDIA = [
   {id: 'slow', gbps: 1.25},
 ];
 
+export const KV_PROFILES = [
+  {id: 'dense_bf16', bytes: KV_BYTES_PER_TOKEN},
+  {id: 'dense_fp8', bytes: KV_BYTES_PER_TOKEN / 2},
+  {id: 'mla', bytes: 70 * 1024},
+  {id: 'ced_csa2', bytes: 890},
+];
+
+export const CONCURRENCY_LEVELS = [1, 4, 8];
+
 export const SERIES_TOKENS = [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192];
 
 export const pageSegments = pages => {
@@ -63,7 +72,7 @@ const requestTiming = (poolHits, l2Hits, computed, seconds = READOUT) => {
   return {lookup, fabric, load, compute, total: lookup + fabric + load + compute};
 };
 
-export function simulateTrace(mode = 'cluster', poolPages = POOL_DEFAULT, seconds = READOUT) {
+export function simulateTrace(mode = 'cluster', poolPages = POOL_DEFAULT, seconds = READOUT, hotReplicas = 1) {
   const trace = buildTrace();
   const capacity = pageSegments(poolPages);
   const l2 = Array.from({length: INSTANCES}, () => Array(L2_PAGES).fill(null));
@@ -156,6 +165,13 @@ export function simulateTrace(mode = 'cluster', poolPages = POOL_DEFAULT, second
       if (mode === 'cluster' && findPool(id) < 0) {
         if (putPool(id, request.instance, pinned)) newPages += 1;
       }
+      if (mode === 'cluster' && hotReplicas >= 2 && id === 'S0') {
+        const replicaSeg = 1;
+        if (!segments[replicaSeg].includes(id) && (segments[replicaSeg].includes(null) || evictFrom(segments[replicaSeg], segmentOrder[replicaSeg], pinned))) {
+          segments[replicaSeg][segments[replicaSeg].indexOf(null)] = id;
+          touch(segments[replicaSeg], segmentOrder[replicaSeg], id);
+        }
+      }
     }
 
     const timing = requestTiming(poolPagesHit, localPagesHit, computedPages, seconds);
@@ -212,8 +228,9 @@ export function localPrefix(snapshot) {
   return pages;
 }
 
-export function deriveMooncakeState({mode = 'cluster', poolPages = POOL_DEFAULT, step = 0} = {}) {
-  const clusters = {instance: simulateTrace('instance', poolPages), cluster: simulateTrace('cluster', poolPages)};
+export function deriveMooncakeState({mode = 'cluster', poolPages = POOL_DEFAULT, step = 0, hotReplicas = 1} = {}) {
+  const safeReplicas = hotReplicas === 2 ? 2 : 1;
+  const clusters = {instance: simulateTrace('instance', poolPages, READOUT, 1), cluster: simulateTrace('cluster', poolPages, READOUT, safeReplicas)};
   const active = clusters[mode] || clusters.cluster;
   const limit = active.snapshots.length - 1;
   const safeMode = clusters[mode] ? mode : 'cluster';
@@ -225,6 +242,8 @@ export function deriveMooncakeState({mode = 'cluster', poolPages = POOL_DEFAULT,
   return {
     mode: safeMode,
     poolPages: active.poolPages,
+    hotReplicas: safeReplicas,
+    peakHotFanout: safeMode === 'cluster' ? (safeReplicas === 2 ? 1.5 : 3) : 0,
     step: at,
     limit,
     phase: at === 0 ? 'idle' : at === limit ? 'done' : 'running',
@@ -342,11 +361,14 @@ export function deriveTopologyComparison(poolPages = POOL_DEFAULT) {
   };
 }
 
-export function deriveEconomics({medium = 'rdma', hitTokens = 2048, prefillRate = READOUT.prefillRate} = {}) {
+export function deriveEconomics({medium = 'rdma', hitTokens = 2048, prefillRate = READOUT.prefillRate, kvProfile = 'dense_bf16', concurrency = 1} = {}) {
   const entry = MEDIA.find(item => item.id === medium) || MEDIA[0];
-  const bandwidth = entry.gbps;
+  const profile = KV_PROFILES.find(item => item.id === kvProfile) || KV_PROFILES[0];
+  const safeConc = CONCURRENCY_LEVELS.includes(concurrency) ? concurrency : 1;
+  const kvBytes = profile.bytes;
+  const bandwidth = entry.gbps / safeConc;
   const computeUs = 1e6 / prefillRate;
-  const fetchUs = (KV_BYTES_PER_TOKEN / 1e9) * (1 / bandwidth + 1 / READOUT.hostGBps) * 1e6;
+  const fetchUs = (kvBytes / 1e9) * (1 / bandwidth + 1 / READOUT.hostGBps) * 1e6;
   const computeMs = hitTokens / prefillRate * 1000;
   const transferMs = fetchUs * hitTokens / 1000;
   const fetchMs = READOUT.lookupMs + transferMs;
@@ -354,9 +376,9 @@ export function deriveEconomics({medium = 'rdma', hitTokens = 2048, prefillRate 
   const ratio = fetchMs > 0 ? computeMs / fetchMs : 0;
   const margin = computeUs - fetchUs;
   const breakEvenTokens = margin > 0 ? (READOUT.lookupMs * 1000) / margin : Infinity;
-  const hostOnlyUs = (KV_BYTES_PER_TOKEN / 1e9 / READOUT.hostGBps) * 1e6;
+  const hostOnlyUs = (kvBytes / 1e9 / READOUT.hostGBps) * 1e6;
   const bandwidthFloor = computeUs > hostOnlyUs
-    ? 1 / ((computeUs * 1e-6) / (KV_BYTES_PER_TOKEN / 1e9) - 1 / READOUT.hostGBps)
+    ? 1 / ((computeUs * 1e-6) / (kvBytes / 1e9) - 1 / READOUT.hostGBps)
     : Infinity;
   const verdict = hitTokens < DEFAULT_PREFETCH_TOKENS
     ? 'skipped'
@@ -371,6 +393,10 @@ export function deriveEconomics({medium = 'rdma', hitTokens = 2048, prefillRate 
   const maxUs = Math.max(...series.map(point => Math.max(point.compute, point.fetch)));
   return {
     medium,
+    kvProfile: profile.id,
+    kvBytes,
+    concurrency: safeConc,
+    rawBandwidth: entry.gbps,
     bandwidth,
     hitTokens,
     prefillRate,

@@ -4,7 +4,7 @@ import {useLanguage} from '../lib/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Play, Pause, SkipForward, RotateCcw, Cpu, Database, Zap, AlignLeft, Code, ArrowDown, ArrowUp, SplitSquareHorizontal, Combine, Braces, Calculator, HardDrive, MemoryStick, Info, } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
-import { NUM_WORK_UNITS, deriveFlashDecodeSnapshot } from './flash-decode/model';
+import { FLASH_DECODE_BATCH_SIZES, FLASH_DECODE_HEAD_MODES, NUM_WORK_UNITS, deriveFlashDecodeSnapshot } from './flash-decode/model';
 
 const i18n = {
   zh: {
@@ -26,8 +26,19 @@ const i18n = {
     kvContiguous: '连续',
     kvPaged: 'Paged',
     headModeLabel: '注意力头',
+    batchLabel: 'Batch',
     splitSettingLabel: 'Split 数',
     splitAuto: 'Auto',
+    smOccupancyLabel: 'H100 SM 占用',
+    splitBenefitTag: 'Split-K 拉高并行度',
+    splitCrossoverAlert: 'B×H_kv 已打满 132 SM：继续 Split-K 反增 Workspace 写回与归约开销，应切回 Unsplit',
+    unsplitOptimalTag: '已打满 SM · Unsplit 最优',
+    unsplitUnderutilized: 'SM 空转 · 适合 Split-K',
+    tcPackingLabel: 'Tensor Core 打包',
+    tcPackingGemv: '单头 GEMV (低利用率)',
+    tcPackingWgmma: '同组 {g} 个 Q 头打包入 MMA',
+    mlaLatentRow: '潜向量',
+    mlaLatentNote: 'FlashMLA 吸收式解码：K 读 576 维 [c_KV, k_RoPE]，V 复用前 512 维 c_KV，单份显存同时供 K/V。',
     autoHeuristic: 'Auto 为教学启发式：目标约 2K tokens/split，真实后端会按形状与硬件选择。',
     splitControlsDisabled: 'Unsplit 不产生局部工作区，工作区表示与 Split 数暂不生效。',
     splitSolution: '沿 KV 序列建立逻辑 Split，由多个 CTA 并行计算局部 Attention，再通过独立归约 Kernel 精确合并。',
@@ -141,8 +152,19 @@ const i18n = {
     kvContiguous: 'Contiguous',
     kvPaged: 'Paged',
     headModeLabel: 'Head Mode',
+    batchLabel: 'Batch',
     splitSettingLabel: 'Splits',
     splitAuto: 'Auto',
+    smOccupancyLabel: 'H100 SM occupancy',
+    splitBenefitTag: 'Split-K lifts SM parallelism',
+    splitCrossoverAlert: 'B×H_kv already fills 132 SMs: Split-K adds workspace & reduction overhead—Unsplit wins',
+    unsplitOptimalTag: 'SMs saturated · Unsplit optimal',
+    unsplitUnderutilized: 'SMs underutilized · Split-K helps',
+    tcPackingLabel: 'Tensor Core packing',
+    tcPackingGemv: 'Single-head GEMV (low util)',
+    tcPackingWgmma: 'Pack {g} Q heads into MMA',
+    mlaLatentRow: 'Latent',
+    mlaLatentNote: 'FlashMLA absorbed decode: K reads 576d [c_KV, k_RoPE], V reuses the 512d c_KV from one shared KV tensor.',
     autoHeuristic: 'Auto is a teaching heuristic targeting about 2K tokens per split; real backends dispatch by shape and hardware.',
     splitControlsDisabled: 'Unsplit creates no local workspace, so workspace representation and split count are inactive.',
     splitSolution: 'Create logical splits along the KV sequence, process local Attention with multiple CTAs, then merge exactly in an independent reduction kernel.',
@@ -245,6 +267,7 @@ const App = () => {
   const [execution, setExecution] = useExperimentState('FlashDecode.execution', 'split');
   const [kvLayout, setKvLayout] = useExperimentState('FlashDecode.kvLayout', 'contiguous');
   const [headMode, setHeadMode] = useExperimentState('FlashDecode.headMode', 'gqa');
+  const [batchSize, setBatchSize] = useExperimentState('FlashDecode.batchSize', 1);
   const [splitSetting, setSplitSetting] = useExperimentState('FlashDecode.splitSetting', 'auto');
   const [step, setStep] = useState(0);
   /* Steps:
@@ -269,9 +292,10 @@ const App = () => {
     execution,
     kvLayout,
     headMode,
+    batchSize,
     splitSetting,
     step,
-  }), [algorithm, execution, kvLayout, headMode, splitSetting, step]);
+  }), [algorithm, execution, kvLayout, headMode, batchSize, splitSetting, step]);
 
   const reset = () => {
     setIsPlaying(false);
@@ -496,9 +520,18 @@ const App = () => {
 
             <span className="font-bold text-slate-500 ml-1">{t('headModeLabel')}</span>
             <div className="flex rounded-md border border-slate-200 bg-slate-100 p-0.5">
-              {['mha', 'gqa', 'mqa'].map((value) => (
+              {FLASH_DECODE_HEAD_MODES.map((value) => (
                 <button key={value} data-testid={`head-mode-${value}`} onClick={() => updateTechnicalControl(setHeadMode, value)} className={`rounded px-2.5 py-1 font-semibold uppercase transition ${headMode === value ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
                   {value}
+                </button>
+              ))}
+            </div>
+
+            <span className="font-bold text-slate-500 ml-1">{t('batchLabel')}</span>
+            <div className="flex rounded-md border border-slate-200 bg-slate-100 p-0.5">
+              {FLASH_DECODE_BATCH_SIZES.map((value) => (
+                <button key={value} data-testid={`batch-size-${value}`} onClick={() => updateTechnicalControl(setBatchSize, value)} className={`rounded px-2 py-1 font-semibold transition ${snapshot.batchSize === value ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                  B={value}
                 </button>
               ))}
             </div>
@@ -540,7 +573,8 @@ const App = () => {
 
             <div className="mb-2 flex flex-wrap gap-1.5 text-[10px] md:text-[11px]" data-testid="flashdecode-derived-metrics">
               <span className="flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-slate-600">
-                <strong>{t('dimensions')}</strong><MathFormula>{String.raw`N=${snapshot.sequenceLength},\ d=${snapshot.headDim}`}</MathFormula>
+                <strong>{t('dimensions')}</strong>
+                <MathFormula>{snapshot.sharedLatent ? String.raw`N=${snapshot.sequenceLength},\ d_{qk}=${snapshot.qkDim},\ d_v=${snapshot.vDim}` : String.raw`N=${snapshot.sequenceLength},\ d=${snapshot.headDim}`}</MathFormula>
               </span>
               <span className="flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-blue-800">
                 <strong>{t('queryHeadsMetric')}</strong><MathFormula>{String.raw`H_q=${snapshot.queryHeads},\ H_{kv}=${snapshot.kvHeads}`}</MathFormula>
@@ -554,6 +588,36 @@ const App = () => {
               <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-amber-800"><strong>{t('ctaBatchesMetric')}：</strong>{snapshot.ctaBatches}</span>
               <span className="rounded-md border border-purple-200 bg-purple-50 px-2 py-1 text-purple-800"><strong>{t('workspaceMetric')}：</strong>{snapshot.metrics.workspaceEntries}</span>
               <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-slate-600"><strong>{t('kvReadMetric')}：</strong>{(snapshot.metrics.kvElementsRead / 1_000_000).toFixed(1)}M</span>
+            </div>
+
+            <div className="mb-3 grid grid-cols-1 md:grid-cols-12 gap-2 text-[10px] md:text-[11px]" data-testid="flashdecode-sm-strip">
+              <div className={`md:col-span-7 rounded-lg border px-2.5 py-2 flex flex-col gap-1.5 ${snapshot.occupancy.splitOverheadDominates && snapshot.isSplit ? 'border-rose-300 bg-rose-50/70' : 'border-slate-200 bg-slate-50/80'}`}>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="font-bold text-slate-700">{t('smOccupancyLabel')} (<MathFormula>{String.raw`B\times H_{kv}=${snapshot.occupancy.unsplitCtas}\to ${snapshot.occupancy.activeCtas}`}</MathFormula> / {snapshot.occupancy.gpuSms} SMs)</span>
+                  <span className={`rounded px-1.5 py-0.5 text-[9.5px] font-bold ${snapshot.occupancy.splitOverheadDominates && snapshot.isSplit ? 'bg-rose-100 text-rose-800 border border-rose-300' : snapshot.occupancy.splitOverheadDominates ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : snapshot.isSplit ? 'bg-indigo-100 text-indigo-800 border border-indigo-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}`}>
+                    {snapshot.occupancy.splitOverheadDominates
+                      ? (snapshot.isSplit ? t('splitCrossoverAlert') : t('unsplitOptimalTag'))
+                      : (snapshot.isSplit ? t('splitBenefitTag') : t('unsplitUnderutilized'))}
+                  </span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden flex">
+                  <div className="h-full bg-sky-500 transition-all duration-300" style={{ width: `${snapshot.occupancy.unsplitPct}%` }} />
+                  {snapshot.isSplit && snapshot.occupancy.activePct > snapshot.occupancy.unsplitPct && (
+                    <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${snapshot.occupancy.activePct - snapshot.occupancy.unsplitPct}%` }} />
+                  )}
+                </div>
+              </div>
+              <div className="md:col-span-5 rounded-lg border border-slate-200 bg-slate-50/80 px-2.5 py-2 flex flex-col justify-center gap-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold text-slate-700">{t('tcPackingLabel')}</span>
+                  <span className="font-semibold text-indigo-700">
+                    <MathFormula>{String.raw`[${snapshot.queryHeadsPerKvHead},${snapshot.qkDim}]\times[${snapshot.qkDim},B_{kv}]`}</MathFormula>
+                  </span>
+                </div>
+                <span className="text-[10px] text-slate-500">
+                  {snapshot.queryHeadsPerKvHead > 1 ? t('tcPackingWgmma', { g: snapshot.queryHeadsPerKvHead }) : t('tcPackingGemv')}
+                </span>
+              </div>
             </div>
 
             <div className="flex-1 flex flex-col gap-2 overflow-x-auto pb-4 pt-2">
@@ -577,33 +641,57 @@ const App = () => {
                         return (
                           <div key={queryHead} className={`rounded border px-0.5 py-0.5 text-center text-[7px] md:text-[8px] font-bold leading-none ${tones[kvHead % tones.length]}`}>
                             <MathFormula>{String.raw`Q_{${queryHead}}`}</MathFormula>
-                            <div className="mt-0.5 border-t border-current/20 pt-0.5 opacity-80"><MathFormula>{String.raw`KV_{${kvHead}}`}</MathFormula></div>
+                            <div className="mt-0.5 border-t border-current/20 pt-0.5 opacity-80"><MathFormula>{snapshot.sharedLatent ? String.raw`c_{KV}` : String.raw`KV_{${kvHead}}`}</MathFormula></div>
                           </div>
                         );
                       })}
                     </div>
                   </div>
 
-                  {[ {l:t('keyLabel'),k:'K'}, {l:t('valueLabel'),k:'V'} ].map(row => (
-                    <div key={row.k} className="flex items-center gap-3 w-full">
-                      <span className="text-xs font-bold text-slate-600 w-10 text-right">{row.l}</span>
-                      <div className={`flex w-full transition-all duration-700 ${snapshot.splitVisible ? 'gap-2' : 'gap-0'}`}>
-                        {Array.from({length: snapshot.splitVisible ? snapshot.effectiveSplitCount : 1}).map((_, i) => {
-                          const isActiveSplit = snapshot.assignments.includes(i);
-                          return (
-                            <div key={i} className={`flex-1 flex items-center justify-center font-mono text-[9px] md:text-xs font-bold transition-all duration-700 h-8 whitespace-nowrap
-                              ${snapshot.splitVisible ? 'bg-emerald-100 border-2 border-emerald-400 text-emerald-800 rounded' : 'bg-slate-200 border-y-2 border-slate-300 text-slate-500 first:rounded-l last:rounded-r first:border-l-2 last:border-r-2'}
-                              ${isActiveSplit ? 'ring-2 ring-amber-500 scale-105 z-10 shadow-md bg-amber-100 border-amber-400 text-amber-900' : ''}
-                            `}>
-                              {snapshot.splitVisible
-                                ? <MathFormula>{String.raw`${row.k}_{${i}}\,[b,H_{kv},d]`}</MathFormula>
-                                : <MathFormula>{String.raw`${row.k}\ \mathrm{Cache}\,[N,H_{kv},d]`}</MathFormula>}
-                            </div>
-                          )
-                        })}
+                  {snapshot.sharedLatent ? (
+                    <div className="flex flex-col gap-1.5 w-full">
+                      <div className="flex items-center gap-3 w-full">
+                        <span className="text-xs font-bold text-purple-700 w-10 text-right">{t('mlaLatentRow')}</span>
+                        <div className={`flex w-full transition-all duration-700 ${snapshot.splitVisible ? 'gap-2' : 'gap-0'}`}>
+                          {Array.from({length: snapshot.splitVisible ? snapshot.effectiveSplitCount : 1}).map((_, i) => {
+                            const isActiveSplit = snapshot.assignments.includes(i);
+                            return (
+                              <div key={i} className={`flex-1 flex items-center justify-center font-mono text-[9px] md:text-xs font-bold transition-all duration-700 h-9 whitespace-nowrap
+                                ${snapshot.splitVisible ? 'bg-purple-100 border-2 border-purple-400 text-purple-900 rounded' : 'bg-purple-100 border-2 border-purple-300 text-purple-800 rounded'}
+                                ${isActiveSplit ? 'ring-2 ring-amber-500 scale-105 z-10 shadow-md bg-amber-100 border-amber-400 text-amber-900' : ''}
+                              `}>
+                                {snapshot.splitVisible
+                                  ? <MathFormula>{String.raw`c_{KV,${i}}\,[b,576]`}</MathFormula>
+                                  : <MathFormula>{String.raw`[c_{KV},k_{\mathrm{RoPE}}]\,[N,1,576]`}</MathFormula>}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
+                      <p className="text-[10px] text-purple-700 pl-12 leading-snug">{t('mlaLatentNote')}</p>
                     </div>
-                  ))}
+                  ) : (
+                    [ {l:t('keyLabel'),k:'K'}, {l:t('valueLabel'),k:'V'} ].map(row => (
+                      <div key={row.k} className="flex items-center gap-3 w-full">
+                        <span className="text-xs font-bold text-slate-600 w-10 text-right">{row.l}</span>
+                        <div className={`flex w-full transition-all duration-700 ${snapshot.splitVisible ? 'gap-2' : 'gap-0'}`}>
+                          {Array.from({length: snapshot.splitVisible ? snapshot.effectiveSplitCount : 1}).map((_, i) => {
+                            const isActiveSplit = snapshot.assignments.includes(i);
+                            return (
+                              <div key={i} className={`flex-1 flex items-center justify-center font-mono text-[9px] md:text-xs font-bold transition-all duration-700 h-8 whitespace-nowrap
+                                ${snapshot.splitVisible ? 'bg-emerald-100 border-2 border-emerald-400 text-emerald-800 rounded' : 'bg-slate-200 border-y-2 border-slate-300 text-slate-500 first:rounded-l last:rounded-r first:border-l-2 last:border-r-2'}
+                                ${isActiveSplit ? 'ring-2 ring-amber-500 scale-105 z-10 shadow-md bg-amber-100 border-amber-400 text-amber-900' : ''}
+                              `}>
+                                {snapshot.splitVisible
+                                  ? <MathFormula>{String.raw`${row.k}_{${i}}\,[b,H_{kv},d]`}</MathFormula>
+                                  : <MathFormula>{String.raw`${row.k}\ \mathrm{Cache}\,[N,H_{kv},d]`}</MathFormula>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))
+                  )}
 
                   <div className={`w-full rounded-lg border px-2.5 py-2 ${kvLayout === 'paged' ? 'border-indigo-200 bg-indigo-50/70' : 'border-slate-200 bg-white'}`} data-testid="kv-addressing">
                     <div className="mb-1.5 flex items-center justify-between gap-2 text-[9px] font-bold text-slate-600">
@@ -696,9 +784,15 @@ const App = () => {
                           {isComputingLocal ? (
                             <>
                               <div className="flex flex-wrap gap-1 justify-center animate-fade-in">
-                                <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 text-[8px] rounded border border-blue-200"><MathFormula>{String.raw`Q\,[1,d]`}</MathFormula></span>
-                                <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[8px] rounded border border-emerald-200"><MathFormula>{workItem.fullSequence ? String.raw`K_{0:N}` : String.raw`K_{${workItem.splitIndex}}`}</MathFormula></span>
-                                <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[8px] rounded border border-emerald-200"><MathFormula>{workItem.fullSequence ? String.raw`V_{0:N}` : String.raw`V_{${workItem.splitIndex}}`}</MathFormula></span>
+                                <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 text-[8px] rounded border border-blue-200"><MathFormula>{snapshot.queryHeadsPerKvHead > 1 ? String.raw`Q\,[${snapshot.queryHeadsPerKvHead},${snapshot.qkDim}]` : String.raw`Q\,[1,d]`}</MathFormula></span>
+                                {snapshot.sharedLatent ? (
+                                  <span className="px-1.5 py-0.5 bg-purple-100 text-purple-800 text-[8px] rounded border border-purple-200"><MathFormula>{workItem.fullSequence ? String.raw`c_{KV,0:N}` : String.raw`c_{KV,${workItem.splitIndex}}`}</MathFormula></span>
+                                ) : (
+                                  <>
+                                    <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[8px] rounded border border-emerald-200"><MathFormula>{workItem.fullSequence ? String.raw`K_{0:N}` : String.raw`K_{${workItem.splitIndex}}`}</MathFormula></span>
+                                    <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[8px] rounded border border-emerald-200"><MathFormula>{workItem.fullSequence ? String.raw`V_{0:N}` : String.raw`V_{${workItem.splitIndex}}`}</MathFormula></span>
+                                  </>
+                                )}
                               </div>
                               <ArrowDown size={12} className="text-amber-400 mt-1 animate-pulse"/>
                             </>

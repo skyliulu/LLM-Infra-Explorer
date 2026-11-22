@@ -228,4 +228,13 @@ assert.ok(hit.segmentAll.length >= hit.objects.length);
 assert.equal(hit.segmentMore, hit.segmentAll.length - hit.objects.length);
 assert.ok(hit.l2Slots.includes('S0'));
 
-console.log('Mooncake checks pass: stack steps/lines, i18n parity, 48-request trace, capacity invariants, cross-instance shared page, hit path, policy gate, lookup-loss & bandwidth-floor boundaries.');
+// --- Hot-block replication & KV-footprint / concurrency economics ----------
+const rep2 = deriveMooncakeState({mode: 'cluster', step: 1, hotReplicas: 2});
+assert.equal(rep2.peakHotFanout, 1.5, '2x hot replicas halve S0 NIC fan-out');
+assert.ok(rep2.snapshot.segments[0].includes('S0') && rep2.snapshot.segments[1].includes('S0'), 'S0 resides on both segment 0 and segment 1');
+const mlaEcon = deriveEconomics({medium: 'rdma', hitTokens: 2048, prefillRate: 11000, kvProfile: 'mla', concurrency: 1});
+assert.ok(mlaEcon.fetchMs < rdma.fetchMs, 'MLA 70 KiB/tok transfers faster than 320 KiB/tok dense BF16');
+const contendedTcp = deriveEconomics({medium: 'tcp', hitTokens: 2048, prefillRate: 11000, kvProfile: 'dense_bf16', concurrency: 8});
+assert.equal(contendedTcp.verdict, 'loss', '8x concurrent contention on 100GbE TCP pushes per-stream bandwidth below the floor');
+
+console.log('Mooncake checks pass: stack steps/lines, i18n parity, 48-request trace, capacity invariants, hot replication, KV footprint & concurrency economics, hit path, policy gate, lookup-loss & bandwidth-floor boundaries.');

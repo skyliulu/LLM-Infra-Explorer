@@ -4,7 +4,7 @@ import {useLanguage} from '../lib/LanguageContext';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Play, Pause, SkipForward, RotateCcw, Database, Zap, Code, Layers, Info, AlertTriangle, Network, ArrowDown, Cpu, GripHorizontal } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
-import { deriveDpAttentionSnapshot, getMaxStep } from './dp-attention/model';
+import { DP_LOAD_PROFILES, deriveDpAttentionSnapshot, getMaxStep } from './dp-attention/model';
 
 const i18n = {
   zh: {
@@ -23,6 +23,24 @@ const i18n = {
     moeTopology: 'MoE 拓扑',
     tpMoe: 'TP-FFN',
     epMoe: 'EP-MoE',
+    loadProfileLabel: '负载',
+    load_balanced: '对称均衡',
+    load_skewed_empty: '倾斜 + 空卡 Dummy',
+    load_pd_collision: 'P/D 混布碰撞',
+    tboLabel: 'TBO 掩盖',
+    tboOff: '单批串行',
+    tboOn: '双微批乒乓',
+    dummyBadge: '0 请求 · Dummy 补位',
+    dummyNote: 'Rank 3 无真实请求（dp_sizes=[8,4,2,0]），仍须执行 1-token Dummy Forward 参与集合通信，防止 MoE 屏障死锁。',
+    pdStallBadge: '等屏障',
+    pdPrefillBadge: '2048 Prefill',
+    pdCollisionAlert: 'P/D 混布屏障碰撞：Rank 1–3 完成 4 tok Decode 后在 MoE 全局同步点空等 Rank 0 的 2048 tok Prefill，因此线上常配 P/D 分离。',
+    tboTitle: 'TBO 双微批乒乓掩盖（EP-MoE）',
+    tboStreamCompute: 'Compute 流',
+    tboStreamComm: 'RDMA / NVLink 流',
+    tboNote: '把本地批次拆成 MB0 / MB1 交替调度：MB0 做 All-to-All Dispatch 时 GPU 同时算 MB1 Attention，把跨机通信隐藏在计算背后。',
+    pyDummyGuard: '# 空卡补 1-token Dummy 防止集体通信死锁',
+    pyTboHint: '# TBO: MB0 与 MB1 交替执行，掩盖 All-to-All 延迟',
     assumptionTp: '代表性配置：TP=4 · DP=1 · Attention TP=4 · MoE TP=4',
     assumptionDpTp: '代表性配置：TP=4 · DP=4 · Attention TP=1 · MoE TP=4',
     assumptionDpEp: '代表性配置：World=4 · DP=4 · Attention TP=1 · MoE EP=4',
@@ -159,6 +177,24 @@ const i18n = {
     moeTopology: 'MoE Topology',
     tpMoe: 'TP-FFN',
     epMoe: 'EP-MoE',
+    loadProfileLabel: 'Load',
+    load_balanced: 'Balanced',
+    load_skewed_empty: 'Skew + Dummy Rank',
+    load_pd_collision: 'P/D Barrier Clash',
+    tboLabel: 'TBO Overlap',
+    tboOff: 'Single batch',
+    tboOn: 'Ping-pong MB0/1',
+    dummyBadge: '0 req · Dummy pad',
+    dummyNote: 'Rank 3 has zero live requests (dp_sizes=[8,4,2,0]) yet must run a 1-token Dummy Forward so the global MoE collective does not deadlock.',
+    pdStallBadge: 'Stalled',
+    pdPrefillBadge: '2048 Prefill',
+    pdCollisionAlert: 'P/D barrier collision: Ranks 1–3 finish 4-tok Decode and stall at the global MoE barrier waiting on Rank 0’s 2048-tok Prefill—motivating P/D disaggregation.',
+    tboTitle: 'Two-Batch Overlap (TBO) Ping-Pong in EP-MoE',
+    tboStreamCompute: 'Compute stream',
+    tboStreamComm: 'RDMA / NVLink',
+    tboNote: 'Split each local batch into MB0 / MB1: while MB0 runs All-to-All Dispatch, the GPU computes MB1 Attention, hiding network latency behind compute.',
+    pyDummyGuard: '# Pad empty rank with 1-token dummy to avoid collective deadlock',
+    pyTboHint: '# TBO: ping-pong MB0 and MB1 to hide All-to-All latency',
     assumptionTp: 'Representative: TP=4 · DP=1 · Attention TP=4 · MoE TP=4',
     assumptionDpTp: 'Representative: TP=4 · DP=4 · Attention TP=1 · MoE TP=4',
     assumptionDpEp: 'Representative: World=4 · DP=4 · Attention TP=1 · MoE EP=4',
@@ -426,13 +462,15 @@ const DataBlock = ({ title, dims, mode, label, emptyLabel = '—', isEmpty = fal
 const DpAttentionVisualizer = () => {
   const [modelType, setModelType] = useExperimentState('DpAttention.modelType', 'dp');
   const [moeTopology, setMoeTopology] = useExperimentState('DpAttention.moeTopology', 'tp');
+  const [loadProfile, setLoadProfile] = useExperimentState('DpAttention.loadProfile', 'balanced');
+  const [tbo, setTbo] = useExperimentState('DpAttention.tbo', 'off');
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [lang] = useLanguage();
   const t = (k) => i18n[lang][k] ?? k;
   const snapshot = useMemo(
-    () => deriveDpAttentionSnapshot({ mode: modelType, moeTopology, step }),
-    [modelType, moeTopology, step],
+    () => deriveDpAttentionSnapshot({ mode: modelType, moeTopology, loadProfile, tbo, step }),
+    [modelType, moeTopology, loadProfile, tbo, step],
   );
   const { phase, maxStep } = snapshot;
 
@@ -520,20 +558,54 @@ const DpAttentionVisualizer = () => {
               </button>
             </div>
             {modelType === 'dp' && (
-              <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 shadow-inner" aria-label={t('moeTopology')}>
-                <span className="hidden px-1 text-[9px] font-bold uppercase tracking-wide text-slate-400 sm:inline">{t('moeTopology')}</span>
-                {['tp', 'ep'].map((topology) => (
-                  <button
-                    key={topology}
-                    type="button"
-                    aria-pressed={moeTopology === topology}
-                    onClick={() => handleMoeTopologyChange(topology)}
-                    className={`rounded-md px-2 py-1 text-[10px] font-bold transition ${moeTopology === topology ? 'bg-white text-indigo-700 shadow-sm ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    {t(topology === 'ep' ? 'epMoe' : 'tpMoe')}
-                  </button>
-                ))}
-              </div>
+              <>
+                <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 shadow-inner" aria-label={t('moeTopology')}>
+                  <span className="hidden px-1 text-[9px] font-bold uppercase tracking-wide text-slate-400 sm:inline">{t('moeTopology')}</span>
+                  {['tp', 'ep'].map((topology) => (
+                    <button
+                      key={topology}
+                      type="button"
+                      aria-pressed={moeTopology === topology}
+                      onClick={() => handleMoeTopologyChange(topology)}
+                      className={`rounded-md px-2 py-1 text-[10px] font-bold transition ${moeTopology === topology ? 'bg-white text-indigo-700 shadow-sm ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                      {t(topology === 'ep' ? 'epMoe' : 'tpMoe')}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 shadow-inner" aria-label={t('loadProfileLabel')}>
+                  <span className="hidden px-1 text-[9px] font-bold uppercase tracking-wide text-slate-400 sm:inline">{t('loadProfileLabel')}</span>
+                  {DP_LOAD_PROFILES.map((profile) => (
+                    <button
+                      key={profile}
+                      type="button"
+                      data-testid={`load-profile-${profile}`}
+                      aria-pressed={snapshot.loadProfile === profile}
+                      onClick={() => { setLoadProfile(profile); if (step === 0) setStep(2); }}
+                      className={`rounded-md px-2 py-1 text-[10px] font-bold transition ${snapshot.loadProfile === profile ? 'bg-white text-indigo-700 shadow-sm ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                      {t(`load_${profile}`)}
+                    </button>
+                  ))}
+                </div>
+                {moeTopology === 'ep' && (
+                  <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 shadow-inner" aria-label={t('tboLabel')}>
+                    <span className="hidden px-1 text-[9px] font-bold uppercase tracking-wide text-slate-400 sm:inline">{t('tboLabel')}</span>
+                    {['off', 'on'].map((modeVal) => (
+                      <button
+                        key={modeVal}
+                        type="button"
+                        data-testid={`tbo-${modeVal}`}
+                        aria-pressed={(snapshot.tboEnabled ? 'on' : 'off') === modeVal}
+                        onClick={() => setTbo(modeVal)}
+                        className={`rounded-md px-2 py-1 text-[10px] font-bold transition ${(snapshot.tboEnabled ? 'on' : 'off') === modeVal ? 'bg-white text-emerald-700 shadow-sm ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        {t(modeVal === 'on' ? 'tboOn' : 'tboOff')}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
             <div className="chapter-playback"><button type="button" aria-label={t('reset')} title={t('reset')} onClick={reset} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50"><RotateCcw size={18} /></button>
@@ -583,6 +655,36 @@ const DpAttentionVisualizer = () => {
             </div>
 
             <p className="mb-3 text-xs leading-relaxed text-slate-600" data-testid="decode-length-scope">{t('decodeLengths')} <a className="underline" href="https://github.com/deepseek-ai/DeepSeek-V3/blob/9b4e9788e4a3a731f7567338ed15d3ec549ce03b/inference/model.py#L446-L493" target="_blank" rel="noreferrer">{t('sourceLengths')}</a></p>
+
+            {snapshot.isDp && snapshot.workload.hasDummy && (
+              <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-900" data-testid="dp-dummy-alert">
+                {t('dummyNote')}
+              </div>
+            )}
+            {snapshot.isDp && snapshot.workload.hasBarrierStall && (
+              <div className="mb-3 rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-[11px] leading-relaxed text-rose-900" data-testid="dp-pd-alert">
+                {t('pdCollisionAlert')}
+              </div>
+            )}
+            {snapshot.tboEnabled && (
+              <div className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50/70 p-2.5 text-[10px]" data-testid="dp-tbo-strip">
+                <div className="mb-1.5 flex items-center justify-between gap-2 font-bold text-emerald-900">
+                  <span>{t('tboTitle')}</span>
+                </div>
+                <div className="grid grid-cols-5 gap-1">
+                  {snapshot.tboTimeline.map((item) => (
+                    <div key={item.slot} className="rounded border border-emerald-200 bg-white p-1.5 text-center">
+                      <div className="text-[9px] font-bold text-slate-400">{item.slot}</div>
+                      <div className="mt-1 rounded bg-indigo-100 px-1 py-0.5 text-[9px] font-bold text-indigo-800">{item.compute}</div>
+                      <div className={`mt-1 rounded px-1 py-0.5 text-[9px] font-semibold ${item.comm === '—' ? 'bg-slate-100 text-slate-400' : 'bg-amber-100 text-amber-800'}`}>{item.comm}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between gap-2 text-[9.5px] text-emerald-800">
+                  <span>{t('tboNote')}</span>
+                </div>
+              </div>
+            )}
             <div className="relative pb-4 flex flex-col items-start justify-start flex-1 overflow-x-auto overflow-y-hidden">
                <div className="mb-2 flex w-full items-center justify-end gap-1 text-[10px] font-semibold text-slate-400 xl:hidden">
                  <GripHorizontal size={13} /> {t('scrollHint')}
@@ -626,11 +728,20 @@ const DpAttentionVisualizer = () => {
 
                    {/* Column Headers */}
                    <div className="grid grid-cols-4 gap-2 w-full">
-                      {[0, 1, 2, 3].map(i => (
-                        <div key={i} className="text-center bg-slate-800 text-white py-1.5 rounded-t-lg text-[10px] font-bold flex items-center justify-center gap-1.5 shadow-md">
-                          <Cpu size={12}/> {t('rank')} {i}
-                        </div>
-                      ))}
+                      {[0, 1, 2, 3].map(i => {
+                        const rankTok = snapshot.workload.rankTokens[i];
+                        const rankKind = snapshot.workload.rankKinds[i];
+                        return (
+                          <div key={i} className={`text-center py-1.5 px-1 rounded-t-lg text-[10px] font-bold flex flex-wrap items-center justify-center gap-1 shadow-md ${rankKind === 'dummy' ? 'bg-amber-700 text-amber-50' : rankKind === 'prefill' ? 'bg-rose-700 text-white' : 'bg-slate-800 text-white'}`}>
+                            <Cpu size={12}/> {t('rank')} {i}
+                            {snapshot.isDp && (
+                              <span className={`rounded px-1 py-0.5 text-[8.5px] font-semibold leading-none ${rankKind === 'dummy' ? 'bg-amber-900/60 text-amber-100' : rankKind === 'prefill' ? 'bg-rose-900/60 text-rose-100' : snapshot.workload.hasBarrierStall ? 'bg-amber-500/30 text-amber-200' : 'bg-white/15 text-slate-100'}`}>
+                                {rankKind === 'dummy' ? t('dummyBadge') : rankKind === 'prefill' ? t('pdPrefillBadge') : snapshot.workload.hasBarrierStall ? `${rankTok} tok · ${t('pdStallBadge')}` : `${rankTok} tok`}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
                    </div>
 
                    {/* Row 1: Input */}
@@ -654,9 +765,13 @@ const DpAttentionVisualizer = () => {
 
                    {/* Row 2: MLA Box */}
                    <div className="grid grid-cols-4 gap-2 w-full">
-                      {[0, 1, 2, 3].map(i => (
+                      {[0, 1, 2, 3].map(i => {
+                        const rankKind = snapshot.workload.rankKinds[i];
+                        const isDummyRank = snapshot.isDp && rankKind === 'dummy';
+                        const isPrefillRank = snapshot.isDp && rankKind === 'prefill';
+                        return (
                         <div key={i} className={`border rounded-xl p-2 flex min-w-0 flex-col gap-2 transition-all duration-500 shadow-sm
-                          ${snapshot.views.inputVisible ? (modelType === 'tp' ? 'border-rose-300 bg-rose-50/30' : 'border-indigo-300 bg-indigo-50/40') : 'border-slate-200 bg-slate-50/50'}`}>
+                          ${isDummyRank ? 'border-2 border-dashed border-amber-400 bg-amber-50/40' : isPrefillRank ? 'border-2 border-rose-400 bg-rose-50/40' : snapshot.views.inputVisible ? (modelType === 'tp' ? 'border-rose-300 bg-rose-50/30' : 'border-indigo-300 bg-indigo-50/40') : 'border-slate-200 bg-slate-50/50'}`}>
 
                           <div className="text-[10px] font-bold text-center text-slate-500 mb-0.5 border-b border-slate-200 pb-1">{t('mlaLayer')}</div>
 
@@ -687,7 +802,8 @@ const DpAttentionVisualizer = () => {
                              emptyLabel={t('empty')} isEmpty={!snapshot.views.attentionVisible} rankIndex={i}
                           />
                         </div>
-                      ))}
+                        );
+                      })}
                    </div>
 
                    {/* Row 2.5: EP-MoE Local Router / Top-k (runs BEFORE All-to-All Dispatch on local [B/4, 1, H]) */}
@@ -885,6 +1001,18 @@ const DpAttentionVisualizer = () => {
                  <div className={snapshot.operation === 'input' ? "bg-slate-800 text-slate-100 px-2 -mx-2 rounded border-l-2 border-slate-400 transition-all py-1" : "text-slate-500 py-1"}>
                    <div>  <span className="text-slate-600">{modelType === 'tp' ? t('pyTp1') : t('pyDp1')}</span></div>
                    <div>  x_owned = select_owned_requests(x, request_meta)</div>
+                   {snapshot.isDp && snapshot.workload.hasDummy && (
+                     <>
+                       <div>  <span className="text-amber-400">{t('pyDummyGuard')}</span></div>
+                       <div>  if len(x_owned) == 0: x_owned = dummy_token(1, H)</div>
+                     </>
+                   )}
+                   {snapshot.tboEnabled && (
+                     <>
+                       <div>  <span className="text-emerald-400">{t('pyTboHint')}</span></div>
+                       <div>  mb0, mb1 = split_two_microbatches(x_owned)</div>
+                     </>
+                   )}
                  </div>
                  <br/>
                  <div className={snapshot.operation === 'attention' ? `${modelType === 'tp' ? 'bg-rose-900/40 text-rose-100 border-rose-500' : 'bg-emerald-900/30 text-emerald-100 border-emerald-500'} px-2 -mx-2 rounded border-l-2 transition-all py-1` : "text-slate-500 py-1"}>

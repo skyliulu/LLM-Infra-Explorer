@@ -1,8 +1,9 @@
 export const FLASH_DECODE_ALGORITHMS = ['simple', 'optimized'];
 export const FLASH_DECODE_EXECUTIONS = ['unsplit', 'split'];
 export const FLASH_DECODE_KV_LAYOUTS = ['contiguous', 'paged'];
-export const FLASH_DECODE_HEAD_MODES = ['mha', 'gqa', 'mqa'];
+export const FLASH_DECODE_HEAD_MODES = ['mha', 'gqa', 'mqa', 'mla'];
 export const FLASH_DECODE_SPLIT_SETTINGS = ['auto', '2', '4', '6', '8'];
+export const FLASH_DECODE_BATCH_SIZES = [1, 16, 128];
 
 export const NUM_KV_BLOCKS = 6;
 export const NUM_WORK_UNITS = 4;
@@ -10,13 +11,15 @@ export const MAX_FLASH_DECODE_STEP = 6;
 export const SEQ_LEN = 12288;
 export const HEAD_DIM = 128;
 export const QUERY_HEADS = 8;
+export const GPU_SMS = 132;
 
 const PHYSICAL_PAGE_ORDER = [4, 1, 7, 3, 8, 0];
 
 const HEAD_CONFIG = {
-  mha: { queryHeads: QUERY_HEADS, kvHeads: QUERY_HEADS },
-  gqa: { queryHeads: QUERY_HEADS, kvHeads: 2 },
-  mqa: { queryHeads: QUERY_HEADS, kvHeads: 1 },
+  mha: { queryHeads: QUERY_HEADS, kvHeads: QUERY_HEADS, qkDim: 128, vDim: 128, sharedLatent: false },
+  gqa: { queryHeads: QUERY_HEADS, kvHeads: 2, qkDim: 128, vDim: 128, sharedLatent: false },
+  mqa: { queryHeads: QUERY_HEADS, kvHeads: 1, qkDim: 128, vDim: 128, sharedLatent: false },
+  mla: { queryHeads: QUERY_HEADS, kvHeads: 1, qkDim: 576, vDim: 512, sharedLatent: true },
 };
 
 const SPLIT_OPERATION_BY_STEP = [
@@ -62,6 +65,9 @@ export function normalizeFlashDecodeState(input = {}) {
   const splitSetting = FLASH_DECODE_SPLIT_SETTINGS.includes(String(input.splitSetting))
     ? String(input.splitSetting)
     : 'auto';
+  const batchSize = FLASH_DECODE_BATCH_SIZES.includes(Number(input.batchSize))
+    ? Number(input.batchSize)
+    : 1;
   const configuredSplitCount = splitSetting === 'auto'
     ? deriveAutoSplitCount(SEQ_LEN)
     : Number(splitSetting);
@@ -76,6 +82,7 @@ export function normalizeFlashDecodeState(input = {}) {
     kvLayout,
     headMode,
     splitSetting,
+    batchSize,
     step: clampStep(numericStep, maxStep),
   };
 }
@@ -99,7 +106,7 @@ const createSplitWorkItems = (operation, effectiveSplitCount) => {
 
 export function deriveFlashDecodeSnapshot(input = {}) {
   const normalized = normalizeFlashDecodeState(input);
-  const { algorithm, execution, kvLayout, headMode, splitSetting, step } = normalized;
+  const { algorithm, execution, kvLayout, headMode, splitSetting, batchSize, step } = normalized;
   const isSplit = execution === 'split';
   const configuredSplitCount = splitSetting === 'auto'
     ? deriveAutoSplitCount(SEQ_LEN)
@@ -126,6 +133,14 @@ export function deriveFlashDecodeSnapshot(input = {}) {
       : ['reduceStats', 'mergeOutput', 'writeOutput'].includes(operation)
         ? effectiveSplitCount
         : 0;
+  const unsplitCtas = batchSize * headConfig.kvHeads;
+  const activeCtas = unsplitCtas * effectiveSplitCount;
+  const unsplitOccupancy = Math.min(1, unsplitCtas / GPU_SMS);
+  const activeOccupancy = Math.min(1, activeCtas / GPU_SMS);
+  const splitOverheadDominates = unsplitCtas >= GPU_SMS;
+  const kvElementsPerToken = headConfig.sharedLatent
+    ? headConfig.qkDim
+    : headConfig.qkDim + headConfig.vDim;
 
   return {
     ...normalized,
@@ -143,7 +158,10 @@ export function deriveFlashDecodeSnapshot(input = {}) {
     workspaceVisible: isSplit && writtenBlockCount > 0 && operation !== 'writeOutput',
     workspaceForm: algorithm === 'simple' ? 'accumulators' : 'lse',
     sequenceLength: SEQ_LEN,
-    headDim: HEAD_DIM,
+    headDim: headConfig.qkDim,
+    qkDim: headConfig.qkDim,
+    vDim: headConfig.vDim,
+    sharedLatent: headConfig.sharedLatent,
     effectiveSplitCount,
     splitSize,
     ctaBatches: isSplit ? Math.ceil(effectiveSplitCount / NUM_WORK_UNITS) : 1,
@@ -151,12 +169,20 @@ export function deriveFlashDecodeSnapshot(input = {}) {
     kvHeads: headConfig.kvHeads,
     queryHeadsPerKvHead: headConfig.queryHeads / headConfig.kvHeads,
     headMapping,
+    occupancy: {
+      gpuSms: GPU_SMS,
+      unsplitCtas,
+      activeCtas,
+      unsplitPct: Math.round(unsplitOccupancy * 100),
+      activePct: Math.round(activeOccupancy * 100),
+      splitOverheadDominates,
+    },
     logicalPages: Array.from({ length: NUM_KV_BLOCKS }, (_, logicalPage) => ({
       logicalPage,
       physicalPage: kvLayout === 'paged' ? PHYSICAL_PAGE_ORDER[logicalPage] : logicalPage,
     })),
     metrics: {
-      kvElementsRead: SEQ_LEN * headConfig.kvHeads * HEAD_DIM * 2,
+      kvElementsRead: SEQ_LEN * headConfig.kvHeads * kvElementsPerToken,
       workspaceEntries: isSplit ? effectiveSplitCount : 0,
       reductionPasses: isSplit ? 1 : 0,
     },

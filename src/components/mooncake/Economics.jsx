@@ -1,6 +1,6 @@
 import React from 'react';
 import {MathFormula} from '../linear-attention/MathFormula';
-import {KV_BYTES_PER_TOKEN, MEDIA, PAGE_TOKENS, READOUT, SERIES_TOKENS, deriveEconomics} from './model';
+import {CONCURRENCY_LEVELS, KV_PROFILES, MEDIA, PAGE_TOKENS, READOUT, SERIES_TOKENS, deriveEconomics} from './model';
 import {fmtMs, fmtTokens} from './format';
 
 const W = 340;
@@ -25,7 +25,7 @@ export default function Economics({t, config, setConfig}) {
   const verdictDesc = m.verdict === 'loss'
     ? t(m.lossCause === 'lookup' ? 'verdict_loss_lookup' : 'verdict_loss')
     : t(`verdict_${m.verdict}`);
-  const set = patch => setConfig({...config, ...patch});
+  const set = patch => setConfig(prev => ({...(prev && typeof prev === 'object' ? prev : config), ...patch}));
 
   const xThresh = xFor(256);
   const xBreak = crossing ? xFor(m.breakEvenTokens) : -999;
@@ -42,6 +42,20 @@ export default function Economics({t, config, setConfig}) {
           {MEDIA.map(item => (
             <button key={item.id} type="button" aria-pressed={config.medium === item.id} onClick={() => set({medium: item.id})}>
               {t(`medium_${item.id}`)}
+            </button>
+          ))}
+        </div>
+        <div className="mk-toggle" role="group" aria-label={t('kvProfile')}>
+          {KV_PROFILES.map(item => (
+            <button key={item.id} type="button" aria-pressed={m.kvProfile === item.id} onClick={() => set({kvProfile: item.id})}>
+              {t(`kv_${item.id}`)}
+            </button>
+          ))}
+        </div>
+        <div className="mk-toggle" role="group" aria-label={t('concurrencyLabel')}>
+          {CONCURRENCY_LEVELS.map(level => (
+            <button key={level} type="button" aria-pressed={m.concurrency === level} onClick={() => set({concurrency: level})}>
+              {level}×
             </button>
           ))}
         </div>
@@ -124,8 +138,8 @@ export default function Economics({t, config, setConfig}) {
             <MathFormula block>{String.raw`L^{*} = \frac{t_{\mathrm{lookup}}}{1/R - b\left(1/B_f + 1/B_h\right)}`}</MathFormula>
             <dl className="mk-vars">
               <div><dt><MathFormula>{String.raw`L`}</MathFormula></dt><dd>{t('varL')}</dd></div>
-              <div><dt><MathFormula>{String.raw`b`}</MathFormula></dt><dd>{t('varB')} · {Math.round(KV_BYTES_PER_TOKEN / 1024)} KiB</dd></div>
-              <div><dt><MathFormula>{String.raw`B_f`}</MathFormula></dt><dd>{t('varBf')} · {fmtBandwidth(m.bandwidth)}</dd></div>
+              <div><dt><MathFormula>{String.raw`b`}</MathFormula></dt><dd>{t('varB')} · {m.kvBytes >= 10240 ? `${Math.round(m.kvBytes / 1024)} KiB` : `${(m.kvBytes / 1024).toFixed(2)} KiB`}</dd></div>
+              <div><dt><MathFormula>{String.raw`B_f`}</MathFormula></dt><dd>{t('varBf')} · {fmtBandwidth(m.bandwidth)}{m.concurrency > 1 ? ` (${fmtBandwidth(m.rawBandwidth)} / ${m.concurrency})` : ''}</dd></div>
               <div><dt><MathFormula>{String.raw`B_h`}</MathFormula></dt><dd>{t('varBh')} · {fmtBandwidth(READOUT.hostGBps)}</dd></div>
               <div><dt><MathFormula>{String.raw`R`}</MathFormula></dt><dd>{t('varR')} · {fmtTokens(m.prefillRate)} /s</dd></div>
               <div><dt><MathFormula>{String.raw`t_{\mathrm{lookup}}`}</MathFormula></dt><dd>{t('varT')} · {fmtMs(READOUT.lookupMs)}</dd></div>

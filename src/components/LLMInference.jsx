@@ -8,6 +8,8 @@ import { deriveInferenceTensorSnapshot, deriveSamplingDistribution, MODULE, TOTA
 import {chooseSamplingCandidate,samplingDraw} from './llm-inference/numeric-model';
 import { LayerKvOverview, TensorWorkbench } from './llm-inference/TensorWorkbench';
 import KvRepresentation from './llm-inference/KvRepresentation';
+import ServingScheduler from './llm-inference/ServingScheduler';
+import { ROOFLINE_BATCHES, deriveRooflineState } from './llm-inference/scheduler-model';
 
 const i18n = {
   zh: {
@@ -163,7 +165,13 @@ const i18n = {
     status_active: '执行中',
     status_passed: '已完成',
     status_pending: '待执行',
-    layerLabel: '层'
+    layerLabel: '层',
+    rooflineTitle: 'Roofline 算术强度',
+    rooflineRidge: 'H100 拐点 295 FLOP/B',
+    rooflineCompute: '算力受限 (Compute-Bound)',
+    rooflineMemory: '显存带宽受限 (Memory-Bound)',
+    rooflineBatch: '并发 Batch',
+    rooflineNote: 'BF16 权重每 Token 约 1 FLOP/B；Prefill 并行算完整 Prompt 越过拐点，Decode 仅靠增大 Batch 右移靠近拐点。'
   },
   en: {
     title: 'LLM Inference Panorama',
@@ -318,7 +326,13 @@ const i18n = {
     status_active: 'Active',
     status_passed: 'Passed',
     status_pending: 'Pending',
-    layerLabel: 'Layer'
+    layerLabel: 'Layer',
+    rooflineTitle: 'Roofline Arithmetic Intensity',
+    rooflineRidge: 'H100 ridge 295 FLOP/B',
+    rooflineCompute: 'Compute-Bound',
+    rooflineMemory: 'Memory-Bound',
+    rooflineBatch: 'Batch',
+    rooflineNote: 'BF16 linear layers yield ~1 FLOP/B per token; Prefill processes full prompts past the ridge, while Decode needs larger batches to move right.'
   }
 };
 
@@ -328,6 +342,8 @@ const App = () => {
   const [temperature, setTemperature] = useExperimentState('LLMInference.temperature', 0.7);
   const [topK, setTopK] = useExperimentState('LLMInference.topK', 3);
   const [topP, setTopP] = useExperimentState('LLMInference.topP', 0.9);
+  const [rooflineBatch, setRooflineBatch] = useExperimentState('LLMInference.rooflineBatch', 1);
+  const [schedulerMode, setSchedulerMode] = useExperimentState('LLMInference.schedulerMode', 'continuous');
   const [currentLayer, setCurrentLayer] = useState(1);
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
@@ -450,6 +466,7 @@ const App = () => {
   const draw=samplingDraw(step),sampledChoice=chooseSamplingCandidate(samplingState,draw);
   const generatedTokens=sampledIds.map(id=>({token:promptTokens[id]}));
   const { stageStatus, isLayerStage, layerProgress, positionFormula } = inferenceState;
+  const roofline = useMemo(() => deriveRooflineState({ phase, batchSize: rooflineBatch }), [phase, rooflineBatch]);
 
   const renderTokens = (tokens, isInput) => (
     <div className="flex flex-wrap gap-2 mb-4">
@@ -595,6 +612,55 @@ const App = () => {
                   {modelType === 'moe' ? t('moeArch') : t('denseArch')}
                 </span>
               </h2>
+
+              <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50/90 p-3 space-y-2" data-testid="llm-roofline-strip">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-slate-800">{t('rooflineTitle')}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-[10.5px] font-bold border ${roofline.bound === 'compute' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                      {roofline.phase === 'decode' ? t('decode') : t('prefill')} · {roofline.activeAi} FLOP/B · {roofline.bound === 'compute' ? t('rooflineCompute') : t('rooflineMemory')}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10.5px] font-semibold text-slate-500">{t('rooflineBatch')}</span>
+                    <div className="flex rounded-md border border-slate-200 bg-white p-0.5">
+                      {ROOFLINE_BATCHES.map((b) => (
+                        <button
+                          key={b}
+                          type="button"
+                          data-testid={`roofline-batch-${b}`}
+                          aria-pressed={roofline.batchSize === b}
+                          onClick={() => setRooflineBatch(b)}
+                          className={`rounded px-2 py-0.5 text-[10.5px] font-bold transition ${roofline.batchSize === b ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-800'}`}
+                        >
+                          B={b}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="relative pt-4">
+                  <div className="absolute top-0 -translate-x-1/2 whitespace-nowrap text-[9.5px] font-bold text-slate-600" style={{ left: `${roofline.ridgePct}%` }}>
+                    {t('rooflineRidge')}
+                  </div>
+                  <div className="relative h-6 rounded-lg bg-gradient-to-r from-rose-100 via-amber-50 to-emerald-100 border border-slate-200">
+                    <div className="absolute top-0 bottom-0 border-l-2 border-dashed border-slate-600" style={{ left: `${roofline.ridgePct}%` }} />
+                    <div
+                      className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-4 px-1.5 rounded-full text-[9px] font-bold flex items-center whitespace-nowrap border shadow-sm transition-all ${roofline.phase === 'decode' ? 'bg-rose-600 text-white border-rose-700 z-10 scale-105' : 'bg-white/95 text-rose-700 border-rose-300'}`}
+                      style={{ left: `${roofline.decodePct}%` }}
+                    >
+                      D: {roofline.decodeAi}
+                    </div>
+                    <div
+                      className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-4 px-1.5 rounded-full text-[9px] font-bold flex items-center whitespace-nowrap border shadow-sm transition-all ${roofline.phase === 'prefill' ? 'bg-emerald-600 text-white border-emerald-700 z-10 scale-105' : 'bg-white/95 text-emerald-700 border-emerald-300'}`}
+                      style={{ left: `${roofline.prefillPct}%` }}
+                    >
+                      P: {roofline.prefillAi}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-snug">{t('rooflineNote')}</p>
+              </div>
 
               <TensorWorkbench
                 snapshot={inferenceState}
@@ -751,6 +817,8 @@ const App = () => {
               )}
             </div>
           </div>
+
+          <ServingScheduler lang={lang} mode={schedulerMode} setMode={setSchedulerMode} />
         </div>
       </div>
     </div>

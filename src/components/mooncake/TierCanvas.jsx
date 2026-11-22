@@ -21,11 +21,11 @@ const MOVE_STEP = (MOVE_ROUND - 1) * CLIENTS + MOVE_CLIENT + 1;
 
 const sourceKey = source => (source === 'l2' ? 'sourceL2' : source === 'pool' ? 'sourcePool' : 'sourceMiss');
 
-export default function TierCanvas({t, mode, setMode, poolPages, setPoolPages}) {
+export default function TierCanvas({t, mode, setMode, poolPages, setPoolPages, hotReplicas = 1, setHotReplicas}) {
   const [step, setStep] = useState(0);
   const [isPlaying, setPlaying] = useState(false);
   const [selected, setSelected] = useState('S0');
-  const m = useMemo(() => deriveMooncakeState({mode, poolPages, step}), [mode, poolPages, step]);
+  const m = useMemo(() => deriveMooncakeState({mode, poolPages, step, hotReplicas}), [mode, poolPages, step, hotReplicas]);
   const {snapshot, phase, limit} = m;
   const request = snapshot.request;
   const shown = request || m.nextRequest;
@@ -43,11 +43,17 @@ export default function TierCanvas({t, mode, setMode, poolPages, setPoolPages}) 
 
   const decisionFor = id => snapshot.decisions.find(entry => entry.id === id);
   const localCopies = Array.from({length: INSTANCES}, (_, index) => snapshot.l2[index].includes(selected)).reduce((list, hit, index) => (hit ? [...list, index] : list), []);
-  const segmentIndex = snapshot.segments.findIndex(row => row.includes(selected));
+  const segmentIndices = snapshot.segments.reduce((list, row, index) => (row.includes(selected) ? [...list, index] : list), []);
   const total = snapshot.totals;
   const hitRate = total.reusedTokens + total.computedTokens ? total.reusedTokens / (total.reusedTokens + total.computedTokens) : 0;
   const used = snapshot.segments.reduce((sum, row) => sum + row.filter(Boolean).length, 0);
-  const visiblePages = row => row.filter(Boolean).slice(-4);
+  const visiblePages = row => {
+    const filled = row.filter(Boolean);
+    if (filled.length <= 4) return filled;
+    const tail = filled.slice(-4);
+    if (filled.includes('S0') && !tail.includes('S0')) return ['S0', ...filled.slice(-3)];
+    return tail;
+  };
   const lastPage = shown?.pages.at(-1);
 
   return (
@@ -60,6 +66,12 @@ export default function TierCanvas({t, mode, setMode, poolPages, setPoolPages}) 
           <button type="button" aria-pressed={mode === 'instance'} onClick={() => setMode('instance')}>{t('modeInstance')}</button>
           <button type="button" aria-pressed={mode === 'cluster'} onClick={() => setMode('cluster')}>{t('modeCluster')}</button>
         </div>
+        {setHotReplicas && (
+          <div className="mk-toggle" role="group" aria-label={t('hotReplicas')}>
+            <button type="button" aria-pressed={m.hotReplicas === 1} onClick={() => setHotReplicas(1)}>{t('replica1')}</button>
+            <button type="button" aria-pressed={m.hotReplicas === 2} onClick={() => { if (mode === 'instance') setMode('cluster'); setHotReplicas(2); if (step === 0) setStep(1); setSelected('S0'); }}>{t('replica2')}</button>
+          </div>
+        )}
         <label className="mk-slider" title={t('poolSizeNote')}>
           <span>{t('poolSize')}</span>
           <input type="range" min={POOL_MIN} max={POOL_MAX} step={6} value={poolPages} onChange={event => setPoolPages(Number(event.target.value))} aria-label={t('poolSize')}/>
@@ -161,6 +173,11 @@ export default function TierCanvas({t, mode, setMode, poolPages, setPoolPages}) 
             <header>
               <strong>{t('poolTitle')}</strong>
               <span className="mk-master-pill">{t('master')}</span>
+              {mode === 'cluster' && (
+                <span className={`mk-fanout-pill ${m.hotReplicas === 2 ? 'ok' : 'warn'}`}>
+                  {t('hotFanout')}: {m.peakHotFanout}×
+                </span>
+              )}
               <span>{used}/{m.poolPages} {t('pagesUnit')}</span>
             </header>
             <div className="mk-segments">
@@ -237,7 +254,7 @@ export default function TierCanvas({t, mode, setMode, poolPages, setPoolPages}) 
             <code>qwen70_pp0_{shortHash(selected)}</code>
             <dl>
               <div><dt>{t('pageSource')}</dt><dd>{decisionFor(selected) ? t(sourceKey(decisionFor(selected).source)) : '—'}</dd></div>
-              <div><dt>{t('pageSegment')}</dt><dd>{segmentIndex >= 0 ? `${t('segment')} ${segmentIndex} ${t('segmentUnit')}` : '—'}</dd></div>
+              <div><dt>{t('pageSegment')}</dt><dd>{segmentIndices.length ? segmentIndices.map(index => `${t('segment')} ${index} ${t('segmentUnit')}`).join(' · ') : '—'}</dd></div>
               <div><dt>{t('l2Title')}</dt><dd>{localCopies.length ? localCopies.map(index => `${t('instance')} ${index}`).join(' · ') : '—'}</dd></div>
             </dl>
             <p>{t('selectHint')}</p>

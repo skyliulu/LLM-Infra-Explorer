@@ -77,4 +77,11 @@ for (const mode of ['dp', 'tp']) {
   assert.ok(long.cache.shapeLatex.includes('T_{\\mathrm{KV}}'));
   assert.ok(long.tensors.inputShapeLatex.includes('1,H'));
 }
-console.log('DP Attention model and independent Decode query/history checks passed.');
+const skewed = deriveDpAttentionSnapshot({ mode: 'dp', moeTopology: 'ep', loadProfile: 'skewed_empty', tbo: 'on', step: 2 });
+assert.equal(skewed.workload.hasDummy, true, 'skewed_empty activates Dummy Forward on rank 3');
+assert.equal(skewed.workload.rankTokens[3], 0);
+assert.equal(skewed.tboEnabled, true, 'TBO activates under DP + EP-MoE');
+const pdClash = deriveDpAttentionSnapshot({ mode: 'dp', moeTopology: 'tp', loadProfile: 'pd_collision', step: 2 });
+assert.equal(pdClash.workload.hasBarrierStall, true, 'pd_collision triggers MoE barrier stall');
+assert.equal(pdClash.tboEnabled, false, 'TBO is only active for EP-MoE');
+console.log('DP Attention model, workload skew, TBO and independent Decode query/history checks passed.');

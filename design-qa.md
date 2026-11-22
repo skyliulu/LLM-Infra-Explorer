@@ -1,5 +1,23 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-22 — Wave 2 现代推理覆盖补全（Mooncake / FlashDecode / DpAttention / LLMInference）
+
+- **结构与一致性遵循**：四章均将新能力直接融入原工作台控件、画布与伪代码，不追加文末杂项附录，保持跨模式 `h2` 标题稳定、单句标题与单层精简说明，且无不必要 `<details>` 折叠。
+- **`MooncakeL3`（`#mooncake`）**：
+  - §2 `TierCanvas` 原生接入 `热点副本: 1× 单副本 | 2× 双副本` 切换：开启 `2×` 后共享热页 `S0` 同时落于 `节点 0 segment` 与 `节点 1 segment`，池顶动态显示 `S0 热点 NIC 扇出: 3× → 1.5×`，追踪检查器列出全部副本段。
+  - §4 `Economics` 原生接入 `KV 体积`（`BF16 · 320K | FP8 · 160K | MLA · 70K | CSA2 · 0.9K`）与 `并发路数`（`1× | 4× | 8×`），实时更新公式参数 $b$、有效单流带宽 $B_f$、盈亏平衡点与带宽下限（并修复快速连点下的 `setConfig` 函数式更新）。
+- **`FlashDecode`（`#flashdecode`）**：
+  - 顶栏接入 `MLA`（`FlashMLA` 非对称维度 $d_{qk}=576, d_v=512$，HBM 展示单份共享潜向量 $[c_{KV}, k_{\mathrm{RoPE}}]$ 同时服务 K/V）与 `Batch: B=1 | 16 | 128`。
+  - 数据流画布内联 `H100 SM 占用`（$B \times H_{kv}$ 对照 `132 SMs`）与 `Tensor Core 打包`（$[G, d] \times [d, B_{kv}]$）：当 $B \times H_{kv} \ge 132$ 时标红提示 Split-K 反而增加 Workspace 读写与归约开销、应切回 `Unsplit`。
+- **`DpAttention`（`#dpattention`）**：
+  - DP 顶栏接入 `负载`（`对称均衡 | 倾斜 + 空卡 Dummy | P/D 混布碰撞`）与 EP-MoE 下的 `TBO 掩盖`（`单批串行 | 双微批乒乓`）：在 4-Rank 泳道标题、MLA 盒样式、内联提示条与伪代码中直观呈现 `dp_sizes=[8,4,2,0]` 的 `1-token Dummy Forward` 防死锁机制、`2048 Prefill` 拖慢 `Decode` 屏障空等，以及 `MB0/MB1` 计算与 All-to-All 通信乒乓重叠。
+- **`LLMInference`（`#llm`）**：
+  - 在 `模型内部流水线` 顶部内联 `Roofline 算术强度` 对数刻度条（`H100 拐点 295 FLOP/B` + `B=1/16/128` 切换），随 Prefill/Decode 阶段实时高亮 `Compute-Bound` vs `Memory-Bound`。
+  - 新增正交小节 `在线调度 · Continuous Batching 与 Chunked Prefill`（`ServingScheduler.jsx` + `scheduler-model.js`），以 4 条具名请求对比静态批处理（`PAD 空泡` + `队头阻塞`）与连续分块融合 Ragged Batch（$X_{\mathrm{batch}}\in\mathbb{R}^{T\times d}$，全步严格满足 `<= 512` Token 预算）。
+- **验证与实机截图核验**：
+  - `check:mooncake`、`check:flashdecode`（848 合法状态 / 124 键对齐）、`check:dpa`、`check:llm`（含新增 `check-llm-scheduler.mjs`）、`check:workbench`（14 章分享往返）、`check-theme`、`check-navigation`、`npm run build` 全过。
+  - Headless Chrome 实机渲染覆盖四章 Light/Dark × ZH/EN × 1360/390：0 console error、0 KaTeX error、EN `cjkLeak = 0`、390px `overflowX = 0`；逐张核验 14 张截图并现场修复了 3 处细节（Roofline 拐点标签与 `P: 1024` 重叠、调度步 3 预算 `513/512` 越界与表头硬编码 `Request`、Mooncake `Economics` 连点闭包覆盖）。本地提交，待用户预览确认后推送并推进 Wave 3。
+
 ### 2026-11-22 — Wave 1 v4 跨模式视觉一致性与分块 FP8 可视化补强 + Skill 更新
 
 - **Skill 迭代**（`content-and-math.md`、`visual-grammar.md`、`reader-review.md`、`qa-checklist.md`）：补充跨模式视觉一致性通用规则——同一工作台内切换模式页签时，必须保持 `h2` 标题、概览目录项、控件栏文法、页面骨架与原子单位粒度（如逐词 Token 芯片、槽位格）一致，只突出真实的算法/架构差异，禁止在页签背后挂载另一套截然不同的设计语言。
