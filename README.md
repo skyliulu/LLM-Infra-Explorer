@@ -12,7 +12,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## Choose a question, then explore
 
-13 workbenches, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
+14 workbenches, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
 
 | Area | Workbench | What you can investigate |
 | :--- | :--- | :--- |
@@ -22,7 +22,8 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA, CSA, HCA, local windows, record provenance and query execution. |
 | Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax, kernelization, recurrent state and GLA gates. |
 | Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16, INT4/INT8, FP8/FP4; offline algorithms and engine execution. |
-| Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | One prefix tree across GPU, host and external storage; prefetch, backup, eviction and KV layouts. |
+| Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | One prefix tree across GPU, host and external storage, Hybrid Mamba/Linear state checkpoints, LPM scheduling, and KV layouts. |
+| Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | Control/data-plane split, Conductor prefix index, shared L3 KV pool, zero-copy RDMA fetch and reuse economics. |
 | Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP, tensor shards, GPU ranks and runtime topology. |
 | Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV ownership and the communication paths into FFN/MoE. |
 | Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target verification, rejection correction, EAGLE-2 and DSpark. |

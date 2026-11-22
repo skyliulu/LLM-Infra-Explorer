@@ -39,7 +39,7 @@ export const modernCopy = {
     crossoverNote: '单层反转临界长度 N*',
     shortWarning: '当前 N < N*：固定 FP32 递归状态反而大于短上下文 KV！线性层的显存优势在中长上下文才真正放大。',
     longWin: '当前 N ≥ N*：已跨过反转拐点，混合架构大幅压低总显存，同时保留少量 Full 层承担精确长距检索。',
-    radixBridge: '状态原地覆写如何影响多请求前缀缓存（MambaRadixCache 检查点与 CoW）？查看 Radix HiCache →',
+    radixBridge: '状态原地覆写如何影响多请求前缀缓存（MambaRadixCache 检查点与 CoW）？查看 Radix HiCache',
   },
   en: {
     sectionTitle: 'Modern Production Evolution: Chunkwise Parallelism, Gated DeltaNet & Hybrids',
@@ -81,6 +81,6 @@ export const modernCopy = {
     crossoverNote: 'Per-layer crossover N*',
     shortWarning: 'Current N < N*: fixed FP32 recurrent state is larger than short-context KV! Memory wins materialize past the crossover.',
     longWin: 'Current N ≥ N*: past crossover, hybrid interleaving slashes memory while retaining Full layers for exact long-range recall.',
-    radixBridge: 'How does in-place mutable state change multi-request prefix caching (MambaRadixCache checkpoints & CoW)? Open Radix HiCache →',
+    radixBridge: 'How does in-place mutable state change multi-request prefix caching (MambaRadixCache checkpoints & CoW)? Open Radix HiCache',
   },
 };

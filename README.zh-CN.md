@@ -12,7 +12,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## 带着问题选择章节
 
-13 个工作台按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
+14 个工作台按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
 
 | 方向 | 工作台 | 可以探索什么 |
 | :--- | :--- | :--- |
@@ -22,7 +22,8 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA、CSA、HCA、局部窗口、记录来源和单次 Query 执行。 |
 | Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax、核函数、递归状态与 GLA 门控。 |
 | Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16、INT4/INT8、FP8/FP4、离线算法与引擎执行。 |
-| Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | 同一棵前缀树上的 GPU／主机／外部存储，预取、备份、驱逐与 KV layout。 |
+| Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | 同一棵前缀树上的 GPU／主机／外部存储、混合 Mamba/线性状态检查点与 CoW、LPM 调度与 KV layout。 |
+| Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | 控制/数据面解耦、Conductor 前缀索引、L3 共享 KV 池、零拷贝 RDMA 取数与搬运经济边界。 |
 | Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank 与运行时拓扑。 |
 | Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权，以及连接 FFN/MoE 的通信路径。 |
 | Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、拒绝修正、EAGLE-2 与 DSpark。 |
