@@ -513,7 +513,7 @@ const App = () => {
               <label className="flex items-center gap-1.5" title={t('adjustRandomness')}>
                 <SlidersHorizontal size={13} className="shrink-0 text-purple-600" />
                 <span className="w-10 text-[10px] font-semibold text-purple-800">{t('tempLabel')}</span>
-                <input aria-label={t('adjustRandomness')} type="range" min="0.1" max="0.9" step="0.1" value={temperature} onInput={handleTemperatureChange} onChange={handleTemperatureChange} className="w-16 accent-purple-500" />
+                <input aria-label={t('adjustRandomness')} type="range" min="0.1" max="1.5" step="0.1" value={temperature} onInput={handleTemperatureChange} onChange={handleTemperatureChange} className="w-16 accent-purple-500" />
                 <span className="w-5 text-right text-[10px] font-bold text-purple-700">{temperature.toFixed(1)}</span>
               </label>
               <label className="flex items-center gap-1.5" title={t('adjustTopK')}>
@@ -651,7 +651,7 @@ const App = () => {
                       <div>      <span className="text-slate-500">{t('c_ffn1')}</span></div>
                       <div>      ffn_in = norm(x)</div>
                       <div>      hidden = gelu(ffn_in @ W_up[layer_id])</div>
-                      <div>      x = x + (hidden @ W_down) <span className="text-slate-500">{t('c_ffn2')}</span></div>
+                      <div>      x = x + (hidden @ W_down[layer_id]) <span className="text-slate-500">{t('c_ffn2')}</span></div>
                     </div>
                   ) : (
                     <div className={activeModule === MODULE.ffn ? "bg-teal-900/50 text-teal-200 px-1 -mx-1 rounded" : "text-slate-400"}>
@@ -661,10 +661,11 @@ const App = () => {
                       <div className={activeModule === MODULE.ffn ? "text-amber-200" : ""}>      weights, experts = topk(r_scores, k=2)</div>
                       <div className={activeModule === MODULE.ffn ? "text-amber-200" : ""}>      weights = weights / weights.sum(-1, keepdim=True)</div>
                       <div>      moe_out = zeros_like(moe_in)</div>
-                      <div>      <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(2):</div>
-                      <div>          e_idx = experts[i]; w = weights[i]</div>
-                      <div>          e_out = expert_mlp(layer_id, e_idx, moe_in)</div>
-                      <div className={activeModule === MODULE.ffn ? "text-amber-200" : ""}>          moe_out += w * e_out</div>
+                      <div>      <span className="text-emerald-400">for</span> tok <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(moe_in.shape[0]):</div>
+                      <div>          <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(2):</div>
+                      <div>              e_idx = experts[tok, i]; w = weights[tok, i]</div>
+                      <div>              e_out = expert_mlp(layer_id, e_idx, moe_in[tok])</div>
+                      <div className={activeModule === MODULE.ffn ? "text-amber-200" : ""}>              moe_out[tok] += w * e_out</div>
                       <div>      x = x + moe_out <span className="text-slate-500">{t('c_moe2')}</span></div>
                     </div>
                   )}

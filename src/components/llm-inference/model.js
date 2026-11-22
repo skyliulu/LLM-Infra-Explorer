@@ -33,7 +33,7 @@ const normalizeWeights = (values) => {
 export const deriveSamplingDistribution = ({ candidates, temperature, topK, topP }) => {
   if (!candidates?.length) return null;
 
-  const normalizedTemperature = Math.min(0.9, Math.max(0.1, Number(temperature) || 0.7));
+  const normalizedTemperature = Math.min(1.5, Math.max(0.1, Number(temperature) || 0.7));
   const normalizedTopK = Math.min(candidates.length, Math.max(1, Math.round(Number(topK) || 1)));
   const normalizedTopP = Math.min(1, Math.max(0.1, Number(topP) || 0.9));
   const temperatureProbabilities = normalizeWeights(

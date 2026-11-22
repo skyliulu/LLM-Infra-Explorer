@@ -131,11 +131,14 @@ const samplingCandidates = [
 ];
 const restrictiveSampling = deriveSamplingDistribution({
   candidates: samplingCandidates,
-  temperature: 1.4,
+  temperature: 2.0,
   topK: 2,
   topP: 0.7,
 });
-assert.equal(restrictiveSampling.temperature, 0.9, 'temperature is constrained below one');
+assert.equal(restrictiveSampling.temperature, 1.5, 'temperature is clamped to upper bound 1.5');
+const neutralSampling = deriveSamplingDistribution({ candidates: samplingCandidates, temperature: 1.0, topK: 4, topP: 1.0 });
+const flatSampling = deriveSamplingDistribution({ candidates: samplingCandidates, temperature: 1.4, topK: 4, topP: 1.0 });
+assert.ok(flatSampling.candidates[0].temperatureProbability < neutralSampling.candidates[0].temperatureProbability, 'T > 1 flattens the top candidate relative to T = 1');
 assert.ok(restrictiveSampling.keptCount <= restrictiveSampling.topK, 'Top-P never restores a Top-K filtered candidate');
 assert.ok(restrictiveSampling.candidates.slice(restrictiveSampling.topK).every((candidate) => !candidate.accepted));
 assert.ok(restrictiveSampling.candidates.filter((candidate) => !candidate.accepted).every((candidate) => candidate.finalProbability === 0));

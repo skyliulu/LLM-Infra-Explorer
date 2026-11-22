@@ -34,7 +34,7 @@ export function deriveKvRepresentationModel(input = {}) {
     writeFormula: mode === 'mla' ? 'c_t^{KV}=W^{DKV}h_t,\\quad k_t^R=\\operatorname{RoPE}(W^{KR}h_t)' : 'k_{t,g}=\\operatorname{RoPE}(W_g^Kh_t),\\quad v_{t,g}=W_g^Vh_t',
     readFormula: mode === 'mla' ? '(q_i^C)^T W_i^{UK}c_t^{KV}+(q_i^R)^Tk_t^R' : `q_{${head + 1}}^T k_{t,${selectedGroup + 1}}`,
     code: mode === 'mla'
-      ? 'c = down_project(hidden)\nk_rope = rope(key_rope_project(hidden), position)\nslot = layer_cache.reserve(position)\nlayer_cache.write(slot, c, k_rope)\nq_content, q_rope = query_project(current_hidden)\nq_absorbed = absorb_key_projection(q_content)\nout = mla_decode(q_absorbed, q_rope, layer_cache)'
+      ? 'c = down_project(hidden)\nk_rope = rope(key_rope_project(hidden), position)\nslot = layer_cache.reserve(position)\nlayer_cache.write(slot, c, k_rope)\nq_content, q_rope = query_project(current_hidden)\nq_rope = rope(q_rope, position)\nq_absorbed = absorb_key_projection(q_content)\nout = mla_decode(q_absorbed, q_rope, layer_cache)'
       : `q, k, v = project(current_hidden, kv_heads=${groupCount})\nq, k = rope(q, k, position)\nslot = layer_cache.reserve(position)\nlayer_cache.write(slot, k, v)\nhead_to_kv = query_head // ${heads / groupCount}\nout = attention(q, layer_cache, head_to_kv)`,
   };
 }
