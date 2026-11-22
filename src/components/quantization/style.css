@@ -168,15 +168,22 @@
 @media(max-width:1000px) { .qe-workbench { grid-template-columns:minmax(0,1fr); } .qe-controls .q-field { min-width:190px; flex:1; } }
 @media(max-width:500px) { .qe-controls .q-field { min-width:0; flex-basis:100%; } .qe-phases button { flex:1 1 42%; font-size:11px; padding:6px; } }
 
-.q-roofline-inline { border-top:1px solid #e2e8f0; padding-top:8px; display:grid; gap:5px; }
-.q-roofline-head { display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#334155; }
-.q-roofline-mini { display:grid; grid-template-columns:108px minmax(0,1fr) 44px; gap:8px; align-items:center; font-size:11px; padding:2px 4px; border-radius:4px; }
+.q-roofline-inline { margin-top:12px; padding:10px 12px; border:1px solid #e2e8f0; border-radius:9px; background:#f8fafc; display:grid; gap:8px; }
+.q-roofline-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-size:12px; color:#334155; }
+.q-rf-toggle { display:inline-flex; gap:4px; background:#e2e8f0; padding:2px; border-radius:7px; }
+.q-rf-toggle button { border:none; background:transparent; color:#475569; font-size:11px; font-weight:650; padding:4px 9px; border-radius:5px; cursor:pointer; }
+.q-rf-toggle button[aria-pressed="true"] { background:#fff; color:#1d4ed8; box-shadow:0 1px 2px #0f172a14; }
+.q-rf-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 14px; }
+@media(max-width:720px) { .q-rf-grid { grid-template-columns:minmax(0,1fr); } }
+.q-roofline-mini { display:grid; grid-template-columns:108px minmax(0,1fr) 44px; gap:8px; align-items:center; font-size:11px; padding:3px 6px; border-radius:5px; }
 .q-roofline-mini.best { background:#eff6ff; }
 .q-roofline-mini b { text-align:right; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:#0f172a; }
 .q-roofline-mini b.slow { color:#be123c; }
-.q-rf-track { position:relative; height:12px; background:#f1f5f9; border-radius:3px; overflow:hidden; }
+.q-rf-track { position:relative; height:12px; background:#e2e8f0; border-radius:3px; overflow:hidden; }
 .q-rf-fill { height:100%; border-radius:3px; transition:width .25s; }
 .q-rf-fill.ok { background:#3b82f6; }
 .q-rf-fill.best { background:#059669; }
 .q-rf-fill.slow { background:#e11d48; }
 .q-rf-baseline { position:absolute; top:0; bottom:0; border-left:2px dashed #475569; }
+.q-algo-formula { margin-top:10px; padding:8px 12px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.q-algo-formula .katex-display { margin:0; }

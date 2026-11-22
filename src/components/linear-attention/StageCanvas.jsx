@@ -23,6 +23,12 @@ const modeTone = {
     bar: 'bg-cyan-700',
     text: 'text-cyan-800',
   },
+  deltanet: {
+    active: 'border-emerald-400 bg-emerald-50 shadow-[0_0_22px_rgba(5,150,105,.16)]',
+    badge: 'bg-emerald-700 text-white',
+    bar: 'bg-emerald-700',
+    text: 'text-emerald-800',
+  },
 };
 
 const canvasFormulas = {
@@ -42,6 +48,12 @@ const canvasFormulas = {
     String.raw`G_t=\alpha_t^\top\beta_t`,
     String.raw`\widetilde S_{t-1}=G_t\odot S_{t-1}`,
     String.raw`S_t=\widetilde S_{t-1}+k_t^\top v_t`,
+    String.raw`o_t=q_tS_t`,
+  ],
+  deltanet: [
+    String.raw`\hat v_t=\alpha_t k_t S_{t-1}`,
+    String.raw`\delta_t=v_t-\hat v_t`,
+    String.raw`S_t=\alpha_t S_{t-1}+\beta_t k_t^\top\delta_t`,
     String.raw`o_t=q_tS_t`,
   ],
 };
@@ -146,7 +158,7 @@ function StageNode({ mode, index, step, phase, state, label, formula, onSelect, 
 }
 
 function StageConnector({ reached, mode }) {
-  const color = reached ? mode === 'gla' ? 'text-cyan-700' : mode === 'exact' ? 'text-rose-500' : 'text-indigo-500' : 'text-slate-300';
+  const color = reached ? mode === 'deltanet' ? 'text-emerald-700' : mode === 'gla' ? 'text-cyan-700' : mode === 'exact' ? 'text-rose-500' : 'text-indigo-500' : 'text-slate-300';
   return (
     <div className={`flex items-center justify-center ${color}`} aria-hidden="true">
       <motion.div animate={reached ? { x: [0, 3, 0] } : { x: 0 }} transition={reached ? { duration: 0.45 } : { duration: 0 }}>
@@ -214,6 +226,15 @@ function GlaStages({ state, activeIndex, t }) {
   ][activeIndex];
 }
 
+function DeltaStages({ state, activeIndex, t }) {
+  return [
+    (active) => <div className="space-y-3"><SmallVector values={state.key} label={<MathFormula>{String.raw`k_t`}</MathFormula>} tone="indigo" active={active} /><SmallVector values={state.predictedValue || [0,0,0,0]} label={<MathFormula>{String.raw`\hat v_t=\alpha_t k_t S_{t-1}`}</MathFormula>} tone="amber" active={active} /></div>,
+    (active) => <div className="space-y-3"><SmallVector values={state.value} label={<MathFormula>{String.raw`v_t`}</MathFormula>} tone="emerald" active={active} /><SmallVector values={state.deltaError || [0,0,0,0]} label={<MathFormula>{String.raw`\delta_t=v_t-\hat v_t`}</MathFormula>} tone="rose" active={active} /></div>,
+    (active) => <div className="space-y-3"><SmallMatrix matrix={state.update} label={<MathFormula>{String.raw`\beta_t k_t^\top\delta_t`}</MathFormula>} tone="amber" active={active} /><SmallMatrix matrix={state.state} label={<MathFormula>{String.raw`S_t`}</MathFormula>} tone="emerald" active={active} /></div>,
+    (active) => <div className="space-y-3"><SmallVector values={state.query} label={<MathFormula>{String.raw`q_t`}</MathFormula>} tone="cyan" active={active} /><SmallVector values={state.plainOutput} label={t('plainOutput')} tone="rose" active={active} /><SmallVector values={state.linearOutput} label={t('deltaOutputLabel')} tone="emerald" active={active} /></div>,
+  ][activeIndex];
+}
+
 function GlaRelation({ gateStrength, setGateStrength, t }) {
   return (
     <div className="grid gap-3 rounded-xl border border-cyan-300 bg-cyan-50/70 p-3 lg:grid-cols-[1fr_230px] lg:items-center">
@@ -237,7 +258,7 @@ function GlaRelation({ gateStrength, setGateStrength, t }) {
 export function StageCanvas({ mode, step, state, t, gateStrength, setGateStrength, onSelectStep, isPlaying, phase, compact = false }) {
   const track = TRACKS[mode];
   const formulas = canvasFormulas[mode];
-  const renderStage = mode === 'exact' ? ExactStages : mode === 'linear' ? LinearStages : GlaStages;
+  const renderStage = mode === 'exact' ? ExactStages : mode === 'linear' ? LinearStages : mode === 'deltanet' ? DeltaStages : GlaStages;
 
   return (
     <div className={compact ? "decode-compact" : "space-y-4"} role="group" aria-label={t('pipelineTitle')}>

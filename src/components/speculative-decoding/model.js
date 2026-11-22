@@ -1,7 +1,7 @@
 // Deterministic teaching trace, not a checkpoint or hardware benchmark.
 // Main trace uses greedy verification. The separate distribution lab demonstrates
 // exact rejection sampling without conflating draft confidence and acceptance.
-export const SPECULATIVE_ALGORITHMS = ['eagle2', 'dspark'];
+export const SPECULATIVE_ALGORITHMS = ['eagle2', 'dspark', 'mtp'];
 export const SPECULATIVE_RACE_MAX_STEP = 80;
 export const TIME_BUDGET = 8;
 export const PREFIX = ['Large', 'models', 'can'];
@@ -130,8 +130,39 @@ function makeBlock(n, cursor, roundIndex) {
   }
   return {nodes:[root,...nodes],selected,accepted,checks,scheduler};
 }
+function makeMtp(n, cursor) {
+  const root = { id: 'root', token: STREAM[cursor], level: 0, parent: null, value: 1 };
+  const nodes = [];
+  for (let i = 0; i < n.depth; i += 1) {
+    const pos = cursor + i + 1;
+    const fixture = getTeachingPosition(pos);
+    const parentCorrect = i === 0 ? true : nodes[i - 1].correctPath;
+    const correct = parentCorrect && fixture.correctRank === 0;
+    const token = correct ? STREAM[pos] : alternatives[pos % alternatives.length];
+    nodes.push({
+      id: 'm' + i,
+      token,
+      level: i + 1,
+      parent: i ? 'm' + (i - 1) : 'root',
+      probability: fixture.confidence,
+      value: (i ? nodes[i - 1].value : 1) * fixture.confidence,
+      correctPath: correct,
+    });
+  }
+  const selected = [root, ...nodes];
+  const accepted = [];
+  const checks = [];
+  for (const node of nodes) {
+    const expected = STREAM[cursor + node.level];
+    const match = node.token === expected && node.correctPath;
+    checks.push({ position: node.level, expected, proposals: [node.token], acceptedId: match ? node.id : null, accepted: match });
+    if (!match) break;
+    accepted.push(node);
+  }
+  return { nodes: selected, selected, accepted, checks };
+}
 function makeRound(n, cursor, index, start) {
-  const data = n.algorithm === 'eagle2' ? makeTree(n,cursor,index) : makeBlock(n,cursor,index);
+  const data = n.algorithm === 'eagle2' ? makeTree(n,cursor,index) : n.algorithm === 'mtp' ? makeMtp(n,cursor) : makeBlock(n,cursor,index);
   const acceptedCount = data.accepted.length;
   const bonus = STREAM[cursor+acceptedCount+1];
   const output = [...data.accepted.map(x=>x.token), bonus];
@@ -140,16 +171,19 @@ function makeRound(n, cursor, index, start) {
   if (n.algorithm === 'eagle2') {
     for(let level=1;level<=n.depth;level+=1) push('expand','stageExpand',0.09+0.025*n.width,{level,codeIndex:0});
     push('select','stageSelect',0.025,{codeIndex:1});
+  } else if (n.algorithm === 'mtp') {
+    for(let level=1;level<=n.depth;level+=1) push('mtpHead','stageMtpHead',0.045,{level,codeIndex:0});
   } else {
     push('backbone','stageBackbone',0.15+0.012*n.blockSize,{codeIndex:0});
     for(let position=1;position<=n.blockSize;position+=1) push('markov','stageMarkov',0.018,{position,codeIndex:1});
     push('confidence','stageConfidence',0.025,{codeIndex:2});
     push('schedule','stageSchedule',0.035,{codeIndex:3});
   }
-  push('reserve','stageReserve',0.025,{codeIndex:n.algorithm==='eagle2'?2:4});
-  push('verify','stageVerify',targetCost(data.selected.length, n.load),{codeIndex:n.algorithm==='eagle2'?3:5});
-  push('accept','stageAccept',0.035,{codeIndex:n.algorithm==='eagle2'?4:6});
-  push('commit','stageCommit',0.055,{codeIndex:n.algorithm==='eagle2'?5:7});
+  const reserveIdx = n.algorithm==='eagle2' ? 2 : n.algorithm==='mtp' ? 1 : 4;
+  push('reserve','stageReserve',0.025,{codeIndex:reserveIdx});
+  push('verify','stageVerify',targetCost(data.selected.length, n.load),{codeIndex:reserveIdx+1});
+  push('accept','stageAccept',0.035,{codeIndex:reserveIdx+2});
+  push('commit','stageCommit',0.055,{codeIndex:reserveIdx+3});
   let time=start;
   const events=ops.map((op,operationIndex)=>{const event={...op,operationIndex,start:time,end:time+op.duration};time=event.end;return event;});
   const draftEnd=events.find(x=>x.type==='reserve').start;
@@ -176,6 +210,17 @@ export function buildRun(input = {}) {
 }
 function architectureFor(n,event) {
   const type=event?.type;
+  if(n.algorithm==='mtp') {
+    const active=type==='mtpHead';
+    const groups=[
+      {id:'features',labelKey:'featureMtp',kind:'activation',formula:"h_t^T",active},
+      {id:'embedding',labelKey:'embedding',kind:'shared',formula:"E_T",active},
+      {id:'mtpProj',labelKey:'mtpProj',kind:'draft',formula:"M_k\\in\\mathbb{R}^{2d\\times d}",active},
+      {id:'mtpBlock',labelKey:'mtpBlock',kind:'draft',formula:"\\mathrm{MTP}_{1..K}\\ (1\\text{ layer})",active},
+      {id:'lm',labelKey:'lmHead',kind:'shared',formula:"W_{\\mathrm{vocab}}",active},
+    ];
+    return {groups,embedded:true,activeOwner:active?'draft':type==='verify'?'target':['accept','commit','reserve'].includes(type)?'runtime':null};
+  }
   const backbone=n.algorithm==='eagle2' ? type==='expand' : type==='backbone';
   const groups=[
     {id:'features',labelKey:n.algorithm==='eagle2'?'featureEagle':'featureDspark',kind:'activation',formula:n.algorithm==='eagle2'?"h_t^T":"[h_t^{(\\ell_1)};\\ldots;h_t^{(\\ell_m)}]",active:backbone},
@@ -188,7 +233,7 @@ function architectureFor(n,event) {
     {id:'markov',labelKey:'markov',kind:'draft',formula:"W_1[V,r]\\,W_2[r,V]",active:type==='markov'},
     {id:'confidence',labelKey:'confidenceHead',kind:'draft',formula:"w_c\\in\\mathbb{R}^{d+r}",active:type==='confidence'});
   groups.push({id:'controller',labelKey:'controller',kind:'runtime',active:['select','reserve','schedule'].includes(type)});
-  return {groups,activeOwner:backbone||['markov','confidence'].includes(type)?'draft':type==='verify'?'target':['accept','commit','select','reserve','schedule'].includes(type)?'runtime':null};
+  return {groups,embedded:false,activeOwner:backbone||['markov','confidence'].includes(type)?'draft':type==='verify'?'target':['accept','commit','select','reserve','schedule'].includes(type)?'runtime':null};
 }
 export function deriveSpeculativeSnapshot(input={}) {
   const run=buildRun(input), n=run.input;
@@ -201,13 +246,13 @@ export function deriveSpeculativeSnapshot(input={}) {
   const reached=type=>progress>=round.events.findIndex(x=>x.type===type);
   const hasVerdict=reached('accept');
   const committed=phase==='done';
-  const generatedLevel=phase==='done'?n.depth:phase==='idle'?0:event?.type==='expand'?event.level:n.depth;
+  const generatedLevel=phase==='done'?n.depth:phase==='idle'?0:(event?.type==='expand'||event?.type==='mtpHead')?event.level:n.depth;
   const markovPosition=phase==='idle'?0:phase==='done'||!['backbone','markov'].includes(event?.type)?n.blockSize:event?.position||0;
-  const selectedVisible=reached(n.algorithm==='eagle2'?'select':'schedule');
+  const selectedVisible=reached(n.algorithm==='eagle2'?'select':n.algorithm==='mtp'?'reserve':'schedule');
   const acceptedIds=new Set(round.accepted.map(x=>x.id));
   const selectedIds=new Set(round.selected.map(x=>x.id));
   const candidates=round.nodes.map(node=>{
-    const generated=node.id==='root'||(n.algorithm==='eagle2'?node.level<=generatedLevel:node.level<=markovPosition);
+    const generated=node.id==='root'||(n.algorithm==='dspark'?node.level<=markovPosition:node.level<=generatedLevel);
     let status=generated?'proposed':'pending';
     if(selectedVisible&&node.id!=='root')status=selectedIds.has(node.id)?'selected':'skipped';
     if(reached('verify')&&selectedIds.has(node.id))status='verifying';
@@ -234,7 +279,7 @@ export function deriveSpeculativeSnapshot(input={}) {
   const observedVerified=reached('verify')?round.verifiedDraftCount:0;
   const guide = { codeIndex:event?.codeIndex ?? (committed?round.events.at(-1).codeIndex:0), dataKey:'guideAnchor', data:[round.nodes[0].token] };
   if (committed || event?.type==='commit') { guide.dataKey='actualOutput'; guide.data=committed?round.output:[]; }
-  else if (event?.type==='expand') { guide.dataKey='guideCandidates'; guide.data=candidates.filter(x=>x.level===event.level).map(x=>x.token); }
+  else if (event?.type==='expand' || event?.type==='mtpHead') { guide.dataKey='guideCandidates'; guide.data=candidates.filter(x=>x.level===event.level).map(x=>x.token); }
   else if (event?.type==='backbone') { guide.dataKey='baseGuess'; guide.data=round.nodes.slice(1).map(x=>x.baseToken); }
   else if (event?.type==='markov') { guide.dataKey='guideCandidates'; guide.data=candidates.filter(x=>x.id!=='root'&&x.generated).map(x=>x.token); }
   else if (event?.type==='confidence') { guide.dataKey='confidence'; guide.data=round.nodes.slice(1).map(x=>x.confidence.toFixed(2)); }

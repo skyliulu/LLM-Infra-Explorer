@@ -6,30 +6,30 @@ import { motion } from 'framer-motion';
 import { ArrowDown, ArrowRight, BrainCircuit, Cpu, Database, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveSpeculativeSnapshot, deriveCorrectnessExample, getNextLifecycle, PREFIX, STREAM } from './speculative-decoding/model';
-import { DRAFTER_FAMILIES, WORKLOAD_TYPES, deriveDrafterFamilyModel } from './speculative-decoding/serving-model';
 import './speculative-decoding/style.css';
 import './module-header.css';
 
 const i18n = {
   zh: {
     title:'推测解码原理可视化', subtitle:'调整候选配置，观察验证后实际接受的 Token、KV 和输出速度',
-    eagle2:'EAGLE-2', dspark:'DSpark', language:'Switch to English', langToggle:'EN',
+    eagle2:'EAGLE-2', dspark:'DSpark', mtp:'原生 MTP', language:'Switch to English', langToggle:'EN',
     play:'播放', pause:'暂停', replay:'重播', reset:'重置', next:'下一步', nextRound:'进入下一轮',
     raceControls:'竞速控制', traceControls:'算法轨迹控制', raceTitle:'解码效率对比',
     raceHint:'两条路径都从 Target 已生成的 predict 开始。每个周期按实际接受结果推进；点选周期可查看同一轮的内部过程。',
     settings:'实验参数', details:'参数说明',
     depthShort:'每轮向前推测多少步', widthShort:'每步展开多少个候选分支', budgetShort:'一次最多送入 Target 的节点数（含锚点）', blockShort:'一次生成的候选数量',
-    parameterSourceEagle:'SGLang · 运行时配置', parameterSourceDspark:'DeepSpec · 模型配置',
+    parameterSourceEagle:'SGLang · 运行时配置', parameterSourceDspark:'DeepSpec · 模型配置', parameterSourceMtp:'DeepSeek-V3 / Qwen3 · 原生预测头',
     experimentNote:'固定教学样例与计时条件；接受率由验证结果统计。',
     depth:'Draft 展开步数', depthHint:'每轮自回归展开深度；不是下方教学阶段数。',
+    mtpDepth:'MTP 预测头数', mtpDepthShort:'内置链式 MTP 头每轮顺序预测的步数（无需外部 Draft）',
     width:'Top-k 展开宽度', widthHint:'每层选 Top-k 父节点继续，每个父节点保留 Top-k 子候选。',
     budget:'Target 验证容量', budgetHint:'包括 1 个已知锚点。Top-k=1 时按 SGLang 口径设为 steps+1；实际节点不足时不补虚假候选。',
     block:'Draft 候选块长度', blockHint:'对应 DeepSpec 模型配置 block_size。输入为 1 个锚点及其余 Mask；实际送验长度由调度选择。这里比较不同块长的教学配置，不表示任意 checkpoint 可直接修改块长。',
     loadLabel:'并发负载', loadLow:'低 1×', loadMid:'中 4×', loadHigh:'高 10×', loadRegimeLow:'显存受限', loadRegimeMid:'Roofline 拐点', loadRegimeHigh:'算力受限', loadHint:'增大并发后验证步跨过 Roofline 拐点，被拒草稿消耗真实算力，DSpark 也会自动收缩送验前缀。',
-    drafterTitle:'主流 Drafter 路线', workloadChat:'对话', workloadCode:'代码 / Agent', workloadLoad:'高并发',
-    mtpName:'原生 MTP (nextn)', mtpNote:'内置链式预测头（DeepSeek-V3 / Qwen3），零外部模型编排。',
-    eagle3Name:'EAGLE-3 (d2t)', eagle3Note:'多层特征融合 + 152K→32K 词表裁剪，砍低 Draft LM Head 延迟。',
-    ngramName:'免训练 N-gram', ngramNote:'零权重 CPU 后缀查表，代码/工具复用极快，开放对话易失效。',
+    mtpEmbeddedBadge:'内置于 Target · 无外部 Draft 模型',
+    featureMtp:'Target 顶层隐藏态', mtpProj:'隐藏态拼接投影', mtpBlock:'单层 MTP 链式头',
+    stageMtpHead:'内置 MTP 头前向', explainMtpHead:'直接使用 Target 顶层隐藏态与共享词嵌入，逐级通过轻量内置 MTP 头顺序生成候选链，无需单独维护外部 Draft 模型。',
+    mtpChainTitle:'原生 MTP 顺序链', mtpChainHint:'每个内置 MTP 头将上一级隐藏态与预测 Token 拼接，串行产出下一候选，全部送入一次因果 Target 前向验证（无树剪枝开销）。',
     baseline:'标准自回归', speculative:'当前推测方案', baselineHint:'每单位时间完成一次 Target 单 Token 前向',
     drafting:'Draft', verifying:'Target 验证', committing:'接受 / 提交', seconds:'Target 单 Token 时间单位',
     current:'当前', round:'轮', inspect:'查看此轮', seed:'共同起点 · 已有 Target 锚点', output:'已提交输出', noOutput:'尚未提交新 Token',
@@ -105,23 +105,24 @@ const i18n = {
   },
   en: {
     title:'Speculative Decoding Visualization', subtitle:'Adjust proposal settings; observe accepted tokens, KV, and output speed after verification',
-    eagle2:'EAGLE-2', dspark:'DSpark', language:'切换到中文', langToggle:'中文',
+    eagle2:'EAGLE-2', dspark:'DSpark', mtp:'Native MTP', language:'切换到中文', langToggle:'中文',
     play:'Play',pause:'Pause',replay:'Replay',reset:'Reset',next:'Next step',nextRound:'Next round',
     raceControls:'Race controls',traceControls:'Trace controls',raceTitle:'Decoding Efficiency Comparison',
     raceHint:'Both paths start with the Target-produced anchor predict. Each cycle advances by its verified output. Select a cycle to inspect that same round.',
     settings:'Experiment settings',details:'Parameter details',
     depthShort:'How far to draft per round',widthShort:'Candidate branches expanded per step',budgetShort:'Maximum Target input nodes, including the anchor',blockShort:'Candidates produced in one block',
-    parameterSourceEagle:'SGLang · runtime configuration',parameterSourceDspark:'DeepSpec · model configuration',
+    parameterSourceEagle:'SGLang · runtime configuration',parameterSourceDspark:'DeepSpec · model configuration',parameterSourceMtp:'DeepSeek-V3 / Qwen3 · native MTP heads',
     experimentNote:'Fixed teaching data and timing; acceptance is measured after verification.',
     depth:'Draft expansion steps',depthHint:'Autoregressive expansion depth per round, not the number of teaching stages.',
+    mtpDepth:'Native MTP heads',mtpDepthShort:'Built-in chained heads predicting a linear sequence per round (no external draft model)',
     width:'Top-k expansion width',widthHint:'Expand the top-k parents in each layer, retaining top-k children per parent.',
     budget:'Target verification capacity',budgetHint:'Includes one known anchor. With top-k=1, use steps+1 as in SGLang. Do not pad a small tree with fictitious candidates.',
     block:'Draft proposal block length',blockHint:'DeepSpec model field: block_size. Input is one anchor plus masks; the scheduler chooses the verified prefix. This compares teaching configurations, not arbitrary block-size changes to an existing checkpoint.',
     loadLabel:'Concurrency load', loadLow:'Low 1×', loadMid:'Mid 4×', loadHigh:'High 10×', loadRegimeLow:'Memory-bound', loadRegimeMid:'Ridge point', loadRegimeHigh:'Compute-bound', loadHint:'Higher concurrency pushes verification past the roofline ridge so rejected drafts burn compute, and DSpark shrinks its admitted prefix.',
-    drafterTitle:'Production Drafters', workloadChat:'Chat', workloadCode:'Code / Agent', workloadLoad:'High load',
-    mtpName:'Native MTP (nextn)', mtpNote:'In-checkpoint chained heads (DeepSeek-V3 / Qwen3); zero external draft orchestration.',
-    eagle3Name:'EAGLE-3 (d2t)', eagle3Note:'Multi-layer fusion + 152K→32K vocab trim cutting draft LM-head latency.',
-    ngramName:'Training-Free N-gram', ngramNote:'Zero-weight CPU suffix lookup; excels on code/tools, drops on open chat.',
+    mtpEmbeddedBadge:'Embedded inside Target · zero external draft model',
+    featureMtp:'Target top hidden state', mtpProj:'Hidden + embed fusion', mtpBlock:'1-layer MTP chain head',
+    stageMtpHead:'Native MTP head step', explainMtpHead:'Fuses Target top-layer hidden states with shared token embeddings inside built-in 1-layer MTP heads to emit a linear draft chain with zero separate draft orchestration.',
+    mtpChainTitle:'Native MTP sequential chain', mtpChainHint:'Each built-in MTP head chains the prior hidden state with the newly proposed token and feeds the compact K+1 chain into one causal Target verification pass.',
     baseline:'Autoregressive baseline',speculative:'Current speculative path',baselineHint:'One Target single-token forward per time unit',
     drafting:'Draft',verifying:'Target verify',committing:'Accept / commit',seconds:'Target single-token time units',
     current:'Current',round:'Round',inspect:'Inspect round',seed:'Shared start · existing Target anchor',output:'Committed output',noOutput:'No new tokens committed',
@@ -225,10 +226,18 @@ const CODES = {
     'path = target_argmax_prefix(logits, selected)\naccepted = path[1:]\nbonus = argmax(logits[path[-1]])',
     'keep = slots[path]\nkv.gather_prefix(keep)\nkv.release(slots - keep)\nemit(selected[accepted] + [bonus])\ndraft.sync(features[path])\nanchor = bonus',
   ],
+  mtp:[
+    'h = target_hidden\nfor k in range(num_steps):\n    h = mtp_head[k](concat(h, embed(prev)))\n    draft[k] = argmax(lm_head(h)); prev = draft[k]',
+    'selected = [anchor] + draft\nslots = kv.reserve(len(selected))\npositions, mask = causal_metadata(selected)',
+    'logits, target_hidden = target.forward(\n    selected, prefix_kv, slots, positions, mask\n)',
+    'path = target_argmax_prefix(logits, selected)\naccepted = path[1:]\nbonus = argmax(logits[path[-1]])',
+    'keep = slots[path]\nkv.gather_prefix(keep)\nkv.release(slots - keep)\nemit(selected[accepted] + [bonus])\nanchor = bonus  # zero external draft sync',
+  ],
 };
 const CODE_EXPLANATIONS = {
   eagle2:['explainExpand','explainSelect','explainReserve','explainVerify','explainAccept','explainCommit'],
   dspark:['explainBackbone','explainMarkov','explainConfidence','explainSchedule','explainReserve','explainVerify','explainAccept','explainCommit'],
+  mtp:['explainMtpHead','explainReserve','explainVerify','explainAccept','explainCommit'],
 };
 const tones = {
   pending:'border-slate-200 bg-slate-50 text-slate-500',proposed:'border-violet-300 bg-violet-50 text-violet-900',
@@ -244,25 +253,27 @@ function Controls({playing,done,onPlay,onNext,onReset,t,label}) {
     <button className="spec-icon" onClick={onNext} aria-label={t('next')} title={t('next')} disabled={done}><SkipForward size={16}/></button>
   </div>;
 }
-function Parameter({name,hint,short,value,min,max,onChange,disabled=false,flag,t}) {
+function Parameter({name,short,value,min,max,onChange,disabled=false,flag,t}) {
   return <div className="min-w-0 space-y-1">
     <label htmlFor={'spec-param-'+name} className="flex items-start justify-between gap-2 text-xs font-semibold"><span>{t(name)}</span><strong className="text-blue-700">{value}</strong></label>
     {flag&&<code className="block break-all text-[10px] text-slate-500">{flag}</code>}
     <input id={'spec-param-'+name} aria-label={t(name)} type="range" min={min} max={max} step="1" value={value} disabled={disabled} onChange={e=>onChange(Number(e.target.value))} className="w-full accent-blue-600 disabled:opacity-40"/>
-    <details className="text-[11px] leading-relaxed text-slate-500"><summary aria-label={t(name)+' · '+t('details')} className="cursor-pointer rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">{t(short)}</summary><p className="mt-1 rounded border border-slate-200 bg-white p-2">{t(hint)}</p></details>
+    <p className="text-[11px] leading-snug text-slate-500">{t(short)}</p>
   </div>;
 }
 function Settings({s,config,setConfig,load,setLoad,t}) {
   const update=(key,value)=>setConfig({...config,[key]:value});
   const loadLevels=[[1,'loadLow'],[4,'loadMid'],[10,'loadHigh']];
+  const sourceKey=s.algorithm==='eagle2'?'parameterSourceEagle':s.algorithm==='mtp'?'parameterSourceMtp':'parameterSourceDspark';
   return <div className="rounded-lg border border-slate-200 bg-slate-50 p-3" data-testid="speculative-settings">
-    <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-bold">{t('settings')} · {t(s.algorithm)}</h3><span className="text-[11px] text-slate-500">{t(s.algorithm==='eagle2'?'parameterSourceEagle':'parameterSourceDspark')}</span></div>
+    <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-bold">{t('settings')} · {t(s.algorithm)}</h3><span className="text-[11px] text-slate-500">{t(sourceKey)}</span></div>
     <div className={'grid gap-4 '+(s.algorithm==='eagle2'?'sm:grid-cols-4':'sm:grid-cols-2')}>
       {s.algorithm==='eagle2'?<>
-        <Parameter name="depth" hint="depthHint" short="depthShort" value={s.depth} min={1} max={5} onChange={v=>update('depth',v)} flag="--speculative-num-steps" t={t}/>
-        <Parameter name="width" hint="widthHint" short="widthShort" value={s.width} min={1} max={3} onChange={v=>update('width',v)} flag="--speculative-eagle-topk" t={t}/>
-        <Parameter name="budget" hint="budgetHint" short="budgetShort" value={s.budget} min={2} max={16} onChange={v=>update('budget',v)} disabled={s.width===1} flag="--speculative-num-draft-tokens" t={t}/>
-      </>:<Parameter key="block" name="block" hint="blockHint" short="blockShort" value={s.blockSize} min={1} max={8} onChange={v=>update('blockSize',v)} flag="block_size" t={t}/>}
+        <Parameter name="depth" short="depthShort" value={s.depth} min={1} max={5} onChange={v=>update('depth',v)} flag="--speculative-num-steps" t={t}/>
+        <Parameter name="width" short="widthShort" value={s.width} min={1} max={3} onChange={v=>update('width',v)} flag="--speculative-eagle-topk" t={t}/>
+        <Parameter name="budget" short="budgetShort" value={s.budget} min={2} max={16} onChange={v=>update('budget',v)} disabled={s.width===1} flag="--speculative-num-draft-tokens" t={t}/>
+      </>:s.algorithm==='mtp'?<Parameter key="mtp" name="mtpDepth" short="mtpDepthShort" value={s.depth} min={1} max={4} onChange={v=>update('depth',v)} flag="--speculative-num-steps" t={t}/>
+      :<Parameter key="block" name="block" short="blockShort" value={s.blockSize} min={1} max={8} onChange={v=>update('blockSize',v)} flag="block_size" t={t}/>}
       <div className="min-w-0 space-y-1.5" data-testid="spec-load-control">
         <div className="flex items-center justify-between gap-2 text-xs font-semibold"><span>{t('loadLabel')}</span><strong className="text-blue-700">{t(load===1?'loadRegimeLow':load===4?'loadRegimeMid':'loadRegimeHigh')}</strong></div>
         <div className="flex gap-1 rounded-md border border-slate-200 bg-white p-0.5" role="group" aria-label={t('loadLabel')}>
@@ -289,7 +300,7 @@ function AcceptanceSummary({s,t,cumulative=false}) {
       <div className="text-xs text-slate-600">{t('acceptedOfVerified')}<div className="mt-1 text-lg font-bold tabular-nums text-slate-800">{ready?accepted:'—'} / {ready?verified:'—'}</div></div>
       <div className="col-span-2 text-xs text-slate-600 sm:col-span-1">{t(cumulative?'meanLength':'newPerRound')}<strong className="ml-2 text-lg tabular-nums text-slate-800 sm:ml-0 sm:block">{cumulative?(ready?a.meanLength.toFixed(2):'—'):(s.committed?s.committedTokens.length:'—')}</strong></div>
     </div>
-    <div className="mt-1 flex flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] text-slate-600"><span>{ready?(rate===null?t('noDraft'):t(cumulative?'raceRateScope':'roundRateScope')):t('ratePending')}</span><details><summary className="cursor-pointer">{t('rateDefinition')}</summary><p className="mt-1 max-w-lg">{t('rateHint')}</p></details></div>
+    <div className="mt-1 text-[11px] text-slate-600">{ready?(rate===null?t('noDraft'):t(cumulative?'raceRateScope':'roundRateScope')):t('ratePending')}</div>
   </div>;
 }
 function Race({s,t,playing,onPlay,onNext,onReset,onInspect,config,setConfig,load,setLoad}) {
@@ -334,8 +345,9 @@ function Relation({s,t}) {
         <p className="text-[11px] leading-relaxed text-slate-500">{t('targetHint')}</p>
       </div>
       <div className="my-2 flex flex-wrap justify-between gap-1 text-[10px] font-semibold"><span className={owner==='draft'?'text-violet-700':'text-slate-500'}>{t('featurePort')}</span><span className={owner==='target'?'text-blue-700':'text-slate-500'}>{t('returnPort')}</span></div>
-      <div data-testid="draft-model-tower" className={'rounded-lg border-2 bg-white p-2.5 '+(owner==='draft'?'border-rose-400':'border-violet-200')}>
-        <div className="mb-2 flex items-center gap-2 text-sm font-bold"><BrainCircuit size={15}/>{t(s.algorithm)} <MathFormula>{'\\theta_D'}</MathFormula></div>
+      <div data-testid="draft-model-tower" className={'rounded-lg border-2 bg-white p-2.5 '+(owner==='draft'?'border-rose-400':s.architecture.embedded?'border-emerald-300 bg-emerald-50/40':'border-violet-200')}>
+        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1 text-sm font-bold"><span className="flex items-center gap-1.5"><BrainCircuit size={15}/>{t(s.algorithm)} <MathFormula>{s.architecture.embedded?'\\subset \\theta_T':'\\theta_D'}</MathFormula></span></div>
+        {s.architecture.embedded&&<div className="mb-2 rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-900">{t('mtpEmbeddedBadge')}</div>}
         <div className="grid grid-cols-2 gap-1.5" data-testid="draft-internal-flow">{s.architecture.groups.map((g,i)=><div key={g.id} title={t(g.kind==='draft'?'learned':g.kind)} className={'min-w-0 rounded border p-1.5 '+(g.active?'border-rose-400 ring-1 ring-rose-300 ':'')+({shared:'bg-amber-50 text-amber-950',draft:'bg-violet-50 text-violet-950',activation:'bg-cyan-50 text-cyan-950',runtime:'bg-slate-100 text-slate-700'}[g.kind])}>
           <div className="text-[10px] font-semibold leading-snug">{i+1}. {t(g.labelKey)}{g.active&&<span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-rose-500"/>}</div>{g.formula&&<div className="mt-1 overflow-x-auto text-[10px]"><MathFormula>{g.formula}</MathFormula></div>}
         </div>)}</div>
@@ -427,6 +439,25 @@ function Dspark({s,t}) {
     </div>
   </div>;
 }
+function MtpChain({s,t}) {
+  return <div className="rounded-lg border border-emerald-200 bg-emerald-50/30 p-3 space-y-3" data-testid="mtp-chain">
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <h4 className="text-sm font-bold">{t('mtpChainTitle')}</h4>
+      <div className="text-xs"><MathFormula>{String.raw`h_{t+k} = \mathrm{MTP}_k\!\bigl(h_{t+k-1},\, E_T(x_{t+k-1})\bigr)`}</MathFormula></div>
+    </div>
+    <p className="text-xs leading-relaxed text-slate-600">{t('mtpChainHint')}</p>
+    <div className="flex flex-wrap items-center gap-2">
+      {s.candidates.map((n,i)=><React.Fragment key={n.id}>
+        {i>0&&<ArrowRight size={14} className="text-slate-400"/>}
+        <div className={'min-w-[104px] rounded-lg border px-2.5 py-2 text-center '+(s.event?.type==='mtpHead'&&s.event.level===n.level?'border-rose-400 ring-1 ring-rose-200 ':'')+tones[n.status]}>
+          <div className="text-[10px] font-semibold opacity-75">{i===0?t('root'):`MTP ${i}`}</div>
+          <div className="mt-0.5 text-sm font-bold">{n.generated?n.token:'···'}</div>
+          <div className="mt-0.5 text-[10px]">{i===0?t('current'):t(n.status)}</div>
+        </div>
+      </React.Fragment>)}
+    </div>
+  </div>;
+}
 function Verification({s,t}) {
   return <div className="space-y-2 rounded-lg border border-emerald-200 bg-emerald-50/20 p-3" data-testid="verification-result">
     <h4 className="text-sm font-bold">{t('checks')}</h4>
@@ -435,7 +466,7 @@ function Verification({s,t}) {
     <div className="border-t border-emerald-100 pt-2"><div className="mb-1 text-xs font-semibold">{t('actualOutput')}</div><TokenStream tokens={s.committedTokens} t={t}/></div>
   </div>;
 }
-function Workbench({s,t,playing,onPlay,onNext,onReset,onRound,onSeek,selectedNode,setSelectedNode,workload,setWorkload}) {
+function Workbench({s,t,playing,onPlay,onNext,onReset,onRound,onSeek,selectedNode,setSelectedNode}) {
   return <section className="spec-card" data-testid="speculative-architecture">
     <h2 data-section-anchor="speculativedecoding-2" data-section-label={t('architectureNav')} className="text-lg font-bold">{t('architecture')}</h2><p className="mb-4 mt-1 text-xs leading-relaxed text-slate-500">{t('architectureHint')}</p>
     <div className="grid min-w-0 items-start gap-3 xl:grid-cols-[310px_minmax(0,1fr)]">
@@ -449,29 +480,12 @@ function Workbench({s,t,playing,onPlay,onNext,onReset,onRound,onSeek,selectedNod
         <div className="text-xs font-semibold" data-testid="trace-stage">{t('eventStep')} {s.phase==='idle'?0:s.phase==='done'?s.maxStep:s.step+1}/{s.maxStep} · {s.event?t(s.event.labelKey):t(s.phase==='done'?'done':'ready')}{s.event?.level?' · '+t('depthNow')+' '+s.event.level:''}{s.event?.position?' · '+t('position')+' '+s.event.position:''}</div>
         <div className="flex h-1.5 gap-1" aria-hidden="true">{s.stages.map((stage,i)=><div key={i} className={'flex-1 rounded '+(stage.status==='active'?'bg-rose-500':stage.status==='passed'?'bg-emerald-400':'bg-slate-200')}/>)}</div>
         <p className="text-[11px] text-slate-500">{t('eventHint')}</p>
-        {s.algorithm==='eagle2'?<Eagle s={s} t={t} selectedNode={selectedNode} setSelectedNode={setSelectedNode}/>:<Dspark s={s} t={t}/>}
+        {s.algorithm==='eagle2'?<Eagle s={s} t={t} selectedNode={selectedNode} setSelectedNode={setSelectedNode}/>:s.algorithm==='mtp'?<MtpChain s={s} t={t}/>:<Dspark s={s} t={t}/>}
         <Verification s={s} t={t}/>
         {s.phase==='done'&&<button className="spec-small-button" onClick={()=>onRound((s.roundIndex+1)%s.rounds.length)}>{t('nextRound')} →</button>}
       </div>
     </div>
     <div className="mt-4 border-t border-slate-200 pt-4"><ExecutionGuide s={s} t={t} playing={playing} onPlay={onPlay} onNext={onNext} onReset={onReset} onSeek={onSeek}/></div>
-    <div className="mt-4 border-t border-slate-200 pt-4 space-y-2" data-testid="spec-drafter-strip">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-bold text-slate-800">{t('drafterTitle')}</h3>
-        <div className="flex gap-1 rounded-md border border-slate-200 bg-slate-50 p-0.5">
-          {[['chat','workloadChat'],['agent_code','workloadCode'],['high_load','workloadLoad']].map(([w,k])=><button key={w} type="button" aria-pressed={workload===w} onClick={()=>setWorkload(w)} className={'rounded px-2 py-0.5 text-[11px] font-semibold '+(workload===w?'bg-blue-600 text-white':'text-slate-600 hover:bg-white')}>{t(k)}</button>)}
-        </div>
-      </div>
-      <div className="grid gap-2 md:grid-cols-3">
-        {DRAFTER_FAMILIES.map(fam=>{
-          const fm=deriveDrafterFamilyModel({family:fam,workload});
-          return <div key={fam} className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-xs space-y-1">
-            <div className="flex items-center justify-between gap-2"><strong>{t(`${fam}Name`)}</strong><span className={'rounded px-1.5 py-0.5 font-mono text-[10px] font-bold '+(fm.speedup<1?'bg-rose-100 text-rose-800':'bg-emerald-100 text-emerald-800')}>{fm.speedup.toFixed(2)}×</span></div>
-            <p className="text-[11px] leading-snug text-slate-500">{t(`${fam}Note`)}</p>
-          </div>;
-        })}
-      </div>
-    </div>
   </section>;
 }
 function ExecutionGuide({s,t,playing,onPlay,onNext,onReset,onSeek}) {
@@ -559,7 +573,6 @@ function Principles({t}) {
 export default function SpeculativeDecoding() {
   const [config,setConfigState]=useExperimentState('SpeculativeDecoding.config', {algorithm:'eagle2',depth:3,width:2,budget:8,blockSize:4});
   const [load,setLoadState]=useExperimentState('SpeculativeDecoding.load', 1);
-  const [workload,setWorkload]=useState('agent_code');
   const [phase,setPhase]=useState('idle');
   const [step,setStep]=useState(0);
   const [roundIndex,setRoundIndex]=useState(0);
@@ -599,11 +612,11 @@ export default function SpeculativeDecoding() {
     return ()=>clearTimeout(timer);
   },[racePlaying,raceStep,s.race.isDone]);
   return <div className="chapter-page spec-page min-h-full bg-slate-50 text-slate-800">
-    <header className="module-header-card chapter-header"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold"><ChapterIcon chapter="speculative"/>{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div></div></div></header>
+    <header className="module-header-card chapter-header"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold"><ChapterIcon chapter="speculative"/>{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark','mtp'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div></div></div></header>
     <div className="chapter-body mx-auto max-w-[1600px] space-y-3 p-3 lg:p-4">
       <Race s={s} t={t} config={config} setConfig={setConfig} load={load} setLoad={setLoad} playing={racePlaying} onPlay={racePlay} onNext={raceNext} onReset={resetRace} onInspect={inspect}/>
       <Principles t={t}/>
-      <Workbench s={s} t={t} playing={isPlaying} onPlay={togglePlay} onNext={()=>{setIsPlaying(false);handleNextStep();}} onReset={resetTrace} onRound={inspect} onSeek={seek} selectedNode={selectedNode} setSelectedNode={setSelectedNode} workload={workload} setWorkload={setWorkload}/>
+      <Workbench s={s} t={t} playing={isPlaying} onPlay={togglePlay} onNext={()=>{setIsPlaying(false);handleNextStep();}} onReset={resetTrace} onRound={inspect} onSeek={seek} selectedNode={selectedNode} setSelectedNode={setSelectedNode}/>
       <References s={s} t={t}/>
     </div>
   </div>;

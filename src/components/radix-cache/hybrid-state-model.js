@@ -12,9 +12,9 @@ export const HYBRID_CONFIG = {
 };
 
 export const HYBRID_REQUESTS = [
-  { id: 'R1', key: 'req1', tokens: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8'], pages: ['K0', 'K1', 'K2', 'K3'], branchAt: 0 },
-  { id: 'R2', key: 'req2', tokens: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'B7', 'B8'], pages: ['K0', 'K1', 'K2', 'K4'], branchAt: 6 },
-  { id: 'R3', key: 'req3', tokens: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'C7', 'C8'], pages: ['K0', 'K1', 'K2', 'K5'], branchAt: 6 },
+  { id: 'R1', key: 'req1', tokens: ['You', 'are', 'a', 'helpful', 'coding', 'assistant', 'Explain', 'caching'], pages: ['K0', 'K1', 'K2', 'K3'], branchAt: 0 },
+  { id: 'R2', key: 'req2', tokens: ['You', 'are', 'a', 'helpful', 'coding', 'assistant', 'Write', 'tests'], pages: ['K0', 'K1', 'K2', 'K4'], branchAt: 6 },
+  { id: 'R3', key: 'req3', tokens: ['You', 'are', 'a', 'helpful', 'coding', 'assistant', 'Fix', 'bugs'], pages: ['K0', 'K1', 'K2', 'K5'], branchAt: 6 },
 ];
 
 const cloneState = (s) => ({
@@ -65,13 +65,13 @@ export function buildHybridHistory(mode = 'align') {
     mutabilityPos: 0,
   });
 
-  // Step 1: R1 computes T1..T4 -> K0, K1 + checkpoint M0 at t=4
-  kvPool[0] = { id: 'K0', tokens: 'T1–T2', nodeId: 'n4', locked: true };
-  kvPool[1] = { id: 'K1', tokens: 'T3–T4', nodeId: 'n4', locked: true };
+  // Step 1: R1 computes "You are a helpful" -> K0, K1 + checkpoint M0 at t=4
+  kvPool[0] = { id: 'K0', tokens: 'You are', nodeId: 'n4', locked: true };
+  kvPool[1] = { id: 'K1', tokens: 'a helpful', nodeId: 'n4', locked: true };
   mambaPool[0] = { id: 'M0', label: 'S@4', nodeId: 'n4', locked: true, role: 'checkpoint' };
   nodes = [
     nodes[0],
-    { id: 'n4', parent: 'root', label: 'T1–T4', tokenRange: [1, 4], pages: ['K0', 'K1'], mambaSlot: 0, stateStatus: 'checkpoint', kvRef: 1, mambaRef: 1 },
+    { id: 'n4', parent: 'root', label: 'You are a helpful', tokenRange: [1, 4], pages: ['K0', 'K1'], mambaSlot: 0, stateStatus: 'checkpoint', kvRef: 1, mambaRef: 1 },
   ];
   push({
     requestIndex: 0,
@@ -82,16 +82,16 @@ export function buildHybridHistory(mode = 'align') {
     mutabilityPos: 4,
   });
 
-  // Step 2: R1 advances T5..T8 -> K2, K3 + checkpoint M1 at t=8, releases locks
+  // Step 2: R1 advances "coding assistant Explain caching" -> K2, K3 + checkpoint M1 at t=8, releases locks
   kvPool[0].locked = false;
   kvPool[1].locked = false;
-  kvPool[2] = { id: 'K2', tokens: 'T5–T6', nodeId: 'n8a', locked: false };
-  kvPool[3] = { id: 'K3', tokens: 'T7–T8', nodeId: 'n8a', locked: false };
+  kvPool[2] = { id: 'K2', tokens: 'coding assistant', nodeId: 'n8a', locked: false };
+  kvPool[3] = { id: 'K3', tokens: 'Explain caching', nodeId: 'n8a', locked: false };
   mambaPool[0].locked = false;
-  mambaPool[1] = { id: 'M1', label: 'S@8(A)', nodeId: 'n8a', locked: false, role: 'checkpoint' };
+  mambaPool[1] = { id: 'M1', label: 'S@8(R1)', nodeId: 'n8a', locked: false, role: 'checkpoint' };
   nodes[1].kvRef = 0;
   nodes[1].mambaRef = 0;
-  nodes.push({ id: 'n8a', parent: 'n4', label: 'T5–T8', tokenRange: [5, 8], pages: ['K2', 'K3'], mambaSlot: 1, stateStatus: 'checkpoint', kvRef: 0, mambaRef: 0 });
+  nodes.push({ id: 'n8a', parent: 'n4', label: 'coding assistant · Explain caching', tokenRange: [5, 8], pages: ['K2', 'K3'], mambaSlot: 1, stateStatus: 'checkpoint', kvRef: 0, mambaRef: 0 });
   push({
     requestIndex: 0,
     kind: 'r1_done',
@@ -101,15 +101,15 @@ export function buildHybridHistory(mode = 'align') {
     mutabilityPos: 8,
   });
 
-  // Step 3: R2 arrives, matches 6 KV tokens -> splits edge T5..T8 into KV-only T5..T6 + T7..T8
+  // Step 3: R2 arrives, matches 6 KV tokens -> splits edge into KV-only "coding assistant" + "Explain caching"
   const n8a = nodes.find((n) => n.id === 'n8a');
   n8a.parent = 'n6';
-  n8a.label = 'T7–T8';
+  n8a.label = 'Explain caching';
   n8a.tokenRange = [7, 8];
   n8a.pages = ['K3'];
   kvPool[2].nodeId = 'n6';
   nodes.splice(2, 0, {
-    id: 'n6', parent: 'n4', label: 'T5–T6', tokenRange: [5, 6], pages: ['K2'],
+    id: 'n6', parent: 'n4', label: 'coding assistant', tokenRange: [5, 6], pages: ['K2'],
     mambaSlot: null, stateStatus: 'kv_only', kvRef: 0, mambaRef: 0,
   });
   metrics.kvMatched = 6;
@@ -151,10 +151,10 @@ export function buildHybridHistory(mode = 'align') {
     kvPool[0].locked = false;
     kvPool[1].locked = false;
     mambaPool[0].locked = false;
-    kvPool[4] = { id: 'K4', tokens: 'B7–B8', nodeId: 'n8b', locked: false };
-    mambaPool[2] = { id: 'M2', label: 'S@8(B)', nodeId: 'n8b', locked: false, role: 'checkpoint' };
+    kvPool[4] = { id: 'K4', tokens: 'Write tests', nodeId: 'n8b', locked: false };
+    mambaPool[2] = { id: 'M2', label: 'S@8(R2)', nodeId: 'n8b', locked: false, role: 'checkpoint' };
     nodes.push({
-      id: 'n8b', parent: 'n6', label: 'B7–B8', tokenRange: [7, 8], pages: ['K4'],
+      id: 'n8b', parent: 'n6', label: 'Write tests', tokenRange: [7, 8], pages: ['K4'],
       mambaSlot: 2, stateStatus: 'checkpoint', kvRef: 0, mambaRef: 0,
     });
     push({
@@ -188,10 +188,10 @@ export function buildHybridHistory(mode = 'align') {
     n8aNode.stateStatus = 'evicted';
     metrics.stateEvictions += 1;
     metrics.cowClones += 1;
-    kvPool[5] = { id: 'K5', tokens: 'C7–C8', nodeId: 'n8c', locked: false };
-    mambaPool[1] = { id: 'M1', label: 'S@8(C)', nodeId: 'n8c', locked: false, role: 'checkpoint', clonedFrom: 0 };
+    kvPool[5] = { id: 'K5', tokens: 'Fix bugs', nodeId: 'n8c', locked: false };
+    mambaPool[1] = { id: 'M1', label: 'S@8(R3)', nodeId: 'n8c', locked: false, role: 'checkpoint', clonedFrom: 0 };
     nodes.push({
-      id: 'n8c', parent: 'n6', label: 'C7–C8', tokenRange: [7, 8], pages: ['K5'],
+      id: 'n8c', parent: 'n6', label: 'Fix bugs', tokenRange: [7, 8], pages: ['K5'],
       mambaSlot: 1, stateStatus: 'checkpoint', kvRef: 0, mambaRef: 0,
     });
     push({
@@ -220,10 +220,10 @@ export function buildHybridHistory(mode = 'align') {
     n8aNode.stateStatus = 'evicted';
     metrics.stateEvictions += 1;
 
-    kvPool[4] = { id: 'K4', tokens: 'B7–B8', nodeId: 'n8b', locked: false };
-    mambaPool[1] = { id: 'M1', label: 'S@8(B)', nodeId: 'n8b', locked: false, role: 'checkpoint' };
+    kvPool[4] = { id: 'K4', tokens: 'Write tests', nodeId: 'n8b', locked: false };
+    mambaPool[1] = { id: 'M1', label: 'S@8(R2)', nodeId: 'n8b', locked: false, role: 'checkpoint' };
     nodes.push({
-      id: 'n8b', parent: 'n6', label: 'B7–B8', tokenRange: [7, 8], pages: ['K4'],
+      id: 'n8b', parent: 'n6', label: 'Write tests', tokenRange: [7, 8], pages: ['K4'],
       mambaSlot: 1, stateStatus: 'checkpoint', kvRef: 0, mambaRef: 0,
     });
     push({
@@ -257,10 +257,10 @@ export function buildHybridHistory(mode = 'align') {
       n8bNode.stateStatus = 'evicted';
       metrics.stateEvictions += 1;
       metrics.cowClones += 1;
-      kvPool[5] = { id: 'K5', tokens: 'C7–C8', nodeId: 'n8c', locked: false };
-      mambaPool[1] = { id: 'M1', label: 'S@8(C)', nodeId: 'n8c', locked: false, role: 'checkpoint', clonedFrom: 2 };
+      kvPool[5] = { id: 'K5', tokens: 'Fix bugs', nodeId: 'n8c', locked: false };
+      mambaPool[1] = { id: 'M1', label: 'S@8(R3)', nodeId: 'n8c', locked: false, role: 'checkpoint', clonedFrom: 2 };
       nodes.push({
-        id: 'n8c', parent: 'n6', label: 'C7–C8', tokenRange: [7, 8], pages: ['K5'],
+        id: 'n8c', parent: 'n6', label: 'Fix bugs', tokenRange: [7, 8], pages: ['K5'],
         mambaSlot: 1, stateStatus: 'checkpoint', kvRef: 0, mambaRef: 0,
       });
       push({
@@ -296,10 +296,10 @@ export function buildHybridHistory(mode = 'align') {
       metrics.totalHybridHit += 4;
       metrics.totalRollback += 2;
       metrics.cowClones += 1;
-      kvPool[5] = { id: 'K5', tokens: 'C7–C8', nodeId: 'n8c', locked: false };
-      mambaPool[2] = { id: 'M2', label: 'S@8(C)', nodeId: 'n8c', locked: false, role: 'checkpoint', clonedFrom: 0 };
+      kvPool[5] = { id: 'K5', tokens: 'Fix bugs', nodeId: 'n8c', locked: false };
+      mambaPool[2] = { id: 'M2', label: 'S@8(R3)', nodeId: 'n8c', locked: false, role: 'checkpoint', clonedFrom: 0 };
       nodes.push({
-        id: 'n8c', parent: 'n6', label: 'C7–C8', tokenRange: [7, 8], pages: ['K5'],
+        id: 'n8c', parent: 'n6', label: 'Fix bugs', tokenRange: [7, 8], pages: ['K5'],
         mambaSlot: 2, stateStatus: 'checkpoint', kvRef: 0, mambaRef: 0,
       });
       push({

@@ -15,6 +15,8 @@ Look for these demonstrated failure modes:
 - **Results without mechanisms:** a slider changes a percentage, a preset swaps resource counts, or boxes rearrange, while the claimed computation, reuse, movement, waiting or tradeoff remains visible only in prose. Decide what the reader can infer from the objects and interaction, not whether a callback fires.
 - **Broken argument across chapters:** details are either dumped into this chapter or linked away before this chapter establishes their necessary role. Preserve the smallest mechanism that explains the local claim.
 - **Reading friction:** awkward Chinese, repeated headings, dense caveats, unexplained symbols, weak visual hierarchy and sources/process language interrupting the main explanation. Necessary assumptions stay readable and subordinate; do not remove limitations to make the story smoother.
+- **Brochure/name-drop cards & unmotivated add-ons:** static cards that merely list algorithm or architecture names without showing their mechanism in the canvas, or lower panels dropped onto the page without an observable causal bridge from the preceding mode—especially when they switch from concrete readable examples to opaque placeholder IDs or bare coordinate lists.
+- **Unnecessary disclosure click-tax & buried additions:** collapsed `<details>` toggles that expand to only 1–2 short lines or a single formula, or newly added first-class formats/features hidden inside non-default sub-states where a scanning reader cannot discover them.
 
 Judge these against the chapter's actual teaching claim. A structural selector or count-only experiment can be sufficient when that relationship is the learning object; this pass does not require animation, a simulation or more controls in every section.
 

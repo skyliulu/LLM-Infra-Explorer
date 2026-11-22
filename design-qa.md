@@ -1,5 +1,15 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-22 — Wave 1 v3 深度融合重构（顶层模式化 + 零名词卡片 + 折叠清理）与 Skill 提炼
+
+- **Skill 规则沉淀**（`.agents/skills/develop-interactive-module/references/content-and-math.md`、`reader-review.md`、`qa-checklist.md`）：提炼 5 条可迁移通用准则——① 禁止只列名称与静态数字的“宣传卡片条”，所有引入的算法/架构变体必须进入画布展示真实机制；② 同一核心机制下的架构/状态变体优先升格为顶层/主工作台切换，独立正交机制（如调度、布局）单开小节；③ 保持跨模式可读领域实例一致，拒绝抽象占位符（`T1..T8`）或裸坐标；④ 新增能力在同级入口可见，不藏于非默认脚注；⑤ 清理短内容无意义 `<details>` 折叠，1–2 行解释或单行公式直接展示。
+- **四章重构**：
+  - `RadixCache`：将混合 Mamba/Linear 状态缓存并入 §1 顶层架构切换（`纯 Transformer KV · 三层存储` vs `混合 Mamba / Linear 状态 · 双物理池`），统一采用与 §1 一致的可读英文词序列（`You are a helpful / coding assistant / Explain caching / Write tests / Fix bugs`）替换 `T1..T8`；将 `缓存感知调度 · LPM vs FCFS` 独立展开为 §2，含可点击 4 步队列卡片与实时 4 槽 GPU KV 池驻留/挤出视图；展开 §1 单行操作说明 `<details>`。
+  - `LinearAttention`：将 `Gated DeltaNet` 直接升格为顶层第 3 模式（`Softmax 对照 朴素 Linear | GLA | Gated DeltaNet`），在统一 4 阶段 Decode 画布与 `Inspector` 中可视化 `先读出旧值 → 计算覆写残差 → 按残差定向覆写 → 直接读取 qS`；删除底部晦涩的裸坐标 DeltaNet 卡片，代之以带因果衔接的 8 层可视 `混合层架构 · Linear 与 Full Attention 混排` 栈图（`[Linear][Linear][Linear][Full KV]`）与实时显存条。
+  - `SpeculativeDecoding`：删除 §3 底部 3 张静态 `主流 Drafter 路线` 名词卡片及未使用 `serving-model.js`；将 `原生 MTP` 升格为顶层第 3 算法（`EAGLE-2 | DSpark | 原生 MTP`），在 `Relation`、`MtpChain`、`Race` 与伪代码中完整展示“内置于 Target 权重、零外部 Draft 模型、顺序链送验”；展开 `Parameter` 与 `AcceptanceSummary` 中的单行 `<details>` 折叠。
+  - `Quantization`：将 Card 01 的 4 方案 Roofline 速度条提升为全宽显眼条并自带 `Decode (B=1) | Prefill` 一键切换（点击 Prefill 直观看到 `W4A16` 跌破 `1.00×` 至 `0.87×` 变红，而分块 FP8 / NVFP4 占优）；Card 02 的 FP8 分块说明并入分组尺度控件区；展开 Card 03 单行等价公式与 FP4 通道 18 离群值滑块的不必要 `<details>` 折叠。
+- **验证与缺陷拦截**：Chrome 真实渲染 QA 首次运行拦截了 `ChunkDeltaWorkbench.jsx` 引用旧属性名导致的运行时异常，修复后重跑全套 `check:quantization`、`check:speculative`、`check:linear`、`check:radix`、`check:workbench`、`check-theme`、`check-navigation`、`npm run build` 及 Headless Chrome Light/Dark × ZH/EN × 1360/390 全过：0 console error、0 KaTeX error、EN `cjkLeak = 0`、无横向溢出，8 张实机截图逐张核验通过。本地提交，待用户确认后推送。
+
 ### 2026-11-22 — Wave 1 现代推理能力覆盖与结构融合重构 + Skill 扩展规范更新
 
 - **触发反馈**：Wave 1 初稿（`RadixCache` / `LinearAttention` / `SpeculativeDecoding` / `Quantization`）普遍采用“文末追加独立大章节”的方式，导致结构生硬、标题过长且正文说明层叠偏多。本轮先补齐 `.agents/skills/develop-interactive-module/` 的通用扩展约束，再重构四章内容实现原生融入与文案精简。

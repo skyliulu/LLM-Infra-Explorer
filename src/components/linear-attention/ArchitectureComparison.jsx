@@ -55,6 +55,14 @@ const toneClasses = {
     fill: 'bg-cyan-700',
     ring: 'ring-cyan-200',
   },
+  emerald: {
+    text: 'text-emerald-800',
+    border: 'border-emerald-400',
+    soft: 'bg-emerald-50',
+    cell: 'border-emerald-400 bg-emerald-200 text-emerald-950',
+    fill: 'bg-emerald-700',
+    ring: 'ring-emerald-200',
+  },
 };
 
 function MatrixGlyph({ matrix, dk, dv, tone = 'indigo', active = false, dimensions = false, label, compact = false, layoutId, placeholder = false }) {
@@ -284,7 +292,7 @@ function MemoryScale({ contextMode, targetMode, contextLength, dk, dv, state, t 
 }
 
 function AddressabilityStrip({ targetMode, gateStrength, t }) {
-  const tone = targetMode === 'gla' ? 'cyan' : 'indigo';
+  const tone = targetMode === 'deltanet' ? 'emerald' : targetMode === 'gla' ? 'cyan' : 'indigo';
   const colors = toneClasses[tone];
   return (
     <div className="grid items-center gap-3 border-t border-slate-200 px-3 py-3 xl:grid-cols-[1fr_32px_1fr]" role="img" aria-label={t('compressionCostLead')}>
@@ -297,7 +305,7 @@ function AddressabilityStrip({ targetMode, gateStrength, t }) {
       <div className="flex items-center justify-center gap-2">
         <div className="relative h-12 w-40">
           {['A', 'B', 'C'].map((label, index) => (
-            <motion.div key={label} animate={{ left: `${18 + index * 22}%`, opacity: targetMode === 'gla' && index === 0 ? Math.max(0.2, 1 - gateStrength) : 1 }} className={`absolute top-1 flex h-10 w-16 items-center justify-center rounded-lg border text-[10px] font-bold ${colors.border} ${colors.soft} ${colors.text}`}><MathFormula>{String.raw`${label}\rightarrow S`}</MathFormula></motion.div>
+            <motion.div key={label} animate={{ left: `${18 + index * 22}%`, opacity: (targetMode === 'gla' || targetMode === 'deltanet') && index === 0 ? Math.max(0.2, 1 - gateStrength) : 1 }} className={`absolute top-1 flex h-10 w-16 items-center justify-center rounded-lg border text-[10px] font-bold ${colors.border} ${colors.soft} ${colors.text}`}><MathFormula>{String.raw`${label}\rightarrow S`}</MathFormula></motion.div>
           ))}
         </div>
         <Merge size={16} className={colors.text} />
@@ -405,11 +413,15 @@ export function ArchitectureComparison({ contextMode, onSelectContext, targetMod
           {['decode', 'prefill'].map((value) => <button key={value} type="button" onClick={() => onSelectContext(value)} aria-pressed={contextMode === value} className={`linear-focus rounded-lg px-4 py-2 text-[11px] font-bold transition ${contextMode === value ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}>{t(value)}</button>)}
         </div>
       </div>
-      <ComputeComparison key={`${targetMode}-${contextMode}-${contextLength}-${dk}-${dv}-${gateStrength}`} {...sharedProps}/><AddressabilityStrip {...sharedProps}/>{targetMode==='gla'&&<label className="mt-3 flex items-center gap-3 text-xs">{t('gateStrength')}<input aria-label={t('gateStrength')} type="range" min="0" max="0.9" step="0.05" value={gateStrength} onChange={event=>setGateStrength(Number(event.target.value))} className="w-40 accent-cyan-700"/>{Math.round(gateStrength*100)}%</label>}
+      <ComputeComparison key={`${targetMode}-${contextMode}-${contextLength}-${dk}-${dv}-${gateStrength}`} {...sharedProps}/><AddressabilityStrip {...sharedProps}/>{(targetMode==='gla'||targetMode==='deltanet')&&<label className="mt-3 flex items-center gap-3 text-xs">{t('gateStrength')}<input aria-label={t('gateStrength')} type="range" min="0" max="0.9" step="0.05" value={gateStrength} onChange={event=>setGateStrength(Number(event.target.value))} className={`w-40 ${targetMode==='deltanet'?'accent-emerald-700':'accent-cyan-700'}`}/>{Math.round(gateStrength*100)}%</label>}
       {targetMode === 'gla' && <aside className="mt-3 rounded-lg border border-cyan-200 bg-cyan-50 p-3 text-[11px] leading-relaxed text-cyan-950" data-testid="gla-paper-parameterization">
         <strong>{t('glaRelationTitle')}</strong><p className="mt-1 font-semibold">{t('glaPaperTitle')}</p><p>{t('glaPaperNote')}</p>
         <div className="my-1 overflow-x-auto"><MathFormula>{String.raw`\beta_t=\mathbf1\quad\Longrightarrow\quad (G_t)_{ij}=(\alpha_t)_i`}</MathFormula></div>
         <a className="underline" href="https://arxiv.org/html/2312.06635v2#S3.SS4" target="_blank" rel="noreferrer">{t('glaPaperSource')}</a>
+      </aside>}
+      {targetMode === 'deltanet' && <aside className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-[11px] leading-relaxed text-emerald-950" data-testid="deltanet-mode-summary">
+        <strong>{t('deltaRelationTitle')}</strong><p className="mt-1">{t('deltaRelationLead')}</p>
+        <div className="my-1 overflow-x-auto"><MathFormula>{String.raw`S_t = \alpha_t S_{t-1} + \beta_t k_t^\top\bigl(v_t - \alpha_t k_t S_{t-1}\bigr)`}</MathFormula></div>
       </aside>}
     </section>
   );
