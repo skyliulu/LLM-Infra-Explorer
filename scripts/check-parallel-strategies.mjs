@@ -92,18 +92,24 @@ mappingModels.forEach((mappingModel) => {
       const attentionDpIndex = wideEp.attentionDpIndex(lastCoords);
       assert.ok(attentionDpIndex >= 0 && attentionDpIndex < wideEp.attentionDp);
 
-      const helix = getComponentParallelState(degrees, 'helix');
+      const helix = getComponentParallelState(degrees, 'helix', 'standard', 'mla');
       assert.equal(helix.attentionMode, 'helix');
       assert.equal(helix.attentionDp, degrees.dp);
-      assert.equal(helix.kvParallel, degrees.ep);
+      assert.equal(helix.kvParallel, degrees.tp * degrees.ep);
+      assert.equal(helix.attentionTp, 1);
       assert.equal(helix.ffnTp, degrees.tp);
       assert.equal(helix.ffnEp, degrees.ep);
       assert.equal(helix.rankReuseSize, degrees.tp * degrees.ep);
 
+      const helixGqa = getComponentParallelState(degrees, 'helix', 'standard', 'gqa');
+      assert.equal(helixGqa.kvParallel, degrees.ep);
+      assert.equal(helixGqa.attentionTp, degrees.tp);
+
       const dpAttention = getComponentParallelState(degrees, 'standard', 'dpAttention');
       assert.equal(dpAttention.attentionMode, 'dpAttention');
       assert.equal(dpAttention.attentionDp, degrees.dp);
-      assert.equal(dpAttention.attentionTp, degrees.tp);
+      assert.equal(dpAttention.attentionTp, 1);
+      assert.equal(dpAttention.dpAttentionWorkersPerOuterDp, degrees.tp);
       assert.equal(dpAttention.sparseEp, degrees.ep);
 
       const dwdpDegrees = getDwdpDegrees(degrees);
@@ -187,5 +193,52 @@ assert.deepEqual(
   getDeploymentGpuCoordinates(1, { dp: 1, tp: 1, pp: 1, cp: 1, ep: 1, etp: 1 }, 'orthogonal', 'pdDisaggregated'),
   { tp_idx: 0, ep_idx: 0, etp_idx: 0, cp_idx: 0, dp_idx: 0, pp_idx: 0, pool: 'decode', localGpuIndex: 0 },
 );
+
+// DCP reuse correctness invariants: forbid vanished KV shards and compute reduced replication
+assert.equal(
+  isTopologyValid({ dp: 1, tp: 2, pp: 1, cp: 2, ep: 1, etp: 1 }, 'dcpReuse', 'unified', { attentionType: 'mha' }),
+  false,
+);
+assert.equal(
+  isTopologyValid({ dp: 1, tp: 2, pp: 1, cp: 2, ep: 1, etp: 1 }, 'dcpReuse', 'unified', { attentionType: 'gqa' }),
+  false,
+);
+assert.equal(
+  isTopologyValid({ dp: 1, tp: 2, pp: 1, cp: 2, ep: 1, etp: 1 }, 'dcpReuse', 'unified', { attentionType: 'mla', attentionMode: 'dpAttention' }),
+  false,
+);
+assert.equal(
+  isTopologyValid({ dp: 1, tp: 4, pp: 1, cp: 4, ep: 1, etp: 1 }, 'dcpReuse', 'unified', { attentionType: 'mla' }),
+  true,
+);
+assert.equal(
+  getAttentionArchitectureState({ dp: 1, tp: 4, pp: 1, cp: 4, ep: 1, etp: 1 }, 'mla', 'standard', 'decode', 'dcpReuse').kvReplication,
+  1,
+);
+assert.equal(
+  getAttentionArchitectureState({ dp: 1, tp: 4, pp: 1, cp: 2, ep: 1, etp: 1 }, 'mla', 'standard', 'decode', 'dcpReuse').kvReplication,
+  2,
+);
+
+// Helix MLA vs GQA + FFN TPxEP invariants
+assert.equal(
+  getAttentionArchitectureState({ dp: 1, tp: 2, pp: 1, cp: 1, ep: 2, etp: 1 }, 'mla', 'helix', 'decode', 'orthogonal', 'helix').kvReplication,
+  1,
+);
+assert.deepEqual(
+  getMoeParallelState({ dp: 1, tp: 2, pp: 1, cp: 1, ep: 2, etp: 1 }, 'helix'),
+  { mode: 'hybrid', expertTp: 2, shardAxis: 'tp' },
+);
+
+// Wide-EP + EP-only MoE uses direct All-to-All dispatch rather than All-Gather
+const wideEpArch = getAttentionArchitectureState({ dp: 1, tp: 2, pp: 1, cp: 1, ep: 2, etp: 1 }, 'mla', 'dpAttention', 'decode', 'orthogonal', 'wideEp');
+assert.equal(wideEpArch.requestLaneCount, 4);
+assert.equal(wideEpArch.needsTokenGatherBeforeMoe, false);
+assert.equal(wideEpArch.usesDirectEpDispatch, true);
+
+// DWDP treats EP ranks as independent DP executors
+const dwdpComp = getComponentParallelState({ dp: 1, tp: 1, pp: 1, cp: 1, ep: 2, etp: 1 }, 'standard', 'standard', 'mla', 'dwdp');
+assert.equal(dwdpComp.attentionDp, 2);
+assert.equal(dwdpComp.attentionDpIndex({ dp_idx: 0, ep_idx: 1 }), 1);
 
 console.log(`PASS parallel topology regression: ${legalTopologies}/${candidates} legal topologies, ${checkedGpuCards} GPU cards checked, cap=${MAX_GPUS}`);

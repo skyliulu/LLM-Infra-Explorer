@@ -50,7 +50,10 @@ const i18n = {
     decodeInputSplit: 'DP 分配请求；DCP Rank 共享当前 Query',
     dpRequestFact: 'DP 表示不同副本拥有不同请求；这里的 B 网格是全局工作负载示意，不代表一次跨副本集合切分。',
     dpAttentionRequestFact: 'DP Attention 不新增并行度：每个外层 DP 副本复用现有 TP Rank 运行 Attention worker；EP Rank 只在 Sparse FFN 阶段决定 Expert 所有权。若顶部 DP=2、TP=2，物理上仍是两套 TP2，共 4 卡。',
-    wideEpRequestFact: 'DP Attention + Wide-EP：Attention / KV 按 DP×EP 请求副本独立运行，同一批 Rank 在 Sparse FFN 中切换为 EP Expert 所有权；TP 仍表示每个副本内部的层内切分。',
+    wideEpRequestFact: 'DP Attention + Wide-EP 将 DP×EP×TP 全部 Rank 均用作独立 Attention Worker（Attention TP=1，各卡独占请求 KV），在 Sparse FFN 中再切回 EP Expert 所有权；LM Head 仍按 TP 切分。',
+    dwdpInputSplit: 'DWDP 独立执行器 B({dp}) × CP({cp})',
+    dwdpRequestFact: 'DWDP 组内每个 Rank 是独立 DP 执行器，处理各自请求批次并独占 KV，仅跨卡异步预取缺失的 Expert 权重。',
+    dwdpKvSplit: 'KV 所有权: DWDP 独立执行器({dp}) × CP({cp}) Token',
     fullData: '完整数据 (无切分)',
     embedMatrix: 'Embedding Matrix',
     rowSplit: '横向切行(TP={tp})',
@@ -95,7 +98,8 @@ const i18n = {
     kvMlaAssumption: 'MLA 每个 Token 只保存压缩 KV 潜变量；标准 TP 会复制该潜变量缓存，DP Attention 则按请求 Worker 独占。',
     kvDcpAssumption: 'DCP 复用模式按 MLA / 单 KV Head 的高复制场景绘制：CP Rank 由 TP Rank 派生，沿 KV 时间轴分片以减少 TP 引入的 KV 复制。',
     cpPrefillFact: 'Prefill CP：按新 Token 切分 Q/K/V；可选择聚合完整 K/V，或以 Ring P2P 分块交换 K/V。',
-    cpDecodeFact: 'Decode DCP：当前 Query 很短，主要沿 KV 历史长度切分；vLLM 可复用 TP Rank，因此 DCP 不必增加 GPU 数。',
+    cpDecodeFact: 'Decode CP/DCP：当前 Query 很短，主要沿 KV 历史长度切分；各分片独立算出 Partial O 与 LSE 后，再经跨 CP 归约合并为精确 Attention。vLLM 可复用 TP Rank，因此 DCP 不必增加 GPU 数。',
+    decodeCpCombine: 'Partial O + LSE → 跨 CP/DCP 归约合并 → 精确 Attention',
     cpVsSpFact: 'CP vs SP（Megatron 语义）：CP 切分网络输入与全部激活的序列维，并为 Attention 跨 Rank 交换 KV；SP 主要在 TP 组内切分 LayerNorm/Dropout 等激活，不能替代长上下文 Attention/KV 切分。',
     tpCommPath: 'TP 通信：QKV 列并行局部计算 → Attention → Out Projection 行并行 → All-Reduce / Reduce-Scatter',
     tpCommTitle: 'TP 层内通信图',
@@ -122,6 +126,7 @@ const i18n = {
     moeModeEp: '纯 EP：完整 Expert 分布到 EP Rank',
     moeModeEtp: 'ETP：Expert 内部切分',
     moeModeHybrid: '混合 EP × ETP',
+    moeModeHybridTp: '混合 EP × TP',
     tpLocalAttentionEdge: '本地 Attention',
     tpCollectiveEdge: 'All-Reduce / RS → 层输出',
     moeA2AEdge: 'All-to-All：Dispatch ↓ / Combine ↑',
@@ -193,13 +198,20 @@ const i18n = {
     gqaStructure: 'GQA：多个 Q Head 共享较少的 KV Head；TP 超过 KV Head 数时会出现 KV 复制。',
     mlaStructure: 'MLA：KV 压缩成单个潜变量缓存；标准 TP 会在 Rank 间复制这份 KV，DP Attention 的收益最明显。',
     standardAttentionFlow: '同一请求 · TP Head/权重切分',
+    helixMlaAttentionFlow: '同一请求 · KVP 序列分片 (TP=1)',
     standardKvShardFlow: 'KV Head 随 TP 切分',
     standardKvReplicaFlow: '同一请求的 KV 在 TP Rank 上复制 ×{count}',
+    dcpKvShardedFlow: 'DCP 复用 TP：每个 Rank 持有独立 KV 序列分片（无 KV 复制）',
+    helixMlaKvFlow: 'Helix (MLA)：全部 KVP(TP×EP={kvp}) Rank 沿序列切分单条潜变量缓存（无 KV 复制）',
+    helixProjectionReplica: 'Helix (MLA)：Attention 阶段 TP=1，各卡持有本地 Attention 权重并负责 1/{kvp} 序列 KV',
     dpAttentionFlow: '不同请求分配给独立 Attention Worker',
     attentionWorker: 'TP{rank} · 请求 B{rank}',
+    wideEpWorkerLabel: 'W{rank} (EP{ep}·TP{tp})',
     prefillWorkerTask: 'Prefill S_new · 写入私有 KV',
     decodeWorkerTask: 'Decode 1 Token · 读取私有 KV',
-    dpAttentionGather: 'Attention 输出 All-Gather → MoE；MoE 后再按 Worker 重分发',
+    dpAttentionGather: 'Attention 输出 All-Gather → TP/ETP MoE；MoE 后经 Reduce-Scatter 求和并按 Worker 分发',
+    dpAttentionEpBridge: 'EP-only MoE：各 Attention Worker 直接经 All-to-All Dispatch 路由到 Expert（无需先跨 Worker All-Gather），MoE 后 All-to-All Combine 返回',
+    dcpAttentionBoundary: 'DCP 复用 TP 需要存在 TP 级 KV 复制；当前 TP≤4 下仅标准 MLA 支持 CP>1，且不能与 DP Attention / Wide-EP / Helix 同时开启。',
     dpAttentionKvOwnership: '每个 Worker 独占其请求 KV · 无 TP 间 KV 复制',
     attentionTypeBoundary: 'DP Attention 最初针对 DeepSeek MLA：MHA/GQA 在此用于比较数据布局，实际引擎支持范围取决于模型与后端。',
     standardAttention: '标准 TP Attention',
@@ -227,23 +239,28 @@ const i18n = {
     prefillPoolRole: '计算 Prompt 与 KV',
     decodePoolRole: '读取 KV 并逐 Token 生成',
     otherPdPool: '另一阶段服务池',
-    wideEpAttentionRole: 'Wide-EP DP Attention: DP×EP({dp}) × TP({tp})',
-    dpAttentionRole: 'DP Attention: {dp} 个外层副本 · 每个复用 TP({tp}) Rank · EP 独立',
+    wideEpAttentionRole: 'Wide-EP DP Attention: {workers} 独立 Worker (DP×EP×TP) · Attention TP=1',
+    dpAttentionRole: 'DP Attention: {dp} 外层副本 × {tp} 独立 Worker · Attention TP=1 · EP 独立',
     wideEpMoeRole: 'Sparse FFN: EP({ep}) × ETP({etp})',
     wideEpLmHeadRole: 'LM Head: DP×EP({dp}) 请求副本 × TP({tp})',
     dpAttentionGpuRole: '副本 DP {dp} · Attn Worker TP {tp}',
     moeGpuRole: 'MoE EP {ep}',
     dpAttentionWorkerShort: 'DP Attention · W{worker}',
     helixGpuRoleCompact: 'Helix · KVP{kvp} ↔ FFN EP{ep}',
-    helixDecodeFact: 'Helix Decode：每个 DP 副本内，EP Rank 在 Attention 阶段重解释为 KVP Rank；当前 Query 广播到全部 KVP Rank。',
+    helixGpuRoleMla: 'Helix · KVP{kvp} ↔ FFN EP{ep}·TP{tp}',
+    helixDecodeFact: 'Helix Decode：每个 DP 副本内，MLA 将全部 TP×EP Rank 用作 KVP 序列分片（GQA/MHA 用 EP 作 KVP、TP 切 KV Head）；当前 Query 广播到全部 KVP Rank。',
     helixKvSplit: 'KV 所有权: KVP(EP={kvp}) 切序列 × TP({tp}) 切 KV Head',
-    helixKvAssumption: 'Helix 以 EP 旋钮表示 KVP 宽度：KVP 沿 KV 序列切分，TP 只切 KV Head；避免 TP 超过 KV Head 后复制完整 KV。',
+    helixMlaKvSplit: 'KV 所有权: KVP(TP×EP={kvp}) 切序列（MLA 无 KV 头切分）',
+    helixKvAssumption: 'Helix（GQA/MHA）：KVP(EP) 沿 KV 序列切分，TP 沿 KV Head 切分，避免复制完整 KV。',
+    helixMlaKvAssumption: 'Helix（MLA）：单条压缩潜变量无法按 KV Head 切分，因此 Attention 设 TP=1 并将整组 TP×EP Rank 用作 KVP 序列分片（零复制），进入 FFN 时再切回 TP×EP。',
     helixAttentionRole: 'Helix Attention: KVP({kvp}) × TP({tp})',
+    helixMlaAttentionRole: 'Helix Attention (MLA): KVP(TP×EP={kvp}) × TP(1)',
     helixMoeRole: '同一 Rank 池 → TP({tp}) × EP({ep}) FFN',
     helixRankReuse: '同一 Rank 池重配置：KVP×TP Attention → TP×EP FFN',
     helixExactCombine: 'Partial O + LSE → All-to-All → 精确 Attention',
     helixKvShardNode: 'KV Shard Attention',
     helixOutProjNode: 'Out Proj TP/AR',
+    helixOutProjLocalNode: 'Out Proj (本地)',
     helixGpuAttention: 'ATTN KVP {kvp} × TP {tp}',
     helixGpuFfn: 'FFN EP {ep} × TP {tp}',
     clusterHintBold: '点击右侧 GPU 卡片可将其固定锁定，方便对比观察。',
@@ -272,7 +289,10 @@ const i18n = {
     decodeInputSplit: 'DP routes requests; DCP ranks share the current query',
     dpRequestFact: 'DP replicas own different requests. The B grid is a global workload view, not one batch tensor collectively sharded across replicas.',
     dpAttentionRequestFact: 'DP Attention adds no new degree: each outer DP replica reuses its existing TP ranks as Attention workers, while EP only determines Sparse-FFN expert ownership. Top-level DP2 with TP2 is still two TP2 replicas, hence four GPUs.',
-    wideEpRequestFact: 'DP Attention + Wide-EP runs Attention / KV independently over DP×EP request replicas, then reinterprets the same ranks as EP expert owners in Sparse FFN. TP remains the intra-replica layer shard.',
+    wideEpRequestFact: 'DP Attention + Wide-EP runs all DP×EP×TP ranks as independent Attention workers (Attention TP=1, exclusive request KV), then reinterprets them as EP expert owners in Sparse FFN; LM Head still shards by TP.',
+    dwdpInputSplit: 'DWDP Executors B({dp}) × CP({cp})',
+    dwdpRequestFact: 'Each rank in a DWDP group is an independent DP executor with its own request batch and private KV; only missing expert weights are prefetched from peers.',
+    dwdpKvSplit: 'KV ownership: DWDP executors ({dp}) × CP({cp}) tokens',
     fullData: 'Full Data (No Sharding)',
     embedMatrix: 'Embedding Matrix',
     rowSplit: 'Row Shard(TP={tp})',
@@ -317,7 +337,8 @@ const i18n = {
     kvMlaAssumption: 'MLA stores one compressed KV latent per token. Standard TP replicates that latent cache, while DP Attention gives each request worker exclusive ownership.',
     kvDcpAssumption: 'DCP reuse uses an MLA / single-KV-head high-replication teaching case: CP ranks are derived from TP ranks and shard KV over time to reduce TP-induced KV replication.',
     cpPrefillFact: 'Prefill CP shards new-token Q/K/V. It may gather full K/V or exchange K/V chunks with Ring P2P.',
-    cpDecodeFact: 'Decode DCP has a tiny current query and mainly shards KV history by time. vLLM can reuse TP ranks, so DCP need not increase GPU count.',
+    cpDecodeFact: 'Decode CP/DCP has a tiny current query and mainly shards KV history by time; each shard computes Partial O + LSE, then cross-CP LSE reduction produces exact Attention. vLLM can reuse TP ranks, so DCP need not increase GPU count.',
+    decodeCpCombine: 'Partial O + LSE → cross-CP/DCP LSE reduction → exact Attention',
     cpVsSpFact: 'CP vs SP (Megatron semantics): CP shards the sequence dimension of network inputs and all activations, exchanging KV across ranks for Attention. SP mainly shards LayerNorm/Dropout activations inside a TP group and does not replace long-context Attention/KV partitioning.',
     tpCommPath: 'TP communication: column-parallel QKV → Attention → row-parallel output projection → All-Reduce / Reduce-Scatter',
     tpCommTitle: 'TP intra-layer communication',
@@ -344,6 +365,7 @@ const i18n = {
     moeModeEp: 'EP only: full experts distributed by EP rank',
     moeModeEtp: 'ETP: intra-expert sharding',
     moeModeHybrid: 'Hybrid EP × ETP',
+    moeModeHybridTp: 'Hybrid EP × TP',
     tpLocalAttentionEdge: 'Local Attention',
     tpCollectiveEdge: 'All-Reduce / RS → layer output',
     moeA2AEdge: 'All-to-All: Dispatch ↓ / Combine ↑',
@@ -415,13 +437,20 @@ const i18n = {
     gqaStructure: 'GQA shares fewer KV heads across query groups; TP beyond the KV-head count introduces KV replication.',
     mlaStructure: 'MLA compresses KV into one latent cache. Standard TP replicates this cache across ranks, so DP Attention has the clearest benefit.',
     standardAttentionFlow: 'One request · TP head/weight shards',
+    helixMlaAttentionFlow: 'One request · KVP sequence shards (TP=1)',
     standardKvShardFlow: 'KV heads sharded with TP',
     standardKvReplicaFlow: 'The same request KV is replicated across TP ranks ×{count}',
+    dcpKvShardedFlow: 'DCP reuses TP: each rank holds a disjoint KV sequence shard (no KV replication)',
+    helixMlaKvFlow: 'Helix (MLA): all KVP(TP×EP={kvp}) ranks shard the single latent cache along sequence (no KV replication)',
+    helixProjectionReplica: 'Helix (MLA): Attention uses TP=1; each rank holds local Attention weights and 1/{kvp} of the KV sequence',
     dpAttentionFlow: 'Different requests are assigned to independent Attention workers',
     attentionWorker: 'TP{rank} · Request B{rank}',
+    wideEpWorkerLabel: 'W{rank} (EP{ep}·TP{tp})',
     prefillWorkerTask: 'Prefill S_new · write private KV',
     decodeWorkerTask: 'Decode 1 token · read private KV',
-    dpAttentionGather: 'All-Gather Attention outputs → MoE; redistribute them to workers after MoE',
+    dpAttentionGather: 'All-Gather Attention outputs → TP/ETP MoE; Reduce-Scatter sums and returns each worker’s slice',
+    dpAttentionEpBridge: 'EP-only MoE: each Attention worker dispatches tokens directly via All-to-All (no prior All-Gather), then All-to-All Combine returns outputs',
+    dcpAttentionBoundary: 'DCP rank reuse requires TP-induced KV replication; with TP≤4 only standard MLA supports CP>1, and it cannot combine with DP Attention, Wide-EP, or Helix.',
     dpAttentionKvOwnership: 'Each worker exclusively owns its requests and KV · no TP KV replication',
     attentionTypeBoundary: 'DP Attention was introduced for DeepSeek MLA. MHA/GQA are included here to compare layouts; actual engine support depends on the model and backend.',
     standardAttention: 'Standard TP Attention',
@@ -449,23 +478,28 @@ const i18n = {
     prefillPoolRole: 'Compute prompt and KV',
     decodePoolRole: 'Read KV and generate tokens',
     otherPdPool: 'Other phase pool',
-    wideEpAttentionRole: 'Wide-EP DP Attention: DP×EP({dp}) × TP({tp})',
-    dpAttentionRole: 'DP Attention: {dp} outer replicas · each reuses TP({tp}) ranks · EP independent',
+    wideEpAttentionRole: 'Wide-EP DP Attention: {workers} workers (DP×EP×TP) · Attention TP=1',
+    dpAttentionRole: 'DP Attention: {dp} outer replicas × {tp} workers · Attention TP=1 · EP independent',
     wideEpMoeRole: 'Sparse FFN: EP({ep}) × ETP({etp})',
     wideEpLmHeadRole: 'LM Head: DP×EP({dp}) request replicas × TP({tp})',
     dpAttentionGpuRole: 'Replica DP {dp} · Attn Worker TP {tp}',
     moeGpuRole: 'MoE EP {ep}',
     dpAttentionWorkerShort: 'DP Attention · W{worker}',
     helixGpuRoleCompact: 'Helix · KVP{kvp} ↔ FFN EP{ep}',
-    helixDecodeFact: 'Helix decode reinterprets EP ranks inside each DP replica as KVP ranks during Attention; the current query is broadcast to all KVP ranks.',
+    helixGpuRoleMla: 'Helix · KVP{kvp} ↔ FFN EP{ep}·TP{tp}',
+    helixDecodeFact: 'Helix decode uses all TP×EP ranks inside each DP replica as KVP sequence shards on MLA (or EP as KVP and TP for KV heads on GQA/MHA); the current query is broadcast to all KVP ranks.',
     helixKvSplit: 'KV ownership: KVP(EP={kvp}) sequence shards × TP({tp}) KV-head shards',
-    helixKvAssumption: 'The Helix profile uses the EP control as KVP width: KVP shards the KV sequence while TP only shards KV heads, avoiding full-KV duplication beyond the KV-head count.',
+    helixMlaKvSplit: 'KV ownership: KVP(TP×EP={kvp}) sequence shards (MLA has no KV-head split)',
+    helixKvAssumption: 'Helix (GQA/MHA): KVP(EP) shards the KV sequence while TP shards KV heads, avoiding full-KV duplication.',
+    helixMlaKvAssumption: 'Helix (MLA): because a single compressed KV latent cannot split across KV heads, Attention sets TP=1 and uses all TP×EP ranks as KVP sequence shards (zero replication), then reconfigures as TP×EP FFN.',
     helixAttentionRole: 'Helix Attention: KVP({kvp}) × TP({tp})',
+    helixMlaAttentionRole: 'Helix Attention (MLA): KVP(TP×EP={kvp}) × TP(1)',
     helixMoeRole: 'Same rank pool → TP({tp}) × EP({ep}) FFN',
     helixRankReuse: 'Same ranks reconfigure: KVP×TP Attention → TP×EP FFN',
     helixExactCombine: 'Partial O + LSE → All-to-All → exact Attention',
     helixKvShardNode: 'KV Shard Attention',
     helixOutProjNode: 'Out Proj TP/AR',
+    helixOutProjLocalNode: 'Out Proj (local)',
     helixGpuAttention: 'ATTN KVP {kvp} × TP {tp}',
     helixGpuFfn: 'FFN EP {ep} × TP {tp}',
     clusterHintBold: 'Click a GPU card on the right to pin it for comparison.',
@@ -689,8 +723,8 @@ const App = () => {
     [degrees],
   );
   const wideEpModeAvailable = useMemo(
-    () => degrees.ep > 1 || isTopologyValid({ ...degrees, ep: 2 }, mappingModel, servingMode),
-    [degrees, mappingModel, servingMode],
+    () => degrees.ep > 1 || isTopologyValid({ ...degrees, ep: 2 }, 'orthogonal', servingMode),
+    [degrees, servingMode],
   );
   const helixModeAvailable = useMemo(() => {
     const helixDegrees = { ...degrees, cp: 1, ep: Math.max(2, degrees.ep), etp: 1 };
@@ -702,7 +736,11 @@ const App = () => {
   }, [degrees]);
 
   const checkConstraints = (newDegrees, nextMappingModel = mappingModel) => {
-    return isTopologyValid(newDegrees, nextMappingModel, servingMode);
+    return isTopologyValid(newDegrees, nextMappingModel, servingMode, {
+      attentionType,
+      attentionMode,
+      componentProfile,
+    });
   };
 
   const handleSetDegree = (dim, val) => {
@@ -737,24 +775,27 @@ const App = () => {
     if (nextProfile === 'wideEp' && !wideEpModeAvailable) return;
     if (nextProfile === 'helix' && !helixModeAvailable) return;
     let nextDegrees = degrees;
-    if (nextProfile === 'wideEp' && degrees.ep === 1) {
-      const expandedEp = { ...degrees, ep: 2 };
-      if (isTopologyValid(expandedEp, mappingModel, servingMode)) nextDegrees = expandedEp;
+    if (nextProfile === 'wideEp') {
+      if (mappingModel === 'dcpReuse') {
+        const safeCp = getDeploymentGpuCount(nextDegrees, 'orthogonal', servingMode) > MAX_GPUS ? 1 : nextDegrees.cp;
+        nextDegrees = { ...nextDegrees, cp: safeCp };
+        setMappingModel('orthogonal');
+      }
+      if (nextDegrees.ep === 1) {
+        const expandedEp = { ...nextDegrees, ep: 2 };
+        if (isTopologyValid(expandedEp, 'orthogonal', servingMode)) nextDegrees = expandedEp;
+      }
+      setAttentionMode('dpAttention');
+      setAttentionType('mla');
     }
     if (nextProfile === 'helix') {
       nextDegrees = { ...degrees, cp: 1, ep: Math.max(2, degrees.ep), etp: 1 };
       setContextMode('decode');
       setMappingModel('orthogonal');
       setServingMode('unified');
-      resetPipeline();
-    }
-    if (nextProfile === 'wideEp') {
-      setAttentionMode('dpAttention');
-      setAttentionType('mla');
-    }
-    if (nextProfile === 'helix') {
       setAttentionMode('standard');
       setAttentionType('mla');
+      resetPipeline();
     }
     setDegrees(nextDegrees);
     setComponentProfile(nextProfile);
@@ -811,6 +852,13 @@ const App = () => {
 
   const handleAttentionMode = (nextMode) => {
     if (componentProfile === 'helix') return;
+    if (nextMode === 'dpAttention' && mappingModel === 'dcpReuse') {
+      const nextDegrees = getDeploymentGpuCount(degrees, 'orthogonal', servingMode) > MAX_GPUS
+        ? { ...degrees, cp: 1 }
+        : degrees;
+      setDegrees(nextDegrees);
+      setMappingModel('orthogonal');
+    }
     setAttentionMode(nextMode);
     if (nextMode === 'standard' && componentProfile === 'wideEp') setComponentProfile('standard');
     setPinnedGpu(null);
@@ -819,6 +867,13 @@ const App = () => {
   };
 
   const handleAttentionType = (nextType) => {
+    if (mappingModel === 'dcpReuse' && nextType !== 'mla' && degrees.cp > 1) {
+      const nextDegrees = getDeploymentGpuCount(degrees, 'orthogonal', servingMode) > MAX_GPUS
+        ? { ...degrees, cp: 1 }
+        : degrees;
+      setDegrees(nextDegrees);
+      setMappingModel('orthogonal');
+    }
     setAttentionType(nextType);
     setPinnedGpu(null);
     setHoveredGpu(null);
@@ -855,6 +910,9 @@ const App = () => {
         ? expandedTp
         : { ...degrees, cp: Math.min(degrees.cp, degrees.tp) };
       setDegrees(nextDegrees);
+      setComponentProfile('standard');
+      setAttentionMode('standard');
+      setAttentionType('mla');
       setContextMode('decode');
       setMappingModel('dcpReuse');
     } else {
@@ -1046,7 +1104,7 @@ const App = () => {
     );
   };
 
-  const AttentionProjectionVisual = ({ type, isDpMode, tpDegree, activeTp }) => {
+  const AttentionProjectionVisual = ({ type, isDpMode, isHelixMla = false, kvpDegree = 1, tpDegree, activeTp }) => {
     const layouts = {
       mha: [
         { id: 'q', latex: String.raw`W_Q`, flex: 1, tone: 'bg-amber-400' },
@@ -1066,20 +1124,22 @@ const App = () => {
     };
     const bands = layouts[type] || layouts.mla;
     const titleKey = type === 'mha' ? 'mhaWeightLayout' : type === 'gqa' ? 'gqaWeightLayout' : 'mlaWeightLayout';
-    const footerKey = isDpMode
-      ? 'dpProjectionReplica'
-      : type === 'mla' && tpDegree > 1
-        ? 'mlaProjectionShard'
-        : tpDegree > 1
-          ? 'tpProjectionShard'
-          : 'fullWeight';
+    const footerText = isDpMode
+      ? t('dpProjectionReplica')
+      : isHelixMla
+        ? t('helixProjectionReplica', { kvp: kvpDegree })
+        : type === 'mla' && tpDegree > 1
+          ? t('mlaProjectionShard')
+          : tpDegree > 1
+            ? t('tpProjectionShard')
+            : t('fullWeight');
 
     return (
       <div data-testid="attention-projection-visual" data-attention-type={type} className="flex h-full w-full flex-col rounded border border-slate-200 bg-white p-1.5 shadow-sm" role="img" aria-label={t(titleKey)}>
         <span className="mb-1 text-center text-[8px] font-semibold leading-tight text-slate-700">{t(titleKey)}</span>
         <div className="flex min-h-10 flex-1 items-stretch gap-1">
           {bands.map((band) => {
-            const shardDegree = isDpMode || band.followsTp === false ? 1 : Math.max(1, tpDegree);
+            const shardDegree = isDpMode || isHelixMla || band.followsTp === false ? 1 : Math.max(1, tpDegree);
             const activeShard = shardDegree === 1 ? 0 : activeTp % shardDegree;
             return (
               <div key={band.id} data-testid={`projection-band-${band.id}`} data-shards={shardDegree} className="flex min-w-0 flex-col gap-0.5" style={{ flex: band.flex }}>
@@ -1094,7 +1154,7 @@ const App = () => {
             );
           })}
         </div>
-        <span className="mt-1 text-center text-[7px] leading-tight text-slate-500">{t(footerKey)}</span>
+        <span className="mt-1 text-center text-[7px] leading-tight text-slate-500">{footerText}</span>
       </div>
     );
   };
@@ -1172,8 +1232,8 @@ const App = () => {
             <div>
               {pipelineState.stages.map((stage, stageIndex) => {
                 const currentCell = stage.cells[pipelineState.currentSlot];
-                const connectorActive = phase === 'running' && currentCell?.status === 'active';
-                const connectorPassed = phase === 'done' || currentCell?.status === 'passed';
+                const connectorActive = phase === 'running' && Boolean(currentCell?.hasWork) && currentCell?.status === 'active';
+                const connectorPassed = phase === 'done' || (phase === 'running' && stage.cells.some((c) => c.hasWork && c.status === 'passed'));
                 return (
                 <React.Fragment key={stage.stage}>
                   {stageIndex > 0 && (
@@ -1241,14 +1301,14 @@ const App = () => {
 
   const renderLogicalView = () => {
     const coords = activeGpu !== null ? getGpuCoords(activeGpu) : null;
-    const componentParallel = getComponentParallelState(degrees, componentProfile, attentionMode);
+    const componentParallel = getComponentParallelState(degrees, componentProfile, attentionMode, attentionType, moeTransport);
     const attentionDpIndex = coords ? componentParallel.attentionDpIndex(coords) : 0;
     const ownership = coords
       ? getPipelineOwnership(degrees.pp, coords.pp_idx)
       : { ownsEmbedding: true, ownsLmHead: true };
     const isEmbeddingActive = ownership.ownsEmbedding;
     const isLmHeadActive = ownership.ownsLmHead;
-    const moeParallel = getMoeParallelState(degrees);
+    const moeParallel = getMoeParallelState(degrees, componentProfile);
     const expertTp = moeParallel.expertTp;
     const expertShardIndex = moeParallel.shardAxis === 'tp'
       ? coords?.tp_idx || 0
@@ -1258,7 +1318,7 @@ const App = () => {
       tp: 'moeModeTp',
       ep: 'moeModeEp',
       etp: 'moeModeEtp',
-      hybrid: 'moeModeHybrid',
+      hybrid: moeParallel.shardAxis === 'tp' ? 'moeModeHybridTp' : 'moeModeHybrid',
     }[moeParallel.mode];
     const moeUsesCrossRankRouting = moeParallel.mode === 'ep' || moeParallel.mode === 'hybrid';
     const activeExpertIndexes = coords
@@ -1266,28 +1326,33 @@ const App = () => {
       : [0, 1, 2, 3];
     const isPrefill = contextMode === 'prefill';
     const isHelix = componentProfile === 'helix';
+    const isHelixMla = componentParallel.helixMla;
     const isDpAttention = componentParallel.attentionMode === 'dpAttention';
     const attentionArchitecture = getAttentionArchitectureState(
       degrees,
       attentionType,
       componentParallel.attentionMode,
       contextMode,
+      mappingModel,
+      componentProfile,
     );
     const isDwdp = moeTransport === 'dwdp';
     const inputCpDegree = isPrefill ? degrees.cp : 1;
     const inputDims = isPrefill ? '[B, S_new]' : '[B, 1]';
     const kvDims = attentionType === 'mla'
-      ? isPrefill ? '[B, S_new, C_KV]' : '[B, T_cache, C_KV]'
-      : isPrefill ? '[B, S_new, H_KV]' : '[B, T_cache, H_KV]';
+      ? isPrefill ? '[B, S_new, d_c+d_h^R]' : '[B, T_cache, d_c+d_h^R]'
+      : isPrefill ? '[B, S_new, 2·H_KV·d_h]' : '[B, T_cache, 2·H_KV·d_h]';
     const kvSequenceDegree = isHelix ? componentParallel.kvParallel : degrees.cp;
-    const kvSequenceIndex = isHelix ? coords?.ep_idx || 0 : coords?.cp_idx || 0;
+    const kvSequenceIndex = coords ? componentParallel.kvParallelIndex(coords) : 0;
     const attentionRequestDegree = isDpAttention
       ? componentParallel.attentionDp * attentionArchitecture.workerCount
       : componentParallel.attentionDp;
     const attentionRequestIndex = isDpAttention
       ? attentionDpIndex * attentionArchitecture.workerCount + (coords?.tp_idx || 0)
       : attentionDpIndex;
-    const inputSplitLabel = isDpAttention
+    const inputSplitLabel = isDwdp
+      ? t('dwdpInputSplit', { dp: componentParallel.attentionDp, cp: degrees.cp })
+      : isDpAttention
       ? t('dpAttentionInputSplit', { dp: componentParallel.attentionDp, tp: attentionArchitecture.workerCount, cp: degrees.cp })
       : componentParallel.attentionDp > 1 || degrees.cp > 1
       ? isPrefill
@@ -1404,7 +1469,7 @@ const App = () => {
         </div>
         {attentionRequestDegree > 1 && (
           <p className="mx-auto max-w-md rounded border border-blue-200 bg-blue-50 px-2 py-1.5 text-center text-[8px] leading-relaxed text-blue-800">
-            {t(componentProfile === 'wideEp' ? 'wideEpRequestFact' : isDpAttention ? 'dpAttentionRequestFact' : 'dpRequestFact')}
+            {t(isDwdp ? 'dwdpRequestFact' : componentProfile === 'wideEp' ? 'wideEpRequestFact' : isDpAttention ? 'dpAttentionRequestFact' : 'dpRequestFact')}
           </p>
         )}
         {isHelix && (
@@ -1467,13 +1532,13 @@ const App = () => {
                   <div className="mb-2.5 flex flex-wrap items-center justify-between gap-1.5 text-xs font-semibold text-slate-700">
                    <span className="flex items-center gap-1.5"><Grid size={14} className="text-amber-500"/> {t('attnBlock')}</span>
                    {componentProfile === 'wideEp' && (
-                     <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[7px] font-bold text-blue-700">{t('wideEpAttentionRole', { dp: componentParallel.attentionDp, tp: componentParallel.attentionTp })}</span>
+                     <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[7px] font-bold text-blue-700">{t('wideEpAttentionRole', { workers: attentionRequestDegree })}</span>
                    )}
                    {componentProfile !== 'wideEp' && isDpAttention && (
-                     <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[7px] font-bold text-blue-700">{t('dpAttentionRole', { dp: componentParallel.attentionDp, tp: componentParallel.attentionTp })}</span>
+                     <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[7px] font-bold text-blue-700">{t('dpAttentionRole', { dp: componentParallel.attentionDp, tp: attentionArchitecture.workerCount })}</span>
                    )}
                    {isHelix && (
-                     <span className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[7px] font-bold text-violet-700">{t('helixAttentionRole', { kvp: componentParallel.kvParallel, tp: componentParallel.attentionTp })}</span>
+                     <span className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[7px] font-bold text-violet-700">{t(isHelixMla ? 'helixMlaAttentionRole' : 'helixAttentionRole', { kvp: componentParallel.kvParallel, tp: componentParallel.attentionTp })}</span>
                    )}
                  </div>
 
@@ -1500,7 +1565,9 @@ const App = () => {
                        <AttentionProjectionVisual
                          type={attentionType}
                          isDpMode={isDpAttention}
-                         tpDegree={degrees.tp}
+                         isHelixMla={isHelixMla}
+                         kvpDegree={componentParallel.kvParallel}
+                         tpDegree={componentParallel.attentionTp}
                          activeTp={coords?.tp_idx || 0}
                        />
                        <div className="flex flex-col items-center justify-center gap-0.5 text-center text-[7px] font-bold leading-tight text-cyan-700" aria-label={t('tpLocalAttentionEdge')}>
@@ -1509,8 +1576,8 @@ const App = () => {
                        </div>
                        <MatrixBlock
                           title={t('outProj')} dims="[H, H]" sliceDir="row"
-                          splitLabel={isDpAttention ? t('workerLocalWeight') : degrees.tp > 1 ? t('rowSplit', { tp: degrees.tp }) : t('fullWeight')}
-                          degree={isDpAttention ? 1 : degrees.tp} activeChunkIndex={isDpAttention ? 0 : coords?.tp_idx || 0}
+                          splitLabel={isDpAttention || isHelixMla ? t('workerLocalWeight') : componentParallel.attentionTp > 1 ? t('rowSplit', { tp: componentParallel.attentionTp }) : t('fullWeight')}
+                          degree={componentParallel.attentionTp} activeChunkIndex={componentParallel.attentionTp > 1 ? coords?.tp_idx || 0 : 0}
                           isLayerActive={true} activeColorClass={getColorClass('amber', 'active')}
                           mW={16} mH={16}
                        />
@@ -1521,12 +1588,17 @@ const App = () => {
                           <span>{t('dpAttentionFlow')}</span>
                           <span className="rounded-full border border-blue-200 bg-white px-2 py-0.5 text-[7px] text-blue-700">{t('dpAttentionKvOwnership')}</span>
                         </div>
-                        <div className={`grid gap-1.5 ${attentionArchitecture.workerCount === 1 ? 'grid-cols-1' : attentionArchitecture.workerCount === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4'}`}>
-                          {Array.from({ length: attentionArchitecture.workerCount }).map((_, worker) => {
-                            const isCurrentWorker = coords === null || coords.tp_idx === worker;
+                        <div className={`grid gap-1.5 ${componentParallel.dpAttentionWorkersPerOuterDp === 1 ? 'grid-cols-1' : componentParallel.dpAttentionWorkersPerOuterDp === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4'}`}>
+                          {Array.from({ length: Math.min(8, componentParallel.dpAttentionWorkersPerOuterDp) }).map((_, worker) => {
+                            const workerEp = Math.floor(worker / degrees.tp);
+                            const workerTp = worker % degrees.tp;
+                            const activeWorkerIdx = componentProfile === 'wideEp'
+                              ? (coords?.ep_idx || 0) * degrees.tp + (coords?.tp_idx || 0)
+                              : (coords?.tp_idx || 0);
+                            const isCurrentWorker = coords === null || activeWorkerIdx === worker;
                             return (
                               <div key={worker} data-testid={`dp-attention-worker-${worker}`} className={`rounded border px-1.5 py-1 text-center transition ${isCurrentWorker ? 'border-blue-400 bg-white text-blue-900 shadow-sm ring-1 ring-blue-100' : 'border-blue-100 bg-blue-50 text-blue-400 opacity-70'}`}>
-                                <span className="block text-[8px] font-bold">{t('attentionWorker', { rank: worker })}</span>
+                                <span className="block text-[8px] font-bold">{componentProfile === 'wideEp' ? t('wideEpWorkerLabel', { rank: worker, ep: workerEp, tp: workerTp }) : t('attentionWorker', { rank: worker })}</span>
                                 <span className="block text-[7px] leading-tight">{t(isPrefill ? 'prefillWorkerTask' : 'decodeWorkerTask')}</span>
                               </div>
                             );
@@ -1540,19 +1612,39 @@ const App = () => {
                             <ArrowDown size={10} className="shrink-0" />
                           </div>
                         )}
+                        {attentionArchitecture.usesDirectEpDispatch && (
+                          <div className="mt-1.5 flex items-center gap-1 text-[7px] font-bold text-pink-700">
+                            <div className="h-px flex-1 bg-pink-300" />
+                            <Network size={10} className="shrink-0" />
+                            <span className="text-center leading-tight">{t('dpAttentionEpBridge')}</span>
+                            <ArrowDown size={10} className="shrink-0" />
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div data-testid="standard-attention-worker-flow" className="flex flex-wrap items-center justify-between gap-1.5 rounded border border-amber-100 bg-amber-50/60 px-2 py-1 text-[8px] text-amber-900">
-                        <span className="font-bold">{t('standardAttentionFlow')}</span>
-                        <span>{t(attentionArchitecture.kvReplication > 1 ? 'standardKvReplicaFlow' : 'standardKvShardFlow', { count: attentionArchitecture.kvReplication })}</span>
+                        <span className="font-bold">{t(isHelixMla ? 'helixMlaAttentionFlow' : 'standardAttentionFlow')}</span>
+                        <span>
+                          {isHelixMla
+                            ? t('helixMlaKvFlow', { kvp: componentParallel.kvParallel })
+                            : mappingModel === 'dcpReuse' && degrees.cp > 1 && attentionArchitecture.kvReplication === 1
+                              ? t('dcpKvShardedFlow')
+                              : t(attentionArchitecture.kvReplication > 1 ? 'standardKvReplicaFlow' : 'standardKvShardFlow', { count: attentionArchitecture.kvReplication })}
+                        </span>
                       </div>
                     )}
-                    {!isDpAttention && degrees.tp > 1 && (
+                    {!isDpAttention && componentParallel.attentionTp > 1 && (
                       <div data-testid="tp-collective-link" className="ml-auto flex w-[48%] items-center gap-1 py-1 text-[7px] font-bold text-rose-700" role="note" aria-label={t('tpCommTitle')}>
                         <div className="h-px flex-1 bg-rose-300" />
                         <Network size={10} className="shrink-0" />
                         <span className="leading-tight">{t('tpCollectiveEdge')}</span>
                         <ArrowDown size={10} className="shrink-0" />
+                      </div>
+                    )}
+                    {!isHelix && !isPrefill && degrees.cp > 1 && (
+                      <div data-testid="decode-cp-combine-link" className="flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[7px] font-bold text-emerald-800" role="note">
+                        <Network size={10} className="shrink-0" />
+                        <span className="min-w-0 flex-1 text-center leading-tight">{t('decodeCpCombine')}</span>
                       </div>
                     )}
                     {isHelix && (
@@ -1561,7 +1653,7 @@ const App = () => {
                         <ArrowRight size={10} className="shrink-0" />
                         <span className="min-w-0 flex-1 text-center leading-tight">{t('helixExactCombine')}</span>
                         <ArrowRight size={10} className="shrink-0" />
-                        <span className="rounded bg-white px-1 py-0.5">{t('helixOutProjNode')}</span>
+                        <span className="rounded bg-white px-1 py-0.5">{t(componentParallel.attentionTp > 1 ? 'helixOutProjNode' : 'helixOutProjLocalNode')}</span>
                       </div>
                     )}
 
@@ -1578,9 +1670,9 @@ const App = () => {
                        <div className="w-full transition-[max-width] duration-300" style={{ maxWidth: `${kvVisualConfig.maxWidth}px` }}>
                           <Tensor3DBlock
                              title={t('kvCache')} dims={kvDims}
-                             splitLabel={isHelix ? t('helixKvSplit', { kvp: componentParallel.kvParallel, tp: degrees.tp }) : isDpAttention ? t('dpAttentionKvSplit', { workers: attentionRequestDegree, cp: degrees.cp }) : componentParallel.attentionDp > 1 || degrees.cp > 1 || attentionArchitecture.kvHeadShardDegree > 1 ? t(componentProfile === 'wideEp' ? 'wideEpKvSplit' : 'split3D') : t('noSplit')}
-                             degreeX={kvSequenceDegree} degreeY={isDpAttention ? attentionRequestDegree : componentParallel.attentionDp} degreeZ={isDpAttention ? 1 : attentionArchitecture.kvHeadShardDegree}
-                             activeX={kvSequenceIndex} activeY={isDpAttention ? attentionRequestIndex : attentionDpIndex} activeZ={isDpAttention ? 0 : (coords?.tp_idx || 0) % attentionArchitecture.kvHeadShardDegree}
+                             splitLabel={isHelix ? t(isHelixMla ? 'helixMlaKvSplit' : 'helixKvSplit', { kvp: componentParallel.kvParallel, tp: componentParallel.attentionTp }) : isDwdp ? t('dwdpKvSplit', { dp: componentParallel.attentionDp, cp: degrees.cp }) : isDpAttention ? t('dpAttentionKvSplit', { workers: attentionRequestDegree, cp: degrees.cp }) : componentParallel.attentionDp > 1 || degrees.cp > 1 || attentionArchitecture.kvHeadShardDegree > 1 ? t('split3D') : t('noSplit')}
+                             degreeX={kvSequenceDegree} degreeY={isDpAttention ? attentionRequestDegree : componentParallel.attentionDp} degreeZ={isDpAttention || isHelixMla ? 1 : attentionArchitecture.kvHeadShardDegree}
+                             activeX={kvSequenceIndex} activeY={isDpAttention ? attentionRequestIndex : attentionDpIndex} activeZ={isDpAttention || isHelixMla ? 0 : (coords?.tp_idx || 0) % attentionArchitecture.kvHeadShardDegree}
                              isLayerActive={true} activeColorClass={getColorClass('emerald', 'active')}
                              mW={kvVisualConfig.width} mH={kvVisualConfig.height}
                           />
@@ -1593,7 +1685,7 @@ const App = () => {
                       </p>
                     )}
                     <p className="mt-1.5 text-center text-[8px] leading-relaxed text-slate-500">
-                      {t(isHelix ? 'helixKvAssumption' : kvAssumptionKey)}
+                      {t(isHelix ? (isHelixMla ? 'helixMlaKvAssumption' : 'helixKvAssumption') : kvAssumptionKey)}
                     </p>
                     {isDpAttention && (
                       <p className="rounded border border-blue-100 bg-blue-50 px-2 py-1 text-[7px] leading-relaxed text-blue-700">{t('attentionTypeBoundary')}</p>
@@ -1892,7 +1984,11 @@ const App = () => {
         )}
         {componentProfile === 'helix' && (
           <div className="mt-1.5 border-t border-slate-100 pt-1.5 text-center text-[7px] font-bold leading-tight">
-            <span className="block rounded border border-violet-200 bg-violet-50 px-1 py-0.5 text-violet-700">{t('helixGpuRoleCompact', { kvp: coords.ep_idx, ep: coords.ep_idx })}</span>
+            <span className="block rounded border border-violet-200 bg-violet-50 px-1 py-0.5 text-violet-700">
+              {attentionType === 'mla'
+                ? t('helixGpuRoleMla', { kvp: coords.ep_idx * degrees.tp + coords.tp_idx, ep: coords.ep_idx, tp: coords.tp_idx })
+                : t('helixGpuRoleCompact', { kvp: coords.ep_idx, ep: coords.ep_idx })}
+            </span>
           </div>
         )}
         {moeTransport === 'dwdp' && coords.pool === 'prefill' && (
@@ -1930,7 +2026,7 @@ const App = () => {
           </div>
         </div>
 
-        <div data-section-anchor="parallelstrategies-2" className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2 lg:gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2 lg:gap-3">
           {STRATEGIES.map((strat) => {
             const currentVal = degrees[strat.id];
             const Icon = strat.icon;
@@ -1989,7 +2085,7 @@ const App = () => {
                     data-testid={`mapping-model-${model}`}
                     type="button"
                     disabled={model === 'dcpReuse' && (servingMode === 'pdDisaggregated' || componentProfile === 'helix')}
-                    title={model === 'dcpReuse' && componentProfile === 'helix' ? t('helixBoundary') : servingMode === 'pdDisaggregated' && model === 'dcpReuse' ? t('pdDcpBoundary') : undefined}
+                    title={model === 'dcpReuse' && componentProfile === 'helix' ? t('helixBoundary') : servingMode === 'pdDisaggregated' && model === 'dcpReuse' ? t('pdDcpBoundary') : model === 'dcpReuse' ? t('dcpAttentionBoundary') : undefined}
                     aria-pressed={mappingModel === model}
                     onClick={() => handleMappingModel(model)}
                     className={`rounded px-2 py-1 text-[9px] font-bold transition ${mappingModel === model ? 'bg-blue-500 text-white shadow-sm' : model === 'dcpReuse' && (servingMode === 'pdDisaggregated' || componentProfile === 'helix') ? 'cursor-not-allowed bg-slate-100 text-slate-300' : 'bg-white text-slate-500 hover:bg-slate-100'}`}

@@ -1,6 +1,20 @@
 export const MAX_GPUS = 32;
 export const DEGREE_OPTIONS = [1, 2, 4];
 
+const ATTENTION_CONFIGS = {
+  mha: { queryHeads: 16, kvHeads: 16, latentWidth: null, kvFootprintUnits: 32 },
+  gqa: { queryHeads: 16, kvHeads: 4, latentWidth: null, kvFootprintUnits: 8 },
+  mla: { queryHeads: 16, kvHeads: 1, latentWidth: 4, kvFootprintUnits: 4 },
+};
+
+export const getDcpMaxDegree = (tpDegree, attentionType = 'mla') => {
+  const tp = Math.max(1, tpDegree);
+  if (attentionType === 'mla') return tp;
+  const config = ATTENTION_CONFIGS[attentionType] || ATTENTION_CONFIGS.mla;
+  const kvHeadShard = Math.min(tp, config.kvHeads);
+  return Math.max(1, Math.floor(tp / kvHeadShard));
+};
+
 export const getIllustrativeGpuCount = (degrees, mappingModel = 'orthogonal') => {
   const cpFactor = mappingModel === 'dcpReuse' ? 1 : degrees.cp;
   return degrees.dp * degrees.pp * cpFactor * degrees.tp * degrees.ep * degrees.etp;
@@ -11,9 +25,15 @@ export const getDeploymentGpuCount = (degrees, mappingModel = 'orthogonal', serv
   return getIllustrativeGpuCount(degrees, mappingModel) * poolMultiplier;
 };
 
-export const isTopologyValid = (degrees, mappingModel = 'orthogonal', servingMode = 'unified') => {
+export const isTopologyValid = (degrees, mappingModel = 'orthogonal', servingMode = 'unified', options = {}) => {
+  const { attentionType = null, attentionMode = 'standard', componentProfile = 'standard' } = options;
+  const dcpIncompatibleMode = mappingModel === 'dcpReuse'
+    && (attentionMode === 'dpAttention' || componentProfile === 'wideEp' || componentProfile === 'helix');
+  const dcpReplicationLimit = attentionType
+    ? degrees.cp <= getDcpMaxDegree(degrees.tp, attentionType)
+    : true;
   const dcpIsValid = mappingModel !== 'dcpReuse'
-    || (degrees.tp >= degrees.cp && degrees.tp % degrees.cp === 0);
+    || (!dcpIncompatibleMode && degrees.tp >= degrees.cp && degrees.tp % degrees.cp === 0 && dcpReplicationLimit);
   const pdMappingIsValid = !(servingMode === 'pdDisaggregated' && mappingModel === 'dcpReuse');
   return dcpIsValid && pdMappingIsValid && getDeploymentGpuCount(degrees, mappingModel, servingMode) <= MAX_GPUS;
 };
@@ -44,20 +64,33 @@ export const getDeploymentGpuCoordinates = (gpuIndex, degrees, mappingModel = 'o
   };
 };
 
-export const getComponentParallelState = (degrees, profile = 'standard', attentionMode = 'standard') => {
+export const getComponentParallelState = (
+  degrees,
+  profile = 'standard',
+  attentionMode = 'standard',
+  attentionType = 'mla',
+  moeTransport = 'tokenA2a',
+) => {
   const wideEp = profile === 'wideEp';
   const helix = profile === 'helix';
+  const dwdp = moeTransport === 'dwdp';
   const dpAttention = attentionMode === 'dpAttention' || wideEp;
+  const helixMla = helix && attentionType === 'mla';
   return {
     attentionMode: helix ? 'helix' : dpAttention ? 'dpAttention' : 'standard',
-    attentionDp: wideEp ? degrees.dp * degrees.ep : degrees.dp,
-    attentionDpIndex: (coords) => wideEp
+    attentionDp: wideEp || dwdp ? degrees.dp * degrees.ep : degrees.dp,
+    attentionDpIndex: (coords) => (wideEp || dwdp
       ? coords.dp_idx * degrees.ep + coords.ep_idx
-      : coords.dp_idx,
-    attentionTp: degrees.tp,
+      : coords.dp_idx),
+    attentionTp: dpAttention || helixMla ? 1 : degrees.tp,
+    dpAttentionWorkersPerOuterDp: wideEp ? degrees.ep * degrees.tp : dpAttention ? degrees.tp : 1,
     sparseEp: degrees.ep,
-    lmHeadDp: wideEp ? degrees.dp * degrees.ep : degrees.dp,
-    kvParallel: helix ? degrees.ep : 1,
+    lmHeadDp: wideEp || dwdp ? degrees.dp * degrees.ep : degrees.dp,
+    kvParallel: helix ? (helixMla ? degrees.tp * degrees.ep : degrees.ep) : 1,
+    kvParallelIndex: (coords) => (helix
+      ? (helixMla ? coords.ep_idx * degrees.tp + coords.tp_idx : coords.ep_idx)
+      : coords.cp_idx),
+    helixMla,
     ffnTp: degrees.tp,
     ffnEp: degrees.ep,
     rankReuseSize: helix ? degrees.tp * degrees.ep : 1,
@@ -69,32 +102,40 @@ export const getAttentionArchitectureState = (
   attentionType = 'mla',
   attentionMode = 'standard',
   contextMode = 'decode',
+  mappingModel = 'orthogonal',
+  componentProfile = 'standard',
 ) => {
-  const configs = {
-    mha: { queryHeads: 16, kvHeads: 16, latentWidth: null, kvFootprintUnits: 32 },
-    gqa: { queryHeads: 16, kvHeads: 4, latentWidth: null, kvFootprintUnits: 8 },
-    mla: { queryHeads: 16, kvHeads: 1, latentWidth: 4, kvFootprintUnits: 4 },
-  };
-  const config = configs[attentionType] || configs.mla;
+  const config = ATTENTION_CONFIGS[attentionType] || ATTENTION_CONFIGS.mla;
   const workerCount = Math.max(1, degrees.tp);
   const isDpAttention = attentionMode === 'dpAttention';
-  const kvHeadShardDegree = attentionType === 'mla'
+  const isHelix = attentionMode === 'helix';
+  const kvHeadShardDegree = isDpAttention || attentionType === 'mla'
     ? 1
     : Math.min(workerCount, config.kvHeads);
-  const kvReplication = isDpAttention
+  const rawReplication = isDpAttention
     ? 1
     : Math.max(1, Math.ceil(workerCount / kvHeadShardDegree));
+  const kvReplication = isDpAttention
+    ? 1
+    : isHelix && attentionType === 'mla'
+      ? 1
+      : mappingModel === 'dcpReuse'
+        ? Math.max(1, Math.ceil(rawReplication / Math.max(1, degrees.cp)))
+        : rawReplication;
+  const moeParallel = getMoeParallelState(degrees, componentProfile);
+  const hasMultipleDpWorkers = isDpAttention && (componentProfile === 'wideEp' ? degrees.ep * degrees.tp > 1 : workerCount > 1);
 
   return {
     ...config,
     attentionType,
     contextMode,
     workerCount,
-    requestLaneCount: isDpAttention ? workerCount : 1,
+    requestLaneCount: isDpAttention ? (componentProfile === 'wideEp' ? degrees.ep * degrees.tp : workerCount) : 1,
     kvHeadShardDegree,
     kvReplication,
     hasExclusiveRequestKv: isDpAttention,
-    needsTokenGatherBeforeMoe: isDpAttention && workerCount > 1,
+    needsTokenGatherBeforeMoe: hasMultipleDpWorkers && moeParallel.expertTp > 1,
+    usesDirectEpDispatch: hasMultipleDpWorkers && moeParallel.expertTp === 1 && degrees.ep > 1,
     tokensPerRequest: contextMode === 'prefill' ? 'S_new' : '1',
   };
 };
@@ -110,12 +151,20 @@ export const getDwdpExpertResidency = (expertIndex, coords, epDegree) => (
   expertIndex % epDegree === coords.ep_idx ? 'local' : 'prefetched'
 );
 
-export const getMoeParallelState = (degrees) => {
+export const getMoeParallelState = (degrees, componentProfile = 'standard') => {
   if (degrees.etp > 1) {
     return {
       mode: degrees.ep > 1 ? 'hybrid' : 'etp',
       expertTp: degrees.etp,
       shardAxis: 'etp',
+    };
+  }
+
+  if (componentProfile === 'helix' && degrees.ep > 1 && degrees.tp > 1) {
+    return {
+      mode: 'hybrid',
+      expertTp: degrees.tp,
+      shardAxis: 'tp',
     };
   }
 
