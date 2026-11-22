@@ -57,7 +57,14 @@ const componentSource = readFileSync(new URL('../src/components/DpAttention.jsx'
 assert.ok(componentSource.includes('min-w-[520px]'), 'dense four-rank canvas keeps the compact width contract');
 assert.ok(!componentSource.includes('min-w-[760px]'), 'legacy oversized canvas width must not return');
 assert.ok(componentSource.includes("mode === 'localMatrix'"), 'returned DP shards use a visible matrix encoding');
+assert.ok(componentSource.includes("mode === 'routed'"), 'EP-MoE dispatched tokens render mixed cross-rank colors');
 assert.ok(componentSource.includes("tReturnedOutput"), 'returned matrices keep an explicit semantic label');
+assert.ok(componentSource.indexOf('data-testid="ep-router-row"') < componentSource.indexOf("'tDispatch' : 'tGather'"), 'EP-MoE Router/Top-k runs before All-to-All Dispatch');
+assert.ok(!componentSource.includes('H\\times\\frac{EH}{4}'), 'TP-FFN up-projection uses E x (H x H_E/4), not H x (EH/4)');
+assert.ok(!componentSource.includes('<Scissors'), 'Reduce-Scatter renders cross-rank collective lines, not local slice scissors');
+assert.ok(componentSource.includes('data-testid="tp-all-reduce-badge"'), 'Standard TP depicts cross-rank All-Reduce before final output');
+assert.ok(componentSource.includes('H\\times(d_c+d_h^R)'), 'KV compression projection includes decoupled RoPE key dim d_h^R');
+assert.ok(componentSource.includes('attn_global = tp_all_reduce(o_proj(attn_local))'), 'Standard TP pseudocode exposes W_O + All-Reduce');
 
 for (const mode of ['dp', 'tp']) {
   const short = deriveDpAttentionSnapshot({ mode, step: 2, historyLength: 128 });

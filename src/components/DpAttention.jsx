@@ -2,7 +2,7 @@ import ChapterIcon from './ChapterIcon';
 import {useExperimentState} from '../lib/ExperimentContext';
 import {useLanguage} from '../lib/LanguageContext';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Play, Pause, SkipForward, RotateCcw, Database, Zap, Code, Layers, Info, AlertTriangle, Network, Scissors, ArrowDown, Cpu, GripHorizontal } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Database, Zap, Code, Layers, Info, AlertTriangle, Network, ArrowDown, Cpu, GripHorizontal } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveDpAttentionSnapshot, getMaxStep } from './dp-attention/model';
 
@@ -23,9 +23,9 @@ const i18n = {
     moeTopology: 'MoE 拓扑',
     tpMoe: 'TP-FFN',
     epMoe: 'EP-MoE',
-    assumptionTp: '代表性配置：TP=4 · DP=1 · Attention TP=4',
-    assumptionDpTp: '代表性配置：TP=4 · DP=4 · Attention TP=1 · MoE TP',
-    assumptionDpEp: '代表性配置：TP=4 · DP=4 · Attention TP=1 · MoE EP',
+    assumptionTp: '代表性配置：TP=4 · DP=1 · Attention TP=4 · MoE TP=4',
+    assumptionDpTp: '代表性配置：TP=4 · DP=4 · Attention TP=1 · MoE TP=4',
+    assumptionDpEp: '代表性配置：World=4 · DP=4 · Attention TP=1 · MoE EP=4',
     scrollHint: '横向滚动查看全部 4 个 Rank',
     cachePerRank: '单 Rank KV',
     cacheCluster: '集群总 KV',
@@ -63,6 +63,8 @@ const i18n = {
     dimS: 'KV 历史长度',dimQuery:'本轮输入长度',decodeLengths:'普通逐 Token Decode：每个请求本轮只投影一个新位置，Attention 读取累计历史；Gather 和 MoE 处理本轮激活，不重算整段历史。',sourceLengths:'当前输入与缓存区间的源码对应',
     dimH: '隐藏维',
     dimDc: 'KV 压缩维',
+    dimDr: '解耦 RoPE 维',
+    dimExtraNote: '其余符号：d_q 为 Q 压缩维，H_q 为 Q 头数，E 为专家数，H_E 为单专家中间维，T_expert 为本卡收到的路由 Token 数；公式中 b 为单元素字节，p=4 为 TP 组大小，d 为 DP 数（单层 KV 估算）。',
     rank: 'Rank',
     globalQueue: '全局输入请求队列 (Global Request Queue)',
 
@@ -77,13 +79,16 @@ const i18n = {
     tReduceScatter: 'Reduce-Scatter',
     tDispatch: 'All-to-All Dispatch',
     tCombine: 'All-to-All Combine',
+    tAllReduce: 'All-Reduce (跨卡求和)',
     tMoEIn: 'MoE 输入',
+    tDispatchedIn: '已分发 Token',
     tMoEUp: '专家 Up 投影',
     tMoEDown: '专家 Down 投影',
     tMoEOut: '层最终输出',
     tReturnedOutput: '返回本地矩阵',
     returnResult: '每个 Rank 取回',
     tRouter: 'Router / Top-k',
+    lblRouterLocal: '本地路由选择',
     tExperts: '本地专家',
 
     lblRowShardB4: 'Row Shard (B/4切块)',
@@ -94,12 +99,12 @@ const i18n = {
     lblRepDisaster: 'TP 组 4 份',
     lblRowShardPerf: '本地请求 KV',
     lblRowShardLocal: '本地 Attention',
-    lblFullReduce: 'TP 归约结果',
+    lblFullReduce: 'W_O + TP All-Reduce',
     lblFullBatchIn: '全局 Batch',
     lblColShard: '列切分',
     lblRowShard: '行切分',
     lblRowShardLoop: '本地请求输出',
-    lblTokenShard: 'Routed Tokens (非均匀)',
+    lblTokenShard: '跨卡路由混合 Token',
     lblExpertShard: 'Expert Shard (EP)',
 
     // 代码注释
@@ -154,9 +159,9 @@ const i18n = {
     moeTopology: 'MoE Topology',
     tpMoe: 'TP-FFN',
     epMoe: 'EP-MoE',
-    assumptionTp: 'Representative: TP=4 · DP=1 · Attention TP=4',
-    assumptionDpTp: 'Representative: TP=4 · DP=4 · Attention TP=1 · MoE TP',
-    assumptionDpEp: 'Representative: TP=4 · DP=4 · Attention TP=1 · MoE EP',
+    assumptionTp: 'Representative: TP=4 · DP=1 · Attention TP=4 · MoE TP=4',
+    assumptionDpTp: 'Representative: TP=4 · DP=4 · Attention TP=1 · MoE TP=4',
+    assumptionDpEp: 'Representative: World=4 · DP=4 · Attention TP=1 · MoE EP=4',
     scrollHint: 'Scroll horizontally to inspect all four ranks',
     cachePerRank: 'Per-rank KV',
     cacheCluster: 'Cluster KV',
@@ -193,6 +198,8 @@ const i18n = {
     dimS: 'KV history length',dimQuery:'Current input length',decodeLengths:'Ordinary token-by-token Decode projects one new position per request and reads accumulated KV. Gather and MoE process current activations, not the whole history.',sourceLengths:'Source: current input versus cached interval',
     dimH: 'Hidden',
     dimDc: 'KV latent',
+    dimDr: 'RoPE key dim',
+    dimExtraNote: 'Other symbols: d_q query latent, H_q query heads, E experts, H_E per-expert FFN width, T_expert routed tokens received locally; b bytes/element, p=4 TP group size, d DP size (per-layer KV).',
     rank: 'Rank',
     globalQueue: 'Global Input Request Queue',
 
@@ -206,13 +213,16 @@ const i18n = {
     tReduceScatter: 'Reduce-Scatter',
     tDispatch: 'All-to-All Dispatch',
     tCombine: 'All-to-All Combine',
+    tAllReduce: 'All-Reduce (TP Sum)',
     tMoEIn: 'MoE Input',
+    tDispatchedIn: 'Dispatched Tokens',
     tMoEUp: 'Expert Up Proj',
     tMoEDown: 'Expert Down Proj',
     tMoEOut: 'Layer Final Output',
     tReturnedOutput: 'Returned Local Matrix',
     returnResult: 'Each rank receives',
     tRouter: 'Router / Top-k',
+    lblRouterLocal: 'Local routing',
     tExperts: 'Local Experts',
 
     lblRowShardB4: 'Row Shard (B/4)',
@@ -223,12 +233,12 @@ const i18n = {
     lblRepDisaster: '4 TP copies',
     lblRowShardPerf: 'Local request KV',
     lblRowShardLocal: 'Local attention',
-    lblFullReduce: 'TP reduced result',
+    lblFullReduce: 'W_O + TP All-Reduce',
     lblFullBatchIn: 'Global batch',
     lblColShard: 'Column shard',
     lblRowShard: 'Row shard',
     lblRowShardLoop: 'Local request output',
-    lblTokenShard: 'Routed Tokens (Variable)',
+    lblTokenShard: 'Mixed Routed Tokens',
     lblExpertShard: 'Expert Shard (EP)',
 
     pyTitle: 'Python Pseudocode',
@@ -366,6 +376,19 @@ const DataBlock = ({ title, dims, mode, label, emptyLabel = '—', isEmpty = fal
         {mode === 'subset' && (
           <div className="flex flex-col w-[70%] h-[6px] rounded-[2px] border border-slate-300 overflow-hidden shadow-sm">
              <div className={`flex-1 w-full ${bColors[rankIndex]}`} />
+          </div>
+        )}
+
+        {mode === 'routed' && (
+          <div className="flex w-[76%] h-[18px] rounded-[2px] border border-slate-300 overflow-hidden shadow-sm">
+            {[
+              [3, 1, 2, 1],
+              [1, 3, 1, 2],
+              [2, 1, 3, 1],
+              [1, 2, 1, 3],
+            ][rankIndex % 4].map((weight, idx) => (
+              <div key={idx} style={{ flex: weight }} className={`h-full ${bColors[idx]} border-r border-black/10 last:border-0`} />
+            ))}
           </div>
         )}
 
@@ -577,6 +600,7 @@ const DpAttentionVisualizer = () => {
                      [String.raw`T_{\mathrm{KV}}`, 'dimS'],
                      [String.raw`H`, 'dimH'],
                      [String.raw`d_c`, 'dimDc'],
+                     [String.raw`d_h^R`, 'dimDr'],
                    ].map(([symbol, labelKey]) => (
                      <span key={labelKey} className="flex items-center gap-1 rounded border border-slate-200 bg-white px-1.5 py-1 text-[9px] text-slate-600 shadow-sm">
                        <MathFormula>{symbol}</MathFormula><span>{t(labelKey)}</span>
@@ -584,6 +608,7 @@ const DpAttentionVisualizer = () => {
                    ))}
                  </div>
                </div>
+               <p className="mb-3 w-full min-w-[520px] px-1 text-[10px] leading-relaxed text-slate-500">{t('dimExtraNote')}</p>
 
                {/* Swimlanes Container */}
                <div className="w-full flex-1">
@@ -635,11 +660,11 @@ const DpAttentionVisualizer = () => {
 
                           <div className="text-[10px] font-bold text-center text-slate-500 mb-0.5 border-b border-slate-200 pb-1">{t('mlaLayer')}</div>
 
-                          <WeightBlock title={t('tLatent')} dims={String.raw`H\times d_c`} splitDir="full_square" label={t('lblSharedFull')} rankIndex={i} />
+                          <WeightBlock title={t('tLatent')} dims={String.raw`H\times(d_c+d_h^R)`} splitDir="full_square" label={t('lblSharedFull')} rankIndex={i} />
 
                           <WeightBlock
                              title={t('tWQ')}
-                             dims={modelType === 'tp' ? String.raw`H\to d_q\to \frac{H_qd_h}{4}` : String.raw`H\to d_q\to H_qd_h`}
+                             dims={modelType === 'tp' ? String.raw`H\to d_q\to \frac{H_q}{4}(d_c+d_h^R)` : String.raw`H\to d_q\to H_q(d_c+d_h^R)`}
                              splitDir={modelType === 'tp' ? 'col' : 'full_col'}
                              label={modelType === 'tp' ? t('lblColShardHead') : t('lblSharedNone')}
                              rankIndex={i}
@@ -665,7 +690,23 @@ const DpAttentionVisualizer = () => {
                       ))}
                    </div>
 
-                   {/* Row 3: Inter-layer Comm (All Gather) / Arrows */}
+                   {/* Row 2.5: EP-MoE Local Router / Top-k (runs BEFORE All-to-All Dispatch on local [B/4, 1, H]) */}
+                   {snapshot.isDp && snapshot.moeTopology === 'ep' && (
+                     <div data-testid="ep-router-row" className="grid grid-cols-4 gap-2 w-full">
+                       {[0, 1, 2, 3].map(i => (
+                         <div key={`router-${i}`} className={`rounded-lg border px-2 py-1.5 flex flex-col items-center justify-center transition-all duration-500 ${snapshot.views.bridgeVisible ? 'border-amber-300 bg-amber-50/70 shadow-sm' : 'border-dashed border-slate-200 bg-slate-50/50 opacity-60'}`}>
+                           <div className="text-[10px] font-bold text-amber-900">{t('tRouter')}</div>
+                           <div className="text-[9px] text-amber-700"><MathFormula>{snapshot.tensors.attentionOutputShapeLatex}</MathFormula></div>
+                           <div className="mt-1 flex w-[70%] h-[5px] overflow-hidden rounded-[2px] border border-amber-300">
+                             <div className={`flex-1 ${bColors[i]}`} />
+                           </div>
+                           <div className="mt-0.5 text-[8px] font-semibold text-amber-800">{t('lblRouterLocal')}</div>
+                         </div>
+                       ))}
+                     </div>
+                   )}
+
+                   {/* Row 3: Inter-layer Comm (All Gather / All-to-All Dispatch) / Arrows */}
                    <div className={`relative w-full flex items-center justify-center transition-all duration-500 ${modelType === 'dp' ? 'h-24 my-2' : 'h-8 my-1'}`}>
                       <div className="absolute inset-0 grid grid-cols-4 gap-2 w-full h-full opacity-10">
                         {[0,1,2,3].map(i => <div key={i} className="flex justify-center h-full border-l-2 border-slate-500 border-dashed"></div>)}
@@ -725,32 +766,55 @@ const DpAttentionVisualizer = () => {
                             <div className="text-[10px] font-bold text-center text-slate-500 mb-0.5 border-b border-slate-200 pb-1">{t('moeLayer')}</div>
 
                             <DataBlock
-                              title={isExpertParallel ? t('tRouter') : t('tMoEIn')}
+                              title={isExpertParallel ? t('tDispatchedIn') : t('tMoEIn')}
                               dims={snapshot.tensors.moeInputShapeLatex}
-                              mode={isExpertParallel ? 'subset' : 'full'}
+                              mode={isExpertParallel ? 'routed' : 'full'}
                               label={isExpertParallel ? t('lblTokenShard') : t('lblFullBatchIn')}
                               emptyLabel={t('empty')}
                               isEmpty={!isMoEInActive}
                               rankIndex={i}
                             />
 
-                            <WeightBlock title={isExpertParallel ? t('tExperts') : t('tMoEUp')} dims={isExpertParallel ? String.raw`\frac{E}{4}\times(H\to H_E)` : String.raw`H\times\frac{EH}{4}`} splitDir={isExpertParallel ? 'full_col' : 'col'} label={isExpertParallel ? t('lblExpertShard') : t('lblColShard')} rankIndex={i} />
-                            <WeightBlock title={t('tMoEDown')} dims={isExpertParallel ? String.raw`\frac{E}{4}\times(H_E\to H)` : String.raw`\frac{EH}{4}\times H`} splitDir={isExpertParallel ? 'full_col' : 'row'} label={isExpertParallel ? t('lblExpertShard') : t('lblRowShard')} rankIndex={i} />
+                            <WeightBlock title={isExpertParallel ? t('tExperts') : t('tMoEUp')} dims={isExpertParallel ? String.raw`\frac{E}{4}\times(H\to H_E)` : String.raw`E\times\left(H\times\frac{H_E}{4}\right)`} splitDir={isExpertParallel ? 'full_col' : 'col'} label={isExpertParallel ? t('lblExpertShard') : t('lblColShard')} rankIndex={i} />
+                            <WeightBlock title={t('tMoEDown')} dims={isExpertParallel ? String.raw`\frac{E}{4}\times(H_E\to H)` : String.raw`E\times\left(\frac{H_E}{4}\times H\right)`} splitDir={isExpertParallel ? 'full_col' : 'row'} label={isExpertParallel ? t('lblExpertShard') : t('lblRowShard')} rankIndex={i} />
                           </div>
                         );
                       })}
                    </div>
 
-                   {/* Row 5: Inter-layer Comm (Slice) / Arrows */}
-                   <div className={`relative w-full flex items-center justify-center transition-all duration-500 ${modelType === 'dp' ? 'h-20 my-2' : 'h-8 my-1'}`}>
+                   {/* Row 5: Inter-layer Comm (Reduce-Scatter / All-to-All Combine / TP All-Reduce) */}
+                   <div className="relative w-full flex items-center justify-center transition-all duration-500 h-20 my-2">
                       <div className="absolute inset-0 grid grid-cols-4 gap-2 w-full h-full opacity-10">
                         {[0,1,2,3].map(i => <div key={i} className="flex justify-center h-full border-l-2 border-slate-500 border-dashed"></div>)}
                       </div>
 
+                      {modelType === 'tp' && snapshot.views.outputVisible && (
+                         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" preserveAspectRatio="none">
+                           <defs>
+                             <marker id="arrow-tp-ar" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
+                               <polygon points="0 0, 6 3, 0 6" fill="#9333ea" />
+                             </marker>
+                           </defs>
+                           {[12.5, 37.5, 62.5, 87.5].map((x, i) => (
+                             <React.Fragment key={`tp-ar-${i}`}>
+                               <line x1={`${x}%`} y1="0%" x2="50%" y2="48%" stroke="#9333ea" strokeWidth="2.5" strokeDasharray="6 4" className="animate-flow" />
+                               <line x1="50%" y1="52%" x2={`${x}%`} y2="100%" stroke="#9333ea" strokeWidth="2.5" strokeDasharray="6 4" markerEnd="url(#arrow-tp-ar)" className="animate-flow" />
+                             </React.Fragment>
+                           ))}
+                         </svg>
+                      )}
+
                       {modelType === 'tp' && (
-                         <div className="absolute inset-0 grid grid-cols-4 gap-2 w-full h-full">
-                           {[0,1,2,3].map(i => <div key={i} className="flex justify-center items-center h-full"><ArrowDown size={20} className={`transition-all duration-500 ${snapshot.views.outputVisible ? 'text-indigo-400' : 'text-slate-300 opacity-30'}`} /></div>)}
-                         </div>
+                        <div data-testid="tp-all-reduce-badge" className={`absolute left-1/2 z-20 w-[160px] -translate-x-1/2 transition-all duration-500
+                          ${snapshot.views.outputVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}`}>
+                          <div className="flex flex-col items-center rounded-xl border-2 border-purple-400 bg-purple-50 px-2 py-1.5 text-purple-800 shadow-[0_0_15px_rgba(147,51,234,0.28)]">
+                            <div className="flex items-center justify-center gap-1 text-center text-[9px] font-bold leading-tight">
+                              <Network size={13} className={snapshot.operation === 'output' ? 'animate-pulse' : ''} />
+                              {t('tAllReduce')}
+                            </div>
+                            <div className="mt-0.5 text-[9px] text-purple-900"><MathFormula>{snapshot.tensors.finalShapeLatex}</MathFormula></div>
+                          </div>
+                        </div>
                       )}
 
                       {modelType === 'dp' && snapshot.views.returnVisible && (
@@ -760,13 +824,11 @@ const DpAttentionVisualizer = () => {
                                <polygon points="0 0, 6 3, 0 6" fill="#10b981" />
                              </marker>
                            </defs>
-                           {[12.5, 37.5, 62.5, 87.5].map((x, i) => snapshot.moeTopology === 'ep' ? (
-                             <React.Fragment key={`combine-${i}`}>
+                           {[12.5, 37.5, 62.5, 87.5].map((x, i) => (
+                             <React.Fragment key={`return-${i}`}>
                                <line x1={`${x}%`} y1="0%" x2="50%" y2="48%" stroke="#10b981" strokeWidth="2.5" strokeDasharray="6 4" className="animate-flow" />
                                <line x1="50%" y1="52%" x2={`${x}%`} y2="100%" stroke="#10b981" strokeWidth="2.5" strokeDasharray="6 4" markerEnd="url(#arrow-slice)" className="animate-flow" />
                              </React.Fragment>
-                           ) : (
-                             <line key={`slice-${i}`} x1={`${x}%`} y1="0%" x2={`${x}%`} y2="100%" stroke="#10b981" strokeWidth="2.5" strokeDasharray="6 4" markerEnd="url(#arrow-slice)" className="animate-flow" />
                            ))}
                          </svg>
                       )}
@@ -776,7 +838,7 @@ const DpAttentionVisualizer = () => {
                           ${snapshot.views.returnVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}`}>
                           <div className="flex flex-col items-center rounded-xl border-2 border-emerald-400 bg-emerald-50 px-2 py-1.5 text-emerald-800 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                             <div className="flex items-center justify-center gap-1 text-center text-[9px] font-bold leading-tight">
-                              {snapshot.moeTopology === 'ep' ? <Network size={13} className={snapshot.communicationOperation === 'expertCombine' ? 'animate-pulse' : ''} /> : <Scissors size={13} className={snapshot.communicationOperation === 'reduceScatter' ? "animate-pulse" : ""} />}
+                              <Network size={13} className={['expertCombine', 'reduceScatter'].includes(snapshot.communicationOperation) ? 'animate-pulse' : ''} />
                               {t(snapshot.moeTopology === 'ep' ? 'tCombine' : 'tReduceScatter')}
                             </div>
                             <div className="mt-0.5 text-[8px] font-semibold text-emerald-700">{t('returnResult')}</div>
@@ -811,10 +873,10 @@ const DpAttentionVisualizer = () => {
           {/* Right Column: Pseudocode Panel */}
           <div className="xl:col-span-5 bg-slate-900 rounded-2xl p-4 md:p-6 shadow-lg border border-slate-800 text-slate-300 flex flex-col relative overflow-hidden h-full">
              <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none"><Code size={120}/></div>
-             <h2 data-section-anchor="dpattention-1" className="text-base font-bold mb-4 text-white border-b border-slate-700 pb-2 flex items-center justify-between z-10 shrink-0">
-               <div className="flex items-center gap-2"><Code className="text-emerald-400" size={18} /> {t('pyTitle')}</div>
+             <div className="mb-4 border-b border-slate-700 pb-2 flex items-center justify-between z-10 shrink-0">
+               <h2 data-section-anchor="dpattention-1" className="text-base font-bold text-white flex items-center gap-2"><Code className="text-emerald-400" size={18} /> {t('pyTitle')}</h2>
                <span className="text-[10px] text-slate-400 font-mono border border-slate-700 px-2 py-0.5 rounded bg-slate-800 shadow-sm">Python</span>
-             </h2>
+             </div>
 
              <div className="font-mono text-[11px] md:text-[12px] overflow-x-auto overflow-y-auto bg-[#0a0f18] p-4 rounded-xl border border-slate-800 flex-1 leading-relaxed z-10 shadow-inner custom-scrollbar">
                <div className="min-w-[430px] whitespace-pre">
@@ -832,6 +894,7 @@ const DpAttentionVisualizer = () => {
                    <div>  <span className="text-emerald-500">{t('pyKvState')}</span></div>
                    <div>  kv_cache.write(request_meta.slots, c_kv, k_rope)</div>
                    <div>  attn_local = mla_decode(q, kv_cache.local_view(request_meta))</div>
+                   {modelType === 'tp' && <div>  attn_global = tp_all_reduce(o_proj(attn_local))</div>}
                  </div>
                  {modelType === 'dp' && snapshot.moeTopology === 'tp' && (
                    <>
@@ -855,7 +918,7 @@ const DpAttentionVisualizer = () => {
                  <br/>
                  <div className={snapshot.operation === 'moe' ? "bg-indigo-900/40 text-indigo-100 px-2 -mx-2 rounded border-l-2 border-indigo-400 transition-all py-1" : "text-slate-500 py-1"}>
                    <div>  <span className="text-indigo-300">{t(snapshot.moeTopology === 'ep' ? 'pyMoeEp' : 'pyMoeTp')}</span></div>
-                   <div>  expert_out = local_experts({modelType === 'tp' ? 'attn_local' : snapshot.moeTopology === 'ep' ? 'expert_in' : 'x_global'})</div>
+                   <div>  expert_out = local_experts({modelType === 'tp' ? 'attn_global' : snapshot.moeTopology === 'ep' ? 'expert_in' : 'x_global'})</div>
                  </div>
                  {modelType === 'dp' && (
                    <>
