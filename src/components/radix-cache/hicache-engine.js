@@ -14,7 +14,7 @@ export function deriveHiCacheEngineState(step=0,options={}){
  const tree=()=>{const root={id:'root',pages:[],children:[]};for(const path of paths){let n=root;for(const id of path){if(!local.has(id))break;let c=n.children.find(c=>c.id===id);if(!c){c={id,pages:[id],children:[]};n.children.push(c);}n=c;}}const out=[];const flatten=(n,parent=null)=>{while(n.id!=='root'&&n.children.length===1&&!ends.has(n.pages.at(-1))){const c=n.children[0];n.pages.push(...c.pages);n.children=c.children;}out.push({id:n.id,pages:n.pages,parent});n.children.forEach(c=>flatten(c,n.id));};flatten(root);return out;};
  const isLeaf=(id,tier)=>!paths.some(p=>{const i=p.indexOf(id);return i>=0&&p.slice(i+1).some(x=>ready[tier].has(x));});
  const candidates=tier=>pools[tier].filter(id=>id&&ready[tier].has(id)&&!count(tier==='gpu'?gpuRefs:hostRefs,id)&&(tier!=='host'||!ready.gpu.has(id))&&isLeaf(id,tier)).sort((a,b)=>(age[a]||0)-(age[b]||0));
- const capture=(kind,ids=[],from=null,to=null)=>history.push({kind,ids,from,to,request,pools:structuredClone(pools),ready:Object.fromEntries(Object.entries(ready).map(([k,s])=>[k,[...s]])),tree:tree(),gpuRefs:{...gpuRefs},hostRefs:{...hostRefs},locked:Object.keys(gpuRefs).filter(id=>gpuRefs[id]>0),candidates:{gpu:candidates('gpu'),host:candidates('host')},routes:structuredClone(routes),transfer:transfer?{...transfer}:null,traffic,computed,tail:tail?{...tail}:null,reader,rankResult:rankResult?[...rankResult]:null,received,committed});
+ const capture=(kind,ids=[],from=null,to=null)=>history.push({kind,ids:[...ids],from,to,request,pools:structuredClone(pools),ready:Object.fromEntries(Object.entries(ready).map(([k,s])=>[k,[...s]])),tree:tree(),gpuRefs:{...gpuRefs},hostRefs:{...hostRefs},locked:Object.keys(gpuRefs).filter(id=>gpuRefs[id]>0),candidates:{gpu:candidates('gpu'),host:candidates('host')},routes:structuredClone(routes),transfer:transfer?{...transfer}:null,traffic,computed,tail:tail?{...tail}:null,reader,rankResult:rankResult?[...rankResult]:null,received,committed});
  const remove=(tier,id)=>{pools[tier][pools[tier].indexOf(id)]=null;ready[tier].delete(id);capture('evict',[id],tier);if(!ready.gpu.has(id)&&!ready.host.has(id)){local.delete(id);capture('prune',[id]);}};
  const insert=id=>{local.add(id);const path=REQUESTS[request].ids.slice(0,REQUESTS[request].ids.indexOf(id)+1);if(path.length)paths.push(path);};
  const reserve=(tier,id)=>{if(pools[tier].includes(id))return true;if(!pools[tier].includes(null)&&!evict(tier))return false;pools[tier][pools[tier].indexOf(null)]=id;return true;};
@@ -34,14 +34,14 @@ export function deriveHiCacheEngineState(step=0,options={}){
   transfer.state='ready';if(from!=='storage')ref(refs,[id],-1);if(to==='gpu')ref(gpuRefs,[id],1);capture(operation,[id],from,to);transfer=null;return true;
  };
  const evict=tier=>{const id=candidates(tier)[0];if(!id)return false;capture('victim',[id],tier);
-  if(tier==='gpu'&&opts.write==='write_back'&&!ready.host.has(id)){if(copy(id,'gpu','host','backup'))copy(id,'host','storage','persist');else capture('drop_unbacked',[id]);}
+  if(tier==='gpu'&&opts.write==='write_back'&&!ready.host.has(id)){if(!copy(id,'gpu','host','backup'))capture('drop_unbacked',[id]);}
   remove(tier,id);return true;};
  capture('idle');
  REQUESTS.forEach((r,index)=>{request=index;routes=[];tail=null;rankResult=null;received=0;committed=0;capture('arrive',r.ids);
   let gap=false;routes=r.ids.map(id=>{const source=gap?'unknown':ready.gpu.has(id)?'gpu':ready.host.has(id)?'host':'unknown';if(source==='unknown')gap=true;return{id,source,action:source==='gpu'?'direct':source==='host'?'load':'unknown'};});
-  const held=r.ids.filter(id=>ready.gpu.has(id));ref(gpuRefs,held,1);capture('match',held);
   const localPrefix=routes.filter(v=>v.source!=='unknown').map(v=>v.id);const end=localPrefix.at(-1);
   if(end&&tree().some(n=>n.pages.includes(end)&&n.pages.at(-1)!==end)){ends.add(end);capture('split',localPrefix);}
+  const held=routes.filter(v=>v.source==='gpu').map(v=>v.id);ref(gpuRefs,held,1);capture('match',held);
   if(index===1&&opts.concurrent){reader=true;ref(gpuRefs,['P0','P1'],1);capture('reader_acquire',['P0','P1']);}
   // Only a backend result may turn an unknown suffix into a remote hit.
   const unknown=routes.filter(v=>v.source==='unknown');if(unknown.length){capture('query_pending',unknown.map(v=>v.id));let missing=false;for(const v of unknown){v.source=!missing&&ready.storage.has(v.id)?'storage':'miss';if(v.source==='miss')missing=true;v.action=v.source==='storage'?'fetch':'compute';}capture('query',unknown.map(v=>v.id));}
@@ -49,14 +49,15 @@ export function deriveHiCacheEngineState(step=0,options={}){
   if(remote.length&&opts.prefetch==='best_effort'){remote.forEach(v=>{v.action='compute';});rankResult=[0,0];capture('prefetch_stop',remote.map(v=>v.id));}
   const loadTokens=routes.filter(v=>['load','fetch'].includes(v.action)).length*TOKENS_PER_PAGE;
   if(loadTokens>0&&loadTokens<opts.minLoad){routes.forEach(v=>{if(['load','fetch'].includes(v.action))v.action='compute';});capture('threshold_reject');}
-  for(const route of routes){const {id}=route;
+  for(let ri=0;ri<routes.length;ri++){const route=routes[ri];const {id}=route;
+   const fallbackSuffix=()=>{for(let k=ri;k<routes.length;k++)routes[k].action='compute';};
    if(route.action==='fetch'){
-    if(opts.fault==='host_pressure'){route.action='compute';capture('host_pressure',[id]);capture('allocation_failed',[id],'storage','host');}
-    else if(!copy(id,'storage','host','prefetch'))route.action='compute';
+    if(opts.fault==='host_pressure'){fallbackSuffix();capture('host_pressure',[id]);capture('allocation_failed',[id],'storage','host');}
+    else if(!copy(id,'storage','host','prefetch'))fallbackSuffix();
    }
    if(route.action==='load'||route.action==='fetch'){
-    if(opts.fault==='gpu_pressure'&&index===3){route.action='compute';capture('quota_reject',[id]);}
-    else if(copy(id,'host','gpu','load')){held.push(id);}else route.action='compute';
+    if(opts.fault==='gpu_pressure'&&index===3){fallbackSuffix();capture('quota_reject',[id]);}
+    else if(copy(id,'host','gpu','load')){held.push(id);}else fallbackSuffix();
    }
    if(route.action==='compute'){
     if(!reserve('gpu',id))throw Error('Teaching request exceeds available GPU pages');ref(gpuRefs,[id],1);held.push(id);

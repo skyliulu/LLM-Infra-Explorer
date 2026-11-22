@@ -1,16 +1,22 @@
 import assert from 'node:assert/strict';
 import {deriveHiCacheEngineState} from '../src/components/radix-cache/hicache-engine.js';
 import {deriveHiCacheLayoutState} from '../src/components/radix-cache/hicache-layout-model.js';
+import {REQUESTS} from '../src/components/radix-cache/hicache-story.js';
+const ancestors=Object.fromEntries(REQUESTS.flatMap(r=>r.ids.map((id,idx)=>[id,r.ids.slice(0,idx)])));
 let snapshots=0,configs=0;
 for(const pool of ['mha','mla'])for(const prefetch of ['wait_complete','timeout','best_effort'])for(const write of ['write_through','write_through_selective','write_back'])for(const fault of ['none','host_pressure','gpu_pressure','partial_read','rank_lag'])for(const concurrent of [true,false])for(const minLoad of [2,4]){
  const {history}=deriveHiCacheEngineState(0,{pool,prefetch,write,fault,concurrent,minLoad});configs++;
  for(let i=0;i<history.length;i++){
   snapshots++;const s=history[i],prev=history[i-1];
   for(const tier of ['gpu','host','storage']){assert.equal(new Set(s.pools[tier].filter(Boolean)).size,s.pools[tier].filter(Boolean).length);for(const id of s.ready[tier])assert(s.pools[tier].includes(id));}
+  // L3 prefix-chain contiguity: never persist an orphan suffix without its ancestors (except write_through_selective where hot subset is policy-driven)
+  if(write!=='write_through_selective'){for(const id of s.ready.storage)for(const anc of ancestors[id]||[])assert(s.ready.storage.includes(anc),`L3 orphan ${id} missing ancestor ${anc} under ${write}`);}
+  // Route plan prefix continuity: once any entry is compute, no trailing entry may load or fetch
+  let seenCompute=false;for(const rt of s.routes){if(rt.action==='compute')seenCompute=true;else if(seenCompute)assert(!['load','fetch'].includes(rt.action),`Non-contiguous route after compute: ${JSON.stringify(s.routes)}`);}
   for(const n of s.tree)for(const id of n.pages)assert(s.ready.gpu.includes(id)||s.ready.host.includes(id)||s.kind==='evict'&&s.ids.includes(id),'only local ready pages appear in tree');
   if(['allocate','queued','inflight'].includes(s.kind)){const tx=s.transfer;assert(s.ready[tx.from].includes(tx.id));assert(!s.ready[tx.to].includes(tx.id));if(tx.from!=='storage')assert((tx.from==='gpu'?s.gpuRefs:s.hostRefs)[tx.id]>0);}
   if(s.kind==='evict'){const id=s.ids[0];assert.equal((s.from==='gpu'?prev.gpuRefs:prev.hostRefs)[id]||0,0);if(s.from==='host')assert(!s.ready.gpu.includes(id));}
-  if(s.kind==='match')assert(s.routes.every(r=>['gpu','host','unknown'].includes(r.source)));
+  if(s.kind==='match'){assert(s.routes.every(r=>['gpu','host','unknown'].includes(r.source)));for(const id of s.ids)assert(s.ready.gpu.includes(id),`match snapshot polluted with non-GPU page ${id}`);}
   if(s.kind==='prune')assert(!s.tree.some(n=>n.pages.includes(s.ids[0])));
   if(s.kind==='chunk'){assert(s.tail);assert(!s.ready.gpu.includes(s.tail.id));assert(!s.tree.some(n=>n.pages.includes(s.tail.id))||s.ready.host.includes(s.tail.id));}
   if(s.kind==='consensus'){assert.equal(s.committed,Math.floor(Math.min(...s.rankResult)/2)*2);assert(!s.ready.host.includes(s.ids[0]));}
