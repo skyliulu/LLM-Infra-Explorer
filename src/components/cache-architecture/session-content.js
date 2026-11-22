@@ -48,7 +48,7 @@ export const sessionCopy = {
     device:'GPU working set', backing:'Session cache', resident:'Local states ready', absent:'Not GPU-resident', missing:'Expired', localPending:'Local states pending',
     globalMetric:'Complete global records', deltaMetric:'Added this step', transferMetric:'Global data reloaded this turn',
     repairMetric:'Encoder window repair', decoderMetric:'Decoder prefill positions',
-    reference:'Full-prefix reference', unit:'tokens', perLayer:'per layer', noRepair:'No checkpoint repair',
+    reference:'Full-sequence reference', unit:'tokens', perLayer:'per layer', noRepair:'No checkpoint repair',
     metricNote:'Bytes count complete global KV and index K, including scales. SWA, partial pairs, activations, alignment and copy overhead are excluded. Reload assumes the GPU working set is released between turns; this is not disk IO or latency.',
     titleadmit:'Receive input and match the prefix', titleload:'Reload the matched global records', titlerestore:'Restore the valid Encoder checkpoint',
     titlerepair:'Replay the prefix tail to repair Encoder SWA', titleencodeInput:'Process new input and publish incremental records',
