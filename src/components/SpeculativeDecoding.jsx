@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowDown, ArrowRight, BrainCircuit, Cpu, Database, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveSpeculativeSnapshot, deriveCorrectnessExample, getNextLifecycle, PREFIX, STREAM } from './speculative-decoding/model';
+import ServingBoundaries from './speculative-decoding/ServingBoundaries';
 import './speculative-decoding/style.css';
 import './module-header.css';
 
@@ -565,6 +566,7 @@ export default function SpeculativeDecoding() {
       <Race s={s} t={t} config={config} setConfig={setConfig} playing={racePlaying} onPlay={racePlay} onNext={raceNext} onReset={resetRace} onInspect={inspect}/>
       <Principles t={t}/>
       <Workbench s={s} t={t} playing={isPlaying} onPlay={togglePlay} onNext={()=>{setIsPlaying(false);handleNextStep();}} onReset={resetTrace} onRound={inspect} onSeek={seek} selectedNode={selectedNode} setSelectedNode={setSelectedNode}/>
+      <ServingBoundaries lang={lang}/>
       <References s={s} t={t}/>
     </div>
   </div>;
