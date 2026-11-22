@@ -1,5 +1,29 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-23 — Tier-1 三大新章与 Serving Systems 分组落地（GPU & CUDA Graph / Collective Comm / PD Disaggregation）
+
+- **全站导航与分组扩展（14 → 17 章，5 → 6 分组）**：
+  - `Foundations`（`推理基础`）新增 **`GPU & CUDA Graph`**（`#gpucudagraph`）。
+  - `Parallelism`（`并行策略`）新增 **`Collective Comm`**（`#commcollective`）。
+  - 新建第 6 分组 **`Serving Systems`**（`在线服务系统`），承接 **`PD Disaggregation`**（`#pdrouter`）。
+  - 全站同步注册 `module-groups.js`、`module-titles.js`、`chapter-icons.js`、`chapter-learning.js`（全部前向依赖无环且精确锚点）、`chapter-registry.js`、`experiment-sharing.js`、`README.md` 与 `README.zh-CN.md`。
+- **`GPU & CUDA Graph`（`#gpucudagraph`）**：
+  - §1 **CPU 发射墙与 CUDA Graph 捕获**：CPU/GPU 双轨时间轴 + 单步/播放控制 + 引擎伪代码，对比 `Eager 逐个发射`（`B=1` 52% GPU 空泡）、`Full CUDA Graph`（静态分桶 0 µs 空泡）与 `Piecewise Graph (vLLM V1)`（动态 Attention Eager、其余分段图捕获）。
+  - §2 **算子融合与 HBM 往返消除**：对比 4 个未融合逐元素 Kernel（`1.41 MiB` HBM 读写）与 2 个融合 Kernel（`928 KiB`，`-36%` 流量、中间张量留驻片上寄存器/SRAM）。
+  - §3 **H100 / B200 Roofline 与硬件层级**：对数 Roofline SVG 曲线（`H100 SXM` / `B200 SXM` × `BF16` / `FP8`），实时标注拐点 $I^*$ 与算子瓶颈区切换。
+- **`Collective Comm`（`#commcollective`）**：
+  - §1 **集合通信原语与逐跳分片流转**：4-GPU 单步演练 `All-Reduce (Ring)`（6 跳 `1.50×M`）、`Reduce-Scatter`（3 跳 `0.75×M`）、`All-Gather`（3 跳 `0.75×M`）与 `All-to-All (MoE EP)`（均匀 vs GPU 1 热点 `2.50×` 倾斜告警）。
+  - §2 **机内 NVLink 与机间 IB / RoCE 带宽断层**：$\alpha\text{-}\beta$ 延迟/带宽模型对比 `NVL72 (900 GB/s)`、`NVLink 4.0 (450 GB/s)`、`8×400GbE IB (200 GB/s)` 与 `单口 400GbE IB (50 GB/s)`，随消息量 `1..128 MB` 直观呈现延迟受限向带宽受限切换。
+  - §3 **IBGDA GPU 直发与微批计算通信掩盖**：对比 `Host-Proxy 串行`（`124 µs`、2 次 CPU 代理同步、52% 暴露通信）与 `IBGDA + MB0/MB1 交叠`（`68 µs`、0 CPU 跳数、`1.82×` 加速）。
+- **`PD Disaggregation`（`#pdrouter`）**：
+  - §1 **Prefill–Decode 干扰与分离边界**：3 路在线 Decode 叠加突发 8K Prefill，对比 `传统混布`（P99 TPOT `420 ms` 违规）、`Chunked Prefill`（TTFT `530 ms` / TPOT `112 ms` 仍破严格红线）与 `PD 分离`（`RDMA 190 GB/s` 仅 `18 ms` 传输暴露双达标；切换 `10GbE` 触发 `1024 ms` 传输反杀边界）。
+  - §2 **集群路由三难困境**：4 Worker（`W0:SysA`、`W1:SysB`、`W2/W3` 冷机）单步追踪 6 请求对比 `Load-Only`（命中率 `17%`）、`Prefix-Only`（`W0` 队列冲至 `5` 过载、`P99 TTFT 650 ms`）与 `Cache-Aware`（阈值溢出至 `W2` 自动预热副本，`67%` 命中 + `245 ms` 最低 P99 TTFT）。
+  - §3 **动态 P:D 节点配比与 SLO Goodput**：固定 16 GPU 集群支持 `RAG / Chat / CoT` 预设与 `ISL / OSL / 前缀命中率 / P 节点滑块`，SVG 曲线实时绘制 $Q_{\text{SLO}}(P)$ 与最优配比 $P^*:D^*$。
+- **实机视觉验收与修复**：
+  - 全部单元测试（`check:gpu`、`check:comm`、`check:pdrouter`、`check:workbench`、`check-navigation`、`check-theme`）与 `npm run build` 全过。
+  - 首轮 Chrome 实机截图发现并立即修复 4 项细节：① 侧边栏宽度 `w-44 → w-52` + `truncate` 解决长英文章名右侧裁切；② `GpuCudaGraph` §1 窄条芯片改用紧凑简称（`L1..L8`、`N1/QKV/RoPE/Attn/OPrj/N2/Up/Down`）保留完整 `title` 悬浮提示；③ `GpuCudaGraph` §3 Roofline 拐点标签上移至平台线上方避免与斜线重叠；④ `PdDisaggregation` §3 参数控件组封装 `.pd-ctrl-group` 防止标签与按钮换行分离。
+  - 二轮 Chrome 实机截图（Home + 3 新章 Light/Dark × ZH/EN × 1360/390）：0 console error、0 KaTeX error、EN `cjkLeak = 0`、390px `overflowX = 0`，全部核验通过。本地提交，待用户确认后推送。
+
 ### 2026-11-22 — Wave 3 全站 14 章收口（FlashAttention / SparseAttention / ParallelStrategies / Engram / DeepSeek CED / DeepInfer + README 同步）
 
 - **`FlashAttention`（`#flash`）**：

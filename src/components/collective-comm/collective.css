@@ -1,0 +1,82 @@
+/* Collective Communication workbench: light palette; shared theme compiler derives dark mode. */
+.cc-page{background:#f8fafc;color:#1e293b;font-size:13px}
+.cc-page *{box-sizing:border-box}
+.cc-page button{font:inherit;cursor:pointer}
+.cc-section{background:#fff;border:1px solid #dbe2eb;border-radius:12px;padding:16px;display:grid;gap:12px;min-width:0}
+.cc-section h2{font-size:18px;font-weight:750;color:#0f172a;line-height:1.3;margin:0}
+.cc-lead{max-width:84ch;color:#475569;line-height:1.6;margin:0}
+.cc-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:8px 10px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px}
+.cc-toggle{display:inline-flex;flex-wrap:wrap;background:#e2e8f0;border-radius:7px;padding:2px;gap:2px}
+.cc-toggle button{border:1px solid transparent;background:transparent;border-radius:5px;padding:5px 9px;min-height:30px;font-size:11.5px;color:#475569;font-weight:600;transition:background .15s,color .15s}
+.cc-toggle button[aria-pressed="true"]{background:#fff;border-color:#cbd5e1;color:#1d4ed8;box-shadow:0 1px 2px #0f172a14}
+.cc-playback{margin-left:auto}
+
+.cc-stage-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:8px;background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;font-size:12px;font-weight:650}
+.cc-gpu-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.cc-gpu-card{border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc;padding:10px;display:grid;gap:8px;min-width:0}
+.cc-gpu-card.hot{border-color:#f43f5e;background:#fff1f2;box-shadow:0 0 12px rgba(244,63,94,.2)}
+.cc-gpu-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:750;color:#0f172a}
+.cc-gpu-head span{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#e2e8f0;color:#475569}
+.cc-gpu-card.hot .cc-gpu-head span{background:#ffe4e6;color:#be123c}
+.cc-shards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.cc-shard{border:1px solid #cbd5e1;border-radius:6px;background:#fff;padding:5px 4px;text-align:center;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;font-weight:700;color:#475569;transition:all .2s}
+.cc-shard.inflight{background:#fef3c7;border-color:#f59e0b;color:#92400e}
+.cc-shard.ready{background:#d1fae5;border-color:#10b981;color:#065f46}
+.cc-shard.hot{background:#ffe4e6;border-color:#f43f5e;color:#9f1239}
+.cc-shard.empty{background:#f1f5f9;border-style:dashed;color:#94a3b8}
+
+.cc-prim-foot{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;align-items:center;border-top:1px dashed #e2e8f0;padding-top:10px}
+.cc-prim-foot p{margin:0;font-size:12px;line-height:1.6;color:#475569}
+.cc-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cc-kpis>div{border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:7px 9px}
+.cc-kpis small{display:block;font-size:10px;color:#64748b}
+.cc-kpis strong{display:block;font-size:14px;font-weight:800;color:#0f172a;margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* §2 Interconnect Alpha-Beta */
+.cc-link-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:14px;align-items:start}
+.cc-link-bars{display:grid;gap:7px}
+.cc-link-row{display:grid;grid-template-columns:188px minmax(0,1fr) 72px;gap:10px;align-items:center;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:7px 10px;text-align:left}
+.cc-link-row.on{border-color:#6366f1;background:#eef2ff}
+.cc-link-name{display:grid;gap:1px}
+.cc-link-name strong{font-size:11.5px;color:#0f172a}
+.cc-link-name small{font-size:9.5px;color:#64748b}
+.cc-link-track{height:12px;border-radius:5px;background:#e2e8f0;overflow:hidden;display:flex}
+.cc-link-track i.lat{background:#f59e0b;display:block;height:100%}
+.cc-link-track i.bw{background:#6366f1;display:block;height:100%}
+.cc-link-row b{text-align:right;font-size:11.5px;font-variant-numeric:tabular-nums;color:#0f172a}
+.cc-alpha-box{border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;padding:12px;display:grid;gap:8px}
+.cc-alpha-box p{margin:0;font-size:12px;line-height:1.6;color:#475569}
+.cc-ctrl-label{font-size:12px;font-weight:700;color:#334155}
+.cc-math-wrap{margin-top:6px;color:#0f172a}
+.cc-alpha-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:#475569}
+.cc-alpha-legend span{display:inline-flex;align-items:center;gap:5px}
+.cc-alpha-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.cc-alpha-legend i.lat{background:#f59e0b}
+.cc-alpha-legend i.bw{background:#6366f1}
+.cc-dom-pill{font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:6px;border:1px solid}
+.cc-dom-pill.lat{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+.cc-dom-pill.bw{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}
+
+/* §3 IBGDA & Overlap */
+.cc-ov-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;align-items:start}
+.cc-ov-lanes{display:grid;gap:8px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;padding:12px}
+.cc-ov-track{display:grid;grid-template-columns:108px minmax(0,1fr);gap:8px;align-items:center}
+.cc-ov-track>span{font-size:11px;font-weight:700;color:#475569}
+.cc-ov-bar{display:flex;gap:3px;height:30px;padding:3px;border-radius:6px;border:1px solid #cbd5e1;background:#fff}
+.cc-ov-seg{border-radius:4px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-ov-seg.cmp{background:#6366f1;color:#fff}
+.cc-ov-seg.proxy{background:#fecdd3;color:#9f1239;border:1px solid #fda4af}
+.cc-ov-seg.comm{background:#f59e0b;color:#fff}
+.cc-ov-seg.idle{background:#f1f5f9;color:#94a3b8;border:1px dashed #cbd5e1}
+
+.cc-evidence{border:1px solid #dbe2eb;border-radius:10px;background:#fff;padding:10px 14px;font-size:12px;color:#475569}
+.cc-evidence summary{cursor:pointer;font-weight:700;color:#1e293b}
+.cc-evidence p{margin:8px 0 0;line-height:1.6}
+
+@media(max-width:960px){
+  .cc-gpu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cc-prim-foot,.cc-link-grid,.cc-ov-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .cc-link-row{grid-template-columns:130px minmax(0,1fr) 58px}
+}

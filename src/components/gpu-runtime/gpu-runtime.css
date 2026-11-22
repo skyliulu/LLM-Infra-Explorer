@@ -1,0 +1,100 @@
+/* GPU Execution & CUDA Graph workbench: light palette; shared theme compiler derives dark mode. */
+.gr-page{background:#f8fafc;color:#1e293b;font-size:13px}
+.gr-page *{box-sizing:border-box}
+.gr-page button,.gr-page input{font:inherit}
+.gr-page button{cursor:pointer}
+.gr-section{background:#fff;border:1px solid #dbe2eb;border-radius:12px;padding:16px;display:grid;gap:12px;min-width:0}
+.gr-section h2{font-size:18px;font-weight:750;color:#0f172a;line-height:1.3;margin:0}
+.gr-lead{max-width:84ch;color:#475569;line-height:1.6;margin:0}
+.gr-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:8px 10px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px}
+.gr-toggle{display:inline-flex;flex-wrap:wrap;background:#e2e8f0;border-radius:7px;padding:2px;gap:2px}
+.gr-toggle button{border:1px solid transparent;background:transparent;border-radius:5px;padding:5px 9px;min-height:30px;font-size:11.5px;color:#475569;font-weight:600;transition:background .15s,color .15s}
+.gr-toggle button[aria-pressed="true"]{background:#fff;border-color:#cbd5e1;color:#1d4ed8;box-shadow:0 1px 2px #0f172a14}
+.gr-playback{margin-left:auto}
+
+/* §1 Dual-track timeline + code */
+.gr-grid-main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px;align-items:start}
+.gr-timeline-box{border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;padding:12px;display:grid;gap:10px;min-width:0}
+.gr-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.gr-kpis>div{border:1px solid #e2e8f0;border-radius:8px;background:#fff;padding:8px 10px;min-width:0}
+.gr-kpis small{display:block;font-size:10px;color:#64748b}
+.gr-kpis strong{display:block;font-size:15px;font-weight:800;color:#0f172a;font-variant-numeric:tabular-nums;margin-top:2px}
+.gr-kpis>div.good strong{color:#059669}
+.gr-kpis>div.warn strong{color:#e11d48}
+
+.gr-tracks{display:grid;gap:8px;overflow-x:auto;padding-bottom:2px}
+.gr-track-row{display:grid;grid-template-columns:116px minmax(420px,1fr);gap:8px;align-items:center}
+.gr-track-label{font-size:11px;font-weight:700;color:#475569}
+.gr-lane{position:relative;height:36px;border-radius:7px;border:1px solid #cbd5e1;background:#fff;overflow:hidden}
+.gr-lane.gpu{background:repeating-linear-gradient(45deg,#fff1f2,#fff1f2 6px,#fff 6px,#fff 12px)}
+.gr-op{position:absolute;top:4px;bottom:4px;border-radius:4px;border:1px solid;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:opacity .2s,transform .2s}
+.gr-op.launch{background:#fef3c7;border-color:#f59e0b;color:#92400e}
+.gr-op.graph{background:#dbeafe;border-color:#3b82f6;color:#1e40af}
+.gr-op.gemm{background:#6366f1;border-color:#4f46e5;color:#fff}
+.gr-op.elementwise{background:#0ea5e9;border-color:#0284c7;color:#fff}
+.gr-op.attention{background:#10b981;border-color:#059669;color:#fff}
+.gr-op.active{outline:2px solid #0f172a;outline-offset:1px;z-index:5}
+.gr-op.pending{opacity:.35}
+
+.gr-compare-bars{display:grid;gap:5px;border-top:1px dashed #cbd5e1;padding-top:8px}
+.gr-compare-bars>small{font-size:10.5px;font-weight:650;color:#64748b}
+.gr-cbar-row{display:grid;grid-template-columns:152px minmax(0,1fr) 54px;gap:8px;align-items:center;border:1px solid transparent;border-radius:6px;background:#fff;padding:4px 8px;text-align:left}
+.gr-cbar-row.on{border-color:#6366f1;background:#eef2ff}
+.gr-cbar-row span{font-size:11px;font-weight:600;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gr-cbar-track{height:8px;border-radius:4px;background:#e2e8f0;overflow:hidden}
+.gr-cbar-track i{display:block;height:100%;border-radius:4px;background:#6366f1}
+.gr-cbar-row.warn .gr-cbar-track i{background:#f43f5e}
+.gr-cbar-row b{text-align:right;font-size:11px;font-variant-numeric:tabular-nums;color:#0f172a}
+
+.gr-side{display:grid;gap:10px;min-width:0;align-content:start}
+.gr-callout{border:1px solid #cbd5e1;border-left:3px solid #6366f1;border-radius:8px;background:#f8fafc;padding:10px}
+.gr-callout.warn{border-color:#fecdd3;border-left-color:#f43f5e;background:#fff1f2}
+.gr-callout h3{margin:0 0 4px;font-size:12.5px;font-weight:700;color:#0f172a}
+.gr-callout p{margin:0;font-size:11.5px;line-height:1.6;color:#475569}
+.gr-code{background:#0d1117;border-radius:8px;padding:10px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;line-height:1.65;color:#cbd5e1;overflow-x:auto;margin:0}
+.gr-code-title{font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px}
+.gr-ridge-formula{font-size:12px;font-weight:700;color:#3730a3}
+.gr-code>div{padding:0 5px;border-radius:3px;white-space:pre}
+.gr-code>div.on{background:#1f2937;color:#fcd34d;box-shadow:inset 2px 0 0 #f59e0b}
+.gr-code .cmt{color:#64748b}
+
+/* §2 Operator Fusion */
+.gr-fusion-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;align-items:start}
+.gr-fusion-stages{display:grid;gap:8px}
+.gr-stage-card{border:1px solid #dbe2eb;border-radius:8px;background:#f8fafc;padding:9px 11px;display:grid;gap:5px}
+.gr-stage-card.fused{border-color:#a7f3d0;background:#ecfdf5}
+.gr-stage-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.gr-stage-head strong{font-size:12px;color:#0f172a}
+.gr-stage-head span{font-size:10px;font-weight:650;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid #cbd5e1;color:#475569}
+.gr-stage-card.fused .gr-stage-head span{border-color:#6ee7b7;color:#065f46}
+.gr-stage-io{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#475569;font-variant-numeric:tabular-nums}
+.gr-fusion-side{display:grid;gap:10px}
+.gr-fusion-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.gr-fusion-kpis>div{border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:8px}
+.gr-fusion-kpis small{display:block;font-size:10px;color:#64748b}
+.gr-fusion-kpis strong{display:block;font-size:14px;color:#0f172a;margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* §3 Roofline */
+.gr-roof-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:start}
+.gr-roof-chart{border:1px solid #e2e8f0;border-radius:10px;background:#fff;padding:10px}
+.gr-roof-chart svg{width:100%;height:auto;display:block}
+.gr-roof-axis{fill:#64748b;font-size:9px}
+.gr-roof-gridline{stroke:#e2e8f0;stroke-width:1}
+.gr-roof-line{fill:none;stroke:#4f46e5;stroke-width:2.4}
+.gr-roof-ridge{stroke:#f59e0b;stroke-width:1.4;stroke-dasharray:4 3}
+.gr-roof-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.gr-roof-table th,.gr-roof-table td{padding:7px 8px;border-bottom:1px solid #e2e8f0;text-align:left}
+.gr-roof-table th{font-size:10.5px;color:#64748b;font-weight:700;background:#f8fafc}
+.gr-roof-table tr.active{background:#eef2ff;font-weight:700}
+.gr-pill{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;border:1px solid}
+.gr-pill.mem{background:#fff1f2;border-color:#fecdd3;color:#9f1239}
+.gr-pill.cmp{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+
+.gr-evidence{border:1px solid #dbe2eb;border-radius:10px;background:#fff;padding:10px 14px;font-size:12px;color:#475569}
+.gr-evidence summary{cursor:pointer;font-weight:700;color:#1e293b}
+.gr-evidence p{margin:8px 0 0;line-height:1.6}
+
+@media(max-width:960px){
+  .gr-grid-main,.gr-fusion-grid,.gr-roof-grid{grid-template-columns:1fr}
+  .gr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

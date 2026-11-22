@@ -100,7 +100,7 @@ export default function MainDashboard() {
       <aside id="chapter-sidebar"
         className={cn(
           'fixed top-[52px] bottom-0 left-0 z-30 flex flex-col bg-slate-900 border-r border-slate-800 transition-transform duration-300',
-          compact ? 'w-14' : 'w-44',
+          compact ? 'w-14' : 'w-52',
           'md:sticky md:top-[52px] md:h-[calc(100vh-52px)] md:translate-x-0 shrink-0',
           sidebarOpen ? 'translate-x-0 visible' : '-translate-x-full invisible md:visible'
         )}
@@ -112,7 +112,7 @@ export default function MainDashboard() {
 
         {compact ? <button className="mx-auto mt-2 p-2 text-slate-400" title="Search chapters" aria-label="Search chapters" onClick={()=>{setSidebarCollapsed(false);requestAnimationFrame(()=>document.getElementById('chapter-search')?.focus());}}><Search size={16}/></button> : <div className="chapter-search"><Search size={14}/><input id="chapter-search" type="search" placeholder="Search chapters" aria-label="Search chapters" value={search} onChange={event=>setSearch(event.target.value)}/></div>}
         {!navigationGroups.length && <p className="px-3 py-4 text-xs text-slate-400" role="status">No chapters found</p>}
-        <nav aria-label="Chapter navigation" className="flex-1 min-h-0 py-3 px-2 overflow-y-auto">
+        <nav aria-label="Chapter navigation" className="flex-1 min-h-0 py-3 px-2 overflow-y-auto overflow-x-hidden">
           {navigationGroups.map(group => {
             return <section key={group.id} aria-label={group.label[lang]} className="mb-3 last:mb-0">
               {compact ? <div className="mx-3 my-3 border-t border-slate-800" title={group.label.en} /> : (
@@ -128,7 +128,7 @@ export default function MainDashboard() {
                     className={cn('w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300', compact && 'justify-center px-0', isActive ? 'bg-slate-800 text-sky-200' : 'text-slate-400 hover:text-white hover:bg-slate-800')}
                     aria-label={title} aria-current={isActive ? 'page' : undefined} title={compact ? `${group.label[lang]} · ${title}` : title}>
                     <Icon size={16} className="shrink-0" />
-                    {!compact && <span className="min-w-0 whitespace-nowrap">{title}</span>}
+                    {!compact && <span className="min-w-0 truncate">{title}</span>}
                   </a>;
                 })}
               </div>

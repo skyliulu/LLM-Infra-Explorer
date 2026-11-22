@@ -14,6 +14,9 @@ export const MODULE_LABELS = {
   dpattention: 'DP Attention',
   linearattn: 'Linear Attention',
   deepinfer: 'DeepInfer',
+  gpucudagraph: 'GPU & CUDA Graph',
+  commcollective: 'Collective Comm',
+  pdrouter: 'PD Disaggregation',
 };
 
 export const getModuleLabel = id => MODULE_LABELS[id];

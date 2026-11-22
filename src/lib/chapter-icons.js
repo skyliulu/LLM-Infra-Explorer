@@ -1,7 +1,8 @@
-import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split,CircuitBoard,Boxes} from 'lucide-react';
+import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split,CircuitBoard,Boxes,Gauge,Waypoints,ArrowLeftRight} from 'lucide-react';
 
 export const CHAPTER_ICONS = {
   llm: Cpu,
+  gpucudagraph: Gauge,
   parallel: Network,
   flash: Zap,
   sparseattn: Filter,
@@ -13,6 +14,8 @@ export const CHAPTER_ICONS = {
   radixcache: GitBranch,
   mooncake: Boxes,
   dpattention: Split,
+  commcollective: Waypoints,
+  pdrouter: ArrowLeftRight,
   linearattn: Repeat2,
   deepinfer: CircuitBoard,
 };

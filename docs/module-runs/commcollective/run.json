@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "commcollective",
+  "topic": "Collective Communication and Interconnect",
+  "kind": "create",
+  "status": "in_progress",
+  "nextAction": "Resolve identity and write brief.md and research.md; then implement and verify the chapter.",
+  "capabilities": [],
+  "assumptions": [],
+  "inputs": {},
+  "snapshotAt": null,
+  "artifacts": [
+    {
+      "id": "brief",
+      "kind": "note",
+      "path": "brief.md"
+    },
+    {
+      "id": "research",
+      "kind": "note",
+      "path": "research.md"
+    },
+    {
+      "id": "qa",
+      "kind": "note",
+      "path": "../../../design-qa.md"
+    },
+    {
+      "id": "reader-review",
+      "kind": "note",
+      "path": "reader-review.md"
+    }
+  ],
+  "claims": [],
+  "journeys": [],
+  "checks": [
+    {
+      "id": "research",
+      "kind": "research",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": []
+    },
+    {
+      "id": "model",
+      "kind": "model",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": []
+    },
+    {
+      "id": "browser",
+      "kind": "browser",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": []
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": []
+    },
+    {
+      "id": "reader",
+      "kind": "reader",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": [],
+      "reviewer": "owner",
+      "route": "",
+      "readingPath": [],
+      "retelling": "",
+      "frictions": []
+    },
+    {
+      "id": "conventions",
+      "kind": "conventions",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": []
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": []
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "status": "pending",
+      "startedAt": null,
+      "artifactIds": []
+    }
+  ],
+  "reviews": [
+    {
+      "area": "technical",
+      "verdict": "pending",
+      "observation": "",
+      "artifactIds": []
+    },
+    {
+      "area": "teaching",
+      "verdict": "pending",
+      "observation": "",
+      "artifactIds": []
+    },
+    {
+      "area": "interaction",
+      "verdict": "pending",
+      "observation": "",
+      "artifactIds": []
+    },
+    {
+      "area": "visual",
+      "verdict": "pending",
+      "observation": "",
+      "artifactIds": []
+    },
+    {
+      "area": "integration",
+      "verdict": "pending",
+      "observation": "",
+      "artifactIds": []
+    }
+  ],
+  "findings": []
+}

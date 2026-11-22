@@ -1,0 +1,6 @@
+# Brief: Collective Communication & Interconnect (`commcollective`)
+
+- **Teaching question**: How do bytes physically move across GPUs during `All-Reduce`, `Reduce-Scatter`, `All-Gather`, and `All-to-All`? Why does Ring All-Reduce move $2\frac{P-1}{P}M$ per GPU independent of $P$, why do small messages hit latency ($\alpha$) while large messages hit bandwidth ($\beta$), and how do `IBGDA / DeepEP` and micro-batch overlap hide inter-node communication?
+- **Explanatory thesis**: Parallel strategies (`TP / SP / EP / DP-Attn`) emit collectives whose actual cost depends on (1) algorithm topology & volume (Ring `All-Reduce = RS + AG` vs `All-to-All` skew), (2) interconnect hierarchy (NVLink 450–900 GB/s intra-node vs IB/RoCE 50–200 GB/s inter-node) under the $\alpha + \beta M$ model, and (3) control-plane overhead (CPU proxy doorbell vs IBGDA GPU-direct + ping-pong micro-batch compute overlap).
+- **Chapter ownership**: Owns collective algorithms, shard movement, alpha-beta interconnect cost, and IBGDA/overlap mechanisms. Links to `Parallel Strategy` and `DP Attention` for model-level tensor sharding.
+- **Capabilities**: `multiple-modes`, `timeline`, `resource-metrics`, `structural-comparison`, `data-movement`, `math`.

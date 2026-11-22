@@ -16,9 +16,13 @@ const SparseAttention = lazy(() => import('../components/SparseAttention.jsx'));
 const CacheArchitecture = lazy(() => import('../components/CacheArchitecture.jsx'));
 const DeepInfer = lazy(() => import('../components/DeepInfer.jsx'));
 const MooncakeL3 = lazy(() => import('../components/MooncakeL3.jsx'));
+const GpuCudaGraph = lazy(() => import('../components/GpuCudaGraph.jsx'));
+const CollectiveComm = lazy(() => import('../components/CollectiveComm.jsx'));
+const PdDisaggregation = lazy(() => import('../components/PdDisaggregation.jsx'));
 
 const routes = [
   { id: 'llm', icon: CHAPTER_ICONS.llm, component: LLMInference },
+  { id: 'gpucudagraph', icon: CHAPTER_ICONS.gpucudagraph, component: GpuCudaGraph },
   { id: 'parallel', icon: CHAPTER_ICONS.parallel, component: ParallelStrategies },
   { id: 'flash', icon: CHAPTER_ICONS.flash, component: FlashAttention },
   { id: 'sparseattn', icon: CHAPTER_ICONS.sparseattn, component: SparseAttention },
@@ -30,6 +34,8 @@ const routes = [
   { id: 'radixcache', icon: CHAPTER_ICONS.radixcache, component: RadixCache },
   { id: 'mooncake', icon: CHAPTER_ICONS.mooncake, component: MooncakeL3 },
   { id: 'dpattention', icon: CHAPTER_ICONS.dpattention, component: DpAttention },
+  { id: 'commcollective', icon: CHAPTER_ICONS.commcollective, component: CollectiveComm },
+  { id: 'pdrouter', icon: CHAPTER_ICONS.pdrouter, component: PdDisaggregation },
   { id: 'linearattn', icon: CHAPTER_ICONS.linearattn, component: LinearAttention },
   { id: 'deepinfer', icon: CHAPTER_ICONS.deepinfer, component: DeepInfer },
 ];
@@ -144,8 +150,32 @@ const descriptions = [
     },
     iconClass: 'text-sky-300',
   },
+  {
+    id: 'gpucudagraph',
+    description: {
+      en: 'Visualize CPU kernel launch overhead, Full vs Piecewise CUDA Graphs, operator fusion HBM savings, and H100/B200 rooflines.',
+      zh: '可视化 CPU 发射墙、全图与分段 CUDA Graph、算子融合的 HBM 读写节省，以及 H100/B200 Roofline 拐点。',
+    },
+    iconClass: 'text-amber-300',
+  },
+  {
+    id: 'commcollective',
+    description: {
+      en: 'Trace Ring All-Reduce/RS/AG and MoE All-to-All skew, NVLink vs InfiniBand latency cliffs, and IBGDA micro-batch overlap.',
+      zh: '追踪 Ring All-Reduce/RS/AG 与 MoE All-to-All 热点倾斜、NVLink 与 IB 带宽断层，以及 IBGDA 双微批交叠。',
+    },
+    iconClass: 'text-purple-300',
+  },
+  {
+    id: 'pdrouter',
+    description: {
+      en: 'Explore Prefill–Decode disaggregation vs chunked prefill, cluster cache-aware routing, and dynamic P:D pool Goodput.',
+      zh: '对比混布、Chunked Prefill 与 PD 分离边界，演练集群缓存感知路由，并求解动态 P:D 配比下的 SLO Goodput。',
+    },
+    iconClass: 'text-emerald-300',
+  },
 ];
-const aliases={deepinfer:'deepseek offline engine scheduler async cpu device overlap request dspark distributed 离线引擎 调度 异步 请求 运行时',llm:'推理 预填充 生成 token moe dense kv',parallel:'并行 dp tp pp cp ep etp gpu helix',flash:'fa fa2 fa3 fa4 分块 注意力 sram hbm',sparseattn:'dsa csa hca swa 稀疏 压缩 注意力',cachearch:'ced csa2 deepseek 缓存 共享 编码 解码',flashdecode:'解码 split 分块 reduction',speculative:'投机解码 draft target eagle dspark',quantization:'量化 精度 int4 fp4 fp8 bf16 awq gptq smoothquant',engram:'记忆 ngram 预取',radixcache:'前缀缓存 基数树 sglang lru hicache 分层存储 预取 host gpu',mooncake:'mooncake conductor prefill decode 分离式 cpp 分块流水 调度 过载 提前拒绝 kimi 共享缓存 kv store rdma transfer engine 命中率 池化',linearattn:'线性注意力 gla 递归 状态',dpattention:'dp tp mla attention 数据并行'};
-const related={deepinfer:['llm','speculative','cachearch','parallel'],llm:['quantization','speculative'],parallel:['dpattention','flashdecode'],flash:['sparseattn','flashdecode'],sparseattn:['flash','cachearch'],cachearch:['sparseattn','quantization','radixcache'],flashdecode:['flash','dpattention'],speculative:['llm','radixcache'],quantization:['llm','cachearch'],engram:['llm','radixcache'],radixcache:['llm','cachearch'],mooncake:['radixcache','cachearch','llm'],dpattention:['parallel','flashdecode'],linearattn:['flash','sparseattn']};
+const aliases={deepinfer:'deepseek offline engine scheduler async cpu device overlap request dspark distributed 离线引擎 调度 异步 请求 运行时',llm:'推理 预填充 生成 token moe dense kv',gpucudagraph:'gpu cuda graph piecewise kernel launch fusion roofline h100 b200 sram hbm 发射墙 算子融合 图捕获',parallel:'并行 dp tp pp cp ep etp gpu helix',commcollective:'collective nccl ring allreduce reducescatter allgather alltoall nvlink nvl72 ib infiniband roce ibgda deepep overlap 集合通信 互联 带宽',pdrouter:'pd disaggregation distserve splitwise dynamo router cache aware prefix goodput slo ttft tpot prefill decode 分离 路由 负载均衡',flash:'fa fa2 fa3 fa4 分块 注意力 sram hbm',sparseattn:'dsa csa hca swa 稀疏 压缩 注意力',cachearch:'ced csa2 deepseek 缓存 共享 编码 解码',flashdecode:'解码 split 分块 reduction',speculative:'投机解码 draft target eagle dspark',quantization:'量化 精度 int4 fp4 fp8 bf16 awq gptq smoothquant',engram:'记忆 ngram 预取',radixcache:'前缀缓存 基数树 sglang lru hicache 分层存储 预取 host gpu',mooncake:'mooncake conductor prefill decode 分离式 cpp 分块流水 调度 过载 提前拒绝 kimi 共享缓存 kv store rdma transfer engine 命中率 池化',linearattn:'线性注意力 gla 递归 状态',dpattention:'dp tp mla attention 数据并行'};
+const related={deepinfer:['llm','speculative','cachearch','parallel'],llm:['gpucudagraph','quantization','speculative'],gpucudagraph:['llm','flash','quantization'],parallel:['dpattention','commcollective','flashdecode'],commcollective:['parallel','dpattention','pdrouter'],pdrouter:['mooncake','radixcache','deepinfer'],flash:['sparseattn','flashdecode','gpucudagraph'],sparseattn:['flash','cachearch'],cachearch:['sparseattn','quantization','radixcache'],flashdecode:['flash','dpattention'],speculative:['llm','radixcache'],quantization:['llm','cachearch','gpucudagraph'],engram:['llm','radixcache'],radixcache:['llm','cachearch','pdrouter'],mooncake:['radixcache','pdrouter','cachearch'],dpattention:['parallel','commcollective','flashdecode'],linearattn:['flash','sparseattn']};
 export const CHAPTERS=READING_ORDER.map(id=>routes.find(route=>route.id===id)).map(route=>({...descriptions.find(item=>item.id===route.id),...route,title:getModuleLabel(route.id),aliases:aliases[route.id],related:related[route.id],learning:LEARNING_PATHS[route.id]}));
 export function matchesChapter(chapter, query){return query.trim().toLowerCase().split(/\s+/).every(word=>[chapter.title,chapter.id,chapter.aliases,...Object.values(chapter.description)].join(' ').toLowerCase().includes(word));}
