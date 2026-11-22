@@ -135,7 +135,7 @@ const i18n = {
     p1Title: "Phase 1 记忆路由与特征检索",
     p1Desc: "获取后缀 N-Gram，并通过多头乘法异或定位内存槽位，直接展平无需线性层。",
     p2Title: "Phase 2 依赖建模与动态门控",
-    p2Desc: "按 Hyper-Connection(HC) 切分。引入双侧 RMSNorm 与 sgn(x)√|x| 平方根缩放解决内积数值爆炸。",
+    p2Desc: "按 Hyper-Connection(HC) 切分。双侧 RMSNorm 与 1/√D 控制内积尺度，sgn(x)√|x| 则同时压缩大值（防 Sigmoid 饱和）并放大近零小值（拉开门控区分度）。",
     p2Where: "其中",
     p3Title: "Phase 3 时序平滑与状态融合",
     p3Desc: "门控后的特征序列再经过组内 RMSNorm 后，送入短上下文 1D 卷积进行平滑与残差相加。",
@@ -259,7 +259,7 @@ const i18n = {
     p1Title: "Phase 1 Memory Routing & Feature Retrieval",
     p1Desc: "Obtain suffix N-Grams, locate memory slots via multi-head multiplicative XOR, and flatten directly without linear layers.",
     p2Title: "Phase 2 Dependency Modeling & Dynamic Gating",
-    p2Desc: "Sliced by Hyper-Connection (HC). Bilateral RMSNorm and sgn(x)√|x| scaling are introduced to solve dot product explosion.",
+    p2Desc: "Sliced by Hyper-Connection (HC). Bilateral RMSNorm and 1/√D control inner-product scale, while sgn(x)√|x| compresses large values (avoiding sigmoid saturation) and expands small values (sharpening gating).",
     p2Where: "Where",
     p3Title: "Phase 3 Temporal Smoothing & State Fusion",
     p3Desc: "The gated sequence passes through intra-group RMSNorm, then into a short-context 1D conv for smoothing and residual addition.",
@@ -853,7 +853,7 @@ const App = () => {
                            <div className={`relative w-[90%] flex items-center justify-center gap-1.5 bg-white border rounded py-1 shadow-sm z-10 transition-all duration-500 mb-0.5
                              ${concatStatus === 'active' ? `border-${item.color}-400 scale-105 shadow-[0_0_10px_currentColor] ${lColor.text}` : concatReached ? `border-${item.color}-200 ${lColor.text} opacity-70` : 'border-slate-300 text-slate-400'}`}>
                              <span className="text-[10px] font-bold"><FunctionSquare size={10} className="inline mr-1 -mt-0.5"/>{t('flatten')}</span>
-                             <DimBadge text="[B, L, E_D]" status={concatStatus} posClasses="-right-16 top-1/2 -translate-y-1/2" />
+                             <DimBadge text="[B, L, E_D/2]" status={concatStatus} posClasses="-right-16 top-1/2 -translate-y-1/2" />
                            </div>
 
                            <div className={`h-3 w-0.5 my-0.5 transition-colors ${concatReached ? getTensorColors(item.color, concatStatus).main : 'bg-slate-300'}`}></div>
@@ -1051,13 +1051,13 @@ const App = () => {
                 ngram_idx = n - 2
               </CodeLine>
               <CodeLine num="11" active={step === 2} indent={2}>
-                mix = g_t[n][0] * M[0]
+                mix = g_t[n][n - 1] * M[0]
               </CodeLine>
               <CodeLine num="12" active={step === 2} indent={2}>
                 <span className="text-purple-400">for</span> i <span className="text-purple-400">in</span> <span className="text-blue-200">range</span>(1, n):
               </CodeLine>
               <CodeLine num="13" active={step === 2} indent={3}>
-                mix = torch.<span className="text-amber-200">bitwise_xor</span>(mix, g_t[n][i] * M[i])
+                mix = torch.<span className="text-amber-200">bitwise_xor</span>(mix, g_t[n][n - 1 - i] * M[i])
               </CodeLine>
               <CodeLine num="14" active={step === 2} indent={2}>
                 <span className="text-slate-500 italic">{t('c4')}</span>
@@ -1117,7 +1117,7 @@ const App = () => {
                 norm_K = self.norm1[hc](K_t)
               </CodeLine>
               <CodeLine num="34" active={step === 7} indent={2}>
-                norm_Q = self.norm2[hc](hidden[:,:,hc,:])
+                norm_Q = self.norm2[hc](hidden_states[:,:,hc,:])
               </CodeLine>
               <CodeLine num="35" active={step === 7} indent={2}>
                 gt = (norm_K * norm_Q).<span className="text-amber-200">sum</span>(-1) / <span className="text-amber-200">sqrt</span>(D)
@@ -1264,7 +1264,7 @@ const App = () => {
                  <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg text-xs text-slate-700 space-y-2 shadow-sm mt-auto overflow-x-auto">
                     <MathFormula block className="text-slate-500 min-w-max">{String.raw`g_{t,n}=(x'_{t-n+1},\ldots,x'_t)`}</MathFormula>
                     <MathFormula block className="text-slate-500 min-w-max">{String.raw`h_{n,k}=\left(\bigoplus_{i=0}^{n-1}x'_{t-i}M_i\right)\bmod P_{n,k}`}</MathFormula>
-                    <div className="pt-2 border-t border-slate-200 text-purple-700 font-bold min-w-max"><MathFormula block>{String.raw`E_t=\operatorname{Concat}_{n,k}\!\left(\mathcal{E}_{n,k}[h_{n,k}]\right)\in\mathbb{R}^{B\times L\times E_D}`}</MathFormula></div>
+                    <div className="pt-2 border-t border-slate-200 text-purple-700 font-bold min-w-max"><MathFormula block>{String.raw`E_t=\operatorname{Concat}_{n,k}\!\left(\mathcal{E}_{n,k}[h_{n,k}]\right)\in\mathbb{R}^{B\times E_D},\quad E\in\mathbb{R}^{B\times L\times E_D}`}</MathFormula></div>
                  </div>
               </div>
 
@@ -1275,10 +1275,10 @@ const App = () => {
                    {t('p2Desc')}
                  </p>
                  <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg text-[11px] text-slate-700 space-y-2 shadow-sm mt-auto overflow-x-auto">
-                    <MathFormula block className="text-slate-500 min-w-max">{String.raw`K_t^{(c)}=W_K^{(c)}E_t,\qquad V_t=W_VE_t`}</MathFormula>
-                    <div className="text-[10px] text-slate-400 min-w-max flex items-center gap-2"><span>{t('p2Where')}</span><MathFormula>{String.raw`x=\langle\operatorname{RMSNorm}(H_{\mathrm{in}}^{(c)}),\operatorname{RMSNorm}(K_t^{(c)})\rangle/\sqrt{D}`}</MathFormula></div>
+                    <MathFormula block className="text-slate-500 min-w-max">{String.raw`K^{(c)}=E\,W_K^{(c)},\qquad V=E\,W_V`}</MathFormula>
+                    <div className="text-[10px] text-slate-400 min-w-max flex items-center gap-2"><span>{t('p2Where')}</span><MathFormula>{String.raw`x=\langle\operatorname{RMSNorm}(H_{\mathrm{in},t}^{(c)}),\operatorname{RMSNorm}(K_t^{(c)})\rangle/\sqrt{D}`}</MathFormula></div>
                     <MathFormula block className="text-rose-600 font-bold min-w-max">{String.raw`\alpha_t^{(c)}=\sigma\!\left(\operatorname{sgn}(x)\sqrt{|x|}\right)`}</MathFormula>
-                    <div className="pt-2 border-t border-slate-200 text-emerald-700 font-bold text-xs min-w-max"><MathFormula block>{String.raw`\widetilde{V}_t^{(c)}=\alpha_t^{(c)}V_t\in\mathbb{R}^{B\times L\times HC\times D}`}</MathFormula></div>
+                    <div className="pt-2 border-t border-slate-200 text-emerald-700 font-bold text-xs min-w-max"><MathFormula block>{String.raw`\widetilde{V}_t^{(c)}=\alpha_t^{(c)}V_t,\quad \widetilde{V}\in\mathbb{R}^{B\times L\times HC\times D}`}</MathFormula></div>
                  </div>
               </div>
 
@@ -1289,7 +1289,7 @@ const App = () => {
                    {t('p3Desc')}
                  </p>
                  <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg text-[12px] text-slate-700 space-y-2 shadow-sm mt-auto overflow-x-auto">
-                    <MathFormula block className="text-slate-500 min-w-max">{String.raw`\widetilde{V}=[\widetilde{V}_1,\ldots,\widetilde{V}_T]`}</MathFormula>
+                    <MathFormula block className="text-slate-500 min-w-max">{String.raw`\widetilde{V}=[\widetilde{V}_1,\ldots,\widetilde{V}_L]`}</MathFormula>
                     <MathFormula block className="text-emerald-700 font-bold min-w-max">{String.raw`Y_{\mathrm{engram}}=\widetilde{V}+\operatorname{SiLU}\!\left(\operatorname{DWConv1D}(\operatorname{RMSNorm}(\widetilde{V}))\right)`}</MathFormula>
                     <div className="pt-2 border-t border-slate-200 text-blue-700 font-bold min-w-max"><MathFormula block>{String.raw`H_{\mathrm{block}}=H_{\mathrm{in}}+Y_{\mathrm{engram}}\in\mathbb{R}^{B\times L\times HC\times D}`}</MathFormula></div>
                  </div>
