@@ -19,7 +19,8 @@ For full chapter delivery, apply common checks and the capability sections decla
 - [ ] Preserved behavior still works after the change.
 - [ ] Any information-architecture change was explicitly in scope.
 - [ ] Repairs and extensions preserve major-region order, relative prominence, control placement, split ratios, and responsive reading order unless the user explicitly authorized a redesign.
-- [ ] New technical evidence was embedded in existing semantic regions before any new panel or page-wide composition was introduced.
+- [ ] New technical evidence was embedded in existing semantic regions (existing tabs, control bars, mode branches, or comparison canvases) whenever it extends an existing axis; no catch-all appendix card was bolted on to bundle unrelated sub-topics.
+- [ ] Headings (`h2`/`h3`/`h4`) stay concise and single-clause (no parenthetical glosses or multi-topic lists), and visual blocks avoid stacked redundant prose layers (intro + hint + mode blurb + conclusion + footnote).
 - [ ] The affected dimensions, views, and preserved behavior were declared before editing.
 
 ## Technical and model truth

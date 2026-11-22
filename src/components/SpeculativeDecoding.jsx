@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowDown, ArrowRight, BrainCircuit, Cpu, Database, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { MathFormula } from './linear-attention/MathFormula';
 import { deriveSpeculativeSnapshot, deriveCorrectnessExample, getNextLifecycle, PREFIX, STREAM } from './speculative-decoding/model';
-import ServingBoundaries from './speculative-decoding/ServingBoundaries';
+import { DRAFTER_FAMILIES, WORKLOAD_TYPES, deriveDrafterFamilyModel } from './speculative-decoding/serving-model';
 import './speculative-decoding/style.css';
 import './module-header.css';
 
@@ -25,6 +25,11 @@ const i18n = {
     width:'Top-k 展开宽度', widthHint:'每层选 Top-k 父节点继续，每个父节点保留 Top-k 子候选。',
     budget:'Target 验证容量', budgetHint:'包括 1 个已知锚点。Top-k=1 时按 SGLang 口径设为 steps+1；实际节点不足时不补虚假候选。',
     block:'Draft 候选块长度', blockHint:'对应 DeepSpec 模型配置 block_size。输入为 1 个锚点及其余 Mask；实际送验长度由调度选择。这里比较不同块长的教学配置，不表示任意 checkpoint 可直接修改块长。',
+    loadLabel:'并发负载', loadLow:'低 1×', loadMid:'中 4×', loadHigh:'高 10×', loadRegimeLow:'显存受限', loadRegimeMid:'Roofline 拐点', loadRegimeHigh:'算力受限', loadHint:'增大并发后验证步跨过 Roofline 拐点，被拒草稿消耗真实算力，DSpark 也会自动收缩送验前缀。',
+    drafterTitle:'主流 Drafter 路线', workloadChat:'对话', workloadCode:'代码 / Agent', workloadLoad:'高并发',
+    mtpName:'原生 MTP (nextn)', mtpNote:'内置链式预测头（DeepSeek-V3 / Qwen3），零外部模型编排。',
+    eagle3Name:'EAGLE-3 (d2t)', eagle3Note:'多层特征融合 + 152K→32K 词表裁剪，砍低 Draft LM Head 延迟。',
+    ngramName:'免训练 N-gram', ngramNote:'零权重 CPU 后缀查表，代码/工具复用极快，开放对话易失效。',
     baseline:'标准自回归', speculative:'当前推测方案', baselineHint:'每单位时间完成一次 Target 单 Token 前向',
     drafting:'Draft', verifying:'Target 验证', committing:'接受 / 提交', seconds:'Target 单 Token 时间单位',
     current:'当前', round:'轮', inspect:'查看此轮', seed:'共同起点 · 已有 Target 锚点', output:'已提交输出', noOutput:'尚未提交新 Token',
@@ -112,6 +117,11 @@ const i18n = {
     width:'Top-k expansion width',widthHint:'Expand the top-k parents in each layer, retaining top-k children per parent.',
     budget:'Target verification capacity',budgetHint:'Includes one known anchor. With top-k=1, use steps+1 as in SGLang. Do not pad a small tree with fictitious candidates.',
     block:'Draft proposal block length',blockHint:'DeepSpec model field: block_size. Input is one anchor plus masks; the scheduler chooses the verified prefix. This compares teaching configurations, not arbitrary block-size changes to an existing checkpoint.',
+    loadLabel:'Concurrency load', loadLow:'Low 1×', loadMid:'Mid 4×', loadHigh:'High 10×', loadRegimeLow:'Memory-bound', loadRegimeMid:'Ridge point', loadRegimeHigh:'Compute-bound', loadHint:'Higher concurrency pushes verification past the roofline ridge so rejected drafts burn compute, and DSpark shrinks its admitted prefix.',
+    drafterTitle:'Production Drafters', workloadChat:'Chat', workloadCode:'Code / Agent', workloadLoad:'High load',
+    mtpName:'Native MTP (nextn)', mtpNote:'In-checkpoint chained heads (DeepSeek-V3 / Qwen3); zero external draft orchestration.',
+    eagle3Name:'EAGLE-3 (d2t)', eagle3Note:'Multi-layer fusion + 152K→32K vocab trim cutting draft LM-head latency.',
+    ngramName:'Training-Free N-gram', ngramNote:'Zero-weight CPU suffix lookup; excels on code/tools, drops on open chat.',
     baseline:'Autoregressive baseline',speculative:'Current speculative path',baselineHint:'One Target single-token forward per time unit',
     drafting:'Draft',verifying:'Target verify',committing:'Accept / commit',seconds:'Target single-token time units',
     current:'Current',round:'Round',inspect:'Inspect round',seed:'Shared start · existing Target anchor',output:'Committed output',noOutput:'No new tokens committed',
@@ -242,16 +252,24 @@ function Parameter({name,hint,short,value,min,max,onChange,disabled=false,flag,t
     <details className="text-[11px] leading-relaxed text-slate-500"><summary aria-label={t(name)+' · '+t('details')} className="cursor-pointer rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">{t(short)}</summary><p className="mt-1 rounded border border-slate-200 bg-white p-2">{t(hint)}</p></details>
   </div>;
 }
-function Settings({s,config,setConfig,t}) {
+function Settings({s,config,setConfig,load,setLoad,t}) {
   const update=(key,value)=>setConfig({...config,[key]:value});
+  const loadLevels=[[1,'loadLow'],[4,'loadMid'],[10,'loadHigh']];
   return <div className="rounded-lg border border-slate-200 bg-slate-50 p-3" data-testid="speculative-settings">
     <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-bold">{t('settings')} · {t(s.algorithm)}</h3><span className="text-[11px] text-slate-500">{t(s.algorithm==='eagle2'?'parameterSourceEagle':'parameterSourceDspark')}</span></div>
-    <div className={'grid gap-4 '+(s.algorithm==='eagle2'?'sm:grid-cols-3':'max-w-sm')}>
+    <div className={'grid gap-4 '+(s.algorithm==='eagle2'?'sm:grid-cols-4':'sm:grid-cols-2')}>
       {s.algorithm==='eagle2'?<>
         <Parameter name="depth" hint="depthHint" short="depthShort" value={s.depth} min={1} max={5} onChange={v=>update('depth',v)} flag="--speculative-num-steps" t={t}/>
         <Parameter name="width" hint="widthHint" short="widthShort" value={s.width} min={1} max={3} onChange={v=>update('width',v)} flag="--speculative-eagle-topk" t={t}/>
         <Parameter name="budget" hint="budgetHint" short="budgetShort" value={s.budget} min={2} max={16} onChange={v=>update('budget',v)} disabled={s.width===1} flag="--speculative-num-draft-tokens" t={t}/>
       </>:<Parameter key="block" name="block" hint="blockHint" short="blockShort" value={s.blockSize} min={1} max={8} onChange={v=>update('blockSize',v)} flag="block_size" t={t}/>}
+      <div className="min-w-0 space-y-1.5" data-testid="spec-load-control">
+        <div className="flex items-center justify-between gap-2 text-xs font-semibold"><span>{t('loadLabel')}</span><strong className="text-blue-700">{t(load===1?'loadRegimeLow':load===4?'loadRegimeMid':'loadRegimeHigh')}</strong></div>
+        <div className="flex gap-1 rounded-md border border-slate-200 bg-white p-0.5" role="group" aria-label={t('loadLabel')}>
+          {loadLevels.map(([val,labelKey])=><button key={val} type="button" aria-pressed={load===val} onClick={()=>setLoad(val)} className={'flex-1 whitespace-nowrap rounded px-2 py-1 text-[11px] font-semibold '+(load===val?'bg-blue-600 text-white':'text-slate-600 hover:bg-slate-100')}>{t(labelKey)}</button>)}
+        </div>
+        <p className="text-[11px] leading-relaxed text-slate-500">{t('loadHint')}</p>
+      </div>
     </div>
     <p className="mt-2 text-[11px] text-slate-500">{t('experimentNote')}</p>
   </div>;
@@ -274,11 +292,11 @@ function AcceptanceSummary({s,t,cumulative=false}) {
     <div className="mt-1 flex flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] text-slate-600"><span>{ready?(rate===null?t('noDraft'):t(cumulative?'raceRateScope':'roundRateScope')):t('ratePending')}</span><details><summary className="cursor-pointer">{t('rateDefinition')}</summary><p className="mt-1 max-w-lg">{t('rateHint')}</p></details></div>
   </div>;
 }
-function Race({s,t,playing,onPlay,onNext,onReset,onInspect,config,setConfig}) {
+function Race({s,t,playing,onPlay,onNext,onReset,onInspect,config,setConfig,load,setLoad}) {
   const r=s.race;
   return <section className="spec-card space-y-3" data-testid="speculative-race">
     <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 data-section-anchor="speculativedecoding-1" className="text-lg font-bold">{t('raceTitle')}</h2><p className="mt-1 max-w-4xl text-xs leading-relaxed text-slate-500">{t('raceHint')}</p></div><Controls t={t} label="raceControls" playing={playing} done={r.isDone} onPlay={onPlay} onNext={onNext} onReset={onReset}/></div>
-    <Settings s={s} config={config} setConfig={setConfig} t={t}/>
+    <Settings s={s} config={config} setConfig={setConfig} load={load} setLoad={setLoad} t={t}/>
     <AcceptanceSummary s={s} t={t} cumulative/>
     <div className="flex flex-wrap justify-between gap-2 text-xs"><span>{t('seed')}: <strong>{[...PREFIX,STREAM[0]].join(' ')}</strong></span><span className="font-semibold tabular-nums">{r.elapsed.toFixed(1)} / {r.timeBudget} · {t('seconds')}</span></div>
     <div className="grid min-w-0 gap-2 xl:grid-cols-2" data-testid="race-lanes">
@@ -417,7 +435,7 @@ function Verification({s,t}) {
     <div className="border-t border-emerald-100 pt-2"><div className="mb-1 text-xs font-semibold">{t('actualOutput')}</div><TokenStream tokens={s.committedTokens} t={t}/></div>
   </div>;
 }
-function Workbench({s,t,playing,onPlay,onNext,onReset,onRound,onSeek,selectedNode,setSelectedNode}) {
+function Workbench({s,t,playing,onPlay,onNext,onReset,onRound,onSeek,selectedNode,setSelectedNode,workload,setWorkload}) {
   return <section className="spec-card" data-testid="speculative-architecture">
     <h2 data-section-anchor="speculativedecoding-2" data-section-label={t('architectureNav')} className="text-lg font-bold">{t('architecture')}</h2><p className="mb-4 mt-1 text-xs leading-relaxed text-slate-500">{t('architectureHint')}</p>
     <div className="grid min-w-0 items-start gap-3 xl:grid-cols-[310px_minmax(0,1fr)]">
@@ -437,6 +455,23 @@ function Workbench({s,t,playing,onPlay,onNext,onReset,onRound,onSeek,selectedNod
       </div>
     </div>
     <div className="mt-4 border-t border-slate-200 pt-4"><ExecutionGuide s={s} t={t} playing={playing} onPlay={onPlay} onNext={onNext} onReset={onReset} onSeek={onSeek}/></div>
+    <div className="mt-4 border-t border-slate-200 pt-4 space-y-2" data-testid="spec-drafter-strip">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-bold text-slate-800">{t('drafterTitle')}</h3>
+        <div className="flex gap-1 rounded-md border border-slate-200 bg-slate-50 p-0.5">
+          {[['chat','workloadChat'],['agent_code','workloadCode'],['high_load','workloadLoad']].map(([w,k])=><button key={w} type="button" aria-pressed={workload===w} onClick={()=>setWorkload(w)} className={'rounded px-2 py-0.5 text-[11px] font-semibold '+(workload===w?'bg-blue-600 text-white':'text-slate-600 hover:bg-white')}>{t(k)}</button>)}
+        </div>
+      </div>
+      <div className="grid gap-2 md:grid-cols-3">
+        {DRAFTER_FAMILIES.map(fam=>{
+          const fm=deriveDrafterFamilyModel({family:fam,workload});
+          return <div key={fam} className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-xs space-y-1">
+            <div className="flex items-center justify-between gap-2"><strong>{t(`${fam}Name`)}</strong><span className={'rounded px-1.5 py-0.5 font-mono text-[10px] font-bold '+(fm.speedup<1?'bg-rose-100 text-rose-800':'bg-emerald-100 text-emerald-800')}>{fm.speedup.toFixed(2)}×</span></div>
+            <p className="text-[11px] leading-snug text-slate-500">{t(`${fam}Note`)}</p>
+          </div>;
+        })}
+      </div>
+    </div>
   </section>;
 }
 function ExecutionGuide({s,t,playing,onPlay,onNext,onReset,onSeek}) {
@@ -523,6 +558,8 @@ function Principles({t}) {
 }
 export default function SpeculativeDecoding() {
   const [config,setConfigState]=useExperimentState('SpeculativeDecoding.config', {algorithm:'eagle2',depth:3,width:2,budget:8,blockSize:4});
+  const [load,setLoadState]=useExperimentState('SpeculativeDecoding.load', 1);
+  const [workload,setWorkload]=useState('agent_code');
   const [phase,setPhase]=useState('idle');
   const [step,setStep]=useState(0);
   const [roundIndex,setRoundIndex]=useState(0);
@@ -531,11 +568,12 @@ export default function SpeculativeDecoding() {
   const [racePlaying,setRacePlaying]=useState(false);
   const [selectedNode,setSelectedNode]=useState(null);
   const [lang] = useLanguage();
-  const s=useMemo(()=>deriveSpeculativeSnapshot({...config,phase,step,roundIndex,raceStep}),[config,phase,step,roundIndex,raceStep]);
+  const s=useMemo(()=>deriveSpeculativeSnapshot({...config,load,phase,step,roundIndex,raceStep}),[config,load,phase,step,roundIndex,raceStep]);
   const t=key=>i18n[lang][key]??key;
   const resetTrace=()=>{setPhase('idle');setStep(0);setIsPlaying(false);setSelectedNode(null);};
   const resetRace=()=>{setRaceStep(0);setRacePlaying(false);};
   const setConfig=value=>{setConfigState(value);resetTrace();resetRace();setRoundIndex(0);};
+  const setLoad=value=>{setLoadState(value);resetTrace();resetRace();setRoundIndex(0);};
   const handleNextStep=()=>{
     const next=getNextLifecycle(s);
     setPhase(next.phase);setStep(next.step);setRoundIndex(next.roundIndex);
@@ -563,10 +601,9 @@ export default function SpeculativeDecoding() {
   return <div className="chapter-page spec-page min-h-full bg-slate-50 text-slate-800">
     <header className="module-header-card chapter-header"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold"><ChapterIcon chapter="speculative"/>{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div></div></div></header>
     <div className="chapter-body mx-auto max-w-[1600px] space-y-3 p-3 lg:p-4">
-      <Race s={s} t={t} config={config} setConfig={setConfig} playing={racePlaying} onPlay={racePlay} onNext={raceNext} onReset={resetRace} onInspect={inspect}/>
+      <Race s={s} t={t} config={config} setConfig={setConfig} load={load} setLoad={setLoad} playing={racePlaying} onPlay={racePlay} onNext={raceNext} onReset={resetRace} onInspect={inspect}/>
       <Principles t={t}/>
-      <Workbench s={s} t={t} playing={isPlaying} onPlay={togglePlay} onNext={()=>{setIsPlaying(false);handleNextStep();}} onReset={resetTrace} onRound={inspect} onSeek={seek} selectedNode={selectedNode} setSelectedNode={setSelectedNode}/>
-      <ServingBoundaries lang={lang}/>
+      <Workbench s={s} t={t} playing={isPlaying} onPlay={togglePlay} onNext={()=>{setIsPlaying(false);handleNextStep();}} onReset={resetTrace} onRound={inspect} onSeek={seek} selectedNode={selectedNode} setSelectedNode={setSelectedNode} workload={workload} setWorkload={setWorkload}/>
       <References s={s} t={t}/>
     </div>
   </div>;

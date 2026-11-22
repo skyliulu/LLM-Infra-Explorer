@@ -20,7 +20,7 @@ For implementation-level explanations, apply [implementation-fidelity.md](implem
 
 Start with one reader question and a top-down responsibility map, not a catalogue of implementation features. Each level should answer a narrower part of its parent's question; retain the parent context and a clear way back. Read the project's Analyze Technical Principles skill for chapter ownership. Research notes may be comprehensive while the visible chapter deliberately selects a small coherent argument. Cross-chapter links should say what the destination explains and preserve this chapter's own integration story.
 
-Keep titles concise and consistent with neighboring chapters. Separate two explanatory levels when useful:
+Keep titles concise and consistent with neighboring chapters. Headings (`h2`/`h3`/`h4`) are short single-clause navigation labels, not mini-summaries: state the mechanism or core question cleanly without stuffing parenthetical glosses, colon sub-clauses, or multi-topic enumerations (`A、B 与 C`) into the heading. Move qualifiers and explanations to visual legends, control labels, or a single short lead line. Separate two explanatory levels when useful:
 
 - design or architecture: what representation, resource, or topology changes;
 - execution: how one real token, chunk, request, or kernel step updates the system.
@@ -29,11 +29,18 @@ Use parallel heading grammar and typography across levels. Avoid internal engine
 
 ## Integrate extensions into their teaching family
 
-A format extension belongs in the existing representation/configuration workflow when it answers the same question. Do not append an always-visible standalone panel simply because the format is new. Separate the object being configured, its numeric format, and the implementation recipe. For example, W4A16 describes bit budgets, not whether weights use INT4 or FP4, and neither determines KV precision. Dependent views follow the selected format; independent object settings stay independent.
+Before adding a new section to an existing chapter, test whether the extension belongs **inside an existing semantic region**:
+
+- **Embed inline** when the new concept is a new variant of an existing axis (for example, adding a new algorithm to an existing algorithm tab bar or a new load/batch parameter to an existing race or capacity control bar), the missing branch of an existing mode switch (for example, showing parallel prefill inside the `Prefill` branch of a `Prefill / Decode` toggle), or a precision/format refinement of an existing card.
+- **Create a separate section only when** the extension introduces genuinely distinct physical objects or a different state model that would distort the existing canvas if forced into it. Never bolt on a catch-all appendix section (such as "Modern Evolution", "Frontier Topics", or "Production Boundaries") that bundles several unrelated sub-topics at the bottom of a chapter.
+
+Separate the object being configured, its numeric format, and the implementation recipe. For example, W4A16 describes bit budgets, not whether weights use INT4 or FP4, and neither determines KV precision. Dependent views follow the selected format; independent object settings stay independent.
 
 Teach the general mechanism before a model-specific recipe. Keep implementation names, constraints and sources available in the example or provenance, rather than making them the title of a general concept. This does not prohibit architecture-specific chapters when their organization is itself the learning object.
 
 Within one teaching family, keep corresponding regions in the same place across modes: for example storage comparison on the left and reconstruction on the right when that is the accepted arrangement. Reuse its visual components, density and disclosure pattern; do not give each format a different visual language. Preserve real structural differences rather than forcing all mechanisms into identical stages.
+
+Keep prose tight: use at most one short lead layer per visual block instead of stacking a section intro, subsection hint, mode paragraph, card conclusion, and scope footnote around the same diagram. Let live numbers, visual state, and short labels carry the argument, and move optional caveats into compact notes or disclosures.
 
 When reusing a view, recheck its text as well as its numbers: sample counts, dimensions, bit fields, units and precision labels must describe the active format. Copying an FP16 field label into an FP4 view can produce a convincing but incorrect diagram.
 

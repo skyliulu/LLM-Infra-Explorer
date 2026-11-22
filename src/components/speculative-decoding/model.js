@@ -25,6 +25,7 @@ export function normalizeSpeculativeInput(input = {}) {
     algorithm, depth, width,
     budget: width === 1 ? depth + 1 : Math.round(clamp(input.budget, 2, 16, 8)),
     blockSize: Math.round(clamp(input.blockSize, 1, 8, 4)),
+    load: clamp(input.load, 1, 16, 1),
     phase: ['idle', 'running', 'done'].includes(input.phase) ? input.phase : 'idle',
     step: Math.max(0, Math.round(Number(input.step) || 0)),
     roundIndex: Math.max(0, Math.round(Number(input.roundIndex) || 0)),
@@ -115,7 +116,7 @@ function makeBlock(n, cursor, roundIndex) {
       baseToken:vocabulary[baseLogits.indexOf(Math.max(...baseLogits))], previous, vocabulary, baseLogits, bias, logits,
       correctPath:token===STREAM[cursor+i+1] });
   }
-  const scheduler = schedulePrefix(nodes.map(x=>x.confidence));
+  const scheduler = schedulePrefix(nodes.map(x=>x.confidence), n.load);
   const root = { id:'root', token:STREAM[cursor], level:0, parent:null, value:1 };
   const selected = [root, ...nodes.slice(0,scheduler.count)];
   const accepted = [];
@@ -146,7 +147,7 @@ function makeRound(n, cursor, index, start) {
     push('schedule','stageSchedule',0.035,{codeIndex:3});
   }
   push('reserve','stageReserve',0.025,{codeIndex:n.algorithm==='eagle2'?2:4});
-  push('verify','stageVerify',targetCost(data.selected.length),{codeIndex:n.algorithm==='eagle2'?3:5});
+  push('verify','stageVerify',targetCost(data.selected.length, n.load),{codeIndex:n.algorithm==='eagle2'?3:5});
   push('accept','stageAccept',0.035,{codeIndex:n.algorithm==='eagle2'?4:6});
   push('commit','stageCommit',0.055,{codeIndex:n.algorithm==='eagle2'?5:7});
   let time=start;

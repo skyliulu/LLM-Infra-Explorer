@@ -1,5 +1,18 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-22 — Wave 1 现代推理能力覆盖与结构融合重构 + Skill 扩展规范更新
+
+- **触发反馈**：Wave 1 初稿（`RadixCache` / `LinearAttention` / `SpeculativeDecoding` / `Quantization`）普遍采用“文末追加独立大章节”的方式，导致结构生硬、标题过长且正文说明层叠偏多。本轮先补齐 `.agents/skills/develop-interactive-module/` 的通用扩展约束，再重构四章内容实现原生融入与文案精简。
+- **Skill 迭代**：
+  - `references/content-and-math.md`：新增“单句精炼标题（禁止括号注释与多主题串烧）”“扩展内容嵌入 vs 独立小节决策准则（优先嵌入已有卡片/标签/模式分支，禁止把多个松散主题塞进文末杂项附录）”“单层说明预算（画布外说明不超过两句）”。
+  - `references/qa-checklist.md`：在 `Change-contract integrity` 增加对应可观察验收项。
+- **四章结构融合**：
+  - `Quantization`（删除独立 Card 05）：Card 01 原生嵌入由现有 `Decode/Prefill + Batch` 驱动的 4 方案 Roofline 速度条；Card 02 在 `mode==='fp8'` 时按上下文展示细粒度分块 FP8 + WGMMA FP32 累加说明；Card 03 直接将 `QuaRot` 作为第 5 种离线算法接入 `ALGORITHMS` 与共享 `3×8` 矩阵/离群通道条，保留原 01–04 章节主干。
+  - `SpeculativeDecoding`（删除独立 §4）：将 `load`（`低 1× / 中 4× / 高 10×`）直接融入 §1 `Race` 实验参数与真实 `targetCost` / DSpark `schedulePrefix`，直观拉长高并发验证步并收缩送验前缀；§3 底部压缩为单行 3 卡片 `主流 Drafter 路线`（`MTP / EAGLE-3 / N-gram`）。
+  - `LinearAttention`：将 `Chunkwise 并行 Prefill` 直接融入 `contextMode === 'prefill'` 的细节插槽（消除原 Prefill 态底部留白）；下方收束为紧凑双栏 `Gated DeltaNet 与混合架构`（单行公式零横向滚动）。
+  - `RadixCache`：保留具独立双物理池（`TokenToKVPool + MambaPool`）结构的 `混合 Mamba 状态缓存` 中段小节，标题与说明压缩 ~60%（小节总高收束至 1154 px）。
+- **验证结果**：`check:quantization`、`check:speculative`、`check:linear`、`check:radix`、`check:workbench`、`check-theme`、`check-navigation` 与 `npm run build` 全部通过；Headless Chrome 真实渲染覆盖四章 Light/Dark × ZH/EN × 1360/900/390，0 console error、0 KaTeX error、EN `cjkLeak = 0`、无横向溢出，并逐张核验真实浅/深色截图。本地提交，待用户预览确认后再推送。
+
 ### 2026-11-21 — Targeted polish & cleanup: DeepInfer (`#deepinfer`)
 
 - Upgraded `#di-layout` (`ParallelPath`) from 4 static boxes to an interactive Prefill (EP2–8 · large local batch) vs Decode (EP64–128 · wide batch gathering) switcher.

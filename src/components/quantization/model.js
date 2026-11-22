@@ -1,4 +1,5 @@
 import {toBF16, describeBF16} from './bfloat16.js';
+import {hadamard8} from './frontier-model.js';
 // Deterministic teaching fixtures, not checkpoint inference or a hardware benchmark.
 export const WEIGHTS = [
   [.12, -.37, .64, -.91, 1.23, -.18, .43, -.72],
@@ -7,7 +8,7 @@ export const WEIGHTS = [
 ];
 export const clone = a => a.map(r => [...r]);
 export const MODES = ['fp16', 'w4', 'w8', 'fp8'];
-export const ALGORITHMS = ['rtn', 'awq', 'gptq', 'smooth'];
+export const ALGORITHMS = ['rtn', 'awq', 'gptq', 'smooth', 'quarot'];
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 export const maxAbs = a => Math.max(0, ...a.flat().map(Math.abs));
 export const mse = (a, b) => a.flat().reduce((sum, v, i) => sum + (v - b.flat()[i]) ** 2, 0) / a.flat().length;
@@ -134,6 +135,12 @@ export function deriveAlgorithmModel(algorithm = 'awq', outliers = true, step = 
     }
     finalW = current;
     stages = ['calibrate', ...Array.from({length: 8}, (_, i) => `column${i}`), 'pack'];
+  } else if (algorithm === 'quarot') {
+    const tw = w.map(hadamard8), tx = x.map(hadamard8);
+    const qw = quantize(tw, {format: 'int4'});
+    const qx = quantize(tx, {format: 'int4'}).values;
+    transformed = tw; input = qx; q = qw; finalW = qw.values;
+    stages = ['calibrate', 'rotate', 'quantWeights', 'pack'];
   }
   const completed = clamp(Math.floor(Number.isFinite(step) ? step : 0), 0, stages.length);
   let visibleW = w, visibleX = x, committed = 0;
@@ -141,9 +148,9 @@ export function deriveAlgorithmModel(algorithm = 'awq', outliers = true, step = 
     committed = clamp(completed - 1, 0, 8);
     visibleW = committed ? snapshots[committed - 1].after : w;
   } else {
-    const scaled = (algorithm === 'awq' || algorithm === 'smooth') && completed >= 2;
-    visibleW = scaled ? transformed : w;
-    visibleX = scaled ? x.map(r => r.map((v, c) => v / scales[c])) : x;
+    const transformedStep = (algorithm === 'awq' || algorithm === 'smooth' || algorithm === 'quarot') && completed >= 2;
+    visibleW = transformedStep ? transformed : w;
+    visibleX = transformedStep ? (algorithm === 'quarot' ? x.map(hadamard8) : x.map(r => r.map((v, c) => v / scales[c]))) : x;
     if (completed >= stages.indexOf('quantWeights') + 1) {visibleW = finalW; visibleX = input; committed = 8;}
   }
   return {algorithm, x, w, reference, stages, completed, scales, scores, snapshots, visibleW, visibleX, committed,

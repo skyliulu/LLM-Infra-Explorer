@@ -9,7 +9,7 @@ import { getAttentionState, TRACKS } from './linear-attention/model';
 import { ArchitectureComparison } from './linear-attention/ArchitectureComparison';
 import { Inspector } from './linear-attention/Inspector';
 import { StageCanvas } from './linear-attention/StageCanvas';
-import ChunkDeltaWorkbench from './linear-attention/ChunkDeltaWorkbench';
+import ChunkDeltaWorkbench, { ChunkwisePrefillSection } from './linear-attention/ChunkDeltaWorkbench';
 
 const CONTEXT_OPTIONS = [16, 64, 256, 1024, 4096, 16384];
 const D_OPTIONS = [16, 32, 64, 128];
@@ -192,6 +192,10 @@ function LinearAttention() {
           setGateStrength={setGateStrength}
           t={t}
         />
+
+        {contextMode === 'prefill' && (
+          <ChunkwisePrefillSection lang={lang} contextLength={contextLength} dk={dk} dv={dv} />
+        )}
 
         {contextMode === 'decode' && (
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">

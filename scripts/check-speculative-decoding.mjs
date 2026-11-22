@@ -91,7 +91,8 @@ assert.deepEqual(derive({budget:2}).round.nodes,derive({budget:16}).round.nodes,
 const short=derive({algorithm:'dspark',blockSize:2}),long=derive({algorithm:'dspark',blockSize:8});
 assert.deepEqual(short.round.nodes,long.round.nodes.slice(0,3),'Block extension preserves fixed earlier predictions and confidence');
 assert.notEqual(derive({algorithm:'dspark',blockSize:2,phase:'done'}).acceptance.rate,derive({algorithm:'dspark',blockSize:4,phase:'done'}).acceptance.rate,'Measured acceptance changes with verified prefix');
-assert.deepEqual(buildRun({quality:0,load:8}),buildRun({quality:100,load:1}),'Removed input fields must not affect the fixed experiment');
+assert.deepEqual(buildRun({quality:0}),buildRun({quality:100}),'Removed quality field must not affect the fixed experiment');
+assert.ok(buildRun({load:10}).rounds[0].events.find(e=>e.type==='verify').duration>buildRun({load:1}).rounds[0].events.find(e=>e.type==='verify').duration,'Concurrency load must stretch verification latency');
 assert.equal(getTeachingPosition(3).correctRank,1);
 assert.ok(derive({raceStep:80}).race.lead>0,'Default teaching configuration can accelerate');
 assert.equal(derive({raceStep:80}).race.isDone,true);
@@ -111,14 +112,14 @@ assert.equal(deriveSamplingModel(90,0.1,2).output,2,'Accepted proposal is emitte
 assert.equal(deriveSamplingModel(90,0.82,2,0.37).output,0,'Residual low draw selects A');
 assert.equal(deriveSamplingModel(90,0.82,2,0.99).output,1,'Residual high draw selects B');
 assert.equal(deriveSamplingModel(100,0.99,2).accepted,true,'Equal distributions never reject');
-assert.equal(n.depth,5);assert.equal(n.budget,6);assert.ok(!('quality' in n));assert.ok(!('load' in n));
+assert.equal(n.depth,5);assert.equal(n.budget,6);assert.ok(!('quality' in n));assert.equal(n.load,16);
 const complete=derive({phase:'done'});
 assert.equal(getNextLifecycle(complete).roundIndex,1);
 const jsx=readFileSync(new URL('../src/components/SpeculativeDecoding.jsx',import.meta.url),'utf8');
 assert.ok(jsx.includes('length:s.blockSize-1'),'DSpark input must have gamma-1 masks');
 assert.ok(!jsx.includes('ArchitectureDetailedLegacy'),'Obsolete architecture removed');
 assert.ok(!jsx.includes('text-[6px]')&&!jsx.includes('text-[7px]')&&!jsx.includes('text-[8px]'),'No microtype in the teaching interface');
-assert.ok(!jsx.includes('name="quality"')&&!jsx.includes('name="load"')&&!jsx.includes('s.quality'),'No acceptance or load input, including downstream expected-rate bars');
+assert.ok(!jsx.includes('name="quality"')&&!jsx.includes('s.quality'),'No synthetic acceptance input');
 assert.ok(jsx.includes('flag="block_size"'),'DSpark uses its actual model config field');
 assert.ok(jsx.includes('<details')&&!jsx.includes('<details open'),'Long parameter explanations are collapsed by default');
 assert.ok(jsx.includes("'race-acceptance'")&&jsx.includes("'round-acceptance'"),'Both playback scopes expose a clearly labeled acceptance result');
