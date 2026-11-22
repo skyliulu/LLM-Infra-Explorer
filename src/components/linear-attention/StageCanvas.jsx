@@ -28,13 +28,13 @@ const modeTone = {
 const canvasFormulas = {
   exact: [
     String.raw`q_t,\ k_t,\ v_t`,
-    String.raw`s_{tj}=\frac{q_t^\top k_j}{\sqrt{d_k}}`,
+    String.raw`s_{tj}=\frac{q_tk_j^\top}{\sqrt{d_k}}`,
     String.raw`a_t=\operatorname{softmax}(s_t)`,
     String.raw`o_t=\sum_j a_{tj}v_j`,
   ],
   linear: [
     String.raw`\bar k_t=\phi(k_t)`,
-    String.raw`\Delta S_t=\bar k_t v_t^\top`,
+    String.raw`\Delta S_t=\bar k_t^\top v_t`,
     String.raw`S_t=S_{t-1}+\Delta S_t`,
     String.raw`o_t=n_t/d_t`,
   ],
@@ -201,7 +201,7 @@ function LinearStages({ state, activeIndex }) {
     (active) => <div className="space-y-3"><SmallVector values={state.key} label={<MathFormula>{String.raw`k_t`}</MathFormula>} active={active} /><SmallVector values={state.phiKey} label={<MathFormula>{String.raw`\phi(k_t)`}</MathFormula>} tone="emerald" active={active} /></div>,
     (active) => <SmallMatrix matrix={state.update} label={<MathFormula>{String.raw`\Delta S_t`}</MathFormula>} tone="amber" active={active} />,
     (active) => <div className="space-y-3"><SmallMatrix matrix={state.state} label={<MathFormula>{String.raw`S_t`}</MathFormula>} active={active} /><SmallVector values={state.normalizer} label={<MathFormula>{String.raw`z_t`}</MathFormula>} tone="amber" active={active} /></div>,
-    (active) => <div className="space-y-3"><SmallVector values={state.numerator} label={<MathFormula>{String.raw`\phi(q_t)^\top S_t`}</MathFormula>} active={active} /><div className="rounded-lg border border-amber-200 bg-amber-100 px-2 py-2 text-center text-sm font-bold text-amber-950"><MathFormula>{`d_t=${state.denominator.toFixed(2)}`}</MathFormula></div><SmallVector values={state.linearOutput} label={<MathFormula>{String.raw`o_t`}</MathFormula>} tone="emerald" active={active} /></div>,
+    (active) => <div className="space-y-3"><SmallVector values={state.numerator} label={<MathFormula>{String.raw`\phi(q_t)S_t`}</MathFormula>} active={active} /><div className="rounded-lg border border-amber-200 bg-amber-100 px-2 py-2 text-center text-sm font-bold text-amber-950"><MathFormula>{`d_t=${state.denominator.toFixed(2)}`}</MathFormula></div><SmallVector values={state.linearOutput} label={<MathFormula>{String.raw`o_t`}</MathFormula>} tone="emerald" active={active} /></div>,
   ][activeIndex];
 }
 

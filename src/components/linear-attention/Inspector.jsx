@@ -5,7 +5,7 @@ import { getStageCopy } from './content';
 export function Inspector({ mode, step, state, t }) {
   const copy = getStageCopy(mode, step, t);
   const formula = mode === 'gla' && step === 0
-    ? String.raw`\begin{aligned}\alpha_t&=\sigma(W_\alpha x_t)\\\beta_t&=\sigma(W_\beta x_t)\\G_t&=\alpha_t^\top\beta_t\end{aligned}`
+    ? String.raw`\begin{aligned}\alpha_t&=\sigma(x_tW_\alpha)\\\beta_t&=\sigma(x_tW_\beta)\\G_t&=\alpha_t^\top\beta_t\end{aligned}`
     : copy.formula;
   return (
     <aside className="linear-inspector rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm">
