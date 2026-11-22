@@ -206,7 +206,7 @@ export const FORMULAS = {
   bfloat16:String.raw`v=(-1)^b\left(1+\frac{F}{2^7}\right)2^{E-127}`,
   float16:String.raw`v=(-1)^b\left(1+\frac{F}{2^{10}}\right)2^{E-15}`,
   fp8:String.raw`q=\operatorname{cast}_{\mathrm{E4M3FN}}(\operatorname{clip}(w/s,-448,448)),\quad \hat w=sq`,
-  quant:String.raw`q=\operatorname{clip}(\operatorname{round}(w/s)+z),\quad \hat w=s(q-z)`,
+  quant:String.raw`q=\operatorname{clip}\!\left(\operatorname{round}(w/s)+z,\,q_{\min},\,q_{\max}\right),\quad \hat w=s(q-z)`,
   equivalent:String.raw`Y=XW^\top=(XS^{-1})(WS)^\top`,
   error:String.raw`\mathrm{MSE}=\frac{1}{N}\sum_i (Y_i-\hat Y_i)^2`,
   kvElements:String.raw`N_{\mathrm{KV}}=2\cdot L\cdot B\cdot T\cdot H_{\mathrm{KV}}\cdot d_h`,

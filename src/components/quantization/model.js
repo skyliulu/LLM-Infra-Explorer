@@ -103,7 +103,7 @@ export function deriveAlgorithmModel(algorithm = 'awq', outliers = true, step = 
       ? x.reduce((s, r) => s + Math.abs(r[c]), 0) / x.length : Math.max(...x.map(r => Math.abs(r[c]))));
     const tryScale = exponent => {
       let s = a.map((v, c) => algorithm === 'awq' ? v ** exponent : v ** exponent / Math.max(...w.map(r => Math.abs(r[c]))) ** (1 - exponent));
-      const norm = Math.sqrt(Math.max(...s) * Math.min(...s)); s = s.map(v => v / norm);
+      if (algorithm === 'awq') { const norm = Math.sqrt(Math.max(...s) * Math.min(...s)); s = s.map(v => v / norm); }
       const tw = w.map(r => r.map((v, c) => v * s[c])), tx = x.map(r => r.map((v, c) => v / s[c]));
       const qw = quantize(tw, {format: algorithm === 'smooth' ? 'int8' : 'int4'});
       const qx = algorithm === 'smooth' ? quantize(tx, {format: 'int8'}).values : tx;
@@ -182,7 +182,7 @@ export function deriveNumericModel({mode = 'w4', group = 8, clip = 1, affine = f
   // Quantization error is incremental to BF16-rounded source values.
   // The legacy fp16 identity format is an internal no-quantization path.
   const packedCodes = format === 'fp16' ? [] : q.codes.flat().map(value => {
-    const raw = format === 'fp8' ? FP8_VALUES.indexOf(Math.abs(value)) + (value < 0 ? 128 : 0)
+    const raw = format === 'fp8' ? FP8_VALUES.indexOf(Math.abs(value)) + (value < 0 || Object.is(value, -0) ? 128 : 0)
       : (value + 2 ** q.bits) % 2 ** q.bits;
     return raw.toString(2).padStart(q.bits, '0');
   });
