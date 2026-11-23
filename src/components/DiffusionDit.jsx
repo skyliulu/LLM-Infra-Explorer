@@ -21,6 +21,7 @@ import {
 import { i18n } from './diffusion-dit/content';
 import { DitArchSvg } from './diffusion-dit/DitArchSvg';
 import { DitParallelSvg } from './diffusion-dit/DitParallelSvg';
+import { DitParadigmSvg } from './diffusion-dit/DitParadigmSvg';
 import './workbench.css';
 import './diffusion-dit/diffusion-dit.css';
 
@@ -60,6 +61,9 @@ export default function DiffusionDit() {
   const [config, setConfig] = useExperimentState('DiffusionDit.config', DEFAULT_CONFIG);
   const [activeStage, setActiveStage] = useState('ditloop');
   const [selectedCacheStep, setSelectedCacheStep] = useState(8);
+  const [ditParadigm, setDitParadigm] = useState('mmdit');
+  const [sparse3d, setSparse3d] = useState(true);
+  const [sageAttn, setSageAttn] = useState(true);
 
   const updateCfg = (patch) => setConfig((prev) => ({ ...prev, ...patch }));
   const handleReset = () => {
@@ -161,6 +165,29 @@ export default function DiffusionDit() {
                 <MathFormula block>{FLOW_TEX}</MathFormula>
               </div>
               <div className="text-xs text-slate-600 mt-1">{t('s1_formula_note')}</div>
+            </div>
+
+            <div className="mt-4 p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-bold text-slate-700">{t('paradigmTitle')}</span>
+                <div className="dit-pill-row">
+                  <button
+                    type="button"
+                    onClick={() => setDitParadigm('mmdit')}
+                    className={`dit-pill ${ditParadigm === 'mmdit' ? 'dit-pill-active' : ''}`}
+                  >
+                    {t('paradigmMm')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDitParadigm('cross')}
+                    className={`dit-pill ${ditParadigm === 'cross' ? 'dit-pill-active' : ''}`}
+                  >
+                    {t('paradigmCross')}
+                  </button>
+                </div>
+              </div>
+              <DitParadigmSvg paradigm={ditParadigm} />
             </div>
           </section>
 
@@ -272,7 +299,60 @@ export default function DiffusionDit() {
               </p>
             </div>
 
-            <div className="dit-callout">{t('s2_vs_llm')}</div>
+            <div className="dit-callout mb-3">{t('s2_vs_llm')}</div>
+
+            {/* 3D Sparse Video Attention (STA / Radial) + SageAttention INT8 QK */}
+            <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-bold text-slate-700">{t('sparseTitle')}</span>
+                <div className="dit-pill-row">
+                  <button type="button" onClick={() => setSparse3d(false)} className={`dit-pill ${!sparse3d ? 'dit-pill-active' : ''}`}>
+                    {t('sparseDense')}
+                  </button>
+                  <button type="button" onClick={() => setSparse3d(true)} className={`dit-pill ${sparse3d ? 'dit-pill-active' : ''}`}>
+                    {t('sparseSta')}
+                  </button>
+                  <button type="button" onClick={() => setSageAttn((v) => !v)} className={`dit-pill ${sageAttn ? 'dit-pill-active' : ''}`}>
+                    {sageAttn ? t('sageOn') : t('sageOff')}
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                <div className="grid grid-cols-8 gap-1 max-w-[220px]" aria-label="8x8 3D Attention Block Mask">
+                  {Array.from({ length: 64 }, (_, idx) => {
+                    const r = Math.floor(idx / 8);
+                    const c = idx % 8;
+                    const active = !sparse3d || Math.abs(r - c) <= 1 || r === 0 || c === 0;
+                    return (
+                      <div
+                        key={idx}
+                        className={`h-4 rounded-[3px] border ${active ? 'bg-indigo-500 border-indigo-600' : 'bg-slate-200 border-slate-300 opacity-45'}`}
+                      />
+                    );
+                  })}
+                </div>
+
+                <div className="dit-metric-grid">
+                  <div className="dit-metric-card">
+                    <div className="dit-metric-label">Attention Density</div>
+                    <div className="dit-metric-val text-indigo-700">{sparse3d ? '28% (3.6× Cut)' : '100% Dense'}</div>
+                  </div>
+                  <div className="dit-metric-card">
+                    <div className="dit-metric-label">Optimized 1-H100 Latency</div>
+                    <div className="dit-metric-val text-emerald-700">
+                      {(() => {
+                        const attnFrac = tokenModel.attnSharePct / 100;
+                        const attnScale = (sparse3d ? 0.28 : 1.0) / (sageAttn ? 1.8 : 1.0);
+                        const ffnScale = sageAttn ? 0.85 : 1.0;
+                        const factor = attnFrac * attnScale + (1 - attnFrac) * ffnScale;
+                        return `${(tokenModel.estSingleGpuSec * factor).toFixed(1)} s`;
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
 
           {/* §3 Multi-GPU Parallelism: CFG + USP */}
@@ -457,6 +537,23 @@ export default function DiffusionDit() {
                 <div className="dit-metric-label">{t('s4_metric_risk')}</div>
                 <div className="dit-metric-val text-sm">{t(`risk_${cacheModel.qualityRisk}`)}</div>
               </div>
+            </div>
+
+            <div className="mt-4">
+              <div className="text-xs font-bold text-slate-700 mb-1.5">{t('codeTitle')}</div>
+              <pre className="bg-[#0d1117] text-slate-200 border border-slate-800 rounded-xl p-3 text-[11.5px] leading-relaxed overflow-x-auto m-0 font-mono">
+                <code>{`# xDiT / SGLang-Diffusion Production Video Generation Loop
+text_emb = text_encoder_svc.encode(prompt)              # remote T5-XXL microservice (saves 9.5 GB VRAM)
+latents  = randn(B=1, C=16, T=21, H=90, W=160)
+for step, t in enumerate(scheduler.timesteps):          # ${cacheModel.strategy === 'distill' ? '4 distilled solver steps' : '20–50 flow-matching steps'}
+    h_mod = dit.adaln_modulate(latents, t)              # BF16 protected modulation layer
+    if ${cacheModel.strategy === 'teacache' ? `teacache.drift_l1(h_mod) < ${config.cacheThreshold.toFixed(2)}` : 'False'}:                  # TeaCache adaptive middle-step reuse
+        latents = scheduler.step(latents, cached_v, t); continue
+    v_pred   = usp_forward(dit, latents, text_emb, cfg_parallel=True, sage_int8=True)
+    cached_v = v_pred; latents = scheduler.step(latents, v_pred, t)
+dit.offload_to_host_ram()                               # free 28 GB before VAE peak activation spike!
+video_rgb = vae3d.decode_spatiotemporal_tiled(latents, overlap=0.2, causal_conv_cache=True)`}</code>
+              </pre>
             </div>
           </section>
 

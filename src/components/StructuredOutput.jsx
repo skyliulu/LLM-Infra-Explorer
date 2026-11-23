@@ -18,6 +18,7 @@ import {
 } from './structured-output/model';
 import { i18n } from './structured-output/content';
 import StructuredArchSvg from './structured-output/StructuredArchSvg';
+import { XGrammarSplitSvg, JumpFsmSvg } from './structured-output/StructuredVisualSvg';
 import './structured-output/structured-output.css';
 
 const MASK_TEX = String.raw`p(y_t \mid y_{<t}) = \operatorname{softmax}(\mathbf{z}_t + \mathbf{m}_t),\quad m_{t,v}=\begin{cases}0,& v\in\mathcal{V}_{\text{valid}}(s_t)\\ -\infty,& \text{otherwise}\end{cases}`;
@@ -161,6 +162,9 @@ export default function StructuredOutput() {
             </div>
 
             <div className="so-box">
+              <div className="so-svg-wrap">
+                <XGrammarSplitSvg maskEngine={config.maskEngine} vocabSize={config.vocabSize} />
+              </div>
               <div className="so-kpis-2">
                 <div className={`so-kpi ${maskCost.selected.maskMs < 0.2 ? 'good' : 'warn'}`}>
                   <small>{t('mMaskMs')}</small>
@@ -234,6 +238,10 @@ export default function StructuredOutput() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="so-svg-wrap">
+            <JumpFsmSvg jumpMode={config.jumpMode} />
           </div>
 
           <div className="so-grid-2">
@@ -343,6 +351,28 @@ export default function StructuredOutput() {
               <p>{t(`ovNote_${config.overlapMode}`)}</p>
             </div>
           </div>
+
+          <div className="so-box">
+            <span className="so-ctrl-label">{t('codeTitle')}</span>
+            <pre className="so-code">
+              {config.overlapMode === 'async_overlap' ? (
+                <code>{`// SGLang / vLLM Async Grammar Overlap Loop (Zero-Bubble Critical Path)
+future_mask = cpu_pool.submit(pda.fill_next_bitmask, prev_tok_id);  // ~40µs–2.4ms on CPU thread
+logits      = model.forward_decode(prev_tok_id, kv_cache);          // 15.0ms GPU forward (overlaps CPU!)
+bitmask_gpu = future_mask.get_async_h2d(pinned_buf, stream);        // 16 KB uint32 H2D already done
+apply_bitmask_kernel<<<ceil(|V|/256), 256>>>(logits, bitmask_gpu);  // bit==0 => logits[v] = -INF
+next_tok    = sample_softmax(logits);                               // 100% schema-valid output`}</code>
+              ) : (
+                <code>{`// Naive Serial Execution (GPU Stalls Waiting on CPU Grammar Thread)
+logits      = model.forward_decode(prev_tok_id, kv_cache);          // 15.0ms GPU forward
+// ⚠ GPU IDLE BUBBLE: host blocks here while CPU walks grammar & copies bitmask!
+bitmask_cpu = pda.fill_next_bitmask(prev_tok_id);                   // +2.4ms exposed stall
+bitmask_gpu = h2d_copy_sync(bitmask_cpu);                           // sync barrier
+apply_bitmask_kernel<<<ceil(|V|/256), 256>>>(logits, bitmask_gpu);
+next_tok    = sample_softmax(logits);`}</code>
+              )}
+            </pre>
+          </div>
         </section>
 
         {/* §6 Production Pitfalls */}
@@ -398,6 +428,56 @@ export default function StructuredOutput() {
               <span className="so-ctrl-label">{t('pitFix')}</span>
               <p>{t(`pitFix_${config.pitfallId}`)}</p>
             </div>
+          </div>
+
+          <div className="so-box">
+            <span className="so-ctrl-label">{t('engMatrixTitle')}</span>
+            <table className="so-table">
+              <thead>
+                <tr>
+                  <th>{t('colEngName')}</th>
+                  <th>{t('colGrammar')}</th>
+                  <th>{t('colCompile')}</th>
+                  <th>{t('colStepCost')}</th>
+                  <th>{t('colJump')}</th>
+                  <th>{t('colSpec')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>Outlines (FSM)</b></td>
+                  <td>Regex / Flat JSON</td>
+                  <td>100–600 ms</td>
+                  <td>~0.4 ms</td>
+                  <td>Partial</td>
+                  <td><span className="so-pill no">Limited</span></td>
+                </tr>
+                <tr className="on">
+                  <td><b>XGrammar (MLSys 25)</b></td>
+                  <td>Full CFG (PDA)</td>
+                  <td>10–40 ms</td>
+                  <td>~0.04 ms</td>
+                  <td>Optional</td>
+                  <td><span className="so-pill ok">Tree Rollback</span></td>
+                </tr>
+                <tr>
+                  <td><b>LLGuidance (Rust)</b></td>
+                  <td>CFG + Earley + Regex</td>
+                  <td>&lt; 2 ms</td>
+                  <td>~0.05 ms</td>
+                  <td>Fast-Forward</td>
+                  <td><span className="so-pill ok">Multi-Branch</span></td>
+                </tr>
+                <tr>
+                  <td><b>SGLang Compressed FSM</b></td>
+                  <td>JSON / Regex / XGrammar</td>
+                  <td>5–30 ms</td>
+                  <td>~0.04 ms</td>
+                  <td><span className="so-pill ok">Native 3×</span></td>
+                  <td><span className="so-pill ok">EAGLE + Rollback</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 

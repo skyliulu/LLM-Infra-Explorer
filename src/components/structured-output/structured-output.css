@@ -85,6 +85,11 @@
 .so-evidence{border:1px solid #dbe2eb;border-radius:10px;background:#fff;padding:10px 14px;font-size:12px;color:#475569}
 .so-evidence summary{cursor:pointer;font-weight:700;color:#1e293b}
 .so-evidence p{margin:8px 0 0;line-height:1.6}
+.so-code{background:#0d1117;color:#e2e8f0;border:1px solid #1e293b;border-radius:10px;padding:11px 13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.58;overflow-x:auto;margin:0}
+.so-code .kw{color:#93c5fd;font-weight:700}
+.so-code .cm{color:#64748b}
+.so-code .hi{color:#34d399;font-weight:700}
+.so-code .warn{color:#fbbf24;font-weight:700}
 
 @media(max-width:960px){
   .so-grid-2,.so-grid-even{grid-template-columns:1fr}

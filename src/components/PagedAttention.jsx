@@ -22,6 +22,7 @@ import {
 import { i18n } from './paged-kv/content';
 import PagedArchSvg from './paged-kv/PagedArchSvg';
 import VAttnCompareSvg from './paged-kv/VAttnCompareSvg';
+import PrefixHashSvg from './paged-kv/PrefixHashSvg';
 import './paged-kv/paged-kv.css';
 
 const ADDR_TEX = String.raw`i = \left\lfloor \frac{j}{S} \right\rfloor,\quad o = j \bmod S,\quad p = B_r[i],\quad k_j^{(l)} = K_{\text{phys}}^{(l)}[p, o]`;
@@ -50,6 +51,7 @@ export default function PagedAttention() {
 
   const [cowStep, setCowStep] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [apcEdited, setApcEdited] = useState(false);
 
   const frag = useMemo(
     () => deriveFragmentationModel({ allocMode: config.allocMode, blockSize: config.blockSize }),
@@ -213,6 +215,16 @@ export default function PagedAttention() {
             <div className="pk-box">
               <span className="pk-ctrl-label">{t('addrTradeoffTitle')}</span>
               <p>{t(addr.blockSize <= 4 ? 'addrSmallS' : addr.blockSize >= 64 ? 'addrLargeS' : 'addrMidS')}</p>
+              <span className="pk-ctrl-label">{t('kernelTitle')}</span>
+              <pre className="pk-code">
+                <code>{`// Warp-level PagedAttention Decode Kernel (S=${addr.blockSize}, token j=${addr.tokenIdx})
+int logical_blk = ${addr.tokenIdx} / ${addr.blockSize};              // i = ${addr.logicalBlock}
+int offset      = ${addr.tokenIdx} % ${addr.blockSize};              // o = ${addr.offset}
+int phys_blk    = block_tables[req_id][logical_blk]; // -> P${addr.physicalBlock}
+// Coalesced vectorized 128B load from non-contiguous HBM page:
+float4 k_vec = K_cache[phys_blk][kv_head][offset][lane_vec];
+float  score = warp_dot(q_reg, k_vec) * inv_sqrt_dh; // Online Softmax`}</code>
+              </pre>
             </div>
           </div>
         </section>
@@ -266,6 +278,19 @@ export default function PagedAttention() {
             <div className="pk-kpi">
               <small>{t('cowCopies')}</small>
               <strong>{cow.cowCopies}</strong>
+            </div>
+          </div>
+
+          <div className="pk-box">
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <span className="pk-ctrl-label">{t('apcTitle')}</span>
+              <div className="pk-toggle" role="group" aria-label={t('apcTitle')}>
+                <button type="button" aria-pressed={!apcEdited} onClick={() => setApcEdited(false)}>{t('apcClean')}</button>
+                <button type="button" aria-pressed={apcEdited} onClick={() => setApcEdited(true)}>{t('apcEdit')}</button>
+              </div>
+            </div>
+            <div className="pk-svg-wrap">
+              <PrefixHashSvg blockSize={config.blockSize} editedBlock1={apcEdited} />
             </div>
           </div>
         </section>
@@ -475,6 +500,51 @@ export default function PagedAttention() {
               </div>
               <p>{t(`keyReason_${config.keyChange}`)}</p>
             </div>
+          </div>
+
+          <div className="pk-box">
+            <span className="pk-ctrl-label">{t('mgrTitle')}</span>
+            <table className="pk-table">
+              <thead>
+                <tr>
+                  <th>{t('colMgr')}</th>
+                  <th>{t('colGran')}</th>
+                  <th>{t('colLayout')}</th>
+                  <th>{t('colShare')}</th>
+                  <th>{t('colKernel')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="on">
+                  <td><b>vLLM PagedAttention (APC)</b></td>
+                  <td>16–32 tok/block</td>
+                  <td><code>[num_blk, S, H_kv, d_h]</code> (NHD)</td>
+                  <td>Chained Block Hash + CoW</td>
+                  <td>Block-table indirection in FA2/FA3/FlashInfer</td>
+                </tr>
+                <tr>
+                  <td><b>SGLang RadixAttention</b></td>
+                  <td>1-tok page (Radix)</td>
+                  <td><code>[num_pages, H_kv, d_h]</code> (Token Pool)</td>
+                  <td>Exact Prefix Tree + LRU Evict</td>
+                  <td>Index-based indirect gather (zero tail waste)</td>
+                </tr>
+                <tr>
+                  <td><b>FlashMLA (DeepSeek-V3)</b></td>
+                  <td>64 tok/block</td>
+                  <td><code>[num_blk, 64, 576]</code> (Compressed Latent)</td>
+                  <td>Shared Latent Block Hash</td>
+                  <td>Joint K/V absorbed latent paged kernel</td>
+                </tr>
+                <tr>
+                  <td><b>vAttention (CUDA VMM)</b></td>
+                  <td>2 MB GPU page</td>
+                  <td>Contiguous Virtual Address Space</td>
+                  <td>Driver page-table remap</td>
+                  <td>Zero kernel change (standard FA)</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 

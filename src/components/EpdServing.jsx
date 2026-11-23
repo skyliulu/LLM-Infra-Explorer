@@ -19,6 +19,7 @@ import {
 } from './epd-serving/model';
 import { i18n } from './epd-serving/content';
 import EpdArchSvg from './epd-serving/EpdArchSvg';
+import PreprocPipeSvg from './epd-serving/PreprocPipeSvg';
 import './epd-serving/epd-serving.css';
 
 const EPD_GOODPUT_TEX = String.raw`Q_{\text{EPD}}(E,P,D) = \min\!\big(C_E(E),\ C_P(P),\ C_D(D)\big),\qquad E + P + D = N`;
@@ -42,6 +43,8 @@ export default function EpdServing() {
   const [archPin, setArchPin] = useState(2);
   const [cacheStep, setCacheStep] = useState(4);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [simHitPct, setSimHitPct] = useState(60);
+  const [heteroTco, setHeteroTco] = useState(true);
 
   const s2 = useMemo(() => deriveEpdModeModel(config.epdMode), [config.epdMode]);
   const pre = useMemo(() => derivePreprocModel(config.preprocMode), [config.preprocMode]);
@@ -286,6 +289,24 @@ export default function EpdServing() {
               <p>{t(`preNote_${config.preprocMode}`)}</p>
             </div>
           </div>
+
+          <div className="ep-svg-wrap">
+            <PreprocPipeSvg preprocMode={config.preprocMode} />
+          </div>
+
+          <div className="ep-box">
+            <span className="ep-ctrl-label">{t('preCodeTitle')}</span>
+            <pre className="ep-code">
+              <code>{`// Async Media Pool + Bounded E->P Backpressure Queue (vLLM / SGLang EPD Pattern)
+async def encode_worker(req):
+    img_hash = sha256(req.raw_bytes)
+    if (emb := emb_cache.get(img_hash)) is None:
+        pixels = await media_pool.decode_nvjpeg_pinned(req.raw_bytes)   // off main loop!
+        emb    = vit_encode_varlen(pixels, max_patch_budget=16384)      // ~16 MB BF16
+        emb_cache.put_lru(img_hash, emb)
+    await ep_channel.send_with_credit(req.id, emb)                      // blocks if P-pool full`}</code>
+            </pre>
+          </div>
         </section>
 
         {/* §4 Multimodal Embedding Cache */}
@@ -338,6 +359,36 @@ export default function EpdServing() {
               <strong>-{mm.savedMs} ms</strong>
             </div>
           </div>
+
+          <div className="ep-box">
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <span className="ep-ctrl-label">{t('cacheEcoTitle')}</span>
+              <div className="ep-ctrl-group">
+                <span className="ep-ctrl-label">{t('hitRateLbl')}:</span>
+                <div className="ep-toggle" role="group" aria-label={t('hitRateLbl')}>
+                  {[0, 30, 60, 85].map((pct) => (
+                    <button key={pct} type="button" aria-pressed={simHitPct === pct} onClick={() => setSimHitPct(pct)}>
+                      {pct}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="ep-kpis-3">
+              <div className="ep-kpi">
+                <small>Avg ViT Encode / Req</small>
+                <strong>{Math.round(42 * (1 - simHitPct / 100) + 2 * (simHitPct / 100))} ms</strong>
+              </div>
+              <div className="ep-kpi good">
+                <small>Effective E-Pool Capacity</small>
+                <strong>{(1 / Math.max(0.15, 1 - simHitPct / 100)).toFixed(2)}×</strong>
+              </div>
+              <div className="ep-kpi">
+                <small>RAM for 10K Cached Images</small>
+                <strong>~160 GB Host DRAM</strong>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* §5 Dynamic E:P:D 3-Pool Ratio */}
@@ -379,6 +430,42 @@ export default function EpdServing() {
           </div>
 
           <div className={`ep-bn-pill ${ratio.bottleneck}`}>{t(`bn_${ratio.bottleneck}`)}</div>
+
+          <div className="ep-box">
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <span className="ep-ctrl-label">{t('tcoTitle')}</span>
+              <div className="ep-toggle" role="group" aria-label={t('tcoTitle')}>
+                <button type="button" aria-pressed={!heteroTco} onClick={() => setHeteroTco(false)}>{t('tcoHomo')}</button>
+                <button type="button" aria-pressed={heteroTco} onClick={() => setHeteroTco(true)}>{t('tcoHetero')}</button>
+              </div>
+            </div>
+            <div className="ep-kpis-3">
+              <div className="ep-kpi">
+                <small>16-GPU Cluster Hourly Cost</small>
+                <strong>
+                  ${heteroTco
+                    ? (ratio.eNodes * 1.2 + (EPD_TOTAL_GPUS - ratio.eNodes) * 3.5).toFixed(1)
+                    : (EPD_TOTAL_GPUS * 3.5).toFixed(1)}/hr
+                </strong>
+              </div>
+              <div className="ep-kpi good">
+                <small>E-Pool Cost Savings</small>
+                <strong>
+                  {heteroTco
+                    ? `-${Math.round(((ratio.eNodes * (3.5 - 1.2)) / (EPD_TOTAL_GPUS * 3.5)) * 100)}%`
+                    : '0%'}
+                </strong>
+              </div>
+              <div className="ep-kpi">
+                <small>Cost / 100K VLM Requests</small>
+                <strong>
+                  ${((heteroTco
+                    ? ratio.eNodes * 1.2 + (EPD_TOTAL_GPUS - ratio.eNodes) * 3.5
+                    : EPD_TOTAL_GPUS * 3.5) / Math.max(1, ratio.goodput * 36) * 10).toFixed(2)}
+                </strong>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* §6 Multimodal Serving Failure Modes */}
@@ -405,6 +492,46 @@ export default function EpdServing() {
               <span className="ep-ctrl-label">{t('opsFix')}</span>
               <p>{t(`opsFix_${config.opsId}`)}</p>
             </div>
+          </div>
+
+          <div className="ep-box">
+            <span className="ep-ctrl-label">{t('obsTitle')}</span>
+            <table className="ep-table">
+              <thead>
+                <tr>
+                  <th>{t('colMetric')}</th>
+                  <th>{t('colThreshold')}</th>
+                  <th>{t('colLayer')}</th>
+                  <th>{t('colAction')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>media_decode_wait_ms</code></td>
+                  <td>&gt; 25 ms (P95)</td>
+                  <td>Media / CPU</td>
+                  <td>Scale async nvJPEG workers; cap max upload resolution</td>
+                </tr>
+                <tr className="on">
+                  <td><code>vit_batch_patch_count</code></td>
+                  <td>&gt; 16K patches</td>
+                  <td>Encode (E)</td>
+                  <td>Split into patch-budgeted micro-batches (prevent ViT OOM)</td>
+                </tr>
+                <tr>
+                  <td><code>ep_emb_queue_depth_mb</code></td>
+                  <td>&gt; 4 GB / node</td>
+                  <td>E → P Link</td>
+                  <td>Trigger backpressure credits; add P nodes or 2×2 merge</td>
+                </tr>
+                <tr>
+                  <td><code>text_only_ttft_p99_ms</code></td>
+                  <td>&gt; 180 ms</td>
+                  <td>Router / P</td>
+                  <td>Verify modality-aware fast-path bypassing E-pool &amp; video queues</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 

@@ -1,5 +1,63 @@
 import React from 'react';
 
+export function VlmParadigmSvg({ paradigm = 'early_fusion' }) {
+  const isEarly = paradigm === 'early_fusion';
+  return (
+    <svg className="vl-svg" viewBox="0 0 600 128" role="img" aria-label="Early-Fusion Decoder-Only VLM vs Cross-Attention VLM">
+      <rect className="vl-svg-bg" x="4" y="4" width="592" height="120" rx="8" />
+      <text className="vl-svg-hdr" x="14" y="21">
+        {isEarly
+          ? 'Decoder-Only Early Fusion (Qwen2.5-VL / InternVL / LLaVA): Visual Tokens Join Shared LLM KV Cache'
+          : 'Cross-Attention Late Fusion (Llama-3.2-Vision / Flamingo): Visual Features Stay in Dedicated Cross-Attn KV'}
+      </text>
+
+      {isEarly ? (
+        <g>
+          <g className="vl-svg-node indigo">
+            <rect x="14" y="34" width="120" height="54" rx="6" />
+            <text className="vl-svg-t" x="74" y="56" textAnchor="middle">ViT + Projector</text>
+            <text className="vl-svg-s" x="74" y="72" textAnchor="middle">N_vis Embeddings</text>
+          </g>
+          <line className="vl-svg-edge hi" x1="134" y1="61" x2="162" y2="61" />
+          <g className="vl-svg-node blue">
+            <rect x="164" y="34" width="214" height="54" rx="6" />
+            <text className="vl-svg-t" x="271" y="54" textAnchor="middle">Interleaved Sequence in LLM</text>
+            <text className="vl-svg-s" x="271" y="72" textAnchor="middle">[Sys] [Vis_0..Vis_k] [Text Q] → All L Layers</text>
+          </g>
+          <line className="vl-svg-edge hi" x1="378" y1="61" x2="404" y2="61" />
+          <g className="vl-svg-node emerald">
+            <rect x="406" y="34" width="180" height="54" rx="6" />
+            <text className="vl-svg-t" x="496" y="54" textAnchor="middle">Shared Paged KV Cache</text>
+            <text className="vl-svg-s" x="496" y="72" textAnchor="middle">Top OCR · Grows O(N_vis)</text>
+          </g>
+          <text className="vl-svg-s" x="14" y="109">Pros: Best dense OCR &amp; multi-image interleaving, zero extra cross-attn weights. Cost: Visual tokens consume LLM KV across all 80 layers.</text>
+        </g>
+      ) : (
+        <g>
+          <g className="vl-svg-node indigo">
+            <rect x="14" y="34" width="136" height="54" rx="6" />
+            <text className="vl-svg-t" x="82" y="54" textAnchor="middle">ViT Encoder</text>
+            <text className="vl-svg-s" x="82" y="72" textAnchor="middle">Fixed Cross-Attn KV</text>
+          </g>
+          <line className="vl-svg-edge" x1="150" y1="61" x2="180" y2="61" />
+          <g className="vl-svg-node amber">
+            <rect x="182" y="34" width="206" height="54" rx="6" />
+            <text className="vl-svg-t" x="285" y="54" textAnchor="middle">Gated Cross-Attn Layers (Every 4th)</text>
+            <text className="vl-svg-s" x="285" y="72" textAnchor="middle">Text Q attends to Visual K/V only here</text>
+          </g>
+          <line className="vl-svg-edge" x1="388" y1="61" x2="414" y2="61" />
+          <g className="vl-svg-node blue">
+            <rect x="416" y="34" width="170" height="54" rx="6" />
+            <text className="vl-svg-t" x="501" y="54" textAnchor="middle">Text-Only Self-Attn KV</text>
+            <text className="vl-svg-s" x="501" y="72" textAnchor="middle">0 Visual Seq Growth!</text>
+          </g>
+          <text className="vl-svg-s" x="14" y="109">Pros: Preserves pure-text LLM weights &amp; skips visual self-attn growth. Cost: Extra cross-attn params, harder multi-image/video interleaving.</text>
+        </g>
+      )}
+    </svg>
+  );
+}
+
 export function VlmTilingSvg({ tiling, res, tiles, merge4x, rawPatches, llmTokens }) {
   return (
     <svg className="vl-svg" viewBox="0 0 430 144" role="img" aria-label="Dynamic Image Tiling & Patch Packing">

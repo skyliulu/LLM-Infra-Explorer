@@ -19,7 +19,7 @@ import {
 } from './vlm-vision/model';
 import { i18n } from './vlm-vision/content';
 import VlmArchSvg from './vlm-vision/VlmArchSvg';
-import { VlmTilingSvg, VlmProjectorSvg } from './vlm-vision/VlmVisualSvg';
+import { VlmParadigmSvg, VlmTilingSvg, VlmProjectorSvg } from './vlm-vision/VlmVisualSvg';
 import './vlm-vision/vlm-vision.css';
 
 const VIS_TOK_TEX = String.raw`N_{\text{vis}} = \frac{(H / P)\cdot(W / P)}{r^2},\qquad \text{FLOPs}_{\text{attn}} \propto N_{\text{vis}}^2`;
@@ -43,6 +43,8 @@ export default function VlmVision() {
   const update = (patch) => setConfig((prev) => normalizeVlmConfig({ ...(prev || config), ...patch }));
 
   const [archPin, setArchPin] = useState(1);
+  const [paradigm, setParadigm] = useState('early_fusion');
+  const [vitWindowed, setVitWindowed] = useState(true);
 
   const til = useMemo(
     () => deriveTilingModel({ resId: config.resId, tiling: config.tiling, merge4x: config.merge4x }),
@@ -107,6 +109,19 @@ export default function VlmVision() {
                   <p>{t(`pin${num}Desc`)}</p>
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div className="vl-box">
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <span className="vl-ctrl-label">{t('paradigmTitle')}</span>
+              <div className="vl-toggle" role="group" aria-label={t('paradigmTitle')}>
+                <button type="button" aria-pressed={paradigm === 'early_fusion'} onClick={() => setParadigm('early_fusion')}>{t('paradigmEarly')}</button>
+                <button type="button" aria-pressed={paradigm === 'cross_attn'} onClick={() => setParadigm('cross_attn')}>{t('paradigmCross')}</button>
+              </div>
+            </div>
+            <div className="vl-svg-wrap">
+              <VlmParadigmSvg paradigm={paradigm} />
             </div>
           </div>
         </section>
@@ -182,6 +197,26 @@ export default function VlmVision() {
                 />
               </div>
               <p>{t(`tilingNote_${config.tiling}`)}</p>
+            </div>
+          </div>
+
+          <div className="vl-box">
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <span className="vl-ctrl-label">{t('vitAttnTitle')}</span>
+              <div className="vl-toggle" role="group" aria-label={t('vitAttnTitle')}>
+                <button type="button" aria-pressed={vitWindowed} onClick={() => setVitWindowed(true)}>{t('vitWin')}</button>
+                <button type="button" aria-pressed={!vitWindowed} onClick={() => setVitWindowed(false)}>{t('vitFull')}</button>
+              </div>
+            </div>
+            <div className="vl-vram-track" aria-label="ViT Attention Cost">
+              <div
+                className={`vl-vram-kv ${vitWindowed ? '' : 'warn'}`}
+                style={{ width: vitWindowed ? '31%' : '100%' }}
+              >
+                {vitWindowed
+                  ? `Windowed ViT: ~${Math.max(4, Math.round((til.rawPatches / 7168) * 14))} ms (8×8 local + 4 global layers)`
+                  : `Full 2D ViT: ~${Math.max(12, Math.round((til.rawPatches / 7168) * 45))} ms (32× O(N²) full layers)`}
+              </div>
             </div>
           </div>
         </section>
@@ -282,6 +317,21 @@ export default function VlmVision() {
               <p>{t(`ropeNote_${config.ropeMode}`)}</p>
             </div>
           </div>
+
+          <div className="vl-box">
+            <span className="vl-ctrl-label">{t('seqTitle')}</span>
+            <div className="vl-seq-strip">
+              <span className="vl-seq-tok ctl">[BOS] (0,0,0)</span>
+              <span className="vl-seq-tok txt">Sys (1..4, 1..4, 1..4)</span>
+              <span className="vl-seq-tok ctl">&lt;|vision_start|&gt;</span>
+              <span className="vl-seq-tok vis">V_00 (5, 0, 0)</span>
+              <span className="vl-seq-tok vis">V_01 (5, 0, 1)</span>
+              <span className="vl-seq-tok vis">V_10 (5, 1, 0)</span>
+              <span className="vl-seq-tok vis">… V_hw</span>
+              <span className="vl-seq-tok ctl">&lt;|vision_end|&gt;</span>
+              <span className="vl-seq-tok txt">User Q (t=h=w=max+1…)</span>
+            </div>
+          </div>
         </section>
 
         {/* §5 Video KV Cache */}
@@ -358,6 +408,21 @@ export default function VlmVision() {
           </div>
           <div>
             <span className={`vl-pill ${vid.oomWarn ? 'warn' : 'ok'}`}>{t(vid.oomWarn ? 'videoOom' : 'videoOk')}</span>
+          </div>
+
+          <div className="vl-box">
+            <span className="vl-ctrl-label">{t('vlmCodeTitle')}</span>
+            <pre className="vl-code">
+              <code>{`// vLLM / SGLang Multimodal Prefill Execution Path (NaViT + 2×2 Merge + M-RoPE)
+patches, grid_thw, cu_seqlens = pack_native_images_and_video(media_batch); // zero padding!
+vis_hidden = vit.forward_varlen(patches, cu_seqlens, window_layers=28);    // 8×8 window + 4 full
+vis_embeds = projector_2x2_merge(vis_hidden);                              // [N_raw/4, d_LLM]
+// Replace <|image_pad|> placeholder slots with visual vectors before LLM Prefill:
+inputs_embeds = embed_tokens(input_ids);
+inputs_embeds[input_ids == IMAGE_PAD_ID] = vis_embeds;                     // scatter in-place
+pos_ids_3d = build_mrope_positions(input_ids, grid_thw);                   // [3, seq_len] (t,h,w)
+logits = llm_backbone.prefill(inputs_embeds, pos_ids_3d, paged_kv_cache);`}</code>
+            </pre>
           </div>
         </section>
 
