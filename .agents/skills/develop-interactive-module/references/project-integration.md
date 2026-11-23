@@ -11,8 +11,9 @@ The table describes the current React implementation. Technology selection is op
 | Consistent chapter identity | `src/lib/chapter-icons.js`, shared `ChapterIcon` |
 | Prerequisites and reading paths | `src/lib/chapter-learning.js` |
 | Language | `src/lib/LanguageContext.jsx`; site header owns the sole language control |
-| Layout | `src/components/workbench.css`, `chapter-page/layout/header/body`, relevant neighbors |
-| Experiment settings | `src/lib/useExperimentState*`, current callers |
+| Theme | `src/lib/ThemeContext.jsx`; verify resolved `data-theme` instead of assuming storage keys |
+| Layout | `src/components/workbench.css`, `chapter-page/layout/header/body`, relevant neighbors (never nest a second `<main>` inside the site shell) |
+| Experiment settings | `src/lib/ExperimentContext.jsx`, current callers |
 | Share validators | `src/lib/experiment-sharing.js`, `scripts/check-workbench-sharing.mjs` |
 | Model checks | `package.json` `check:*` commands and module-owned `scripts/check-*.mjs` |
 

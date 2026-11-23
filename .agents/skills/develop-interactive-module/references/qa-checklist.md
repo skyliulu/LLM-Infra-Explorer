@@ -112,7 +112,7 @@ A control can be functionally correct and still look wrong. Downscaled full-page
 
 ## Accessibility and responsive layout
 
-- [ ] Light and dark are explicit rendered dimensions, crossed with representative widths and both languages. Record selected preference, resolved `data-theme`, viewport, language and inspected state with screenshot evidence. Pure-model enumeration is not theme acceptance.
+- [ ] Light and dark are explicit rendered dimensions, crossed with representative widths and both languages. Read back the actual resolved `data-theme` (do not assume a storage key) and record selected preference, resolved theme, viewport, language and inspected state with screenshot evidence. Pure-model enumeration is not theme acceptance.
 - [ ] System preference resolves to the environment's appearance and switches back to explicit Light/Dark correctly. If system appearance cannot be emulated, disclose that only the current system branch was exercised; do not claim both OS branches.
 - [ ] Theme changes preserve experiment configuration, selection and paused timeline progress. Verify real surfaces and text, not just the theme menu icon: selected/disabled controls, inactive/active/committed cells, math, pseudocode, borders, arrows, hover/focus and legends remain legible.
 - [ ] Inspect generated theme CSS or renderer palette behavior when automatic color remapping is used. Semantic identity colors and transient state colors retain their meaning; chart/SVG/canvas colors are covered too.
@@ -120,9 +120,9 @@ A control can be functionally correct and still look wrong. Downscaled full-page
 - [ ] Selected text, small formulas, matrix cells, sliders, and pale panels have readable contrast.
 - [ ] Meaning does not rely on color alone.
 - [ ] Desktop, intermediate (sidebar-open / split-screen / tablet), and mobile widths preserve logical reading order without squeezing wrapping header titles into narrow vertical columns beside wide control bars.
-- [ ] The rendered section-jump / overview dropdown was inspected in both languages: every option corresponds to a top-level section heading with concise, clean text—no container body dumps, glued badges, dynamic counter noise, raw line breaks, or disproportionately wide options.
+- [ ] The rendered section-jump / overview dropdown was inspected in both languages by reading every `<option>` label (not merely counting `[data-section-anchor]` elements): every option corresponds to a top-level section heading (`h1`–`h3`) with concise, clean text—no container body dumps, glued badges, dynamic counter noise, raw line breaks, or disproportionately wide options. Chapter components do not nest a second `<main>` landmark inside the site shell.
 - [ ] No page-level horizontal overflow appears.
-- [ ] Dense components have no unintended internal overflow in sparse, representative, and maximum-content states.
+- [ ] Dense components and narrow timeline/progress segments have no unintended internal overflow or clipped text (`min-width: fit-content` or external legends for short bars) in sparse, representative, and maximum-content states.
 - [ ] Both languages preserve readable proportions and control labels.
 - [ ] When narrow layouts hide segment labels, an explicit readable legend and inspectable operation identity remain; numbers alone do not explain operation colors.
 - [ ] Controls remain keyboard reachable and have labels.

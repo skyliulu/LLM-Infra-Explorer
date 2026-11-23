@@ -92,6 +92,23 @@ if (capabilities.has('timeline')) {
   check('play handler', /\btogglePlay\b/, 'Implement togglePlay().');
 }
 
+const badContainerAnchors = [...source.matchAll(/<(section|div|article|main)\b[^>]*\bdata-section-anchor=/g)]
+  .filter((match) => !match[0].includes('data-section-label='));
+results.push({
+  name: 'section-anchor placement',
+  passed: badContainerAnchors.length === 0,
+  message: 'Attach data-section-anchor to heading elements (h1-h3) or provide explicit data-section-label; never put bare anchors on container tags.',
+  level: 'FAIL',
+});
+
+const nestedMain = /<main\b/.test(source);
+results.push({
+  name: 'no nested main landmark',
+  passed: !nestedMain,
+  message: 'Do not render a <main> element inside a chapter component; the site shell already provides <main id="main-content">.',
+  level: 'FAIL',
+});
+
 const hardcodedCjk = />[^\n<{]*[\u3400-\u9fff][^<{]*</.test(source);
 results.push({
   name: 'hardcoded JSX prose',
