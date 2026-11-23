@@ -17,6 +17,11 @@ export const MODULE_LABELS = {
   gpucudagraph: 'GPU & CUDA Graph',
   commcollective: 'Collective Comm',
   pdrouter: 'PD Disaggregation',
+  pagedkv: 'PagedAttention',
+  structuredoutput: 'Structured Output',
+  vlmvision: 'VLM & Visual Tokens',
+  epdserving: 'EPD Disaggregation',
+  diffusiondit: 'Diffusion & DiT Infra',
 };
 
 export const getModuleLabel = id => MODULE_LABELS[id];

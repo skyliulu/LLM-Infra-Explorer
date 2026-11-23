@@ -24,6 +24,11 @@
     "check:gpu": "node scripts/check-gpu-cuda-graph.mjs",
     "check:comm": "node scripts/check-collective-comm.mjs",
     "check:pdrouter": "node scripts/check-pd-router.mjs",
+    "check:pagedkv": "node scripts/check-paged-kv.mjs",
+    "check:structured": "node scripts/check-structured-output.mjs",
+    "check:vlm": "node scripts/check-vlm-vision.mjs",
+    "check:epd": "node scripts/check-epd-serving.mjs",
+    "check:dit": "node scripts/check-diffusion-dit.mjs",
     "check:visual": "node scripts/visual-check.js",
     "check:visual:module": "node scripts/visual-check.js --module",
     "check:workbench": "node scripts/check-workbench-sharing.mjs && node scripts/check-learning-paths.mjs"

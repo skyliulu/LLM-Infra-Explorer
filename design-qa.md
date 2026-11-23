@@ -1,5 +1,23 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-23 — Tier-2 与多模态推理三大新章落地（5 新章 + Multimodal Infra 分组，全站 17 → 22 章 / 6 → 7 分组）
+
+- **全站导航与分组扩展（17 → 22 章，6 → 7 分组）**：
+  - `Memory & Precision`（`缓存与精度`）新增 **`PagedAttention`**（`#pagedkv`）。
+  - `Serving Systems`（`在线服务系统`）新增 **`Structured Output`**（`#structuredoutput`）。
+  - 新建第 7 分组 **`Multimodal Infra`**（`多模态推理`），完整承接 3 个多模态推理核心章节：**`VLM & Visual Tokens`**（`#vlmvision`）、**`EPD Disaggregation`**（`#epdserving`）与 **`Diffusion & DiT Infra`**（`#diffusiondit`）。
+  - 全站同步注册 `module-groups.js`、`module-titles.js`、`chapter-icons.js`、`chapter-learning.js`（22 章前向依赖无环）、`chapter-registry.js`、`experiment-sharing.js`、`package.json`、`README.md` 与 `README.zh-CN.md`。
+- **5 章完整 6 节深度与自定义 `light-dark()` SVG 架构图**：
+  - **`PagedAttention`（`#pagedkv`）**：§1 连续预分配碎片 vs Block Table（`PagedArchSvg.jsx`）、§2 虚拟→物理寻址与块大小 $S$ 权衡、§3 引用计数与 Copy-on-Write 并行采样单步演练、§4 PCIe Swap vs Recompute 抢占拐点、§5 PagedAttention vs vAttention (CUDA VMM) 路线对照（`VAttnCompareSvg.jsx`）、§6 GQA/MLA KV 容量账本与 Prefix Cache Key 安全边界。
+  - **`Structured Output`（`#structuredoutput`）**：§1 受限解码端到端架构（`StructuredArchSvg.jsx` + `①–④` 联动）、§2 128K–256K 词表扫描灾难与 XGrammar 自适应位掩码拆分（`210×` 加速）、§3 单步 FSM 状态转移与 Logits 实时掩码演练、§4 确定性语法跳步 Jump-Forward Decoding（`3.25×` 步数压缩）、§5 CPU 掩码构造与 GPU 前向异步重叠、§6 BPE 跨边界裂词（Token Healing）/ 递归 CFG / 冷编译 / 投机解码耦合排查。
+  - **`VLM & Visual Tokens`（`#vlmvision`）**：§1 VLM 端到端数据流架构（`VlmArchSvg.jsx` + `①–④` 联动）、§2 动态分辨率切片（Fixed / AnyRes / NaViT）与视觉 Token 爆炸模型、§3 Projector（MLP 1:1 / 2×2 Pixel-Shuffle 4:1 / Q-Former）压缩与 OCR 保真权衡、§4 1D-RoPE vs 3D M-RoPE `(t, h, w)` 时空邻近性、§5 长视频帧采样与时空池化 KV 账本、§6 VLM 线上四类高频瓶颈诊断。
+  - **`EPD Disaggregation`（`#epdserving`）**：§1 Encode–Prefill–Decode 三阶段分离架构（`EpdArchSvg.jsx` + `①–④` 联动，揭示 E→P 16 MB Embedding 比 P→D 1.28 GB KV 轻 80×）、§2 三合一混布 vs PD 两分离 vs EPD 三分离干扰对照、§3 CPU 图像解码瓶颈与异步 nvJPEG 硬件预处理流水、§4 内容寻址 SHA256 多模态 Embedding Cache 单步追踪、§5 16 GPU 动态 E:P:D 三池配比与异构 Goodput、§6 线上多模态故障排查清单。
+  - **`Diffusion & DiT Infra`（`#diffusiondit`）**：§1 DiT / 视频生成端到端推理架构（`DitArchSvg.jsx` + `①–④` 联动 + Flow Matching / CFG 公式）、§2 3D 时空 Patchify 与二次方 3D Full Attention 墙（对照 LLM Decode 访存受限 vs DiT 极度 Compute-Bound）、§3 多卡并行加速：CFG 并行 + USP（Ulysses All-to-All + Ring P2P）序列并行（`DitParallelSvg.jsx`）、§4 去噪步数压缩与 TeaCache 动态特征缓存 / 4 步蒸馏时间轴、§5 3D VAE 峰值激活显存 OOM 炸弹与时空分块解码（Tiled VAE）、§6 FP8 / SVDQuant 敏感层保护与生产故障排查。
+- **自动化验证与真浏览器浅/深色逐图审查**：
+  - `npm run check:pagedkv`、`check:structured`、`check:vlm`、`check:epd`、`check:dit`、`check:workbench`、`scripts/check-navigation.mjs`、`scripts/check-theme.mjs`、`npm run build` 全部通过（0 error）。
+  - Headless Chrome 实测 Home + 全部 5 个新章节在 **Light (ZH) + Dark (EN) × 1360px / 390px**：所有 5 章均 `sections=6`、`katexErr=0`、`enCjk=0`、`overflowX=false`、`mobileOverflowX=0`。
+  - **视觉走查发现并当场修复的 3 处真实缺陷**：(1) `StructuredOutput` §4 按钮键误拼导致显示 `jump_jump_forward` → 修复为正确 i18n 映射；(2) `StructuredOutput` §5 与 `EpdServing` §3 窄异步时间轴条文字左右截断 → 精简条内标签并移至右侧说明区，消除截断；(3) `DiffusionDit` §2 与 §3 单卡基准步长口径对齐（`1197.2s` 单卡 ↔ `155s` 8 卡 USP `7.72×`）。修复后重新 build 并二次截屏复检 Light + Dark 全部通过。
+
 ### 2026-11-23 — Tier-1 三大新章与 Serving Systems 分组落地（GPU & CUDA Graph / Collective Comm / PD Disaggregation）
 
 - **全站导航与分组扩展（14 → 17 章，5 → 6 分组）**：

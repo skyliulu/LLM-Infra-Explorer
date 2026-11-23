@@ -1,0 +1,356 @@
+import React, { useMemo, useState } from 'react';
+import ChapterIcon from './ChapterIcon';
+import { useLanguage } from '../lib/LanguageContext';
+import { useExperimentState } from '../lib/ExperimentContext';
+import { MathFormula } from './linear-attention/MathFormula';
+import {
+  PROJECTOR_MODES,
+  RES_PRESETS,
+  ROPE_MODES,
+  TILING_SCHEMES,
+  VIDEO_DURATIONS,
+  VIDEO_FPS_OPTS,
+  VIDEO_POOL_MODES,
+  VLM_DIAG_IDS,
+  deriveProjectorModel,
+  deriveTilingModel,
+  deriveVideoKvModel,
+  normalizeVlmConfig,
+} from './vlm-vision/model';
+import { i18n } from './vlm-vision/content';
+import VlmArchSvg from './vlm-vision/VlmArchSvg';
+import './vlm-vision/vlm-vision.css';
+
+const VIS_TOK_TEX = String.raw`N_{\text{vis}} = \frac{(H / P)\cdot(W / P)}{r^2},\qquad \text{FLOPs}_{\text{attn}} \propto N_{\text{vis}}^2`;
+
+export default function VlmVision() {
+  const [lang] = useLanguage();
+  const t = (key) => i18n[lang]?.[key] ?? i18n.en[key] ?? key;
+
+  const [rawConfig, setConfig] = useExperimentState('VlmVision.config', {
+    resId: 'r1080',
+    tiling: 'navit_native',
+    merge4x: true,
+    projector: 'pixel_shuffle_4x',
+    ropeMode: 'mrope_3d',
+    durationSec: 60,
+    fps: 1,
+    poolMode: 'spatial_4x',
+    diagId: 'ocr_oom',
+  });
+  const config = useMemo(() => normalizeVlmConfig(rawConfig), [rawConfig]);
+  const update = (patch) => setConfig((prev) => normalizeVlmConfig({ ...(prev || config), ...patch }));
+
+  const [archPin, setArchPin] = useState(1);
+
+  const til = useMemo(
+    () => deriveTilingModel({ resId: config.resId, tiling: config.tiling, merge4x: config.merge4x }),
+    [config.resId, config.tiling, config.merge4x]
+  );
+  const proj = useMemo(() => deriveProjectorModel(config.projector), [config.projector]);
+  const vid = useMemo(
+    () => deriveVideoKvModel({ durationSec: config.durationSec, fps: config.fps, poolMode: config.poolMode }),
+    [config.durationSec, config.fps, config.poolMode]
+  );
+
+  // 2x4 patch grid illustrating 1D vs 3D M-RoPE coordinates
+  const ropeCells = Array.from({ length: 8 }, (_, idx) => {
+    const r = Math.floor(idx / 4);
+    const c = idx % 4;
+    const isPair = c === 1;
+    return {
+      idx,
+      label: config.ropeMode === 'mrope_3d' ? `(t=5, h=${r}, w=${c})` : `pos=${10 + idx}`,
+      cls: isPair ? (config.ropeMode === 'mrope_3d' ? 'hi' : 'far') : '',
+    };
+  });
+
+  return (
+    <div className="chapter-page vl-page">
+      <header className="chapter-header">
+        <div>
+          <h1><ChapterIcon chapter="vlmvision" />{t('title')}</h1>
+          <p>{t('subtitle')}</p>
+        </div>
+      </header>
+
+      <div className="chapter-layout chapter-body">
+        {/* §1 VLM Architecture */}
+        <section className="vl-section" data-testid="vlm-arch-section">
+          <h2 data-section-anchor="vlm-arch">{t('archTitle')}</h2>
+          <p className="vl-lead">{t('archLead')}</p>
+
+          <div className="vl-grid-2">
+            <div style={{ display: 'grid', gap: 10 }}>
+              <div className="vl-svg-wrap">
+                <VlmArchSvg activePin={archPin} onSelectPin={setArchPin} />
+              </div>
+              <div className="vl-box">
+                <MathFormula>{VIS_TOK_TEX}</MathFormula>
+              </div>
+            </div>
+
+            <div className="vl-pin-list">
+              {[1, 2, 3, 4].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  data-testid={`vlm-pin-${num}`}
+                  className={`vl-pin-card ${archPin === num ? 'on' : ''}`}
+                  onClick={() => setArchPin(num)}
+                >
+                  <div className="vl-pin-head">
+                    <span className="vl-pin-num">{num}</span>
+                    <strong>{t(`pin${num}Title`)}</strong>
+                  </div>
+                  <p>{t(`pin${num}Desc`)}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* §2 Dynamic Tiling & Token Explosion */}
+        <section className="vl-section" data-testid="vlm-tiling-section">
+          <h2 data-section-anchor="vlm-tiling">{t('s2Title')}</h2>
+          <p className="vl-lead">{t('s2Lead')}</p>
+
+          <div className="vl-controls">
+            <div className="vl-ctrl-group">
+              <span className="vl-ctrl-label">{t('resLabel')}:</span>
+              <div className="vl-toggle" role="group" aria-label={t('resLabel')}>
+                {RES_PRESETS.map((r) => (
+                  <button key={r.id} type="button" data-testid={`vlm-res-${r.id}`} aria-pressed={config.resId === r.id} onClick={() => update({ resId: r.id })}>
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="vl-ctrl-group">
+              <span className="vl-ctrl-label">{t('schemeLabel')}:</span>
+              <div className="vl-toggle" role="group" aria-label={t('schemeLabel')}>
+                {TILING_SCHEMES.map((s) => (
+                  <button key={s} type="button" data-testid={`vlm-tiling-${s}`} aria-pressed={config.tiling === s} onClick={() => update({ tiling: s })}>
+                    {t(`tiling_${s}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="vl-toggle" role="group" aria-label="Spatial Merge">
+              <button type="button" data-testid="vlm-merge-on" aria-pressed={config.merge4x} onClick={() => update({ merge4x: true })}>{t('mergeOn')}</button>
+              <button type="button" data-testid="vlm-merge-off" aria-pressed={!config.merge4x} onClick={() => update({ merge4x: false })}>{t('mergeOff')}</button>
+            </div>
+          </div>
+
+          <div className="vl-grid-2">
+            <div className="vl-box">
+              <div className="vl-kpis-2">
+                <div className="vl-kpi">
+                  <small>{t('mRawPatch')}</small>
+                  <strong>{til.rawPatches.toLocaleString()}</strong>
+                </div>
+                <div className={`vl-kpi ${til.llmTokens > 2500 ? 'warn' : 'good'}`}>
+                  <small>{t('mLlmTok')}</small>
+                  <strong>{til.llmTokens.toLocaleString()} tok</strong>
+                </div>
+                <div className={`vl-kpi ${til.attnCostRatio > 100 ? 'warn' : ''}`}>
+                  <small>{t('mAttnScale')}</small>
+                  <strong>{til.attnCostRatio}×</strong>
+                </div>
+                <div className="vl-kpi">
+                  <small>{t('mKvFoot')}</small>
+                  <strong>{til.kvMB} MB</strong>
+                </div>
+              </div>
+              <span className={`vl-pill ${til.ocrPreserved ? 'ok' : 'warn'}`}>
+                {t(til.ocrPreserved ? 'ocrOk' : 'ocrBad')}
+              </span>
+            </div>
+
+            <div className="vl-box">
+              <div className="vl-tile-grid">
+                {Array.from({ length: Math.min(8, til.tiles) }, (_, idx) => (
+                  <div key={idx} className={`vl-tile ${config.tiling === 'anyres_tiles' && idx === 0 ? 'thumb' : ''}`}>
+                    {config.tiling === 'anyres_tiles' && idx === 0 ? 'Global' : config.tiling === 'navit_native' ? `Native (${til.res.label})` : `Tile ${idx + 1}`}
+                  </div>
+                ))}
+              </div>
+              <p>{t(`tilingNote_${config.tiling}`)}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* §3 Projector Compression */}
+        <section className="vl-section" data-testid="vlm-projector-section">
+          <h2 data-section-anchor="vlm-projector">{t('s3Title')}</h2>
+          <p className="vl-lead">{t('s3Lead')}</p>
+
+          <div className="vl-controls">
+            <div className="vl-toggle" role="group" aria-label={t('s3Title')}>
+              {PROJECTOR_MODES.map((m) => (
+                <button key={m} type="button" data-testid={`vlm-proj-${m}`} aria-pressed={config.projector === m} onClick={() => update({ projector: m })}>
+                  {t(`proj_${m}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="vl-grid-2">
+            <div className="vl-box">
+              <table className="vl-table">
+                <thead>
+                  <tr>
+                    <th>{t('colProj')}</th>
+                    <th>{t('colRatio')}</th>
+                    <th>{t('colOutTok')}</th>
+                    <th>{t('colPrefill')}</th>
+                    <th>{t('colOcr')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {proj.rows.map((r) => (
+                    <tr key={r.id} className={config.projector === r.id ? 'on' : ''} onClick={() => update({ projector: r.id })} style={{ cursor: 'pointer' }}>
+                      <td>{t(`proj_${r.id}`)}</td>
+                      <td>{r.ratio}</td>
+                      <td>{r.outTokens}</td>
+                      <td>{r.prefillMs} ms</td>
+                      <td><span className={`vl-pill ${r.ocr === 'high' ? 'ok' : 'warn'}`}>{t(r.ocr === 'high' ? 'ocrHigh' : 'ocrLow')}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="vl-box">
+              <p>{t(`projNote_${config.projector}`)}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* §4 1D-RoPE vs 3D M-RoPE */}
+        <section className="vl-section" data-testid="vlm-mrope-section">
+          <h2 data-section-anchor="vlm-mrope">{t('s4Title')}</h2>
+          <p className="vl-lead">{t('s4Lead')}</p>
+
+          <div className="vl-controls">
+            <div className="vl-toggle" role="group" aria-label={t('s4Title')}>
+              {ROPE_MODES.map((m) => (
+                <button key={m} type="button" data-testid={`vlm-rope-${m}`} aria-pressed={config.ropeMode === m} onClick={() => update({ ropeMode: m })}>
+                  {t(m)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="vl-grid-2">
+            <div className="vl-box">
+              <div className="vl-rope-grid" aria-label="2x4 Visual Patch Coordinates">
+                {ropeCells.map((cell) => (
+                  <div key={cell.idx} className={`vl-rope-cell ${cell.cls}`}>
+                    {cell.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="vl-box">
+              <p>{t(`ropeNote_${config.ropeMode}`)}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* §5 Video KV Cache */}
+        <section className="vl-section" data-testid="vlm-video-section">
+          <h2 data-section-anchor="vlm-video-kv">{t('s5Title')}</h2>
+          <p className="vl-lead">{t('s5Lead')}</p>
+
+          <div className="vl-controls">
+            <div className="vl-ctrl-group">
+              <span className="vl-ctrl-label">{t('durLabel')}:</span>
+              <div className="vl-toggle" role="group" aria-label={t('durLabel')}>
+                {VIDEO_DURATIONS.map((d) => (
+                  <button key={d} type="button" aria-pressed={config.durationSec === d} onClick={() => update({ durationSec: d })}>{d}s</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="vl-ctrl-group">
+              <span className="vl-ctrl-label">{t('fpsLabel')}:</span>
+              <div className="vl-toggle" role="group" aria-label={t('fpsLabel')}>
+                {VIDEO_FPS_OPTS.map((f) => (
+                  <button key={f} type="button" aria-pressed={config.fps === f} onClick={() => update({ fps: f })}>{f} FPS</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="vl-ctrl-group">
+              <span className="vl-ctrl-label">{t('poolLabel')}:</span>
+              <div className="vl-toggle" role="group" aria-label={t('poolLabel')}>
+                {VIDEO_POOL_MODES.map((p) => (
+                  <button key={p} type="button" data-testid={`vlm-pool-${p}`} aria-pressed={config.poolMode === p} onClick={() => update({ poolMode: p })}>
+                    {t(`pool_${p}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="vl-kpis-4">
+            <div className="vl-kpi">
+              <small>{t('mFrames')}</small>
+              <strong>{vid.frames}</strong>
+            </div>
+            <div className={`vl-kpi ${vid.oomWarn ? 'warn' : 'good'}`}>
+              <small>{t('mVisTok')}</small>
+              <strong>{vid.totalVisTokens.toLocaleString()}</strong>
+            </div>
+            <div className="vl-kpi">
+              <small>{t('mVitMs')}</small>
+              <strong>{vid.vitMs} ms</strong>
+            </div>
+            <div className={`vl-kpi ${vid.oomWarn ? 'warn' : 'good'}`}>
+              <small>{t('mVideoKv')}</small>
+              <strong>{vid.kvGB} GB</strong>
+            </div>
+          </div>
+          <div>
+            <span className={`vl-pill ${vid.oomWarn ? 'warn' : 'ok'}`}>{t(vid.oomWarn ? 'videoOom' : 'videoOk')}</span>
+          </div>
+        </section>
+
+        {/* §6 VLM Bottleneck Diagnostics */}
+        <section className="vl-section" data-testid="vlm-diag-section">
+          <h2 data-section-anchor="vlm-diag">{t('s6Title')}</h2>
+          <p className="vl-lead">{t('s6Lead')}</p>
+
+          <div className="vl-controls">
+            <div className="vl-toggle" role="group" aria-label={t('s6Title')}>
+              {VLM_DIAG_IDS.map((id) => (
+                <button key={id} type="button" data-testid={`vlm-diag-${id}`} aria-pressed={config.diagId === id} onClick={() => update({ diagId: id })}>
+                  {t(`diag_${id}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="vl-grid-even">
+            <div className="vl-box">
+              <span className="vl-ctrl-label">{t('diagRoot')}</span>
+              <p>{t(`diagRoot_${config.diagId}`)}</p>
+            </div>
+            <div className="vl-box">
+              <span className="vl-ctrl-label">{t('diagFix')}</span>
+              <p>{t(`diagFix_${config.diagId}`)}</p>
+            </div>
+          </div>
+        </section>
+
+        <details className="vl-evidence">
+          <summary>{t('evidence')}</summary>
+          <p>{t('evidenceBody')}</p>
+        </details>
+      </div>
+    </div>
+  );
+}

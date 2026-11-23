@@ -12,7 +12,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## Choose a question, then explore
 
-17 workbenches across 6 areas, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
+22 workbenches across 7 areas, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
 
 | Area | Workbench | What you can investigate |
 | :--- | :--- | :--- |
@@ -23,12 +23,17 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA, CSA, HCA, local windows, record provenance, NSA/MoBA block sparsity, and Attention Sinks. |
 | Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax, kernelization, Chunkwise Prefill, GLA, Gated DeltaNet, and Hybrid Linear/Full layer stacks. |
 | Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16, INT4/INT8, Block-wise FP8, NVFP4/MXFP4 W4A4, Roofline crossover, QuaRot Hadamard rotation, and runtime scaling. |
+| Memory & Precision | [**PagedAttention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#pagedkv) | KV fragmentation, Block Table virtual-to-physical translation, Copy-on-Write sharing, Swap vs Recompute preemption, vAttention, and KV sizing. |
 | Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | One prefix tree across GPU, host and external storage, Hybrid Mamba/Linear state checkpoints, LPM scheduling, and KV layouts. |
 | Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | Control/data-plane split, Conductor prefix index, shared L3 KV pool with hot replication, zero-copy RDMA fetch, and KV-footprint economics. |
 | Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP, tensor shards, GPU ranks, SP/Ulysses/ZigZag-Ring prefill, and asymmetric P/D KV resharding. |
 | Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV ownership, MoE bridges, workload skew + Dummy Forward, P/D barrier collision, and TBO micro-batch overlap. |
 | Parallelism | [**Collective Comm ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#commcollective) | Ring/Tree/NVLS SHARP topologies, MoE All-to-All skew, NVLink vs IB alpha-beta cliffs, GPUDirect RDMA / RoCEv2 PFC, IBGDA overlap, and placement. |
 | Serving Systems | [**PD Disaggregation ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#pdrouter) | End-to-end P/D architecture, Chunked Prefill budgets, layer-wise KV pipelining & resharding, cache-aware routing, dynamic P:D Goodput, and SLO ops. |
+| Serving Systems | [**Structured Output ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#structuredoutput) | JSON Schema / CFG compilation, XGrammar split bitmasking, FSM logits masking, Jump-Forward decoding, async CPU/GPU overlap, and BPE pitfalls. |
+| Multimodal Infra | [**VLM & Visual Tokens ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#vlmvision) | ViT dynamic tiling (AnyRes / NaViT), Projector token compression, 3D M-RoPE coordinates, video frame KV budgets, and VLM serving diagnosis. |
+| Multimodal Infra | [**EPD Disaggregation ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#epdserving) | Encode–Prefill–Decode disaggregation, 80× smaller E→P embedding transfer, async nvJPEG preprocessing, content-addressed caching, and E:P:D ratios. |
+| Multimodal Infra | [**Diffusion & DiT Infra ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#diffusiondit) | End-to-end DiT & video pipeline, 3D patchify quadratic attention wall, CFG + USP parallelism, TeaCache reuse, 3D Tiled VAE OOM, and FP8/SVDQuant. |
 | Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target verification, load crossover, rejection correction, EAGLE-2, DSpark, and native MTP. |
 | Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram retrieval, context-aware gates, Zipf prefetch hiding budget, and U-shaped MoE/Engram allocation law. |
 | Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | Causal Encoder-Decoder, CSA2 sharing, FP4 byte budgets, hierarchical indexing, 20×128 SWA receptive cone, and chunked 2:1 parity. |

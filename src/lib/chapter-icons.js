@@ -1,4 +1,4 @@
-import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split,CircuitBoard,Boxes,Gauge,Waypoints,ArrowLeftRight} from 'lucide-react';
+import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split,CircuitBoard,Boxes,Gauge,Waypoints,ArrowLeftRight,LayoutGrid,Braces,ScanEye,Workflow,Clapperboard} from 'lucide-react';
 
 export const CHAPTER_ICONS = {
   llm: Cpu,
@@ -10,12 +10,17 @@ export const CHAPTER_ICONS = {
   flashdecode: Merge,
   speculative: ListChecks,
   quantization: Binary,
+  pagedkv: LayoutGrid,
   engram: BrainCircuit,
   radixcache: GitBranch,
   mooncake: Boxes,
   dpattention: Split,
   commcollective: Waypoints,
   pdrouter: ArrowLeftRight,
+  structuredoutput: Braces,
+  vlmvision: ScanEye,
+  epdserving: Workflow,
+  diffusiondit: Clapperboard,
   linearattn: Repeat2,
   deepinfer: CircuitBoard,
 };

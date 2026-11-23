@@ -12,7 +12,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## 带着问题选择章节
 
-17 个工作台覆盖 6 大方向，按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
+22 个工作台覆盖 7 大方向，按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
 
 | 方向 | 工作台 | 可以探索什么 |
 | :--- | :--- | :--- |
@@ -23,12 +23,17 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA、CSA、HCA、局部窗口、记录来源、NSA/MoBA 块稀疏与 Attention Sink。 |
 | Attention | [**Linear Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#linearattn) | Softmax、核函数、Chunkwise Prefill、GLA、Gated DeltaNet 与混合层栈。 |
 | Memory & Precision | [**Quantization ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#quantization) | BF16、INT4/INT8、分块 FP8、NVFP4/MXFP4 W4A4、Roofline 拐点、QuaRot 旋转与引擎执行。 |
+| Memory & Precision | [**PagedAttention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#pagedkv) | KV 显存碎片、Block Table 虚拟到物理寻址、Copy-on-Write 共享、Swap 与 Recompute 抢占、vAttention 及容量速算。 |
 | Memory & Precision | [**Radix HiCache ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#radixcache) | 同一棵前缀树上的 GPU／主机／外部存储、混合 Mamba/线性状态检查点与 CoW、LPM 调度与 KV layout。 |
 | Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | 控制/数据面解耦、Conductor 前缀索引、L3 共享池与热点多副本、零拷贝 RDMA 与 KV 体积经济边界。 |
 | Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank、SP/Ulysses/ZigZag-Ring 与非对称 P/D 重排。 |
 | Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权、MoE 桥接、负载倾斜与空卡 Dummy、P/D 屏障碰撞及 TBO 双微批交叠。 |
 | Parallelism | [**Collective Comm ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#commcollective) | Ring/Tree/NVLS SHARP 拓扑、MoE All-to-All 倾斜、NVLink/IB 断层、GPUDirect RDMA 与 RoCEv2 PFC、IBGDA 交叠及拓扑放置排障。 |
 | Serving Systems | [**PD Disaggregation ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#pdrouter) | 端到端 PD 架构与状态机、Chunked Prefill 预算、逐层 KV 流水与非对称重排、缓存感知路由、动态 P:D Goodput 与生产可观测性。 |
+| Serving Systems | [**Structured Output ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#structuredoutput) | JSON Schema / CFG 语法编译、XGrammar 掩码拆分、FSM 逐词掩码、Jump-Forward 跳步、CPU/GPU 异步交叠与 BPE 排障。 |
+| Multimodal Infra | [**VLM & Visual Tokens ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#vlmvision) | ViT 动态分块（AnyRes / NaViT）、Projector 视觉 Token 压缩、3D M-RoPE 坐标编码、长视频帧采样 KV 账本与 VLM 排障。 |
+| Multimodal Infra | [**EPD Disaggregation ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#epdserving) | Encode–Prefill–Decode 三阶段分离、80× 轻量视觉特征传输、异步 nvJPEG 预处理、内容寻址多模态缓存与动态 E:P:D 配比。 |
+| Multimodal Infra | [**Diffusion & DiT Infra ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#diffusiondit) | DiT / 视频生成端到端流水线、3D Patchify 注意力墙、CFG + USP 序列并行、TeaCache 动态复用、3D 分块 VAE 与 FP8/SVDQuant。 |
 | Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、高并发负载拐点、拒绝修正、EAGLE-2、DSpark 与原生 MTP。 |
 | Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram 检索、上下文门控、Zipf 预取掩盖预算与 MoE/Engram U 型分配律。 |
 | Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | 因果编码器—解码器、CSA2 共享、FP4 字节账本、分层索引、20×128 SWA 感受野锥体与分块 2:1 奇偶边界。 |
