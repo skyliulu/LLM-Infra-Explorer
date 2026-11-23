@@ -21,8 +21,8 @@ const examples={
  mooncake:{'Mooncake.mode':'instance','Mooncake.poolPages':48,'Mooncake.cost':{medium:'ssd',hitTokens:4096,prefillRate:12000}},
  deepinfer:lessonSettings,
  gpucudagraph:{'GpuCudaGraph.config':{regsPerThread:128,smemKB:96,blockSize:256,divergent:true,memView:'tiling',stride:32,tiled:true,launchMode:'piecewise_graph',batchSize:8,fusionMode:'fused',gpu:'b200',dtype:'fp4',diagId:'decode_slow',archGen:'blackwell'}},
- commcollective:{'CollectiveComm.config':{op:'alltoall',routingSkew:'hot',interconnect:'nvl72',msgMB:64,overlapMode:'ibgda_overlap'}},
- pdrouter:{'PdRouter.config':{pdMode:'disaggregated',link:'rdma',routerPolicy:'cache_aware',isl:8192,osl:256,cacheHitPct:40,pNodes:10}},
+ commcollective:{'CollectiveComm.config':{op:'alltoall',routingSkew:'hot',algo:'nvls',algoP:64,algoMsgMB:1,interconnect:'nvl72',msgMB:64,rdmaMode:'gpudirect_rdma',overlapMode:'ibgda_overlap',diagId:'ep_skew_tail'}},
+ pdrouter:{'PdRouter.config':{pdMode:'disaggregated',link:'rdma',chunkSize:1024,kvPipe:'layerwise_pipelined',kvLayout:'asymmetric',routerPolicy:'cache_aware',isl:8192,osl:256,cacheHitPct:40,pNodes:10,failId:'kv_collapse'}},
 };
 assert.deepEqual(Object.keys(examples).sort(),Object.keys(SHARE_SCHEMA).sort());
 for(const [chapter,values] of Object.entries(examples)){

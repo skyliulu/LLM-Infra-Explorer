@@ -14,14 +14,20 @@
   - §4 **算子融合与 HBM 往返消除**：对比 4 个未融合逐元素 Kernel（`1.41 MiB`）与 2 个融合 Kernel（`928 KiB`，`-36%`）。
   - §5 **多代 GPU Roofline 与 Nsight 瓶颈归因**：扩展为 `A100 / H100 / B200` × `BF16 / FP8 / FP4`（不支持的低精度显式回退提示），并内联 4 类 Nsight Compute 典型症状排查器（主 Stall 原因与首检抓手）。
   - §6 **NVIDIA GPU 架构代际演进（Volta → Rubin）**：交互切换 5 代 AI 架构（Volta GV100 / Ampere GA100 / Hopper GH100 / Blackwell B200 & NVL72 / Vera Rubin NVL72），为每代提供**独立芯片/系统组织架构图 SVG（`ArchDiagramSvg.jsx`，基于 CSS `light-dark()` 适配浅深双色）**，并将图上 `①–④` 可点击标注与右侧 **4 条相对上一代的核心具体改进** 双向联动，同时展示 HBM/NVLink 演进条、CUDA 软件栈与“不应误解为”边界卡片（Rubin 严格标为公开系统级平台规格）。
-- **`Collective Comm`（`#commcollective`）**：
-  - §1 **集合通信原语与逐跳分片流转**：4-GPU 单步演练 `All-Reduce (Ring)`（6 跳 `1.50×M`）、`Reduce-Scatter`（3 跳 `0.75×M`）、`All-Gather`（3 跳 `0.75×M`）与 `All-to-All (MoE EP)`（均匀 vs GPU 1 热点 `2.50×` 倾斜告警）。
-  - §2 **机内 NVLink 与机间 IB / RoCE 带宽断层**：$\alpha\text{-}\beta$ 延迟/带宽模型对比 `NVL72 (900 GB/s)`、`NVLink 4.0 (450 GB/s)`、`8×400GbE IB (200 GB/s)` 与 `单口 400GbE IB (50 GB/s)`，随消息量 `1..128 MB` 直观呈现延迟受限向带宽受限切换。
-  - §3 **IBGDA GPU 直发与微批计算通信掩盖**：对比 `Host-Proxy 串行`（`124 µs`、2 次 CPU 代理同步、52% 暴露通信）与 `IBGDA + MB0/MB1 交叠`（`68 µs`、0 CPU 跳数、`1.82×` 加速）。
-- **`PD Disaggregation`（`#pdrouter`）**：
-  - §1 **Prefill–Decode 干扰与分离边界**：3 路在线 Decode 叠加突发 8K Prefill，对比 `传统混布`（P99 TPOT `420 ms` 违规）、`Chunked Prefill`（TTFT `530 ms` / TPOT `112 ms` 仍破严格红线）与 `PD 分离`（`RDMA 190 GB/s` 仅 `18 ms` 传输暴露双达标；切换 `10GbE` 触发 `1024 ms` 传输反杀边界）。
-  - §2 **集群路由三难困境**：4 Worker（`W0:SysA`、`W1:SysB`、`W2/W3` 冷机）单步追踪 6 请求对比 `Load-Only`（命中率 `17%`）、`Prefix-Only`（`W0` 队列冲至 `5` 过载、`P99 TTFT 650 ms`）与 `Cache-Aware`（阈值溢出至 `W2` 自动预热副本，`67%` 命中 + `245 ms` 最低 P99 TTFT）。
-  - §3 **动态 P:D 节点配比与 SLO Goodput**：固定 16 GPU 集群支持 `RAG / Chat / CoT` 预设与 `ISL / OSL / 前缀命中率 / P 节点滑块`，SVG 曲线实时绘制 $Q_{\text{SLO}}(P)$ 与最优配比 $P^*:D^*$。
+- **`Collective Comm`（`#commcollective` · 扩充至 6 节完整深度）**：
+  - §1 **集合通信原语与逐跳分片流转**：4-GPU 单步演练 `All-Reduce (Ring)`、`Reduce-Scatter`、`All-Gather` 与 `All-to-All (MoE EP)` 热点倾斜。
+  - §2 **NCCL 算法拓扑（Ring vs Double-Binary Tree vs NVLS SHARP）**：交互 SVG 拓扑图（`CommAlgoSvg.jsx`，`light-dark()` 双色）+ `P=4..64 × M=1..256 MB` 对比表，直观呈现 Ring $O(P)$、Tree $O(\log P)$ 与 NVLS 交换机内硬件归约 $O(1)$ 的延迟/流量/SM 占用拐点。
+  - §3 **机内 NVLink 与机间 IB / RoCE 带宽断层**：$\alpha\text{-}\beta$ 延迟/带宽模型。
+  - §4 **跨机传输通路（GPUDirect RDMA / RoCEv2 ECN-PFC / Rail-Optimized）**：交互数据通路 SVG（`RdmaPathSvg.jsx`，`light-dark()` 双色），对比 TCP 4 次 CPU 拷贝、GPUDirect RDMA 零拷贝 + 同轨道直连与 RoCEv2 缺配 ECN 触发的 PFC 暂停风暴（`980 µs`）。
+  - §5 **IBGDA GPU 直发与双微批交叠**：`124 µs → 68 µs`（`0` CPU 跳数、`1.82×` 加速）。
+  - §6 **生产通信排障与并行维度拓扑放置矩阵**：4 类多卡故障诊断 + `TP / EP / PP / PD KV` 物理互联边界表。
+- **`PD Disaggregation`（`#pdrouter` · 参照《Prefill/Decode 调度与分离部署》与《生产推理服务栈》扩充至 6 节）**：
+  - §1 **端到端 PD 分离架构与请求状态机**：交互架构图 SVG（`PdArchSvg.jsx`，`light-dark()` 双色）+ `①–④` 双向联动卡片 + 状态元组 $s_r$ 与 $T_{\text{TTFT}}$ 拆解公式。
+  - §2 **Prefill–Decode 干扰、Chunked Prefill 预算与分离边界**：在 `Chunked Prefill` 模式下新增分块大小 `c=512..4096` 交互调节与 $T_{\text{chunk}}(c) \le \beta S_{\text{TPOT}}$ 公式，保留 RDMA vs 10GbE 失效边界。
+  - §3 **KV 传输引擎（逐层流水掩盖与非对称 P→D 重排）**：对比 `整包阻塞`（`104 ms` 全暴露）与 `逐层流水 RDMA`（`21 ms` 暴露、`80%` 掩盖）+ `P:TP4 → D:TP2` 非对称头重排 SVG（`KvTransferSvg.jsx`）。
+  - §4 **集群路由三难困境**：4 Worker 6 请求单步追踪 `Load-Only` / `Prefix-Only` / `Cache-Aware`。
+  - §5 **动态 P:D 节点配比与 SLO Goodput**：16 GPU 集群 `RAG / Chat / CoT` 预设与 $Q_{\text{SLO}}(P)$ 曲线。
+  - §6 **SLO 故障模式、生产服务栈分层与可观测性**：5 层生产服务栈高亮联动 + 5 类高频线上故障的根因 Trace、必查指标与治理动作。
 - **实机视觉验收与修复**：
   - 全部单元测试（`check:gpu`、`check:comm`、`check:pdrouter`、`check:workbench`、`check-navigation`、`check-theme`）与 `npm run build` 全过。
   - 首轮 Chrome 实机截图发现并立即修复 4 项细节：① 侧边栏宽度 `w-44 → w-52` + `truncate` 解决长英文章名右侧裁切；② `GpuCudaGraph` §1 窄条芯片改用紧凑简称（`L1..L8`、`N1/QKV/RoPE/Attn/OPrj/N2/Up/Down`）保留完整 `title` 悬浮提示；③ `GpuCudaGraph` §3 Roofline 拐点标签上移至平台线上方避免与斜线重叠；④ `PdDisaggregation` §3 参数控件组封装 `.pd-ctrl-group` 防止标签与按钮换行分离。

@@ -161,16 +161,16 @@ const descriptions = [
   {
     id: 'commcollective',
     description: {
-      en: 'Trace Ring All-Reduce/RS/AG and MoE All-to-All skew, NVLink vs InfiniBand latency cliffs, and IBGDA micro-batch overlap.',
-      zh: '追踪 Ring All-Reduce/RS/AG 与 MoE All-to-All 热点倾斜、NVLink 与 IB 带宽断层，以及 IBGDA 双微批交叠。',
+      en: 'Explore Ring/Tree/NVLS SHARP topologies, MoE All-to-All skew, NVLink vs IB cliffs, GPUDirect RDMA / RoCEv2 PFC, IBGDA overlap, and placement.',
+      zh: '贯通 Ring/Tree/NVLS SHARP 算法拓扑、MoE All-to-All 倾斜、NVLink 与 IB 断层、GPUDirect RDMA / RoCEv2 拥塞、IBGDA 交叠与排障。',
     },
     iconClass: 'text-purple-300',
   },
   {
     id: 'pdrouter',
     description: {
-      en: 'Explore Prefill–Decode disaggregation vs chunked prefill, cluster cache-aware routing, and dynamic P:D pool Goodput.',
-      zh: '对比混布、Chunked Prefill 与 PD 分离边界，演练集群缓存感知路由，并求解动态 P:D 配比下的 SLO Goodput。',
+      en: 'Inspect end-to-end P/D architecture, Chunked Prefill budgets, layer-wise KV pipelining & resharding, cache-aware routing, Goodput, and SLO ops.',
+      zh: '贯通端到端 PD 分离架构与状态机、Chunked Prefill 预算、逐层 KV 流水与非对称重排、缓存感知路由、动态 P:D Goodput 与生产可观测性。',
     },
     iconClass: 'text-emerald-300',
   },

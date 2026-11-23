@@ -1,7 +1,7 @@
 export const i18n = {
   zh: {
     title: '集合通信与互联拓扑',
-    subtitle: '从 Ring All-Reduce 的字节流转到 NVLink/IB 带宽断层，理解 IBGDA 与双微批如何掩盖跨卡通信。',
+    subtitle: '从 Ring / Tree / NVLS 算法演进到 Scale-Up NVLink 与 Scale-Out GPUDirect RDMA / RoCEv2，贯通 IBGDA 交叠与分布式通信排障。',
 
     // §1 Primitives
     s1Title: '集合通信原语与逐跳分片流转',
@@ -29,9 +29,27 @@ export const i18n = {
     primNote_allgather: 'All-Gather 把各卡私有分片拼成全局张量（如 Megatron SP 进入线性层、DPA 聚合局部 Attention 输出），流量为 (P-1)/P·M。',
     primNote_alltoall: 'EP-MoE 中各卡按 Router 结果点对点发送 Token。均匀路由下每卡收 16 tok；一旦热门专家集中到 GPU 1，该卡接收流量暴涨至 2.5× 并阻塞全组。',
 
-    // §2 Interconnect Alpha-Beta
+    // §2 Algorithm Topologies: Ring vs Tree vs NVLS
+    algoTitle: 'NCCL 算法拓扑：Ring vs Double-Binary Tree vs NVLS SHARP',
+    algoLead: 'Ring 带宽最优但跳数随卡数线性增长 O(P)，在大集群小消息（Decode TP）下延迟爆炸；Tree 将跳数压到 O(log P)，而 NVLS SHARP 直接在交换机芯片内完成硬件归约。',
+    algo_ring: 'Ring 环形算法',
+    algo_tree: 'Double-Binary Tree',
+    algo_nvls: 'NVLS SHARP (交换机内归约)',
+    algoPLabel: '集群卡数 P',
+    algoMsgLabel: '消息量 M',
+    algoColName: '集合算法',
+    algoColHops: '延迟跳数',
+    algoColVol: '流量系数',
+    algoColSm: 'SM 占用',
+    algoColTime: '估算耗时',
+    algoWinner: '当前最优',
+    algoNote_ring: 'Ring 将消息切成 P 份并行流动，带宽利用率最高（适合 64–256 MB 大梯度同步），但跳数达 2(P-1)，64 卡小消息时固定延迟 α 成为灾难。',
+    algoNote_tree: '双二叉树把跳数压缩到 2·log₂P（64 卡仅 12 跳 vs Ring 126 跳），两棵互补树同时跑满全双工带宽，是跨机中小消息的 NCCL 主力算法。',
+    algoNote_nvls: 'NVLink Switch 内置 SHARP 硬件归约引擎：各 GPU 仅发 1×M 到交换机完成片上求和再多播广播（O(1) 跳数、减半链路流量），同时将通信占用 SM 降至极低。',
+
+    // §3 Interconnect Alpha-Beta
     s2Title: '机内 NVLink 与机间 IB / RoCE 带宽断层',
-    s2Lead: '通信耗时由固定启动延迟 α 与带宽项 β·M 共同决定。拖动消息大小 M，观察小消息（Decode TP）为何受延迟主导，而跨出 NVLink 域后延迟为何陡增。',
+    s2Lead: '通信耗时由固定启动延迟 α 与带宽项 β·M 共同决定。对比 Scale-Up（机内 NVSwitch）与 Scale-Out（跨机 Leaf-Spine）物理路径，拖动 M 观察主导区切换。',
     linkLabel: '互联域',
     link_nvl72: 'NVL72 全互联 (900 GB/s)',
     link_nvlink4: '机内 NVLink 4.0 (450 GB/s)',
@@ -47,7 +65,23 @@ export const i18n = {
     scopeIntra: '机内互联',
     scopeInter: '跨机网络',
 
-    // §3 IBGDA & Overlap
+    // §4 Cross-Node RDMA / RoCEv2 / Rail-Optimized
+    rdmaTitle: '跨机传输通路：GPUDirect RDMA、RoCEv2 拥塞与 Rail-Optimized 拓扑',
+    rdmaLead: '跨出单机 NVLink 后，数据如何穿越 PCIe、网卡与交换机决定真实尾延迟。切换三种数据通路，对比 Host 拷贝瓶颈、零拷贝 RDMA 与 RoCEv2 PFC 暂停帧风暴。',
+    rdma_tcp_host: 'TCP / CPU 中转拷贝',
+    rdma_gpudirect_rdma: 'GPUDirect RDMA (零拷贝 + ECN)',
+    rdma_roce_pfc_storm: 'RoCEv2 缺配 ECN (PFC 风暴)',
+    rdmaCopies: 'CPU 内存拷贝次数',
+    rdmaP99: 'P99 单跳延迟',
+    rdmaBw: '单口实测有效带宽',
+    rdmaZeroCopy: 'GPU 零拷贝直通',
+    rdmaYes: '已启用',
+    rdmaNo: '未启用',
+    rdmaNote_tcp_host: '数据须经 GPU→Host DRAM→内核 TCP 协议栈→NIC→远端内核→远端 Host DRAM→远端 GPU（4 次拷贝 + CPU 中断），有效带宽暴跌且抖动巨大。',
+    rdmaNote_gpudirect_rdma: '网卡通过 PCIe Peer-to-Peer 直接读写 GPU HBM（0 次 CPU 拷贝），配合 Rail-Optimized 轨道拓扑让各机同号 GPU 直连同一 Leaf 交换机，避开 Spine 拥塞。',
+    rdmaNote_roce_pfc_storm: '无损以太网 RoCEv2 若未提前用 DCQCN/ECN 降速，微突发会触发交换机逐跳回传 PFC Pause 帧造成队头阻塞扩散，引发全群尾延迟雪崩（980+ µs）。',
+
+    // §5 IBGDA & Overlap
     s3Title: 'IBGDA GPU 直发与微批计算通信掩盖',
     s3Lead: '传统跨机通信需经 CPU 代理线程敲响网卡门铃并串行等待；DeepEP 采用 IBGDA 让 GPU 线程直接发起 RDMA，并把请求拆成 MB0/MB1 乒乓掩盖通信。',
     ovProxy: '传统 Host-Proxy 串行',
@@ -65,12 +99,44 @@ export const i18n = {
     recvTokens: '接收 Token',
     algoBytes: '单卡算法流量',
 
+    // §6 Troubleshooting & Placement
+    diagTitle: '生产通信排障与并行策略拓扑放置',
+    diagLead: '并行切分最终要落在物理拓扑与 NCCL 通道上。点击常见多卡性能症状查看根因与调优动作，并对照不同并行维度的推荐物理放置边界。',
+    diag_tp_small_batch: 'TP 从 4 扩到 8 反而变慢',
+    diag_ep_skew_tail: 'MoE All-to-All 尾延迟剧烈抖动',
+    diag_cross_rail_cliff: '跨机通信实测带宽仅标称一半',
+    diag_sm_starvation: '通信与计算并行但 GEMM 变慢',
+    diagRoot_tp_small_batch: '小 Batch Decode 下单次 All-Reduce 消息仅数 MB，受固定启动延迟 α 主导；跨卡切分进一步缩小矩阵算术强度，通信占比反超计算收益。',
+    diagFix_tp_small_batch: '将 TP 严格限制在机内 NVLink 域内（≤8 卡），开启 NVLS/Custom All-Reduce（SymmMem）或在大并发下改用 DP Attention + 较小 TP。',
+    diagRoot_ep_skew_tail: '真实流量命中少数热点专家（如代码/数学路由倾斜），导致 All-to-All 接收端出现 2–3× 热点卡并阻塞全组同步屏障。',
+    diagFix_ep_skew_tail: '引入动态冗余专家负载均衡（EPLB）、限制单卡接收容量，并采用 DeepEP IBGDA + TBO 双微批交叠掩盖跨机 Dispatch/Combine。',
+    diagRoot_cross_rail_cliff: 'GPU 与 NIC 未按 PCIe 亲和性绑定（跨 NUMA/QPI 绕行 CPU），或流量跨轨道（Cross-Rail）打满上联 Spine 交换机。',
+    diagFix_cross_rail_cliff: '核查 nvidia-smi topo -m 确保 GPU↔NIC 同 PCIe Switch，启用 Rail-Optimized 轨道组网并检查 RoCEv2 ECN 水位与 PFC Pause 计数。',
+    diagRoot_sm_starvation: 'NCCL 通信 Kernel 默认占用 8–24 个 SM 搬运与归约数据，与同时运行的 GEMM/Attention 争抢 SM 导致计算波次拉长。',
+    diagFix_sm_starvation: '启用 NVLS SHARP 把归约卸载至交换机、限制 NCCL_MAX_CTAS 通道数，或使用低 SM 占用的异步 RDMA / Copy Engine 路径。',
+    placeTitle: '并行维度 → 物理互联放置矩阵',
+    placeColDim: '并行 / 通信场景',
+    placeColPrim: '核心通信原语',
+    placeColTopo: '推荐物理互联边界',
+    placeRow1Dim: 'Tensor Parallel (TP)',
+    placeRow1Prim: 'All-Reduce / RS+AG（每层 2 次）',
+    placeRow1Topo: '严格机内 NVLink / NVSwitch（极低 α）',
+    placeRow2Dim: 'Expert Parallel (EP)',
+    placeRow2Prim: 'All-to-All Dispatch & Combine',
+    placeRow2Topo: 'NVL72 或 8×400GbE IB + IBGDA 交叠',
+    placeRow3Dim: 'Pipeline Parallel (PP)',
+    placeRow3Prim: 'Point-to-Point Send/Recv',
+    placeRow3Topo: '可跨机 IB / RoCE（频次低、仅传边界激活）',
+    placeRow4Dim: 'PD 分离 KV Transfer',
+    placeRow4Prim: 'One-Sided RDMA Write / Read',
+    placeRow4Topo: '专用 RDMA / NIXL 零拷贝（避开慢以太网）',
+
     evidence: '参考与范围边界',
-    evidenceBody: '带宽与延迟锚定 H100 8-GPU NVLink 4.0（450 GB/s 单向）、GB200 NVL72（900 GB/s 单向）与 InfiniBand NDR 400GbE（50 GB/s 单口 / 8 口聚合 ~200 GB/s 实测级）；α-β 模型用于揭示延迟/带宽主导区切换与跨机断层，不替代具体 NCCL/DeepEP 拓扑实测。',
+    evidenceBody: '带宽与延迟锚定 H100 8-GPU NVLink 4.0（450 GB/s 单向）、GB200 NVL72（900 GB/s 单向）、InfiniBand NDR 400GbE（50 GB/s 单口 / 8 口聚合 ~200 GB/s）及 NCCL Ring/Tree/NVLS、GPUDirect RDMA、DeepEP IBGDA 公开机制；公式模型用于解释算法跳数、协议路径与拓扑放置权衡，不替代具体机房 NCCL-tests 实测。',
   },
   en: {
     title: 'Collective Communication & Interconnect',
-    subtitle: 'Trace Ring All-Reduce shard hops, NVLink vs InfiniBand bandwidth cliffs, and how IBGDA + micro-batch overlap hides cross-node communication.',
+    subtitle: 'From Ring / Tree / NVLS algorithms to scale-up NVLink and scale-out GPUDirect RDMA / RoCEv2, IBGDA overlap, and distributed troubleshooting.',
 
     // §1 Primitives
     s1Title: 'Collective Primitives & Per-Hop Shard Movement',
@@ -98,9 +164,27 @@ export const i18n = {
     primNote_allgather: 'All-Gather reconstructs the full tensor from per-rank shards (Megatron SP entry, DPA gather), moving (P-1)/P·M per GPU.',
     primNote_alltoall: 'EP-MoE sends routed tokens point-to-point. Uniform routing delivers 16 tokens per GPU; a hot expert on GPU 1 spikes its ingress to 2.5× and stalls the group.',
 
-    // §2 Interconnect Alpha-Beta
+    // §2 Algorithm Topologies: Ring vs Tree vs NVLS
+    algoTitle: 'NCCL Algorithm Topologies: Ring vs Double-Binary Tree vs NVLS SHARP',
+    algoLead: 'Ring maximizes bandwidth on huge tensors but scales hops linearly O(P), hurting latency at scale; Trees cut hops to O(log P), while NVLS SHARP reduces directly inside NVSwitch silicon.',
+    algo_ring: 'Ring Algorithm',
+    algo_tree: 'Double-Binary Tree',
+    algo_nvls: 'NVLS SHARP (In-Switch)',
+    algoPLabel: 'World Size P',
+    algoMsgLabel: 'Message Size M',
+    algoColName: 'Algorithm',
+    algoColHops: 'Latency Hops',
+    algoColVol: 'Traffic Factor',
+    algoColSm: 'SM Cost',
+    algoColTime: 'Est. Time',
+    algoWinner: 'Fastest',
+    algoNote_ring: 'Ring pipelines P chunks to saturate bandwidth on 64–256 MB tensors, but 2(P-1) hops cause severe α latency penalties on 64-GPU small-message Decode TP.',
+    algoNote_tree: 'Double-Binary Trees compress latency hops to 2·log₂P (12 hops vs 126 on 64 GPUs) while running two complementary trees to utilize full-duplex links.',
+    algoNote_nvls: 'NVSwitch SHARP offloads reduction into switch hardware: GPUs send 1×M once and receive reduced 1×M in O(1) hops, halving wire traffic and freeing GPU SMs.',
+
+    // §3 Interconnect Alpha-Beta
     s2Title: 'Intra-Node NVLink vs Inter-Node IB / RoCE Cliff',
-    s2Lead: 'Collective time splits into fixed startup latency α and bandwidth term β·M. Vary message size M to see why small-batch Decode TP is latency-bound and why crossing off NVLink hurts.',
+    s2Lead: 'Collective time splits into fixed startup latency α and bandwidth term β·M. Compare Scale-Up (NVSwitch) vs Scale-Out (Leaf-Spine) paths and vary M to watch the regime flip.',
     linkLabel: 'Interconnect',
     link_nvl72: 'NVL72 Domain (900 GB/s)',
     link_nvlink4: 'Intra-node NVLink 4.0 (450 GB/s)',
@@ -116,7 +200,23 @@ export const i18n = {
     scopeIntra: 'Intra-node',
     scopeInter: 'Inter-node',
 
-    // §3 IBGDA & Overlap
+    // §4 Cross-Node RDMA / RoCEv2 / Rail-Optimized
+    rdmaTitle: 'Inter-Node Transport: GPUDirect RDMA, RoCEv2 Congestion & Rail-Optimized Fabric',
+    rdmaLead: 'Once traffic leaves NVLink, how packets cross PCIe, NICs, and switches dictates tail latency. Compare host-bounced TCP, zero-copy GPUDirect RDMA, and RoCEv2 PFC pause storms.',
+    rdma_tcp_host: 'TCP / Host Bounce',
+    rdma_gpudirect_rdma: 'GPUDirect RDMA (Zero-Copy + ECN)',
+    rdma_roce_pfc_storm: 'RoCEv2 Missing ECN (PFC Storm)',
+    rdmaCopies: 'CPU Memory Copies',
+    rdmaP99: 'P99 Hop Latency',
+    rdmaBw: 'Effective Per-NIC BW',
+    rdmaZeroCopy: 'GPU Zero-Copy Bypass',
+    rdmaYes: 'Enabled',
+    rdmaNo: 'Disabled',
+    rdmaNote_tcp_host: 'Data bounces GPU→Host DRAM→kernel TCP stack→NIC→remote kernel→remote Host DRAM→remote GPU (4 copies + CPU interrupts), collapsing bandwidth and spiking jitter.',
+    rdmaNote_gpudirect_rdma: 'NICs DMA directly from GPU HBM over PCIe P2P (0 CPU copies), paired with Rail-Optimized switches so GPU k on Node A talks to GPU k on Node B on one leaf switch.',
+    rdmaNote_roce_pfc_storm: 'Without early DCQCN/ECN rate-limiting, microbursts trigger hop-by-hop RoCEv2 PFC pause frames that spread head-of-line blocking and collapse tail latency (>980 µs).',
+
+    // §5 IBGDA & Overlap
     s3Title: 'IBGDA GPU-Direct & Micro-Batch Overlap',
     s3Lead: 'Host-proxy RDMA wakes CPU threads to ring NIC doorbells while stalling GPU compute; DeepEP uses IBGDA so GPU warps ring NICs directly while overlapping MB0/MB1.',
     ovProxy: 'Host-Proxy Serial',
@@ -134,7 +234,39 @@ export const i18n = {
     recvTokens: 'Recv tokens',
     algoBytes: 'Per-GPU algo volume',
 
+    // §6 Troubleshooting & Placement
+    diagTitle: 'Production Communication Troubleshooting & Topology Placement',
+    diagLead: 'Parallelism only pays off when mapped onto physical interconnect tiers. Inspect four production failure symptoms and the recommended parallelism-to-fabric placement matrix.',
+    diag_tp_small_batch: 'Scaling TP 4→8 Gets Slower',
+    diag_ep_skew_tail: 'MoE All-to-All Tail Jitter',
+    diag_cross_rail_cliff: 'Inter-Node BW Halved',
+    diag_sm_starvation: 'Overlap Slows Down GEMM',
+    diagRoot_tp_small_batch: 'Small-batch Decode All-Reduce transfers only a few MB and is α latency-bound; wider TP shrinks per-GPU GEMM arithmetic intensity so comm overhead outweighs compute speedup.',
+    diagFix_tp_small_batch: 'Keep TP strictly inside intra-node NVLink (≤8 GPUs), enable NVLS/Custom All-Reduce (SymmMem), or adopt DP Attention with narrower TP at high concurrency.',
+    diagRoot_ep_skew_tail: 'Real traffic skews toward hot experts (e.g. code/math routing), piling 2–3× ingress onto one GPU and stalling the global All-to-All barrier.',
+    diagFix_ep_skew_tail: 'Deploy dynamic redundant expert placement (EPLB), cap per-rank dispatch capacity, and overlap cross-node Dispatch/Combine with DeepEP IBGDA + two micro-batches.',
+    diagRoot_cross_rail_cliff: 'GPUs and NICs lack PCIe switch affinity (bouncing across NUMA/CPU root), or cross-rail traffic saturates oversubscribed spine uplinks.',
+    diagFix_cross_rail_cliff: 'Verify GPU↔NIC affinity via nvidia-smi topo -m, align ranks to Rail-Optimized leaves, and audit RoCEv2 ECN thresholds + PFC pause counters.',
+    diagRoot_sm_starvation: 'Default NCCL kernels occupy 8–24 SMs for copy/reduction, competing directly with concurrent GEMM/Attention waves on the same GPU.',
+    diagFix_sm_starvation: 'Offload reduction to switches via NVLS SHARP, cap NCCL_MAX_CTAS channels, or use low-SM async RDMA / Copy Engine paths.',
+    placeTitle: 'Parallelism Dimension → Physical Fabric Placement Matrix',
+    placeColDim: 'Parallel / Serving Pattern',
+    placeColPrim: 'Primary Collective',
+    placeColTopo: 'Recommended Fabric Boundary',
+    placeRow1Dim: 'Tensor Parallel (TP)',
+    placeRow1Prim: 'All-Reduce / RS+AG (2×/layer)',
+    placeRow1Topo: 'Strictly Intra-Node NVLink / NVSwitch (lowest α)',
+    placeRow2Dim: 'Expert Parallel (EP)',
+    placeRow2Prim: 'All-to-All Dispatch & Combine',
+    placeRow2Topo: 'NVL72 or 8×400GbE IB + IBGDA Overlap',
+    placeRow3Dim: 'Pipeline Parallel (PP)',
+    placeRow3Prim: 'Point-to-Point Send/Recv',
+    placeRow3Topo: 'Cross-Node IB / RoCE (low frequency, stage boundaries)',
+    placeRow4Dim: 'P/D KV Transfer',
+    placeRow4Prim: 'One-Sided RDMA Write / Read',
+    placeRow4Topo: 'Dedicated RDMA / NIXL Zero-Copy (avoid slow Ethernet)',
+
     evidence: 'References & scope boundaries',
-    evidenceBody: 'Link anchors use H100 NVLink 4.0 (450 GB/s unidirectional), GB200 NVL72 (900 GB/s unidirectional), and InfiniBand NDR 400GbE (50 GB/s per NIC / ~200 GB/s 8-NIC aggregate). The alpha-beta model explains latency vs bandwidth regimes and cross-node cliffs rather than replacing hardware NCCL/DeepEP benchmarks.',
+    evidenceBody: 'Link anchors use H100 NVLink 4.0 (450 GB/s unidirectional), GB200 NVL72 (900 GB/s unidirectional), InfiniBand NDR 400GbE (50 GB/s per NIC / ~200 GB/s 8-NIC aggregate), NCCL Ring/Tree/NVLS, GPUDirect RDMA, and DeepEP IBGDA mechanisms. Formulas explain hop scaling, transport paths, and placement rather than replacing cluster nccl-tests benchmarks.',
   },
 };

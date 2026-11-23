@@ -1,6 +1,11 @@
 export const PD_MODES = ['collocated', 'chunked', 'disaggregated'];
 export const PD_LINKS = ['rdma', 'eth10g'];
+export const CHUNK_SIZES = [512, 1024, 2048, 4096];
+export const KV_PIPE_MODES = ['bulk_blocking', 'layerwise_pipelined'];
+export const KV_LAYOUT_MODES = ['symmetric', 'asymmetric'];
 export const ROUTER_POLICIES = ['load_only', 'cache_only', 'cache_aware'];
+export const OPS_FAIL_IDS = ['short_starvation', 'decode_jitter', 'kv_collapse', 'over_disagg', 'priority_inversion'];
+export const STACK_LAYERS = ['gateway', 'router', 'runtime', 'cluster', 'obs'];
 export const TOTAL_GPUS = 16;
 
 export const ISL_OPTIONS = [1024, 2048, 4096, 8192];
@@ -16,27 +21,45 @@ export const RATIO_PRESETS = {
 export function normalizePdConfig(input = {}) {
   const pdMode = PD_MODES.includes(input.pdMode) ? input.pdMode : 'disaggregated';
   const link = PD_LINKS.includes(input.link) ? input.link : 'rdma';
+  const chunkSize = CHUNK_SIZES.includes(Number(input.chunkSize)) ? Number(input.chunkSize) : 2048;
+  const kvPipe = KV_PIPE_MODES.includes(input.kvPipe) ? input.kvPipe : 'layerwise_pipelined';
+  const kvLayout = KV_LAYOUT_MODES.includes(input.kvLayout) ? input.kvLayout : 'asymmetric';
   const routerPolicy = ROUTER_POLICIES.includes(input.routerPolicy) ? input.routerPolicy : 'cache_aware';
   const isl = Math.max(512, Math.min(16384, Math.round(Number(input.isl) || 4096)));
   const osl = Math.max(64, Math.min(8192, Math.round(Number(input.osl) || 512)));
   const cacheHitPct = Math.max(0, Math.min(85, Math.round(Number(input.cacheHitPct ?? 40))));
   const pNodes = Math.max(2, Math.min(TOTAL_GPUS - 2, Math.round(Number(input.pNodes) || 8)));
-  return { pdMode, link, routerPolicy, isl, osl, cacheHitPct, pNodes };
+  const failId = OPS_FAIL_IDS.includes(input.failId) ? input.failId : 'short_starvation';
+  return { pdMode, link, chunkSize, kvPipe, kvLayout, routerPolicy, isl, osl, cacheHitPct, pNodes, failId };
 }
 
-// §1 Prefill-Decode interference & transfer boundary
-// Concrete scenario: 3 active Decode users + 1 bursty 8K Prefill (~1.28 GB KV cache)
-// SLO targets: TTFT <= 500 ms, P99 TPOT <= 30 ms
-export function deriveInterferenceModel({ pdMode = 'disaggregated', link = 'rdma' } = {}) {
+// §2 Prefill-Decode interference, Chunked Prefill time budget & transfer boundary
+export function deriveInterferenceModel({ pdMode = 'disaggregated', link = 'rdma', chunkSize = 2048 } = {}) {
   const safeMode = PD_MODES.includes(pdMode) ? pdMode : 'disaggregated';
   const safeLink = PD_LINKS.includes(link) ? link : 'rdma';
+  const c = CHUNK_SIZES.includes(Number(chunkSize)) ? Number(chunkSize) : 2048;
   const ttftSloMs = 500;
   const tpotSloMs = 30;
-  const kvSizeGB = 1.28; // 8K prompt KV for 70B-class GQA model
+  const kvSizeGB = 1.28;
 
   const transferMs = safeMode === 'disaggregated'
-    ? (safeLink === 'rdma' ? 18 : Math.round((kvSizeGB / 1.25) * 1000)) // 18ms pipelined RDMA vs ~1024ms over 10GbE
+    ? (safeLink === 'rdma' ? 18 : Math.round((kvSizeGB / 1.25) * 1000))
     : 0;
+
+  // Dynamic Chunked Prefill math for 8K prompt cut into chunks of size c:
+  // Smaller c -> lower TPOT jitter (T_chunk(c) = 6 + c/22 ms), but more chunks -> slightly higher launch/KV contention -> longer TTFT
+  const numChunks = Math.max(1, Math.round(8192 / c));
+  const chunkTpotMs = Math.round(14 + (c / 2048) * 98); // c=512 -> 39ms, c=1024 -> 63ms, c=2048 -> 112ms, c=4096 -> 210ms
+  const chunkTtftMs = Math.round(455 + numChunks * 18.5); // c=512 -> 751ms, c=2048 -> 529ms, c=4096 -> 492ms
+
+  const chunkSegs = [];
+  const visChunks = Math.min(4, numChunks);
+  const pPct = Math.round(72 / visChunks);
+  const dPct = Math.round(28 / visChunks);
+  for (let i = 0; i < visChunks; i += 1) {
+    chunkSegs.push({ id: `chp${i}`, label: `P${i + 1}`, kind: 'prefill', pct: pPct });
+    chunkSegs.push({ id: `chd${i}`, label: 'D', kind: 'decode', pct: dPct });
+  }
 
   const scenarios = {
     collocated: {
@@ -52,19 +75,10 @@ export function deriveInterferenceModel({ pdMode = 'disaggregated', link = 'rdma
       kvLane: null,
     },
     chunked: {
-      ttftMs: 530,
-      p99TpotMs: 112,
+      ttftMs: chunkTtftMs,
+      p99TpotMs: chunkTpotMs,
       transferMs: 0,
-      pLane: [
-        { id: 'ch0', label: 'P1', kind: 'prefill', pct: 18 },
-        { id: 'ch1', label: 'D', kind: 'decode', pct: 7 },
-        { id: 'ch2', label: 'P2', kind: 'prefill', pct: 18 },
-        { id: 'ch3', label: 'D', kind: 'decode', pct: 7 },
-        { id: 'ch4', label: 'P3', kind: 'prefill', pct: 18 },
-        { id: 'ch5', label: 'D', kind: 'decode', pct: 7 },
-        { id: 'ch6', label: 'P4', kind: 'prefill', pct: 18 },
-        { id: 'ch7', label: 'D', kind: 'decode', pct: 7 },
-      ],
+      pLane: chunkSegs,
       dLane: null,
       kvLane: null,
     },
@@ -98,6 +112,8 @@ export function deriveInterferenceModel({ pdMode = 'disaggregated', link = 'rdma
   return {
     pdMode: safeMode,
     link: safeLink,
+    chunkSize: c,
+    numChunks,
     ttftSloMs,
     tpotSloMs,
     ...active,
@@ -107,8 +123,33 @@ export function deriveInterferenceModel({ pdMode = 'disaggregated', link = 'rdma
   };
 }
 
-// §2 Cluster Cache-Aware Router Trilemma
-// 4 workers: W0 (warm SysA, base load 1), W1 (warm SysB, base load 1), W2 (cold, base load 0), W3 (cold, base load 0)
+// §3 Layer-wise Pipelined KV Transfer & Asymmetric P->D Resharding
+export function deriveKvTransferModel({ kvPipe = 'layerwise_pipelined', kvLayout = 'asymmetric' } = {}) {
+  const isPipelined = kvPipe === 'layerwise_pipelined';
+  const isAsym = kvLayout === 'asymmetric';
+  const kvSizeGB = 1.28; // 8K prompt, 80 layers, 70B GQA
+  const computeMs = 360;
+  const rawTransferMs = isAsym ? 104 : 96; // small head-gather overhead when P:TP4 -> D:TP2
+  const exposedTransferMs = isPipelined ? (isAsym ? 21 : 18) : rawTransferMs;
+  const overlapPct = isPipelined ? Math.round(((rawTransferMs - exposedTransferMs) / rawTransferMs) * 100) : 0;
+  const totalTtftMs = computeMs + exposedTransferMs;
+
+  return {
+    kvPipe: isPipelined ? 'layerwise_pipelined' : 'bulk_blocking',
+    kvLayout: isAsym ? 'asymmetric' : 'symmetric',
+    isPipelined,
+    isAsym,
+    kvSizeGB,
+    computeMs,
+    rawTransferMs,
+    exposedTransferMs,
+    overlapPct,
+    totalTtftMs,
+    fanIn: isAsym ? '2P → 1D (Head Gather)' : '1P → 1D (Direct Copy)',
+  };
+}
+
+// §4 Cluster Cache-Aware Router Trilemma
 const ROUTER_REQUESTS = [
   { id: 'R1', prefix: 'SysA' },
   { id: 'R2', prefix: 'SysA' },
@@ -130,7 +171,7 @@ export function deriveRouterTrace({ routerPolicy = 'cache_aware', step = 6 } = {
     { id: 'W3', baseLoad: 0, load: 0, warm: [], assigned: [] },
   ];
 
-  const threshold = 3; // spill hot prefix when candidate worker load >= 3
+  const threshold = 3;
   const events = [];
   let hits = 0;
 
@@ -141,7 +182,6 @@ export function deriveRouterTrace({ routerPolicy = 'cache_aware', step = 6 } = {
     const warmCandidates = workers.filter((w) => w.warm.includes(req.prefix));
 
     if (policy === 'load_only') {
-      // Strictly lowest active load (tie-break by highest free KV -> W2, W3 first)
       target = [...workers].sort((a, b) => a.load - b.load || a.warm.length - b.warm.length)[0];
       reason = 'load_only';
     } else if (policy === 'cache_only') {
@@ -153,7 +193,6 @@ export function deriveRouterTrace({ routerPolicy = 'cache_aware', step = 6 } = {
         reason = 'cold_least_load';
       }
     } else {
-      // cache_aware: use warm worker below threshold, else spill to lowest-load worker and warm it
       const healthyWarm = warmCandidates.filter((w) => w.load < threshold);
       if (healthyWarm.length > 0) {
         target = [...healthyWarm].sort((a, b) => a.load - b.load)[0];
@@ -178,7 +217,6 @@ export function deriveRouterTrace({ routerPolicy = 'cache_aware', step = 6 } = {
   const maxQueue = Math.max(...workers.map((w) => w.load));
   const minQueue = Math.min(...workers.map((w) => w.load));
   const hitRatePct = s === 0 ? 0 : Math.round((hits / s) * 100);
-  // Stylized P99 TTFT: hit saves prefill (~110 ms), miss recomputes (~340 ms), queue > 3 adds severe queueing penalty
   const queuePenalty = maxQueue > 3 ? (maxQueue - 2) * 165 : (maxQueue - 1) * 45;
   const basePrefill = hitRatePct >= 60 ? 155 : hitRatePct >= 30 ? 250 : 390;
   const p99TtftMs = s === 0 ? 0 : Math.round(basePrefill + queuePenalty);
@@ -202,17 +240,13 @@ export function deriveRouterTrace({ routerPolicy = 'cache_aware', step = 6 } = {
   };
 }
 
-// §3 Dynamic P:D Ratio & Cluster Goodput Q_SLO
+// §5 Dynamic P:D Ratio & Cluster Goodput Q_SLO
 export function derivePdRatioModel({ isl = 4096, osl = 512, cacheHitPct = 40, pNodes = 8 } = {}) {
   const safeIsl = Math.max(512, Math.min(16384, Number(isl) || 4096));
   const safeOsl = Math.max(64, Math.min(8192, Number(osl) || 512));
   const hit = Math.max(0, Math.min(85, Number(cacheHitPct) || 0)) / 100;
   const p = Math.max(2, Math.min(TOTAL_GPUS - 2, Math.round(Number(pNodes) || 8)));
 
-  // Anchored 70B-class FP8 per-GPU throughput rates under SLO:
-  // Prefill GPU: ~18,000 effective input tok/s under TTFT SLO
-  // Decode GPU: ~1,900 output tok/s aggregate across concurrent batch under TPOT <= 30ms SLO
-  // RDMA fabric cap across cluster: ~48 req/s equivalent for 4K KV
   const effIsl = Math.max(256, safeIsl * (1 - hit));
   const prefillPerGpuReqS = 18000 / effIsl;
   const decodePerGpuReqS = 1900 / safeOsl;
@@ -260,3 +294,12 @@ export function derivePdRatioModel({ isl = 4096, osl = 512, cacheHitPct = 40, pN
     efficiencyPct,
   };
 }
+
+// §6 Failure mode -> primary stack layer mapping
+export const FAIL_LAYER_MAP = {
+  short_starvation: 'runtime',
+  decode_jitter: 'runtime',
+  kv_collapse: 'cluster',
+  over_disagg: 'router',
+  priority_inversion: 'gateway',
+};

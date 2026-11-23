@@ -27,8 +27,8 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Memory & Precision | [**Mooncake ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#mooncake) | 控制/数据面解耦、Conductor 前缀索引、L3 共享池与热点多副本、零拷贝 RDMA 与 KV 体积经济边界。 |
 | Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank、SP/Ulysses/ZigZag-Ring 与非对称 P/D 重排。 |
 | Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权、MoE 桥接、负载倾斜与空卡 Dummy、P/D 屏障碰撞及 TBO 双微批交叠。 |
-| Parallelism | [**Collective Comm ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#commcollective) | Ring All-Reduce / RS / AG、MoE All-to-All 热点倾斜、NVLink / NVL72 与 IB 延迟带宽断层，以及 IBGDA 双微批交叠。 |
-| Serving Systems | [**PD Disaggregation ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#pdrouter) | 混布 vs Chunked Prefill vs PD 分离（RDMA/10GbE 边界）、集群缓存感知路由三难困境与动态 P:D 节点 SLO Goodput。 |
+| Parallelism | [**Collective Comm ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#commcollective) | Ring/Tree/NVLS SHARP 拓扑、MoE All-to-All 倾斜、NVLink/IB 断层、GPUDirect RDMA 与 RoCEv2 PFC、IBGDA 交叠及拓扑放置排障。 |
+| Serving Systems | [**PD Disaggregation ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#pdrouter) | 端到端 PD 架构与状态机、Chunked Prefill 预算、逐层 KV 流水与非对称重排、缓存感知路由、动态 P:D Goodput 与生产可观测性。 |
 | Advanced Inference | [**Speculative Decoding ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#speculative) | Draft–Target 验证、高并发负载拐点、拒绝修正、EAGLE-2、DSpark 与原生 MTP。 |
 | Advanced Inference | [**Engram ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#engram) | N-gram 检索、上下文门控、Zipf 预取掩盖预算与 MoE/Engram U 型分配律。 |
 | Advanced Inference | [**DeepSeek CED ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#cachearch) | 因果编码器—解码器、CSA2 共享、FP4 字节账本、分层索引、20×128 SWA 感受野锥体与分块 2:1 奇偶边界。 |

@@ -5,22 +5,33 @@ import { useLanguage } from '../lib/LanguageContext';
 import { useExperimentState } from '../lib/ExperimentContext';
 import { MathFormula } from './linear-attention/MathFormula';
 import {
+  CHUNK_SIZES,
+  FAIL_LAYER_MAP,
   HIT_OPTIONS,
   ISL_OPTIONS,
+  KV_LAYOUT_MODES,
+  KV_PIPE_MODES,
+  OPS_FAIL_IDS,
   OSL_OPTIONS,
   PD_LINKS,
   PD_MODES,
   RATIO_PRESETS,
   ROUTER_POLICIES,
+  STACK_LAYERS,
   TOTAL_GPUS,
   deriveInterferenceModel,
+  deriveKvTransferModel,
   derivePdRatioModel,
   deriveRouterTrace,
   normalizePdConfig,
 } from './pd-router/model';
 import { i18n } from './pd-router/content';
+import PdArchSvg from './pd-router/PdArchSvg';
+import KvTransferSvg from './pd-router/KvTransferSvg';
 import './pd-router/pd-router.css';
 
+const TTFT_TEX = String.raw`T_{\text{TTFT}} \approx T_{\text{queue}} + T_{\text{prefill}} + T_{\text{transfer}} + T_{\text{handoff}},\qquad s_r = (P_r, D_r, G_r, \text{phase}_r, \text{kv\_blocks}_r)`;
+const CHUNK_TEX = String.raw`T_{\text{chunk}}(c) = T_{\text{launch}} + T_{\text{attn}}(c) + T_{\text{mlp}}(c) \le \beta \cdot S_{\text{TPOT}}`;
 const GOODPUT_TEX = String.raw`Q_{\text{SLO}}(P) = \min\!\big(P\cdot r_P(\text{ISL}_{\text{eff}}),\ (N-P)\cdot r_D(\text{OSL}),\ C_{\text{KV}}\big),\quad \text{ISL}_{\text{eff}}=\text{ISL}(1-h)`;
 
 export default function PdDisaggregation() {
@@ -30,21 +41,30 @@ export default function PdDisaggregation() {
   const [rawConfig, setConfig] = useExperimentState('PdRouter.config', {
     pdMode: 'disaggregated',
     link: 'rdma',
+    chunkSize: 2048,
+    kvPipe: 'layerwise_pipelined',
+    kvLayout: 'asymmetric',
     routerPolicy: 'cache_aware',
     isl: 4096,
     osl: 512,
     cacheHitPct: 40,
     pNodes: 8,
+    failId: 'short_starvation',
   });
   const config = useMemo(() => normalizePdConfig(rawConfig), [rawConfig]);
   const update = (patch) => setConfig((prev) => normalizePdConfig({ ...(prev || config), ...patch }));
 
+  const [archPin, setArchPin] = useState(1);
   const [step, setStep] = useState(6);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const s1 = useMemo(
-    () => deriveInterferenceModel({ pdMode: config.pdMode, link: config.link }),
-    [config.pdMode, config.link]
+    () => deriveInterferenceModel({ pdMode: config.pdMode, link: config.link, chunkSize: config.chunkSize }),
+    [config.pdMode, config.link, config.chunkSize]
+  );
+  const kv = useMemo(
+    () => deriveKvTransferModel({ kvPipe: config.kvPipe, kvLayout: config.kvLayout }),
+    [config.kvPipe, config.kvLayout]
   );
   const router = useMemo(
     () => deriveRouterTrace({ routerPolicy: config.routerPolicy, step }),
@@ -70,7 +90,9 @@ export default function PdDisaggregation() {
     ? `sloNote_disaggregated_${config.link}`
     : `sloNote_${config.pdMode}`;
 
-  // §3 SVG Goodput curve geometry
+  const activeLayer = FAIL_LAYER_MAP[config.failId] || 'runtime';
+
+  // §5 SVG Goodput curve geometry
   const box = { left: 42, right: 342, top: 18, bottom: 128 };
   const xP = (pVal) => box.left + ((pVal - 2) / (TOTAL_GPUS - 4)) * (box.right - box.left);
   const yQ = (qVal) => box.bottom - (qVal / (ratio.maxGoodput * 1.15)) * (box.bottom - box.top);
@@ -88,7 +110,43 @@ export default function PdDisaggregation() {
       </header>
 
       <div className="chapter-layout chapter-body">
-        {/* §1 Prefill-Decode Interference & Transfer Boundary */}
+        {/* §1 End-to-End Architecture & Request State Machine */}
+        <section className="pd-section" data-testid="pd-arch-section">
+          <h2 data-section-anchor="pd-arch">{t('archTitle')}</h2>
+          <p className="pd-lead">{t('archLead')}</p>
+
+          <div className="pd-arch-grid">
+            <div style={{ display: 'grid', gap: 10 }}>
+              <div className="pd-svg-wrap">
+                <PdArchSvg activePin={archPin} onSelectPin={setArchPin} />
+              </div>
+              <div className="pd-math-strip">
+                <small>{t('archStateTitle')}</small>
+                <MathFormula>{TTFT_TEX}</MathFormula>
+              </div>
+            </div>
+
+            <div className="pd-pin-list">
+              {[1, 2, 3, 4].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  data-testid={`pd-arch-pin-${num}`}
+                  className={`pd-pin-card ${archPin === num ? 'on' : ''}`}
+                  onClick={() => setArchPin(num)}
+                >
+                  <div className="pd-pin-head">
+                    <span className="pd-pin-num">{num}</span>
+                    <strong>{t(`archPin${num}Title`)}</strong>
+                  </div>
+                  <p>{t(`archPin${num}Desc`)}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* §2 Prefill-Decode Interference, Chunked Prefill Budget & Transfer Boundary */}
         <section className="pd-section" data-testid="pd-interference-section">
           <h2 data-section-anchor="pd-interference">{t('s1Title')}</h2>
           <p className="pd-lead">{t('s1Lead')}</p>
@@ -107,6 +165,25 @@ export default function PdDisaggregation() {
                 </button>
               ))}
             </div>
+
+            {config.pdMode === 'chunked' && (
+              <div className="pd-ctrl-group">
+                <span className="pd-ctrl-label">{t('chunkLabel')}:</span>
+                <div className="pd-toggle" role="group" aria-label={t('chunkLabel')}>
+                  {CHUNK_SIZES.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      data-testid={`pd-chunk-${c}`}
+                      aria-pressed={config.chunkSize === c}
+                      onClick={() => update({ chunkSize: c })}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {config.pdMode === 'disaggregated' && (
               <div className="pd-toggle" role="group" aria-label={t('laneKv')}>
@@ -163,6 +240,12 @@ export default function PdDisaggregation() {
                   </div>
                 </div>
               )}
+
+              {config.pdMode === 'chunked' && (
+                <div style={{ paddingTop: 4 }}>
+                  <MathFormula>{CHUNK_TEX}</MathFormula>
+                </div>
+              )}
             </div>
 
             <div className="pd-side-box">
@@ -189,7 +272,104 @@ export default function PdDisaggregation() {
           </div>
         </section>
 
-        {/* §2 Cluster Cache-Aware Router Trilemma */}
+        {/* §3 KV Transfer Pipeline & Asymmetric P->D Resharding */}
+        <section className="pd-section" data-testid="pd-kvtransfer-section">
+          <h2 data-section-anchor="pd-kvtransfer">{t('kvTitle')}</h2>
+          <p className="pd-lead">{t('kvLead')}</p>
+
+          <div className="pd-controls">
+            <div className="pd-toggle" role="group" aria-label={t('kvTitle')}>
+              {KV_PIPE_MODES.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  data-testid={`pd-kvpipe-${m}`}
+                  aria-pressed={config.kvPipe === m}
+                  onClick={() => update({ kvPipe: m })}
+                >
+                  {t(`kvPipe_${m}`)}
+                </button>
+              ))}
+            </div>
+
+            <div className="pd-toggle" role="group" aria-label={t('kvFanIn')}>
+              {KV_LAYOUT_MODES.map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  data-testid={`pd-kvlayout-${l}`}
+                  aria-pressed={config.kvLayout === l}
+                  onClick={() => update({ kvLayout: l })}
+                >
+                  {t(`kvLayout_${l}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="pd-kv-grid">
+            <div style={{ display: 'grid', gap: 10 }}>
+              <div className="pd-lanes">
+                <div className="pd-lane-row">
+                  <span>{t('laneP')}</span>
+                  <div className="pd-lane-bar">
+                    <div className="pd-seg prefill" style={{ width: kv.isPipelined ? '86%' : '76%' }}>
+                      Layers L0..L79 Compute (360 ms)
+                    </div>
+                    <div className="pd-seg idle" style={{ width: kv.isPipelined ? '14%' : '24%' }} />
+                  </div>
+                </div>
+                <div className="pd-lane-row">
+                  <span>{t('laneKv')}</span>
+                  <div className="pd-lane-bar">
+                    {kv.isPipelined ? (
+                      <>
+                        <div className="pd-seg idle" style={{ width: '8%' }} />
+                        <div className="pd-seg rdma" style={{ width: '86%' }}>
+                          Async RDMA L0..L79 Overlapped (+{kv.exposedTransferMs} ms exposed)
+                        </div>
+                        <div className="pd-seg idle" style={{ width: '6%' }} />
+                      </>
+                    ) : (
+                      <>
+                        <div className="pd-seg idle" style={{ width: '76%' }}>Wait All 80 Layers</div>
+                        <div className="pd-seg stall" style={{ width: '24%' }}>Bulk {kv.exposedTransferMs}ms</div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pd-svg-wrap">
+                <KvTransferSvg isAsym={kv.isAsym} />
+              </div>
+            </div>
+
+            <div className="pd-side-box">
+              <div className="pd-kpis-2">
+                <div className="pd-kpi">
+                  <small>{t('kvVol')}</small>
+                  <strong>{kv.kvSizeGB} GB</strong>
+                </div>
+                <div className={`pd-kpi ${kv.isPipelined ? 'pass' : 'fail'}`}>
+                  <small>{t('kvExposed')}</small>
+                  <strong>{kv.exposedTransferMs} ms</strong>
+                </div>
+                <div className={`pd-kpi ${kv.overlapPct >= 75 ? 'pass' : ''}`}>
+                  <small>{t('kvOverlap')}</small>
+                  <strong>{kv.overlapPct}%</strong>
+                </div>
+                <div className="pd-kpi">
+                  <small>{t('kvFanIn')}</small>
+                  <strong>{kv.fanIn}</strong>
+                </div>
+              </div>
+              <p>{t(`kvNote_${config.kvPipe}`)}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* §4 Cluster Cache-Aware Router Trilemma */}
         <section className="pd-section" data-testid="pd-router-section">
           <h2 data-section-anchor="pd-router">{t('s2Title')}</h2>
           <p className="pd-lead">{t('s2Lead')}</p>
@@ -270,7 +450,7 @@ export default function PdDisaggregation() {
           </div>
         </section>
 
-        {/* §3 Dynamic P:D Ratio & SLO Goodput */}
+        {/* §5 Dynamic P:D Ratio & SLO Goodput */}
         <section className="pd-section" data-testid="pd-ratio-section">
           <h2 data-section-anchor="pd-ratio">{t('s3Title')}</h2>
           <p className="pd-lead">{t('s3Lead')}</p>
@@ -413,6 +593,52 @@ export default function PdDisaggregation() {
               <div className={`pd-bn-pill ${ratio.current.bottleneck}`}>
                 {t(`bn_${ratio.current.bottleneck}`)}
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* §6 SLO Failure Modes, Production Serving Stack & Observability */}
+        <section className="pd-section" data-testid="pd-ops-section">
+          <h2 data-section-anchor="pd-ops">{t('opsTitle')}</h2>
+          <p className="pd-lead">{t('opsLead')}</p>
+
+          <div className="pd-stack-strip" aria-label={t('opsTitle')}>
+            {STACK_LAYERS.map((layer) => (
+              <div key={layer} className={`pd-stack-card ${activeLayer === layer ? 'active' : ''}`}>
+                <strong>{t(`stack_${layer}`)}</strong>
+                <small>{t(`stackSub_${layer}`)}</small>
+              </div>
+            ))}
+          </div>
+
+          <div className="pd-controls">
+            <div className="pd-toggle" role="group" aria-label={t('opsTitle')}>
+              {OPS_FAIL_IDS.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  data-testid={`pd-fail-${id}`}
+                  aria-pressed={config.failId === id}
+                  onClick={() => update({ failId: id })}
+                >
+                  {t(`fail_${id}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="pd-ops-grid">
+            <div className="pd-ops-card">
+              <small>{t('opsRootLabel')}</small>
+              <p>{t(`failRoot_${config.failId}`)}</p>
+            </div>
+            <div className="pd-ops-card">
+              <small>{t('opsMetricLabel')}</small>
+              <code>{t(`failMetric_${config.failId}`)}</code>
+            </div>
+            <div className="pd-ops-card">
+              <small>{t('opsFixLabel')}</small>
+              <p>{t(`failFix_${config.failId}`)}</p>
             </div>
           </div>
         </section>

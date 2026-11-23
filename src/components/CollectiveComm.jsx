@@ -5,15 +5,24 @@ import { useLanguage } from '../lib/LanguageContext';
 import { useExperimentState } from '../lib/ExperimentContext';
 import { MathFormula } from './linear-attention/MathFormula';
 import {
+  ALGO_MODES,
+  ALGO_MSG_SIZES,
+  ALGO_WORLD_SIZES,
   COLLECTIVE_OPS,
+  COMM_DIAG_IDS,
   MSG_SIZES_MB,
   OVERLAP_MODES,
+  RDMA_MODES,
+  deriveAlgoComparison,
   deriveCollectiveStep,
   deriveInterconnectLatency,
   deriveOverlapModel,
+  deriveRdmaModel,
   normalizeCollectiveConfig,
 } from './collective-comm/model';
 import { i18n } from './collective-comm/content';
+import CommAlgoSvg from './collective-comm/CommAlgoSvg';
+import RdmaPathSvg from './collective-comm/RdmaPathSvg';
 import './collective-comm/collective.css';
 
 const ALPHA_BETA_TEX = String.raw`T_{\text{comm}} = \alpha \cdot N_{\text{hops}} + \frac{V_{\text{algo}}(P, M)}{BW}`;
@@ -26,9 +35,14 @@ export default function CollectiveComm() {
   const [rawConfig, setConfig] = useExperimentState('CollectiveComm.config', {
     op: 'allreduce',
     routingSkew: 'uniform',
+    algo: 'ring',
+    algoP: 8,
+    algoMsgMB: 8,
     interconnect: 'nvlink4',
     msgMB: 16,
+    rdmaMode: 'gpudirect_rdma',
     overlapMode: 'ibgda_overlap',
+    diagId: 'tp_small_batch',
   });
   const config = useMemo(() => normalizeCollectiveConfig(rawConfig), [rawConfig]);
   const update = (patch) => setConfig((prev) => normalizeCollectiveConfig({ ...(prev || config), ...patch }));
@@ -41,10 +55,15 @@ export default function CollectiveComm() {
     () => deriveCollectiveStep({ op: config.op, routingSkew: config.routingSkew, step }),
     [config.op, config.routingSkew, step]
   );
+  const algoModel = useMemo(
+    () => deriveAlgoComparison({ algo: config.algo, algoP: config.algoP, algoMsgMB: config.algoMsgMB }),
+    [config.algo, config.algoP, config.algoMsgMB]
+  );
   const linkModel = useMemo(
     () => deriveInterconnectLatency({ op: config.op, interconnect: config.interconnect, msgMB: config.msgMB }),
     [config.op, config.interconnect, config.msgMB]
   );
+  const rdma = useMemo(() => deriveRdmaModel(config.rdmaMode), [config.rdmaMode]);
   const overlap = useMemo(() => deriveOverlapModel(config.overlapMode), [config.overlapMode]);
 
   const done = prim.phase === 'done';
@@ -172,7 +191,86 @@ export default function CollectiveComm() {
           </div>
         </section>
 
-        {/* §2 Interconnect Alpha-Beta Cliff */}
+        {/* §2 NCCL Algorithm Topologies: Ring vs Tree vs NVLS SHARP */}
+        <section className="cc-section" data-testid="comm-algos-section">
+          <h2 data-section-anchor="comm-algos">{t('algoTitle')}</h2>
+          <p className="cc-lead">{t('algoLead')}</p>
+
+          <div className="cc-controls">
+            <div className="cc-toggle" role="group" aria-label={t('algoTitle')}>
+              {ALGO_MODES.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  data-testid={`comm-algo-${m}`}
+                  aria-pressed={config.algo === m}
+                  onClick={() => update({ algo: m })}
+                >
+                  {t(`algo_${m}`)}
+                </button>
+              ))}
+            </div>
+
+            <div className="cc-ctrl-group">
+              <span className="cc-ctrl-label">{t('algoPLabel')}:</span>
+              <div className="cc-toggle" role="group" aria-label={t('algoPLabel')}>
+                {ALGO_WORLD_SIZES.map((p) => (
+                  <button key={p} type="button" data-testid={`comm-p-${p}`} aria-pressed={config.algoP === p} onClick={() => update({ algoP: p })}>
+                    P={p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="cc-ctrl-group">
+              <span className="cc-ctrl-label">{t('algoMsgLabel')}:</span>
+              <div className="cc-toggle" role="group" aria-label={t('algoMsgLabel')}>
+                {ALGO_MSG_SIZES.map((mb) => (
+                  <button key={mb} type="button" data-testid={`comm-amsg-${mb}`} aria-pressed={config.algoMsgMB === mb} onClick={() => update({ algoMsgMB: mb })}>
+                    {mb} MB
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="cc-algo-grid">
+            <div className="cc-svg-wrap">
+              <CommAlgoSvg algo={config.algo} />
+            </div>
+
+            <div className="cc-alpha-box">
+              <table className="cc-table">
+                <thead>
+                  <tr>
+                    <th>{t('algoColName')}</th>
+                    <th>{t('algoColHops')}</th>
+                    <th>{t('algoColVol')}</th>
+                    <th>{t('algoColSm')}</th>
+                    <th>{t('algoColTime')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {algoModel.entries.map((row) => (
+                    <tr key={row.id} className={config.algo === row.id ? 'on' : ''} onClick={() => update({ algo: row.id })} style={{ cursor: 'pointer' }}>
+                      <td>
+                        {t(`algo_${row.id}`)}
+                        {algoModel.winner.id === row.id && <span className="cc-win-badge">{t('algoWinner')}</span>}
+                      </td>
+                      <td>{row.hops}</td>
+                      <td>{row.factor}×M</td>
+                      <td>{row.smLoad}</td>
+                      <td>{row.totalUs} µs</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p>{t(`algoNote_${config.algo}`)}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* §3 Interconnect Alpha-Beta Cliff */}
         <section className="cc-section" data-testid="comm-interconnect-section">
           <h2 data-section-anchor="comm-interconnect">{t('s2Title')}</h2>
           <p className="cc-lead">{t('s2Lead')}</p>
@@ -249,7 +347,57 @@ export default function CollectiveComm() {
           </div>
         </section>
 
-        {/* §3 IBGDA & Micro-Batch Overlap */}
+        {/* §4 Cross-Node GPUDirect RDMA, RoCEv2 ECN/PFC & Rail-Optimized */}
+        <section className="cc-section" data-testid="comm-rdma-section">
+          <h2 data-section-anchor="comm-rdma">{t('rdmaTitle')}</h2>
+          <p className="cc-lead">{t('rdmaLead')}</p>
+
+          <div className="cc-controls">
+            <div className="cc-toggle" role="group" aria-label={t('rdmaTitle')}>
+              {RDMA_MODES.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  data-testid={`comm-rdma-${m}`}
+                  aria-pressed={config.rdmaMode === m}
+                  onClick={() => update({ rdmaMode: m })}
+                >
+                  {t(`rdma_${m}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="cc-rdma-grid">
+            <div className="cc-svg-wrap">
+              <RdmaPathSvg rdmaMode={config.rdmaMode} />
+            </div>
+
+            <div className="cc-alpha-box">
+              <div className="cc-kpis-2">
+                <div className={`cc-kpi ${rdma.cpuCopies === 0 ? 'good' : 'warn'}`}>
+                  <small>{t('rdmaCopies')}</small>
+                  <strong>{rdma.cpuCopies}</strong>
+                </div>
+                <div className={`cc-kpi ${rdma.healthy ? 'good' : 'warn'}`}>
+                  <small>{t('rdmaP99')}</small>
+                  <strong>{rdma.p99Us} µs</strong>
+                </div>
+                <div className={`cc-kpi ${rdma.effBwGBps >= 40 ? 'good' : 'warn'}`}>
+                  <small>{t('rdmaBw')}</small>
+                  <strong>{rdma.effBwGBps} GB/s</strong>
+                </div>
+                <div className={`cc-kpi ${rdma.zeroCopy ? 'good' : 'warn'}`}>
+                  <small>{t('rdmaZeroCopy')}</small>
+                  <strong>{t(rdma.zeroCopy ? 'rdmaYes' : 'rdmaNo')}</strong>
+                </div>
+              </div>
+              <p>{t(`rdmaNote_${config.rdmaMode}`)}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* §5 IBGDA & Micro-Batch Overlap */}
         <section className="cc-section" data-testid="comm-overlap-section">
           <h2 data-section-anchor="comm-overlap">{t('s3Title')}</h2>
           <p className="cc-lead">{t('s3Lead')}</p>
@@ -343,6 +491,61 @@ export default function CollectiveComm() {
               </div>
               <p>{t(`ovDesc_${config.overlapMode}`)}</p>
             </div>
+          </div>
+        </section>
+
+        {/* §6 Production Communication Troubleshooting & Placement Matrix */}
+        <section className="cc-section" data-testid="comm-troubleshoot-section">
+          <h2 data-section-anchor="comm-troubleshoot">{t('diagTitle')}</h2>
+          <p className="cc-lead">{t('diagLead')}</p>
+
+          <div className="cc-controls">
+            <div className="cc-toggle" role="group" aria-label={t('diagTitle')}>
+              {COMM_DIAG_IDS.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  data-testid={`comm-diag-${id}`}
+                  aria-pressed={config.diagId === id}
+                  onClick={() => update({ diagId: id })}
+                >
+                  {t(`diag_${id}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="cc-diag-grid">
+            <div className="cc-diag-card">
+              <small>Root Cause</small>
+              <p>{t(`diagRoot_${config.diagId}`)}</p>
+            </div>
+            <div className="cc-diag-card">
+              <small>NCCL / Topology Fix</small>
+              <p>{t(`diagFix_${config.diagId}`)}</p>
+            </div>
+          </div>
+
+          <div>
+            <div className="cc-ctrl-label" style={{ marginBottom: 6 }}>{t('placeTitle')}</div>
+            <table className="cc-table">
+              <thead>
+                <tr>
+                  <th>{t('placeColDim')}</th>
+                  <th>{t('placeColPrim')}</th>
+                  <th>{t('placeColTopo')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[1, 2, 3, 4].map((row) => (
+                  <tr key={row}>
+                    <td><strong>{t(`placeRow${row}Dim`)}</strong></td>
+                    <td>{t(`placeRow${row}Prim`)}</td>
+                    <td>{t(`placeRow${row}Topo`)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
