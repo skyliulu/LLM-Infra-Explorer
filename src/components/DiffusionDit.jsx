@@ -100,34 +100,31 @@ export default function DiffusionDit() {
 
   return (
     <div className="chapter-page">
-      <div className="chapter-layout">
-        <header className="chapter-header">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <ChapterIcon chapter="diffusiondit" />
-                {t('title')}
-              </h1>
-              <p className="text-xs md:text-sm text-slate-600 mt-1 max-w-3xl">{t('subtitle')}</p>
-            </div>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold transition-colors"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              {t('reset')}
-            </button>
-          </div>
-        </header>
+      <header className="chapter-header">
+        <div>
+          <h1>
+            <ChapterIcon chapter="diffusiondit" />
+            {t('title')}
+          </h1>
+          <p>{t('subtitle')}</p>
+        </div>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold transition-colors shrink-0"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          {t('reset')}
+        </button>
+      </header>
 
-        <main className="chapter-body space-y-6">
-          {/* §1 End-to-End Architecture */}
-          <section className="dit-section" data-section-anchor="dit-arch">
-            <div className="flex items-center gap-2 mb-1">
-              <Layers className="w-4 h-4 text-indigo-600 shrink-0" />
-              <h2 className="dit-section-title m-0">{t('s1_title')}</h2>
-            </div>
+      <div className="chapter-layout chapter-body space-y-6">
+        {/* §1 End-to-End Architecture */}
+        <section className="dit-section">
+          <div className="flex items-center gap-2 mb-1">
+            <Layers className="w-4 h-4 text-indigo-600 shrink-0" />
+            <h2 data-section-anchor="dit-arch" className="dit-section-title m-0">{t('s1_title')}</h2>
+          </div>
             <p className="dit-section-lead">{t('s1_lead')}</p>
 
             <DitArchSvg activeStage={activeStage} onSelectStage={setActiveStage} t={t} />
@@ -168,10 +165,10 @@ export default function DiffusionDit() {
           </section>
 
           {/* §2 3D Spatio-Temporal Patchify & Quadratic Attention Wall */}
-          <section className="dit-section" data-section-anchor="dit-tokens">
+          <section className="dit-section">
             <div className="flex items-center gap-2 mb-1">
               <Cpu className="w-4 h-4 text-indigo-600 shrink-0" />
-              <h2 className="dit-section-title m-0">{t('s2_title')}</h2>
+              <h2 data-section-anchor="dit-tokens" className="dit-section-title m-0">{t('s2_title')}</h2>
             </div>
             <p className="dit-section-lead">{t('s2_lead')}</p>
 
@@ -279,10 +276,10 @@ export default function DiffusionDit() {
           </section>
 
           {/* §3 Multi-GPU Parallelism: CFG + USP */}
-          <section className="dit-section" data-section-anchor="dit-parallel">
+          <section className="dit-section">
             <div className="flex items-center gap-2 mb-1">
               <Network className="w-4 h-4 text-indigo-600 shrink-0" />
-              <h2 className="dit-section-title m-0">{t('s3_title')}</h2>
+              <h2 data-section-anchor="dit-parallel" className="dit-section-title m-0">{t('s3_title')}</h2>
             </div>
             <p className="dit-section-lead">{t('s3_lead')}</p>
 
@@ -364,10 +361,10 @@ export default function DiffusionDit() {
           </section>
 
           {/* §4 Step Compression & TeaCache */}
-          <section className="dit-section" data-section-anchor="dit-cache">
+          <section className="dit-section">
             <div className="flex items-center gap-2 mb-1">
               <FastForward className="w-4 h-4 text-indigo-600 shrink-0" />
-              <h2 className="dit-section-title m-0">{t('s4_title')}</h2>
+              <h2 data-section-anchor="dit-cache" className="dit-section-title m-0">{t('s4_title')}</h2>
             </div>
             <p className="dit-section-lead">{t('s4_lead')}</p>
 
@@ -464,10 +461,10 @@ export default function DiffusionDit() {
           </section>
 
           {/* §5 3D Tiled VAE Memory Peak */}
-          <section className="dit-section" data-section-anchor="dit-vae">
+          <section className="dit-section">
             <div className="flex items-center gap-2 mb-1">
               <HardDrive className="w-4 h-4 text-indigo-600 shrink-0" />
-              <h2 className="dit-section-title m-0">{t('s5_title')}</h2>
+              <h2 data-section-anchor="dit-vae" className="dit-section-title m-0">{t('s5_title')}</h2>
             </div>
             <p className="dit-section-lead">{t('s5_lead')}</p>
 
@@ -590,10 +587,10 @@ export default function DiffusionDit() {
           </section>
 
           {/* §6 Quantization & Production Troubleshooting */}
-          <section className="dit-section" data-section-anchor="dit-ops">
+          <section className="dit-section">
             <div className="flex items-center gap-2 mb-1">
               <Wrench className="w-4 h-4 text-indigo-600 shrink-0" />
-              <h2 className="dit-section-title m-0">{t('s6_title')}</h2>
+              <h2 data-section-anchor="dit-ops" className="dit-section-title m-0">{t('s6_title')}</h2>
             </div>
             <p className="dit-section-lead">{t('s6_lead')}</p>
 
@@ -664,7 +661,6 @@ export default function DiffusionDit() {
             <summary className="cursor-pointer font-bold text-slate-800">{t('evidence')}</summary>
             <p className="mt-2 mb-0 leading-relaxed">{t('evidenceBody')}</p>
           </details>
-        </main>
       </div>
     </div>
   );

@@ -19,6 +19,7 @@
   - **视觉走查即时修复的 3 处基础缺陷 + 二次 `reader-review.md` 读者通读补强**：
     - 首轮修完 `StructuredOutput` §4 按钮键误拼（`jump_jump_forward`）、窄异步条截断与 `DiffusionDit` §2/§3 单卡延迟对齐。
     - 二次按 `reader-review.md` 逐节审读与非默认分支点击走查，补齐多处“纯数字/纯文本代替机制图”缺口：`VlmVision` 新增 §2 动态切片 SVG（`VlmTilingSvg`）、§3 投影张量变换 SVG（`VlmProjectorSvg`）、§4 M-RoPE 通道拆分条与纵向距离标注、§5 视频帧条与 80 GB 显存堆叠条；`PagedAttention` 消除 §1 `PagedArchSvg` 物理块箭头穿字；`StructuredOutput` §6 补齐 Token Healing / PDA / 冷编译 / 投机回滚追踪条；`EpdServing` §2 补齐 `16 MB vs 1,280 MB (80×)` 量级条；`DiffusionDit` 补齐 `<ChapterIcon>`、统一无编号标题与 `<details>` 边界折叠区，并新增 §5 VAE 峰值显存堆叠条/分块重叠条与 §6 敏感层 BF16 保护流水条；`MainDashboard` 补充侧边栏激活章节自动滚入视口（`scrollIntoView`）；复检修复 3 处窄进度条文字边缘紧贴。
+    - 修复 `DiffusionDit` 顶部“概览”目录异常：原先将 `data-section-anchor` 误挂在 `<section>` 容器而非 `<h2>` 标题上，导致 `ChapterTools` 递归抽取整段正文塞进下拉菜单；已全部移至 6 个 `<h2>` 标题、消除嵌套 `<main>` 并在 `scripts/check-navigation.mjs` 增加永久锚点防回归校验，实测 5 个新章的 `概览` 下拉菜单选项均仅含简洁标题（12–48 字符）。
 
 ### 2026-11-23 — Tier-1 三大新章与 Serving Systems 分组落地（GPU & CUDA Graph / Collective Comm / PD Disaggregation）
 
