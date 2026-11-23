@@ -16,7 +16,9 @@
 - **自动化验证与真浏览器浅/深色逐图审查**：
   - `npm run check:pagedkv`、`check:structured`、`check:vlm`、`check:epd`、`check:dit`、`check:workbench`、`scripts/check-navigation.mjs`、`scripts/check-theme.mjs`、`npm run build` 全部通过（0 error）。
   - Headless Chrome 实测 Home + 全部 5 个新章节在 **Light (ZH) + Dark (EN) × 1360px / 390px**：所有 5 章均 `sections=6`、`katexErr=0`、`enCjk=0`、`overflowX=false`、`mobileOverflowX=0`。
-  - **视觉走查发现并当场修复的 3 处真实缺陷**：(1) `StructuredOutput` §4 按钮键误拼导致显示 `jump_jump_forward` → 修复为正确 i18n 映射；(2) `StructuredOutput` §5 与 `EpdServing` §3 窄异步时间轴条文字左右截断 → 精简条内标签并移至右侧说明区，消除截断；(3) `DiffusionDit` §2 与 §3 单卡基准步长口径对齐（`1197.2s` 单卡 ↔ `155s` 8 卡 USP `7.72×`）。修复后重新 build 并二次截屏复检 Light + Dark 全部通过。
+  - **视觉走查即时修复的 3 处基础缺陷 + 二次 `reader-review.md` 读者通读补强**：
+    - 首轮修完 `StructuredOutput` §4 按钮键误拼（`jump_jump_forward`）、窄异步条截断与 `DiffusionDit` §2/§3 单卡延迟对齐。
+    - 二次按 `reader-review.md` 逐节审读与非默认分支点击走查，补齐多处“纯数字/纯文本代替机制图”缺口：`VlmVision` 新增 §2 动态切片 SVG（`VlmTilingSvg`）、§3 投影张量变换 SVG（`VlmProjectorSvg`）、§4 M-RoPE 通道拆分条与纵向距离标注、§5 视频帧条与 80 GB 显存堆叠条；`PagedAttention` 消除 §1 `PagedArchSvg` 物理块箭头穿字；`StructuredOutput` §6 补齐 Token Healing / PDA / 冷编译 / 投机回滚追踪条；`EpdServing` §2 补齐 `16 MB vs 1,280 MB (80×)` 量级条；`DiffusionDit` 补齐 `<ChapterIcon>`、统一无编号标题与 `<details>` 边界折叠区，并新增 §5 VAE 峰值显存堆叠条/分块重叠条与 §6 敏感层 BF16 保护流水条；`MainDashboard` 补充侧边栏激活章节自动滚入视口（`scrollIntoView`）；复检修复 3 处窄进度条文字边缘紧贴。
 
 ### 2026-11-23 — Tier-1 三大新章与 Serving Systems 分组落地（GPU & CUDA Graph / Collective Comm / PD Disaggregation）
 

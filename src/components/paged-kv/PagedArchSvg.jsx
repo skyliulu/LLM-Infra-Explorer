@@ -43,16 +43,16 @@ export default function PagedArchSvg({ allocMode = 'paged' }) {
             </g>
           ))}
 
-          {/* Physical HBM Pool */}
+          {/* Physical HBM Pool — non-contiguous physical IDs placed so arrows never cross block labels */}
           <rect className="pk-svg-shell" x="342" y="36" width="200" height="138" rx="7" />
           <text className="pk-svg-s" x="352" y="52">Physical HBM KV Pool (0% Ext Frag)</text>
           {[
-            { id: 1, cls: 'indigo', lbl: 'P1: A[1]' },
-            { id: 2, cls: 'emerald', lbl: 'P2: B[0]' },
-            { id: 4, cls: 'amber', lbl: 'P4: C[0]' },
             { id: 7, cls: 'indigo', lbl: 'P7: A[0]' },
-            { id: 8, cls: 'emerald', lbl: 'P8: B[1]' },
+            { id: 2, cls: 'emerald', lbl: 'P2: B[0]' },
+            { id: 1, cls: 'indigo', lbl: 'P1: A[1]' },
+            { id: 4, cls: 'amber', lbl: 'P4: C[0]' },
             { id: 11, cls: 'indigo', lbl: 'P11: A[2]' },
+            { id: 8, cls: 'emerald', lbl: 'P8: B[1]' },
           ].map((blk, idx) => {
             const col = idx % 2;
             const row = Math.floor(idx / 2);
@@ -66,9 +66,9 @@ export default function PagedArchSvg({ allocMode = 'paged' }) {
             );
           })}
 
-          <line className="pk-svg-edge hi" x1="304" y1="74" x2="444" y2="110" />
-          <line className="pk-svg-edge hi" x1="304" y1="110" x2="352" y2="74" />
-          <line className="pk-svg-edge hi" x1="304" y1="146" x2="444" y2="146" />
+          <path className="pk-svg-edge hi" fill="none" d="M 304 74 C 324 74, 332 74, 352 74" />
+          <path className="pk-svg-edge hi" fill="none" d="M 304 110 C 324 110, 332 110, 352 110" />
+          <path className="pk-svg-edge hi" fill="none" d="M 304 146 C 324 146, 332 146, 352 146" />
         </>
       ) : (
         <>

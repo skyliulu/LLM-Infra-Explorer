@@ -50,6 +50,7 @@ export default function MainDashboard() {
   useEffect(() => {
     document.title = activeTab === 'home' ? 'LLM Infra Explorer' : `${getModuleLabel(activeTab)} · LLM Infra Explorer`;
     setSidebarOpen(false);
+    requestAnimationFrame(() => document.querySelector('#chapter-sidebar a[aria-current="page"]')?.scrollIntoView({ block: 'nearest' }));
   }, [activeTab]);
   useEffect(() => {
     if (!sidebarOpen) return;

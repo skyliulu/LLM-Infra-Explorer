@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { RotateCcw, Layers, Cpu, Network, FastForward, HardDrive, Wrench } from 'lucide-react';
+import ChapterIcon from './ChapterIcon';
 import { useLanguage } from '../lib/LanguageContext';
 import { useExperimentState } from '../lib/ExperimentContext';
 import { MathFormula } from './linear-attention/MathFormula';
@@ -103,7 +104,10 @@ export default function DiffusionDit() {
         <header className="chapter-header">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">{t('title')}</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <ChapterIcon chapter="diffusiondit" />
+                {t('title')}
+              </h1>
               <p className="text-xs md:text-sm text-slate-600 mt-1 max-w-3xl">{t('subtitle')}</p>
             </div>
             <button
@@ -544,6 +548,38 @@ export default function DiffusionDit() {
               </div>
             </div>
 
+            {/* VRAM Stacked Ceiling Bar + Tile Overlap Strip */}
+            <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 mb-3 space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-slate-700">
+                <span>VRAM Peak: {vaeModel.totalPeakGB} GB vs {vaeModel.gpuVramGB} GB GPU Limit</span>
+                <span>{vaeModel.tilesCount} tile(s) · Overlap Blending {vaeModel.overlapOverheadPct}%</span>
+              </div>
+              <div className="w-full h-6 rounded-md overflow-hidden flex bg-slate-200 border border-slate-300 text-[11px] font-bold text-white">
+                <div
+                  className="bg-slate-600 flex items-center justify-center px-2 whitespace-nowrap"
+                  style={{ width: `${Math.min(100, (vaeModel.residentWeightsGB / Math.max(vaeModel.gpuVramGB, vaeModel.totalPeakGB)) * 100)}%` }}
+                >
+                  Weights {vaeModel.residentWeightsGB} GB
+                </div>
+                <div
+                  className={`${vaeModel.oomRisk ? 'bg-rose-600' : 'bg-emerald-600'} flex items-center justify-center px-2.5 whitespace-nowrap min-w-fit transition-all duration-300`}
+                  style={{ width: `${Math.min(100, (vaeModel.vaePeakActGB / Math.max(vaeModel.gpuVramGB, vaeModel.totalPeakGB)) * 100)}%` }}
+                >
+                  VAE Act {vaeModel.vaePeakActGB} GB {vaeModel.oomRisk ? '(OOM!)' : ''}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {Array.from({ length: vaeModel.tilesCount }, (_, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2 py-0.5 rounded text-[10.5px] font-semibold border border-indigo-300 bg-indigo-50 text-indigo-800"
+                  >
+                    Tile {idx + 1} {vaeModel.tilingMode !== 'full' ? '+ Overlap' : '(Full Frame)'}
+                  </span>
+                ))}
+              </div>
+            </div>
+
             <div className={`dit-callout mb-3 ${vaeModel.oomRisk ? 'dit-callout-warn' : 'dit-callout-ok'}`}>
               {vaeModel.oomRisk
                 ? t('s5_status_oom', { vram: vaeModel.gpuVramGB })
@@ -574,7 +610,7 @@ export default function DiffusionDit() {
               ))}
             </div>
 
-            <div className="dit-metric-grid mb-5">
+            <div className="dit-metric-grid mb-4">
               <div className="dit-metric-card">
                 <div className="dit-metric-label">{t('s6_q_weight')}</div>
                 <div className="dit-metric-val">{quantModel.weightGB} GB</div>
@@ -586,6 +622,27 @@ export default function DiffusionDit() {
               <div className="dit-metric-card">
                 <div className="dit-metric-label">{t('s6_q_protect')}</div>
                 <div className="dit-metric-val text-sm">{quantModel.adalnPrecision}</div>
+              </div>
+            </div>
+
+            {/* Visual Sensitive-Layer Precision Pipeline */}
+            <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 mb-5">
+              <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
+                <span className="px-2.5 py-1.5 rounded-md border border-amber-400 bg-amber-50 text-amber-900">
+                  Block 0–1 · BF16 Protected
+                </span>
+                <span className="text-slate-400">→</span>
+                <span className="px-2.5 py-1.5 rounded-md border border-indigo-400 bg-indigo-50 text-indigo-900">
+                  Block 2–37 · {config.quantId === 'bf16' ? 'BF16 Dense' : config.quantId === 'fp8' ? 'FP8 E4M3 Block-Scaled' : 'NVFP4 W4A4 + Rank-32 LoRA'}
+                </span>
+                <span className="text-slate-400">+</span>
+                <span className="px-2.5 py-1.5 rounded-md border border-emerald-400 bg-emerald-50 text-emerald-900">
+                  AdaLN-Zero &amp; Norm · BF16
+                </span>
+                <span className="text-slate-400">→</span>
+                <span className="px-2.5 py-1.5 rounded-md border border-amber-400 bg-amber-50 text-amber-900">
+                  Block 38–39 · BF16 Protected
+                </span>
               </div>
             </div>
 
@@ -602,6 +659,11 @@ export default function DiffusionDit() {
               ))}
             </div>
           </section>
+
+          <details className="dit-section text-xs text-slate-600">
+            <summary className="cursor-pointer font-bold text-slate-800">{t('evidence')}</summary>
+            <p className="mt-2 mb-0 leading-relaxed">{t('evidenceBody')}</p>
+          </details>
         </main>
       </div>
     </div>

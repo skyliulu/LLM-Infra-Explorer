@@ -7,7 +7,7 @@ export const i18n = {
     reset: '重置参数',
 
     // §1 Arch
-    s1_title: '1. DiT 与视频生成端到端推理架构',
+    s1_title: 'DiT 与视频生成端到端推理架构',
     s1_lead: '与自回归 LLM 逐 token 受显存带宽限制截然不同，Diffusion Transformer (DiT) 是典型的重计算流水线：90% 以上耗时集中在数十步全局 3D 注意力去噪循环，而最后仅执行一次的 3D VAE 解码却潜伏着最致命的激活显存尖峰。',
     s1_hint: '点击架构图中的 ①–④ 阶段节点，检查各阶段算力/显存特征与工程隔离边界',
     s1_formula_label: 'Flow Matching 去噪步进与 Classifier-Free Guidance (CFG)',
@@ -30,7 +30,7 @@ export const i18n = {
     stage_vaedec_metric: '耗时占比 3–8% · 峰值激活 > 40 GB',
 
     // §2 3D Patchify & Quadratic Attention Wall
-    s2_title: '2. 3D 时空 Patchify 与二次方注意力墙',
+    s2_title: '3D 时空 Patchify 与二次方注意力墙',
     s2_lead: '视频生成比文生图难出两个数量级，本质在于时间维与空间维相乘后，全局 3D 双向注意力的 O(N²) 计算量彻底压倒 FFN。',
     s2_preset_label: '生成任务规格',
     preset_img512: '512² 文生图',
@@ -53,7 +53,7 @@ export const i18n = {
     s2_vs_llm: '对比 LLM Decode：LLM 每次仅算 1 个新 Token（算术强度 < 2，内存带宽受限）；720p 视频 DiT 每步同时算 75K Token 且无因果掩码，单次请求算力堪比一次超长 Prefill 重复 100 遍。',
 
     // §3 Parallelism
-    s3_title: '3. 多卡并行加速：CFG 并行 + USP 序列并行',
+    s3_title: '多卡并行加速：CFG 并行 + USP 序列并行',
     s3_lead: '单卡生成一段 720p/1080p 视频动辄数十到上百秒。DiT 并行不首选传统 TP（每层高频 AllReduce 延迟大），而是组合“零侵入的 CFG 并行”与“Ulysses + Ring 混合序列并行 (USP)”。',
     s3_mode_single: '单卡基线 (1 GPU)',
     s3_mode_cfg: 'CFG 并行 (2 GPUs)',
@@ -71,7 +71,7 @@ export const i18n = {
     s3_topology_note_usp: '机内用 DeepSpeed-Ulysses 做 All-to-All（将序列切分转置为注意力头切分，利用 NVLink 高带宽）；跨节点或头数受限时外层叠 Ring Attention，用 FlashAttention 算力掩盖 P2P KV 传输。',
 
     // §4 Step Compression & TeaCache
-    s4_title: '4. 去噪步数压缩与特征缓存：TeaCache / 步数蒸馏',
+    s4_title: '去噪步数压缩与特征缓存：TeaCache / 步数蒸馏',
     s4_lead: '在 50 步去噪轨迹中，前几步决定画面大构图，最后几步雕琢高频纹理，而中间大量步骤的隐状态变化非常平缓——这让免训练的特征复用（TeaCache）与少步蒸馏成为最立竿见影的加速手段。',
     s4_strat_baseline: '全步基线 (20/20)',
     s4_strat_teacache: 'TeaCache 动态缓存',
@@ -93,7 +93,7 @@ export const i18n = {
     s4_step_detail: '第 {step} 步 · 单步变化 Δ = {delta} · 累计误差 = {accum}',
 
     // §5 3D Tiled VAE
-    s5_title: '5. 3D VAE 解码显存峰值与分块解码 (Tiled VAE)',
+    s5_title: '3D VAE 解码显存峰值与分块解码 (Tiled VAE)',
     s5_lead: '许多团队上线视频生成时遇到诡异故障：50 步 DiT 去噪全部跑完，却在最后 2 秒 VAE 解码时瞬间 OOM。根源是 3D Conv 上采样在像素分辨率下会产生数十至上百 GB 的中间激活张量。',
     s5_res_label: '目标输出分辨率',
     s5_tiling_label: 'VAE 解码策略',
@@ -110,7 +110,7 @@ export const i18n = {
     s5_seam_note: '工程关键点：分块不能硬切！空间边界需保留 Overlap 重叠带做线性羽化融合（Blending），时间块之间必须传递 3D Causal Conv 的历史特征缓存，否则视频会出现明显“九宫格拼缝”或每隔 1 秒跳闪一次。',
 
     // §6 Quantization & Production Ops
-    s6_title: '6. 精度量化 (FP8 / NVFP4) 与 DiT 线上生产排障',
+    s6_title: '精度量化 (FP8 / NVFP4) 与 DiT 线上生产排障',
     s6_lead: 'DiT 的权重与激活同样存在极端离群通道，尤其是时间步调制层（AdaLN-Zero）和首尾 Block。盲目整网低比特量化会导致画面整体发灰、构图崩塌或视频剧烈闪烁。',
     quant_bf16: 'BF16 基线',
     quant_fp8: 'FP8 E4M3 (块级缩放)',
@@ -141,6 +141,8 @@ export const i18n = {
     svg_par_single: '单卡串行：Cond + Uncond 全序列独享 1 卡',
     svg_par_cfg: 'CFG 并行：2 卡分担 Cond / Uncond，步末极小张量聚合',
     svg_par_usp: 'USP 混合并行：外层 CFG × 机内 Ulysses (All-to-All) × 跨机 Ring (P2P)',
+    evidence: '参考与范围边界',
+    evidenceBody: '参考 DiT (Peebles & Xie)、FLUX / SD3 MM-DiT、Wan2.1 / CogVideoX 3D VAE 与时空 Patchify、xDiT / USP (Ulysses + Ring Attention)、TeaCache (CVPR 25) 与 SVDQuant (ICLR 25)。算力与显存模型以 14B 视频 DiT 与 81 帧 720p/1080p 锚定，用于揭示二次方注意力、并行通信、缓存漂移与 3D VAE 激活峰值的系统边界。',
   },
   en: {
     title: 'Diffusion & DiT Inference Infrastructure',
@@ -148,7 +150,7 @@ export const i18n = {
     reset: 'Reset',
 
     // §1 Arch
-    s1_title: '1. End-to-End DiT & Video Generation Architecture',
+    s1_title: 'End-to-End DiT & Video Generation Architecture',
     s1_lead: 'Unlike autoregressive LLM decode bound by HBM bandwidth, Diffusion Transformers (DiT) are heavily compute-bound pipelines: 85–95% of latency sits in dozens of global 3D denoising steps, while the single final 3D VAE decode hides the sharpest activation OOM spike.',
     s1_hint: 'Click stages ①–④ in the diagram to inspect compute/memory profiles and serving isolation boundaries',
     s1_formula_label: 'Flow Matching ODE Step & Classifier-Free Guidance (CFG)',
@@ -171,7 +173,7 @@ export const i18n = {
     stage_vaedec_metric: 'Latency 3–8% · Peak Activations > 40 GB',
 
     // §2 3D Patchify & Quadratic Attention Wall
-    s2_title: '2. 3D Spatio-Temporal Patchify & Quadratic Attention Wall',
+    s2_title: '3D Spatio-Temporal Patchify & Quadratic Attention Wall',
     s2_lead: 'Video generation is two orders of magnitude heavier than image generation because multiplying temporal and spatial patches pushes O(N²) 3D full attention far past FFN cost.',
     s2_preset_label: 'Generation Preset',
     preset_img512: '512² Image',
@@ -194,7 +196,7 @@ export const i18n = {
     s2_vs_llm: 'Contrast vs LLM Decode: LLM decode computes 1 token per step (AI < 2, memory-bound). A 720p video DiT runs 75K bidirectional tokens repeated 100 times—like running a giant prefill 100 times back-to-back.',
 
     // §3 Parallelism
-    s3_title: '3. Multi-GPU Acceleration: CFG Parallel + USP Sequence Parallel',
+    s3_title: 'Multi-GPU Acceleration: CFG Parallel + USP Sequence Parallel',
     s3_lead: 'Generating 720p/1080p video on 1 GPU takes tens to hundreds of seconds. Rather than heavy per-layer TP AllReduce, DiT serving combines zero-overhead CFG Parallelism with Unified Sequence Parallelism (Ulysses + Ring).',
     s3_mode_single: 'Single GPU (1 GPU)',
     s3_mode_cfg: 'CFG Parallel (2 GPUs)',
@@ -212,7 +214,7 @@ export const i18n = {
     s3_topology_note_usp: 'DeepSpeed-Ulysses runs intra-node All-to-All (transposing sequence shards into head shards over high-BW NVLink), while outer Ring Attention overlaps cross-node P2P KV transfers behind FlashAttention compute.',
 
     // §4 Step Compression & TeaCache
-    s4_title: '4. Step Compression & Feature Caching: TeaCache / Distillation',
+    s4_title: 'Step Compression & Feature Caching: TeaCache / Distillation',
     s4_lead: 'Early denoising steps lock global layout and final steps refine crisp textures, whereas middle steps evolve smoothly—enabling training-free feature reuse (TeaCache) and few-step distillation.',
     s4_strat_baseline: 'Full Baseline (20/20)',
     s4_strat_teacache: 'TeaCache Adaptive Reuse',
@@ -234,7 +236,7 @@ export const i18n = {
     s4_step_detail: 'Step {step} · Step Δ = {delta} · Accumulated Drift = {accum}',
 
     // §5 3D Tiled VAE
-    s5_title: '5. 3D VAE Peak Activation VRAM & Tiled Decoding',
+    s5_title: '3D VAE Peak Activation VRAM & Tiled Decoding',
     s5_lead: 'A classic video-serving failure: all 50 DiT denoising steps finish cleanly, then the final 2-second 3D VAE decode instantly OOMs because full-frame pixel-space Conv3D upsampling explodes activation memory.',
     s5_res_label: 'Target Output Resolution',
     s5_tiling_label: 'VAE Decoding Mode',
@@ -251,7 +253,7 @@ export const i18n = {
     s5_seam_note: 'Engineering detail: never hard-crop tiles! Spatial tiles require overlapping borders with linear feather blending, and temporal chunks must pass causal Conv3D feature caches across boundaries to eliminate grid seams and periodic flicker.',
 
     // §6 Quantization & Production Ops
-    s6_title: '6. Quantization (FP8 / NVFP4) & Production Troubleshooting',
+    s6_title: 'Quantization (FP8 / NVFP4) & Production Troubleshooting',
     s6_lead: 'DiT activations contain sharp outlier channels, especially in timestep modulation (AdaLN-Zero) and first/last transformer blocks. Naive whole-network low-bit quantization causes washed colors, structural collapse, or video flicker.',
     quant_bf16: 'BF16 Baseline',
     quant_fp8: 'FP8 E4M3 (Block Scaled)',
@@ -282,5 +284,7 @@ export const i18n = {
     svg_par_single: 'Single GPU: Cond + Uncond full sequence sequentially on 1 rank',
     svg_par_cfg: 'CFG Parallel: 2 GPUs split Cond / Uncond with tiny end-of-step sync',
     svg_par_usp: 'USP Hybrid: Outer CFG × Intra-Node Ulysses (All-to-All) × Cross-Node Ring (P2P)',
+    evidence: 'References & scope boundaries',
+    evidenceBody: 'Grounded in DiT (Peebles & Xie), FLUX / SD3 MM-DiT, Wan2.1 / CogVideoX 3D VAE & spatio-temporal patchify, xDiT / USP (Ulysses + Ring Attention), TeaCache (CVPR 25), and SVDQuant (ICLR 25). Compute and VRAM figures anchor on a 14B video DiT at 81-frame 720p/1080p to illustrate quadratic attention scaling, parallel communication, cache drift, and 3D VAE peak activation boundaries.',
   },
 };

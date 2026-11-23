@@ -194,6 +194,21 @@ export default function EpdServing() {
                   <strong>{s2.llmGpuWastePct}%</strong>
                 </div>
               </div>
+              <div className="ep-lanes" style={{ marginTop: 4 }}>
+                <div className="ep-lane-row">
+                  <span>E → P Emb</span>
+                  <div className="ep-lane-bar">
+                    <div className="ep-seg enc" style={{ width: '18%' }}>16 MB</div>
+                    <div className="ep-seg idle" style={{ width: '82%' }}>80× lighter than KV · Elastic E-pool</div>
+                  </div>
+                </div>
+                <div className="ep-lane-row">
+                  <span>P → D KV</span>
+                  <div className="ep-lane-bar">
+                    <div className="ep-seg pre" style={{ width: '100%' }}>1,280 MB (80-layer KV Cache over RDMA)</div>
+                  </div>
+                </div>
+              </div>
               <p>{t(`modeNote_${config.epdMode}`)}</p>
             </div>
           </div>

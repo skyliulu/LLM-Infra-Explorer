@@ -360,6 +360,35 @@ export default function StructuredOutput() {
             </div>
           </div>
 
+          <div className="so-box" style={{ padding: '8px 12px' }}>
+            <div className="so-tok-strip">
+              {config.pitfallId === 'bpe_healing' && (
+                <>
+                  <span className="so-tok det">Broken Split: [&quot;:&quot;] + [&quot;ok&quot;] (OOD)</span>
+                  <span className="so-tok free">Token Healing → [&quot;:&quot;ok&quot;] (Exact BPE Merge)</span>
+                </>
+              )}
+              {config.pitfallId === 'recursive_cfg' && (
+                <>
+                  <span className="so-tok det">Regex FSM: O(2^depth) State Blowup</span>
+                  <span className="so-tok free">PDA Stack: Push &#123; → Depth k → Pop &#125; (Bounded)</span>
+                </>
+              )}
+              {config.pitfallId === 'cold_compile' && (
+                <>
+                  <span className="so-tok det">Cold Sync Compile: +380 ms TTFT Spike</span>
+                  <span className="so-tok free">Schema Hash LRU Hit: 0.02 ms</span>
+                </>
+              )}
+              {config.pitfallId === 'spec_coupling' && (
+                <>
+                  <span className="so-tok free">Draft Branch A: Valid ✓</span>
+                  <span className="so-tok det">Draft Branch B: Masked (-∞) → Rollback Snapshot</span>
+                </>
+              )}
+            </div>
+          </div>
+
           <div className="so-grid-even">
             <div className="so-box">
               <span className="so-ctrl-label">{t('pitRoot')}</span>

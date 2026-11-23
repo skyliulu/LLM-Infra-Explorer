@@ -19,6 +19,7 @@ import {
 } from './vlm-vision/model';
 import { i18n } from './vlm-vision/content';
 import VlmArchSvg from './vlm-vision/VlmArchSvg';
+import { VlmTilingSvg, VlmProjectorSvg } from './vlm-vision/VlmVisualSvg';
 import './vlm-vision/vlm-vision.css';
 
 const VIS_TOK_TEX = String.raw`N_{\text{vis}} = \frac{(H / P)\cdot(W / P)}{r^2},\qquad \text{FLOPs}_{\text{attn}} \propto N_{\text{vis}}^2`;
@@ -170,12 +171,15 @@ export default function VlmVision() {
             </div>
 
             <div className="vl-box">
-              <div className="vl-tile-grid">
-                {Array.from({ length: Math.min(8, til.tiles) }, (_, idx) => (
-                  <div key={idx} className={`vl-tile ${config.tiling === 'anyres_tiles' && idx === 0 ? 'thumb' : ''}`}>
-                    {config.tiling === 'anyres_tiles' && idx === 0 ? 'Global' : config.tiling === 'navit_native' ? `Native (${til.res.label})` : `Tile ${idx + 1}`}
-                  </div>
-                ))}
+              <div className="vl-svg-wrap">
+                <VlmTilingSvg
+                  tiling={config.tiling}
+                  res={til.res}
+                  tiles={til.tiles}
+                  merge4x={config.merge4x}
+                  rawPatches={til.rawPatches}
+                  llmTokens={til.llmTokens}
+                />
               </div>
               <p>{t(`tilingNote_${config.tiling}`)}</p>
             </div>
@@ -224,6 +228,9 @@ export default function VlmVision() {
             </div>
 
             <div className="vl-box">
+              <div className="vl-svg-wrap">
+                <VlmProjectorSvg projector={config.projector} />
+              </div>
               <p>{t(`projNote_${config.projector}`)}</p>
             </div>
           </div>
@@ -253,8 +260,25 @@ export default function VlmVision() {
                   </div>
                 ))}
               </div>
+              <span className={`vl-pill ${config.ropeMode === 'mrope_3d' ? 'ok' : 'warn'}`}>
+                {config.ropeMode === 'mrope_3d'
+                  ? 'Vertical Neighbor Distance: Δh = 1, Δw = 0, Δt = 0'
+                  : 'Vertical Neighbor Distance: Δpos = +4 (1080p image: Δpos = +68!)'}
+              </span>
             </div>
             <div className="vl-box">
+              <span className="vl-ctrl-label">RoPE Head Dim Partition (d_h = 128)</span>
+              {config.ropeMode === 'mrope_3d' ? (
+                <div className="vl-rope-bar">
+                  <div className="vl-rope-seg t" style={{ width: '25%' }}>Time (32d)</div>
+                  <div className="vl-rope-seg h" style={{ width: '37.5%' }}>Height (48d)</div>
+                  <div className="vl-rope-seg w" style={{ width: '37.5%' }}>Width (48d)</div>
+                </div>
+              ) : (
+                <div className="vl-rope-bar">
+                  <div className="vl-rope-seg d1" style={{ width: '100%' }}>Single Flattened 1D Index pos (128d)</div>
+                </div>
+              )}
               <p>{t(`ropeNote_${config.ropeMode}`)}</p>
             </div>
           </div>
@@ -292,6 +316,24 @@ export default function VlmVision() {
                     {t(`pool_${p}`)}
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="vl-box">
+            <div className="vl-frame-strip">
+              {Array.from({ length: Math.min(10, vid.frames) }, (_, i) => (
+                <span key={i} className="vl-frame-chip">F{i + 1} · {vid.tokensPerFrame}t</span>
+              ))}
+              {vid.frames > 10 && <span className="vl-ctrl-label">+ {vid.frames - 10} frames</span>}
+            </div>
+            <div className="vl-vram-track" aria-label="80 GB GPU VRAM Budget">
+              <div className="vl-vram-wt" style={{ width: '44%' }}>70B Weights (35 GB)</div>
+              <div
+                className={`vl-vram-kv ${vid.oomWarn ? 'warn' : ''}`}
+                style={{ width: `${Math.min(56, Math.max(8, (vid.kvGB / 80) * 100))}%` }}
+              >
+                Video KV {vid.kvGB} GB
               </div>
             </div>
           </div>
