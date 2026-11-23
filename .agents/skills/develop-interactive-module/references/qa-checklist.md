@@ -87,7 +87,8 @@ A control can be functionally correct and still look wrong. Downscaled full-page
 
 ## Visual explanation
 
-- [ ] Inspect the whole workbench surface in each theme before checking individual controls. Fixed dark diagram backgrounds are defects in the light branch unless a justified code/media surface requires them. Record the main canvas background and readable text, not merely the resolved theme flag.
+- [ ] Inspect the whole workbench surface in each theme before checking individual controls. Fixed dark diagram backgrounds are defects in the light branch unless a justified code/media surface requires them. Custom inline or component SVG `fill`/`stroke` styles use explicit `light-dark()` pairs or inherited `currentColor` (never bare light neutral hex fills that stay bright against dark text/surfaces), and are visually inspected in actual dark-mode screenshots. Record the main canvas background and readable text, not merely the resolved theme flag.
+- [ ] Spatial or structural claims (hardware organization, network/fabric topology, cross-tier data paths, or generational architectural differences) are shown with an actual structural diagram whose regions/callouts link directly to the concrete mechanism or upgrade explanation rather than being flattened into metric bars or prose cards alone.
 
 - [ ] The core difference is visible without reading long prose.
 - [ ] Every important claim has a trigger, visible evidence, and representative or boundary snapshot.
