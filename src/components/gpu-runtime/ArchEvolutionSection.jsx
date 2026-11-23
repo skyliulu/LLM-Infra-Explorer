@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GPU_GENERATIONS } from './model';
+import ArchDiagramSvg from './ArchDiagramSvg';
 
 export default function ArchEvolutionSection({ config, update, t }) {
   const selected = GPU_GENERATIONS.find((g) => g.id === config.archGen) || GPU_GENERATIONS[2];
+  const [activePin, setActivePin] = useState(1);
   const maxHbm = Math.max(...GPU_GENERATIONS.map((g) => g.hbmGBps));
+
+  useEffect(() => {
+    setActivePin(1);
+  }, [selected.id]);
 
   return (
     <section className="gr-section" data-testid="gpu-evolution-section">
@@ -26,33 +32,40 @@ export default function ArchEvolutionSection({ config, update, t }) {
         </div>
       </div>
 
-      <div className="gr-evo-grid">
-        <div className="gr-evo-bars">
-          {GPU_GENERATIONS.map((gen) => (
-            <button
-              key={gen.id}
-              type="button"
-              className={`gr-evo-row ${selected.id === gen.id ? 'on' : ''}`}
-              onClick={() => update({ archGen: gen.id })}
-            >
-              <div>
-                <strong>{gen.chip}</strong>
-                <small>{gen.precision} · {gen.tcGen}</small>
-              </div>
-              <div className="gr-evo-track" aria-hidden="true">
-                <i style={{ width: `${Math.max(8, (gen.hbmGBps / maxHbm) * 100).toFixed(1)}%` }} />
-              </div>
+      {/* Interactive 5-Gen HBM Scaling Strip */}
+      <div className="gr-evo-strip" role="list" aria-label={t('evoHbmMetric')}>
+        {GPU_GENERATIONS.map((gen) => (
+          <button
+            key={gen.id}
+            type="button"
+            className={`gr-evo-chip ${selected.id === gen.id ? 'on' : ''}`}
+            onClick={() => update({ archGen: gen.id })}
+          >
+            <div className="gr-evo-chip-top">
+              <strong>{gen.chip}</strong>
               <b>{(gen.hbmGBps / 1000).toFixed(1)} TB/s</b>
-            </button>
-          ))}
-        </div>
+            </div>
+            <div className="gr-evo-track" aria-hidden="true">
+              <i style={{ width: `${Math.max(6, (gen.hbmGBps / maxHbm) * 100).toFixed(1)}%` }} />
+            </div>
+            <small>{gen.precision} · NVLink {gen.nvlinkGBps >= 1000 ? `${(gen.nvlinkGBps / 1000).toFixed(1)} TB/s` : `${gen.nvlinkGBps} GB/s`}</small>
+          </button>
+        ))}
+      </div>
 
-        <div className="gr-evo-card">
+      {/* Main Architecture Diagram + Concrete Upgrades */}
+      <div className="gr-evo-main">
+        <div className="gr-evo-diagram-wrap">
           <div className="gr-evo-head">
             <strong>{selected.chip} ({selected.year})</strong>
             <span className={`gr-evo-badge ${selected.isPlatformSpec ? 'spec' : ''}`}>
-              {selected.isPlatformSpec ? t('evoPlatformBadge') : `${selected.peakLabel} · NVLink ${selected.nvlinkGBps} GB/s`}
+              {selected.isPlatformSpec ? t('evoPlatformBadge') : `${selected.tcGen} · ${selected.precision}`}
             </span>
+          </div>
+
+          <div className="gr-code-title">{t('evoDiagramTitle')}</div>
+          <div className="gr-arch-canvas">
+            <ArchDiagramSvg gen={selected.id} activePin={activePin} onSelectPin={setActivePin} />
           </div>
 
           <div className="gr-kpis" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
@@ -62,26 +75,46 @@ export default function ArchEvolutionSection({ config, update, t }) {
             </div>
             <div>
               <small>{t('evoHbmMetric')}</small>
-              <strong>{(selected.hbmGBps / 1000).toFixed(2)} TB/s</strong>
+              <strong>{selected.hbmCap} · {(selected.hbmGBps / 1000).toFixed(1)} TB/s</strong>
             </div>
             <div>
               <small>{t('evoNvlMetric')}</small>
-              <strong>{selected.nvlinkGBps} GB/s</strong>
+              <strong>{selected.nvlinkGBps >= 1000 ? `${(selected.nvlinkGBps / 1000).toFixed(1)} TB/s` : `${selected.nvlinkGBps} GB/s`}</strong>
             </div>
           </div>
 
-          <div className="gr-evo-item">
-            <small>{t('evoSolved')}</small>
-            <p>{t(`evoSolved_${selected.id}`)}</p>
+          <div className="gr-evo-meta-row">
+            <div className="gr-evo-item">
+              <small>{t('evoSolved')}</small>
+              <p>{t(`evoSolved_${selected.id}`)}</p>
+            </div>
+            <div className="gr-evo-item">
+              <small>{t('evoSw')}</small>
+              <p>{t(`evoSw_${selected.id}`)}</p>
+            </div>
           </div>
-          <div className="gr-evo-item">
-            <small>{t('evoHw')}</small>
-            <p>{t(`evoHw_${selected.id}`)}</p>
+        </div>
+
+        <div className="gr-evo-upgrades">
+          <div className="gr-code-title">{t('evoImprovementsTitle')}</div>
+          <div className="gr-imp-list">
+            {[1, 2, 3, 4].map((num) => (
+              <button
+                key={num}
+                type="button"
+                data-testid={`gpu-evo-imp-${num}`}
+                className={`gr-imp-card ${activePin === num ? 'on' : ''}`}
+                onClick={() => setActivePin(num)}
+              >
+                <div className="gr-imp-head">
+                  <span className="gr-imp-num">{num}</span>
+                  <strong>{t(`evoImp${num}Title_${selected.id}`)}</strong>
+                </div>
+                <p>{t(`evoImp${num}Desc_${selected.id}`)}</p>
+              </button>
+            ))}
           </div>
-          <div className="gr-evo-item">
-            <small>{t('evoSw')}</small>
-            <p>{t(`evoSw_${selected.id}`)}</p>
-          </div>
+
           <div className="gr-evo-item trap">
             <small>{t('evoTrap')}</small>
             <p>{t(`evoTrap_${selected.id}`)}</p>

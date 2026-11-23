@@ -146,34 +146,71 @@
 .gr-diag-card p{margin:0;font-size:12px;line-height:1.55;color:#334155}
 .gr-fallback-note{font-size:11.5px;font-weight:650;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:4px 8px}
 
-/* §6 Architecture Evolution */
-.gr-evo-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.35fr);gap:14px;align-items:start}
-.gr-evo-bars{display:grid;gap:7px}
-.gr-evo-row{display:grid;grid-template-columns:126px minmax(0,1fr) 86px;gap:8px;align-items:center;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:7px 10px;text-align:left}
-.gr-evo-row.on{border-color:#6366f1;background:#eef2ff}
-.gr-evo-row strong{display:block;font-size:12px;color:#0f172a}
-.gr-evo-row small{display:block;font-size:10px;color:#64748b}
-.gr-evo-track{height:10px;border-radius:5px;background:#e2e8f0;overflow:hidden}
-.gr-evo-track i{display:block;height:100%;background:#6366f1;border-radius:5px}
-.gr-evo-row b{text-align:right;font-size:11px;color:#0f172a;font-variant-numeric:tabular-nums}
-.gr-evo-card{border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc;padding:12px;display:grid;gap:9px}
+/* §6 Architecture Evolution + Interactive Architecture Diagrams */
+.gr-evo-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.gr-evo-chip{border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:8px 9px;display:grid;gap:5px;text-align:left;min-width:0}
+.gr-evo-chip.on{border-color:#6366f1;background:#eef2ff}
+.gr-evo-chip-top{display:flex;justify-content:space-between;align-items:baseline;gap:4px}
+.gr-evo-chip-top strong{font-size:11.5px;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gr-evo-chip-top b{font-size:10.5px;color:#4f46e5;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gr-evo-chip small{font-size:9.5px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gr-evo-track{height:6px;border-radius:3px;background:#e2e8f0;overflow:hidden}
+.gr-evo-track i{display:block;height:100%;background:#6366f1;border-radius:3px}
+
+.gr-evo-main{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(0,1fr);gap:14px;align-items:start}
+.gr-evo-diagram-wrap{border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc;padding:12px;display:grid;gap:9px;min-width:0}
+.gr-evo-upgrades{display:grid;gap:8px;min-width:0}
+.gr-evo-meta-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+
+.gr-arch-canvas{border:1px solid #dbe2eb;border-radius:9px;background:#fff;padding:6px;overflow:hidden}
+.gr-arch-svg{width:100%;height:auto;display:block}
+.gr-svg-die{fill:light-dark(#f8fafc,#0f172a);stroke:light-dark(#cbd5e1,#334155);stroke-width:1.4}
+.gr-svg-shell{fill:light-dark(#ffffff,#111827);stroke:light-dark(#cbd5e1,#334155);stroke-width:1.1;stroke-dasharray:3 2}
+.gr-svg-box{fill:light-dark(#f1f5f9,#1e293b);stroke:light-dark(#cbd5e1,#475569);stroke-width:1.1}
+.gr-svg-hdr{fill:light-dark(#0f172a,#f1f5f9);font-size:11px;font-weight:700}
+.gr-svg-lbl{fill:light-dark(#475569,#94a3b8);font-size:9.5px;font-weight:700}
+.gr-svg-t{fill:light-dark(#0f172a,#f8fafc);font-size:10.5px;font-weight:700}
+.gr-svg-s{fill:light-dark(#475569,#cbd5e1);font-size:8.8px}
+.gr-svg-arrow{stroke:light-dark(#64748b,#94a3b8);stroke-width:1.6;stroke-dasharray:3 2}
+.gr-svg-node{cursor:pointer}
+.gr-svg-node rect{stroke-width:1.3;transition:stroke-width .15s}
+.gr-svg-node.indigo rect{fill:light-dark(#eef2ff,#1e1b4b);stroke:light-dark(#6366f1,#818cf8)}
+.gr-svg-node.blue rect{fill:light-dark(#eff6ff,#172554);stroke:light-dark(#3b82f6,#60a5fa)}
+.gr-svg-node.emerald rect{fill:light-dark(#ecfdf5,#064e3b);stroke:light-dark(#10b981,#34d399)}
+.gr-svg-node.amber rect{fill:light-dark(#fffbeb,#451a03);stroke:light-dark(#f59e0b,#fbbf24)}
+.gr-svg-node.hl rect{stroke-width:2.6}
+.gr-arch-pin{cursor:pointer}
+.gr-arch-pin circle{fill:light-dark(#334155,#475569);stroke:light-dark(#ffffff,#0f172a);stroke-width:1.6}
+.gr-arch-pin text{fill:light-dark(#ffffff,#ffffff);font-size:10px;font-weight:800;pointer-events:none}
+.gr-arch-pin.on circle{fill:light-dark(#e11d48,#f43f5e)}
+
+.gr-imp-list{display:grid;gap:7px}
+.gr-imp-card{border:1px solid #dbe2eb;border-radius:8px;background:#f8fafc;padding:9px 11px;display:grid;gap:4px;text-align:left;transition:border-color .15s,background .15s}
+.gr-imp-card.on{border-color:#6366f1;background:#eef2ff}
+.gr-imp-head{display:flex;align-items:center;gap:7px}
+.gr-imp-num{width:19px;height:19px;border-radius:999px;background:#334155;color:#fff;font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.gr-imp-card.on .gr-imp-num{background:#e11d48}
+.gr-imp-head strong{font-size:12px;color:#0f172a;line-height:1.35}
+.gr-imp-card p{margin:0;font-size:11.5px;line-height:1.58;color:#475569;padding-left:26px}
+
 .gr-evo-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}
 .gr-evo-head strong{font-size:14px;color:#0f172a}
 .gr-evo-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:#dbeafe;color:#1e40af}
 .gr-evo-badge.spec{background:#fef3c7;color:#92400e}
 .gr-evo-item{border:1px solid #e2e8f0;border-radius:8px;background:#fff;padding:8px 10px;display:grid;gap:2px}
 .gr-evo-item small{font-size:10px;font-weight:700;color:#64748b}
-.gr-evo-item p{margin:0;font-size:12px;line-height:1.55;color:#334155}
+.gr-evo-item p{margin:0;font-size:11.5px;line-height:1.55;color:#334155}
 .gr-evo-item.trap{border-color:#fecdd3;background:#fff1f2}
 .gr-evo-item.trap small{color:#be123c}
 
 @media(max-width:960px){
-  .gr-grid-main,.gr-fusion-grid,.gr-roof-grid,.gr-mem-grid,.gr-evo-grid,.gr-diag-detail{grid-template-columns:1fr}
+  .gr-grid-main,.gr-fusion-grid,.gr-roof-grid,.gr-mem-grid,.gr-evo-main,.gr-diag-detail,.gr-evo-meta-row{grid-template-columns:1fr}
+  .gr-evo-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
   .gr-kpis,.gr-hier-strip,.gr-flow-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
   .gr-cycle-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media(max-width:560px){
   .gr-tier-row{grid-template-columns:minmax(0,1fr) 62px 58px}
   .gr-tier-row span:nth-child(3){display:none}
-  .gr-evo-row{grid-template-columns:96px minmax(0,1fr) 68px}
+  .gr-evo-strip{grid-template-columns:1fr}
 }

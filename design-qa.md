@@ -13,7 +13,7 @@
   - §3 **CPU 发射墙与 CUDA Graph 捕获**：CPU/GPU 双轨时间轴 + 单步/播放 + 引擎伪代码，对比 `Eager 逐个发射`、`Full CUDA Graph` 与 `Piecewise Graph (vLLM V1)`。
   - §4 **算子融合与 HBM 往返消除**：对比 4 个未融合逐元素 Kernel（`1.41 MiB`）与 2 个融合 Kernel（`928 KiB`，`-36%`）。
   - §5 **多代 GPU Roofline 与 Nsight 瓶颈归因**：扩展为 `A100 / H100 / B200` × `BF16 / FP8 / FP4`（不支持的低精度显式回退提示），并内联 4 类 Nsight Compute 典型症状排查器（主 Stall 原因与首检抓手）。
-  - §6 **NVIDIA GPU 架构代际演进（Volta → Rubin）**：交互切换 5 代 AI 架构（Volta / Ampere / Hopper / Blackwell / Rubin），展示算力/HBM/NVLink 演进、解决的瓶颈、硬件与 CUDA 软件栈，以及“不应误解为”边界卡片（Rubin 严格标为公开系统级平台规格）。
+  - §6 **NVIDIA GPU 架构代际演进（Volta → Rubin）**：交互切换 5 代 AI 架构（Volta GV100 / Ampere GA100 / Hopper GH100 / Blackwell B200 & NVL72 / Vera Rubin NVL72），为每代提供**独立芯片/系统组织架构图 SVG（`ArchDiagramSvg.jsx`，基于 CSS `light-dark()` 适配浅深双色）**，并将图上 `①–④` 可点击标注与右侧 **4 条相对上一代的核心具体改进** 双向联动，同时展示 HBM/NVLink 演进条、CUDA 软件栈与“不应误解为”边界卡片（Rubin 严格标为公开系统级平台规格）。
 - **`Collective Comm`（`#commcollective`）**：
   - §1 **集合通信原语与逐跳分片流转**：4-GPU 单步演练 `All-Reduce (Ring)`（6 跳 `1.50×M`）、`Reduce-Scatter`（3 跳 `0.75×M`）、`All-Gather`（3 跳 `0.75×M`）与 `All-to-All (MoE EP)`（均匀 vs GPU 1 热点 `2.50×` 倾斜告警）。
   - §2 **机内 NVLink 与机间 IB / RoCE 带宽断层**：$\alpha\text{-}\beta$ 延迟/带宽模型对比 `NVL72 (900 GB/s)`、`NVLink 4.0 (450 GB/s)`、`8×400GbE IB (200 GB/s)` 与 `单口 400GbE IB (50 GB/s)`，随消息量 `1..128 MB` 直观呈现延迟受限向带宽受限切换。

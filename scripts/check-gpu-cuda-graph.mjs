@@ -72,9 +72,18 @@ assert.equal(h100Fp8.fallback, false);
 assert.equal(b200Fp4.fallback, false);
 assert.ok(b200Fp4.ridgeAi > h100Fp8.ridgeAi);
 
-// §6 Generations (Volta -> Rubin)
+// §6 Generations (Volta -> Rubin) + 4 numbered improvements each
 assert.equal(GPU_GENERATIONS.length, 5);
 assert.equal(GPU_GENERATIONS.at(-1).isPlatformSpec, true);
+assert.equal(GPU_GENERATIONS.at(-1).hbmGBps, 22000);
+for (const gen of GPU_GENERATIONS) {
+  for (const num of [1, 2, 3, 4]) {
+    assert.ok(i18n.zh[`evoImp${num}Title_${gen.id}`], `Missing zh title ${num} for ${gen.id}`);
+    assert.ok(i18n.zh[`evoImp${num}Desc_${gen.id}`], `Missing zh desc ${num} for ${gen.id}`);
+    assert.ok(i18n.en[`evoImp${num}Title_${gen.id}`], `Missing en title ${num} for ${gen.id}`);
+    assert.ok(i18n.en[`evoImp${num}Desc_${gen.id}`], `Missing en desc ${num} for ${gen.id}`);
+  }
+}
 
 console.log('PASS GpuCudaGraph checks:', {
   keys: zhKeys.length,
