@@ -14,7 +14,7 @@ export const MODULE_LABELS = {
   dpattention: 'DP Attention',
   linearattn: 'Linear Attention',
   deepinfer: 'DeepInfer',
-  gpucudagraph: 'GPU & CUDA Graph',
+  gpucudagraph: 'GPU & CUDA',
   commcollective: 'Collective Comm',
   scheduler: 'Serving Scheduler',
   pdrouter: 'PD Disaggregation',

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { MODULE_LABELS } from '../src/lib/module-titles.js';
 
-const expectedLabels = ['LLM Inference','Parallel Strategy','Flash Attention','Sparse Attention','DeepSeek CED','Flash Decode','Spec Decode','Quantization','Engram','Radix HiCache','Mooncake','DP Attention','Linear Attention','DeepInfer','GPU & CUDA Graph','Collective Comm','Serving Scheduler','PD Disaggregation','PagedAttention','Structured Output','VLM & Visual Tokens','EPD Disaggregation','Diffusion & DiT Infra'];
+const expectedLabels = ['LLM Inference','Parallel Strategy','Flash Attention','Sparse Attention','DeepSeek CED','Flash Decode','Spec Decode','Quantization','Engram','Radix HiCache','Mooncake','DP Attention','Linear Attention','DeepInfer','GPU & CUDA','Collective Comm','Serving Scheduler','PD Disaggregation','PagedAttention','Structured Output','VLM & Visual Tokens','EPD Disaggregation','Diffusion & DiT Infra'];
 const source = path => fs.readFileSync(new URL(`../src/${path}`, import.meta.url), 'utf8');
 assert.deepEqual(Object.values(MODULE_LABELS),expectedLabels);
 assert.ok(Object.values(MODULE_LABELS).every(label=>typeof label==='string'));

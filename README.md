@@ -17,7 +17,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Area | Workbench | What you can investigate |
 | :--- | :--- | :--- |
 | Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/decode, Roofline arithmetic intensity, per-layer KV, Dense/MoE, and temperature/Top-K/Top-P sampling. |
-| Foundations | [**GPU & CUDA Graph ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#gpucudagraph) | SM occupancy & warp latency hiding, memory coalescing & Tensor Core tiling, CUDA Graph launch wall, operator fusion, A100–B200 rooflines + Nsight diagnosis, and Volta–Rubin evolution. |
+| Foundations | [**GPU & CUDA ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#gpucudagraph) | Whole-chip & SM architecture overview, dynamic warp scheduling & occupancy, memory coalescing & Tensor Core tiling, CUDA Graph / Piecewise Graph, operator fusion, A100–B200 rooflines + Nsight diagnosis, and Volta–Rubin evolution. |
 | Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard vs V1–V4; tiles, SRAM/HBM IO, FA3/FA4 FP8 Incoherent Processing, and Causal persistent tile scheduling. |
 | Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K, paged KV, GQA Tensor Core packing, SM occupancy crossover, and FlashMLA shared latent decoding. |
 | Attention | [**Sparse Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#sparseattn) | DSA, CSA, HCA, local windows, record provenance, NSA/MoBA block sparsity, and Attention Sinks. |
