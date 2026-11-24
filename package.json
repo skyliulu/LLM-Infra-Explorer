@@ -24,6 +24,7 @@
     "check:gpu": "node scripts/check-gpu-cuda-graph.mjs",
     "check:comm": "node scripts/check-collective-comm.mjs",
     "check:pdrouter": "node scripts/check-pd-router.mjs",
+    "check:scheduler": "node scripts/check-serving-scheduler.mjs",
     "check:pagedkv": "node scripts/check-paged-kv.mjs",
     "check:structured": "node scripts/check-structured-output.mjs",
     "check:vlm": "node scripts/check-vlm-vision.mjs",

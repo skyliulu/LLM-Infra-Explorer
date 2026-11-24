@@ -131,7 +131,9 @@ export default function DiffusionDit() {
           </div>
             <p className="dit-section-lead">{t('s1_lead')}</p>
 
-            <DitArchSvg activeStage={activeStage} onSelectStage={setActiveStage} t={t} />
+            <div className="dit-svg-wrap">
+              <DitArchSvg activeStage={activeStage} onSelectStage={setActiveStage} t={t} />
+            </div>
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-slate-500">{t('s1_hint')}</span>
@@ -187,7 +189,9 @@ export default function DiffusionDit() {
                   </button>
                 </div>
               </div>
-              <DitParadigmSvg paradigm={ditParadigm} />
+              <div className="dit-svg-wrap">
+                <DitParadigmSvg paradigm={ditParadigm} />
+              </div>
             </div>
           </section>
 
@@ -416,7 +420,9 @@ export default function DiffusionDit() {
               )}
             </div>
 
-            <DitParallelSvg model={parallelModel} t={t} />
+            <div className="dit-svg-wrap">
+              <DitParallelSvg model={parallelModel} t={t} />
+            </div>
 
             <div className="dit-metric-grid mt-4 mb-3">
               <div className="dit-metric-card">

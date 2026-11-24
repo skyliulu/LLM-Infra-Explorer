@@ -16,6 +16,7 @@ export const MODULE_LABELS = {
   deepinfer: 'DeepInfer',
   gpucudagraph: 'GPU & CUDA Graph',
   commcollective: 'Collective Comm',
+  scheduler: 'Serving Scheduler',
   pdrouter: 'PD Disaggregation',
   pagedkv: 'PagedAttention',
   structuredoutput: 'Structured Output',

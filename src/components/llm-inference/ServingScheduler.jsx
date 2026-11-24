@@ -95,7 +95,7 @@ const cellStyle = (state) => {
   }
 };
 
-export default function ServingScheduler({ lang = 'zh', mode, setMode }) {
+export default function ServingScheduler({ lang = 'zh', mode, setMode, anchorId = 'sched-batch' }) {
   const t = (key) => copy[lang]?.[key] ?? copy.en[key] ?? key;
   const [tick, setTick] = useState(3);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -137,7 +137,7 @@ export default function ServingScheduler({ lang = 'zh', mode, setMode }) {
     <section className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4" data-testid="llm-serving-scheduler">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-[240px] flex-1">
-          <h2 data-section-anchor="llminference-5" className="text-lg font-semibold flex items-center gap-2 text-slate-900">
+          <h2 data-section-anchor={anchorId} className="text-lg font-semibold flex items-center gap-2 text-slate-900">
             <Layers className="text-indigo-500" size={20} />
             {t('title')}
           </h2>

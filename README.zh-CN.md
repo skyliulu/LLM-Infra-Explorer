@@ -12,11 +12,11 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## 带着问题选择章节
 
-22 个工作台覆盖 7 大方向，按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
+23 个工作台覆盖 7 大方向，按首页与侧边栏的阅读顺序排列。可以顺序探索，也可以选择分支；顶部“建议先了解”直达所需基础，章末区分“继续学习”和“相关分支”。
 
 | 方向 | 工作台 | 可以探索什么 |
 | :--- | :--- | :--- |
-| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/Decode、Roofline 算术强度、逐层 KV、Dense/MoE、采样与 Continuous Batching / Chunked Prefill。 |
+| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/Decode、Roofline 算术强度、逐层 KV、Dense/MoE 与温度/Top-K/Top-P 采样。 |
 | Foundations | [**GPU & CUDA Graph ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#gpucudagraph) | SM 占用率与 Warp 延迟隐藏、访存合并与 Tensor Core 分块、CUDA Graph 发射墙、算子融合、A100–B200 Roofline 与 Nsight 诊断，以及 Volta–Rubin 代际演进。 |
 | Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard 与 V1–V4、分块与 HBM IO、FA3/FA4 FP8 非相干处理与 Causal 持久化调度。 |
 | Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K、分页 KV、GQA Tensor Core 打包、SM 占用拐点与 FlashMLA 潜向量解码。 |
@@ -29,6 +29,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP、张量切片、GPU Rank、SP/Ulysses/ZigZag-Ring 与非对称 P/D 重排。 |
 | Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV 所有权、MoE 桥接、负载倾斜与空卡 Dummy、P/D 屏障碰撞及 TBO 双微批交叠。 |
 | Parallelism | [**Collective Comm ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#commcollective) | Ring/Tree/NVLS SHARP 拓扑、MoE All-to-All 倾斜、NVLink/IB 断层、GPUDirect RDMA 与 RoCEv2 PFC、IBGDA 交叠及拓扑放置排障。 |
+| Serving Systems | [**Serving Scheduler ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#scheduler) | 迭代级 Continuous Batching、Chunked Prefill Token 预算、FCFS/SJF/LPM 队列调度、KV 水位抢占主循环与生产参数调优。 |
 | Serving Systems | [**PD Disaggregation ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#pdrouter) | 端到端 PD 架构与状态机、Chunked Prefill 预算、逐层 KV 流水与非对称重排、缓存感知路由、动态 P:D Goodput 与生产可观测性。 |
 | Serving Systems | [**Structured Output ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#structuredoutput) | JSON Schema / CFG 语法编译、XGrammar 掩码拆分、FSM 逐词掩码、Jump-Forward 跳步、CPU/GPU 异步交叠与 BPE 排障。 |
 | Multimodal Infra | [**VLM & Visual Tokens ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#vlmvision) | ViT 动态分块（AnyRes / NaViT）、Projector 视觉 Token 压缩、3D M-RoPE 坐标编码、长视频帧采样 KV 账本与 VLM 排障。 |

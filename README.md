@@ -12,11 +12,11 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 
 ## Choose a question, then explore
 
-22 workbenches across 7 areas, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
+23 workbenches across 7 areas, in the same reading order as Home and the sidebar. Follow the sequence or choose a branch: Helpful foundations in the header links to prerequisite topics, while each chapter ends with Continue learning and Related branches.
 
 | Area | Workbench | What you can investigate |
 | :--- | :--- | :--- |
-| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/decode, Roofline arithmetic intensity, per-layer KV, Dense/MoE, sampling, and Continuous Batching + Chunked Prefill. |
+| Foundations | [**LLM Inference ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#llm) | Prefill/decode, Roofline arithmetic intensity, per-layer KV, Dense/MoE, and temperature/Top-K/Top-P sampling. |
 | Foundations | [**GPU & CUDA Graph ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#gpucudagraph) | SM occupancy & warp latency hiding, memory coalescing & Tensor Core tiling, CUDA Graph launch wall, operator fusion, A100–B200 rooflines + Nsight diagnosis, and Volta–Rubin evolution. |
 | Attention | [**Flash Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flash) | Standard vs V1–V4; tiles, SRAM/HBM IO, FA3/FA4 FP8 Incoherent Processing, and Causal persistent tile scheduling. |
 | Attention | [**Flash Decode ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#flashdecode) | Split-K, paged KV, GQA Tensor Core packing, SM occupancy crossover, and FlashMLA shared latent decoding. |
@@ -29,6 +29,7 @@ React · Vite · Interactive matrices · Step-by-step execution · AGPL-3.0
 | Parallelism | [**Parallel Strategy ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#parallel) | DP/TP/PP/CP/EP/ETP, tensor shards, GPU ranks, SP/Ulysses/ZigZag-Ring prefill, and asymmetric P/D KV resharding. |
 | Parallelism | [**DP Attention ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#dpattention) | KV ownership, MoE bridges, workload skew + Dummy Forward, P/D barrier collision, and TBO micro-batch overlap. |
 | Parallelism | [**Collective Comm ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#commcollective) | Ring/Tree/NVLS SHARP topologies, MoE All-to-All skew, NVLink vs IB alpha-beta cliffs, GPUDirect RDMA / RoCEv2 PFC, IBGDA overlap, and placement. |
+| Serving Systems | [**Serving Scheduler ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#scheduler) | Iteration-level Continuous Batching, Chunked Prefill token budgets, FCFS/SJF/LPM queue policies, KV watermark preemption, and tuning knobs. |
 | Serving Systems | [**PD Disaggregation ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#pdrouter) | End-to-end P/D architecture, Chunked Prefill budgets, layer-wise KV pipelining & resharding, cache-aware routing, dynamic P:D Goodput, and SLO ops. |
 | Serving Systems | [**Structured Output ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#structuredoutput) | JSON Schema / CFG compilation, XGrammar split bitmasking, FSM logits masking, Jump-Forward decoding, async CPU/GPU overlap, and BPE pitfalls. |
 | Multimodal Infra | [**VLM & Visual Tokens ↗**](https://skyliulu.github.io/LLM-Infra-Explorer/#vlmvision) | ViT dynamic tiling (AnyRes / NaViT), Projector token compression, 3D M-RoPE coordinates, video frame KV budgets, and VLM serving diagnosis. |

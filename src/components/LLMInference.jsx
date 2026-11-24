@@ -8,7 +8,6 @@ import { deriveInferenceTensorSnapshot, deriveSamplingDistribution, MODULE, TOTA
 import {chooseSamplingCandidate,samplingDraw} from './llm-inference/numeric-model';
 import { LayerKvOverview, TensorWorkbench } from './llm-inference/TensorWorkbench';
 import KvRepresentation from './llm-inference/KvRepresentation';
-import ServingScheduler from './llm-inference/ServingScheduler';
 import { ROOFLINE_BATCHES, deriveRooflineState } from './llm-inference/scheduler-model';
 
 const i18n = {
@@ -343,7 +342,6 @@ const App = () => {
   const [topK, setTopK] = useExperimentState('LLMInference.topK', 3);
   const [topP, setTopP] = useExperimentState('LLMInference.topP', 0.9);
   const [rooflineBatch, setRooflineBatch] = useExperimentState('LLMInference.rooflineBatch', 1);
-  const [schedulerMode, setSchedulerMode] = useExperimentState('LLMInference.schedulerMode', 'continuous');
   const [currentLayer, setCurrentLayer] = useState(1);
   const [phase, setPhase] = useState('idle');
   const [step, setStep] = useState(0);
@@ -817,8 +815,6 @@ const App = () => {
               )}
             </div>
           </div>
-
-          <ServingScheduler lang={lang} mode={schedulerMode} setMode={setSchedulerMode} />
         </div>
       </div>
     </div>

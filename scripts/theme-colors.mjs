@@ -41,6 +41,29 @@ export function themeValue(value,role){
   return `light-dark(${original}, rgb(${dark.join(' ')}${alpha?' / '+alpha:''}))`;
  });
 }
+function splitLightDark(expr){
+ // Convert light-dark(a, b) into CSS custom-property space-toggle fallback: var(--_lt, a) var(--_dk, b)
+ let out='', i=0;
+ while(i<expr.length){
+  const idx=expr.indexOf('light-dark(',i);
+  if(idx===-1){out+=expr.slice(i);break;}
+  out+=expr.slice(i,idx);
+  let p=idx+11, depth=1, comma=-1;
+  while(p<expr.length&&depth>0){
+   const ch=expr[p];
+   if(ch==='(')depth++;
+   else if(ch===')')depth--;
+   else if(ch===','&&depth===1&&comma===-1)comma=p;
+   if(depth>0)p++;
+  }
+  if(comma===-1||depth!==0){out+=expr.slice(idx);break;}
+  const lightPart=expr.slice(idx+11,comma).trim();
+  const darkPart=expr.slice(comma+1,p).trim();
+  out+=`var(--_lt, ${lightPart}) var(--_dk, ${darkPart})`;
+  i=p+1;
+ }
+ return out;
+}
 export default function themeColors(){return {postcssPlugin:'chapter-theme-colors',OnceExit(root){root.walkDecls(decl=>{
  if(decl.source?.input?.file?.replaceAll('\\','/').endsWith('/HomeLanding.css'))return;
  const p=decl.prop;let role;
@@ -50,4 +73,11 @@ export default function themeColors(){return {postcssPlugin:'chapter-theme-color
  if(p.startsWith('background')&&decl.parent.nodes?.some(node=>node.prop?.endsWith('background-clip')&&node.value==='text'))role='text';
  if(p==='fill'&&decl.parent.selector?.includes('rect'))role='surface';
  if(role)decl.value=themeValue(decl.value,role);
+ // Emit universal CSS-variable space-toggle fallback before light-dark() for mobile WebViews / Safari <17.5 / forced-scheme browsers
+ if(decl.value.includes('light-dark(')){
+  const fallback=splitLightDark(decl.value);
+  if(fallback!==decl.value&&!decl.prev()?.value?.includes('--_lt')){
+   decl.cloneBefore({value:fallback});
+  }
+ }
  });}};}

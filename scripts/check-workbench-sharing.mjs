@@ -22,6 +22,7 @@ const examples={
  deepinfer:lessonSettings,
  gpucudagraph:{'GpuCudaGraph.config':{regsPerThread:128,smemKB:96,blockSize:256,divergent:true,memView:'tiling',stride:32,tiled:true,launchMode:'piecewise_graph',batchSize:8,fusionMode:'fused',gpu:'b200',dtype:'fp4',diagId:'decode_slow',archGen:'blackwell'}},
  commcollective:{'CollectiveComm.config':{op:'alltoall',routingSkew:'hot',algo:'nvls',algoP:64,algoMsgMB:1,interconnect:'nvl72',msgMB:64,rdmaMode:'gpudirect_rdma',overlapMode:'ibgda_overlap',diagId:'ep_skew_tail'}},
+ scheduler:{'ServingScheduler.config':{batchMode:'continuous',tokenBudget:1024,promptLen:8192,activeDecodes:32,policy:'lpm',kvUtilPct:82,maxNumSeqs:128,opsId:'ttft_avalanche'}},
  pdrouter:{'PdRouter.config':{pdMode:'disaggregated',link:'rdma',chunkSize:1024,kvPipe:'layerwise_pipelined',kvLayout:'asymmetric',routerPolicy:'cache_aware',isl:8192,osl:256,cacheHitPct:40,pNodes:10,failId:'kv_collapse'}},
  pagedkv:{'PagedAttention.config':{allocMode:'paged',blockSize:16,tokenIdx:37,preemptMode:'recompute',victimLen:1024,pcieId:'pcie4',vattnMode:'pagedattention',modelId:'llama70b',kvDtype:'bf16',ctxLen:8192,concurrency:16,keyChange:'same'}},
  structuredoutput:{'StructuredOutput.config':{maskEngine:'xgrammar',vocabSize:128256,jumpMode:'jump_forward',overlapMode:'async_overlap',pitfallId:'bpe_healing'}},
@@ -45,7 +46,7 @@ assert.deepEqual(sanitizeSettings('parallel',{'ParallelStrategies.degrees':{dp:4
 assert.deepEqual(readSharedSettings('llm','#llm?setup='+encodeURIComponent('{"v":1,"values":{"__proto__":{"polluted":true}}}')),{});
 assert.equal({}.polluted,undefined);
 assert.deepEqual(sanitizeSettings('deepinfer',{'DeepInfer.scenario':'unknown','DeepInfer.prefillBudget':6,'DeepInfer.overlap':'true','DeepInfer.step':3,'DeepInfer.playing':true}),{});
-console.log('Sharing schema: all 22 chapters round-trip; malformed, oversized, unknown and out-of-range settings rejected.');
+console.log('Sharing schema: all 23 chapters round-trip; malformed, oversized, unknown and out-of-range settings rejected.');
 
 assert.deepEqual(sanitizeSettings('radixcache',{'HiCache.scenario':'unknown','HiCache.prefetch':'forever','HiCache.write':true}),{});
 

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { MODULE_LABELS } from '../src/lib/module-titles.js';
 
-const expectedLabels = ['LLM Inference','Parallel Strategy','Flash Attention','Sparse Attention','DeepSeek CED','Flash Decode','Spec Decode','Quantization','Engram','Radix HiCache','Mooncake','DP Attention','Linear Attention','DeepInfer','GPU & CUDA Graph','Collective Comm','PD Disaggregation','PagedAttention','Structured Output','VLM & Visual Tokens','EPD Disaggregation','Diffusion & DiT Infra'];
+const expectedLabels = ['LLM Inference','Parallel Strategy','Flash Attention','Sparse Attention','DeepSeek CED','Flash Decode','Spec Decode','Quantization','Engram','Radix HiCache','Mooncake','DP Attention','Linear Attention','DeepInfer','GPU & CUDA Graph','Collective Comm','Serving Scheduler','PD Disaggregation','PagedAttention','Structured Output','VLM & Visual Tokens','EPD Disaggregation','Diffusion & DiT Infra'];
 const source = path => fs.readFileSync(new URL(`../src/${path}`, import.meta.url), 'utf8');
 assert.deepEqual(Object.values(MODULE_LABELS),expectedLabels);
 assert.ok(Object.values(MODULE_LABELS).every(label=>typeof label==='string'));
@@ -17,4 +17,4 @@ for (const file of fs.readdirSync(componentsDir).filter(f => f.endsWith('.jsx'))
     .filter(m => !m[0].includes('data-section-label='));
   assert.equal(badAnchors.length, 0, `${file}: data-section-anchor must be on a heading (h1-h3), not on <section>/<div> wrapper`);
 }
-console.log('Navigation: 22 fixed English labels shared by homepage and sidebar; section-anchor placement guard passed.');
+console.log('Navigation: 23 fixed English labels shared by homepage and sidebar; section-anchor placement guard passed.');

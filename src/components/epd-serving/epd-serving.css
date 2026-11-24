@@ -103,4 +103,7 @@
 }
 @media(max-width:560px){
   .ep-trace-grid,.ep-kpis-3{grid-template-columns:1fr}
+  .ep-lane-row{grid-template-columns:1fr;gap:4px}
+  .ep-gpu-bar{grid-template-columns:repeat(8,minmax(0,1fr))}
+  .ep-slider-row input[type="range"]{width:100%}
 }

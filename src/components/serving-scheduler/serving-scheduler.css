@@ -1,0 +1,89 @@
+/* Serving Scheduler standalone chapter: light palette + explicit light-dark() SVGs + mobile-safe */
+.sc2-page{background:#f8fafc;color:#1e293b;font-size:13px}
+.sc2-page *{box-sizing:border-box}
+.sc2-page button{font:inherit;cursor:pointer}
+.sc2-section{background:#fff;border:1px solid #dbe2eb;border-radius:12px;padding:16px;display:grid;gap:12px;min-width:0}
+.sc2-section h2{font-size:18px;font-weight:750;color:#0f172a;line-height:1.3;margin:0}
+.sc2-lead{max-width:84ch;color:#475569;line-height:1.6;margin:0}
+.sc2-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:8px 10px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px}
+.sc2-ctrl-group{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sc2-ctrl-label{font-size:11.5px;font-weight:700;color:#334155;white-space:nowrap}
+.sc2-toggle{display:inline-flex;flex-wrap:wrap;background:#e2e8f0;border-radius:7px;padding:2px;gap:2px}
+.sc2-toggle button{border:1px solid transparent;background:transparent;border-radius:5px;padding:5px 9px;min-height:30px;font-size:11.5px;color:#475569;font-weight:600;transition:background .15s,color .15s}
+.sc2-toggle button[aria-pressed="true"]{background:#fff;border-color:#cbd5e1;color:#1d4ed8;box-shadow:0 1px 2px #0f172a14}
+
+.sc2-svg-wrap{border:1px solid #dbe2eb;border-radius:10px;background:#fff;padding:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sc2-svg{width:100%;height:auto;display:block}
+.sc2-svg-bg{fill:light-dark(#f8fafc,#0f172a);stroke:light-dark(#cbd5e1,#334155);stroke-width:1.2}
+.sc2-svg-inner{fill:light-dark(#ffffff,#111827);stroke:light-dark(#cbd5e1,#334155);stroke-width:1}
+.sc2-svg-hdr{fill:light-dark(#0f172a,#f1f5f9);font-size:10.5px;font-weight:700}
+.sc2-svg-t{fill:light-dark(#0f172a,#f8fafc);font-size:10px;font-weight:700}
+.sc2-svg-s{fill:light-dark(#475569,#cbd5e1);font-size:8.6px}
+.sc2-svg-edge{stroke:light-dark(#64748b,#94a3b8);stroke-width:1.8}
+.sc2-svg-edge.hi{stroke:light-dark(#10b981,#34d399);stroke-width:2.2}
+.sc2-svg-node{cursor:pointer}
+.sc2-svg-node rect{stroke-width:1.3}
+.sc2-svg-node.indigo rect{fill:light-dark(#eef2ff,#1e1b4b);stroke:light-dark(#6366f1,#818cf8)}
+.sc2-svg-node.blue rect{fill:light-dark(#eff6ff,#172554);stroke:light-dark(#3b82f6,#60a5fa)}
+.sc2-svg-node.emerald rect{fill:light-dark(#ecfdf5,#064e3b);stroke:light-dark(#10b981,#34d399)}
+.sc2-svg-node.amber rect{fill:light-dark(#fffbeb,#451a03);stroke:light-dark(#f59e0b,#fbbf24)}
+.sc2-svg-node.warn rect{fill:light-dark(#fff1f2,#4c0519);stroke:light-dark(#f43f5e,#fb7185)}
+.sc2-svg-node.hl rect{stroke-width:2.6}
+.sc2-arch-pin{cursor:pointer}
+.sc2-arch-pin circle{fill:light-dark(#334155,#475569);stroke:light-dark(#ffffff,#0f172a);stroke-width:1.6}
+.sc2-arch-pin text{fill:#ffffff;font-size:10px;font-weight:800;pointer-events:none}
+.sc2-arch-pin.on circle{fill:light-dark(#e11d48,#f43f5e)}
+
+.sc2-grid-2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start}
+.sc2-grid-even{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sc2-box{border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;padding:12px;display:grid;gap:10px;min-width:0}
+.sc2-box p{margin:0;font-size:12px;line-height:1.6;color:#475569}
+.sc2-pin-list{display:grid;gap:7px}
+.sc2-pin-card{border:1px solid #dbe2eb;border-radius:8px;background:#f8fafc;padding:8px 10px;display:grid;gap:3px;text-align:left}
+.sc2-pin-card.on{border-color:#6366f1;background:#eef2ff}
+.sc2-pin-head{display:flex;align-items:center;gap:7px}
+.sc2-pin-num{width:19px;height:19px;border-radius:999px;background:#334155;color:#fff;font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc2-pin-card.on .sc2-pin-num{background:#e11d48}
+.sc2-pin-head strong{font-size:12px;color:#0f172a}
+.sc2-pin-card p{margin:0;font-size:11.5px;line-height:1.55;color:#475569;padding-left:26px}
+
+.sc2-kpis-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.sc2-kpi{border:1px solid #e2e8f0;border-radius:8px;background:#fff;padding:7px 9px;min-width:0}
+.sc2-kpi small{display:block;font-size:10px;color:#64748b}
+.sc2-kpi strong{display:block;font-size:14px;font-weight:800;color:#0f172a;margin-top:2px;font-variant-numeric:tabular-nums}
+.sc2-kpi.good{border-color:#a7f3d0;background:#ecfdf5}
+.sc2-kpi.good strong{color:#065f46}
+.sc2-kpi.warn{border-color:#fecdd3;background:#fff1f2}
+.sc2-kpi.warn strong{color:#be123c}
+
+.sc2-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.sc2-table th,.sc2-table td{padding:7px 8px;border-bottom:1px solid #e2e8f0;text-align:left}
+.sc2-table th{font-size:10.5px;color:#64748b;font-weight:700;background:#f8fafc}
+.sc2-table tr.on{background:#eef2ff;font-weight:700}
+
+.sc2-pill{display:inline-block;font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:6px;border:1px solid}
+.sc2-pill.ok{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}
+.sc2-pill.warn{background:#fff1f2;border-color:#fda4af;color:#be123c}
+.sc2-pill.amber{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+
+.sc2-slider-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc}
+.sc2-slider-row input[type="range"]{flex:1;min-width:160px;accent-color:#4f46e5}
+
+.sc2-wm-track{position:relative;height:26px;border-radius:7px;background:#e2e8f0;overflow:hidden;border:1px solid #cbd5e1;display:flex}
+.sc2-wm-fill{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;white-space:nowrap;padding:0 8px;transition:width .2s ease}
+.sc2-wm-fill.admitting{background:#10b981}
+.sc2-wm-fill.paused{background:#f59e0b}
+.sc2-wm-fill.preempting{background:#e11d48}
+
+.sc2-code{background:#0d1117;color:#e2e8f0;border:1px solid #1e293b;border-radius:10px;padding:11px 13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.58;overflow-x:auto;margin:0}
+.sc2-evidence{border:1px solid #dbe2eb;border-radius:10px;background:#fff;padding:10px 14px;font-size:12px;color:#475569}
+.sc2-evidence summary{cursor:pointer;font-weight:700;color:#1e293b}
+.sc2-evidence p{margin:8px 0 0;line-height:1.6}
+
+@media(max-width:960px){
+  .sc2-grid-2,.sc2-grid-even{grid-template-columns:1fr}
+  .sc2-kpis-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+  .sc2-box{overflow-x:auto}
+}

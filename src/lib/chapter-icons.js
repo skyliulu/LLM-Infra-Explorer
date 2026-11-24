@@ -1,4 +1,4 @@
-import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split,CircuitBoard,Boxes,Gauge,Waypoints,ArrowLeftRight,LayoutGrid,Braces,ScanEye,Workflow,Clapperboard} from 'lucide-react';
+import {Cpu,Network,Zap,Filter,Layers,BrainCircuit,Merge,ListChecks,GitBranch,Repeat2,Binary,Split,CircuitBoard,Boxes,Gauge,Waypoints,ArrowLeftRight,LayoutGrid,Braces,ScanEye,Workflow,Clapperboard,CalendarClock} from 'lucide-react';
 
 export const CHAPTER_ICONS = {
   llm: Cpu,
@@ -16,6 +16,7 @@ export const CHAPTER_ICONS = {
   mooncake: Boxes,
   dpattention: Split,
   commcollective: Waypoints,
+  scheduler: CalendarClock,
   pdrouter: ArrowLeftRight,
   structuredoutput: Braces,
   vlmvision: ScanEye,

@@ -98,3 +98,7 @@
   .vl-grid-2,.vl-grid-even{grid-template-columns:1fr}
   .vl-kpis-4{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+@media(max-width:640px){
+  .vl-rope-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vl-box{overflow-x:auto}
+}

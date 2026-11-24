@@ -95,3 +95,7 @@
   .so-grid-2,.so-grid-even{grid-template-columns:1fr}
   .so-kpis-3{grid-template-columns:1fr}
 }
+@media(max-width:640px){
+  .so-lane-row{grid-template-columns:1fr;gap:4px}
+  .so-box{overflow-x:auto}
+}

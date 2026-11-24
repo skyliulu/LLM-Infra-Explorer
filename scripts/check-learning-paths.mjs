@@ -3,10 +3,10 @@ import {READING_ORDER,LEARNING_PATHS,learningHref} from '../src/lib/chapter-lear
 import {MODULE_GROUPS} from '../src/lib/module-groups.js';
 import {SHARE_SCHEMA} from '../src/lib/experiment-sharing.js';
 
-assert.equal(new Set(READING_ORDER).size,22);
+assert.equal(new Set(READING_ORDER).size,23);
 assert.deepEqual([...READING_ORDER].sort(),Object.keys(SHARE_SCHEMA).sort());
 assert.deepEqual(READING_ORDER,MODULE_GROUPS.flatMap(group=>group.chapters));
-assert.deepEqual(READING_ORDER,['llm','gpucudagraph','flash','flashdecode','sparseattn','linearattn','quantization','pagedkv','radixcache','mooncake','parallel','dpattention','commcollective','pdrouter','structuredoutput','vlmvision','epdserving','diffusiondit','speculative','engram','cachearch','deepinfer']);
+assert.deepEqual(READING_ORDER,['llm','gpucudagraph','flash','flashdecode','sparseattn','linearattn','quantization','pagedkv','radixcache','mooncake','parallel','dpattention','commcollective','scheduler','pdrouter','structuredoutput','vlmvision','epdserving','diffusiondit','speculative','engram','cachearch','deepinfer']);
 for(const [id,path] of Object.entries(LEARNING_PATHS)) {
   for(const topic of path.before) {
     assert(READING_ORDER.indexOf(topic.chapter)<READING_ORDER.indexOf(id),'Foundations precede their dependent chapter');
@@ -23,4 +23,4 @@ assert.equal(LEARNING_PATHS.cachearch.next,'deepinfer');
 assert.equal(LEARNING_PATHS.radixcache.next,'mooncake','HiCache continues into the shared L3 tier');
 assert.deepEqual(LEARNING_PATHS.mooncake.before.map(t=>t.chapter),['radixcache','llm']);
 assert.equal(LEARNING_PATHS.mooncake.before[0].section,'radix-hicache');
-console.log('PASS learning order: 22 unique chapters, forward-only prerequisites/continuations, bilingual section links and CED / Mooncake / DeepInfer / Tier-1 / Tier-2 & Multimodal dependencies');
+console.log('PASS learning order: 23 unique chapters, forward-only prerequisites/continuations, bilingual section links and CED / Mooncake / DeepInfer / Tier-1 / Tier-2 & Multimodal dependencies');

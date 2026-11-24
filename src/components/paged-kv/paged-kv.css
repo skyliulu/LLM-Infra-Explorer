@@ -99,5 +99,6 @@
 }
 @media(max-width:560px){
   .pk-cow-blocks,.pk-kpis-3{grid-template-columns:1fr}
-  .pk-bar-row{grid-template-columns:110px minmax(0,1fr) 58px}
+  .pk-bar-row{grid-template-columns:1fr;gap:4px}
+  .pk-box{overflow-x:auto}
 }

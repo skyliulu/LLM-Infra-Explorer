@@ -269,3 +269,18 @@
   padding: 12px 14px;
   background: #f8fafc;
 }
+
+.dit-svg-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .dit-section {
+    padding: 14px;
+  }
+  .dit-svg-frame {
+    min-width: 560px;
+  }
+}

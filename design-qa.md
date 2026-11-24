@@ -1,5 +1,17 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-24 — 拆分独立 `Serving Scheduler` 章节（22 → 23 章）+ 移动端主题切换与响应式全面修复
+
+- **在线调度独立成章（`LLM Inference` 瘦身 + `Serving Systems` 新增 `#scheduler`）**：
+  - 将原内嵌在 `LLMInference.jsx` 底部的在线调度模块抽出，让 `LLM Inference` 回归单请求执行基础（Prefill/Decode、Roofline、KV Cache、MoE/Dense 与采样）。
+  - 在 `Serving Systems`（`在线服务系统`）首位新增独立 6 节工作台 **`Serving Scheduler`**（`#scheduler`）：§1 在线调度器端到端架构（`SchedulerArchSvg.jsx` + `①–④` 联动）、§2 Static vs Continuous Batching 迭代级演练（复用并升级 `ServingScheduler.jsx`）、§3 Prefill–Decode 干扰与 Chunked Prefill Token 预算（`ChunkBudgetSvg.jsx`）、§4 FCFS / SJF / LPM / Priority+Aging 队列策略与反饥饿对比、§5 vLLM V1 / SGLang 调度主循环伪代码与 90%/95% KV 水位抢占触发器、§6 生产调度参数速查矩阵与 4 类高频线上排障。
+- **移动端外观/颜色切换彻底修复（兼容 iOS Safari / 微信 WebView / Android 浏览器）**：
+  - `scripts/theme-colors.mjs` 为每一条 `light-dark(a, b)` 规则自动前置通用 CSS 变量空间切换降级（`var(--_lt, a) var(--_dk, b)`），并在 `src/index.css` 中由 `html[data-theme="light"|"dark"]` 驱动 `--_lt` / `--_dk`，确保不支持 `light-dark()` 的移动端 WebView 也能完整切换浅/深色。
+  - `src/lib/ThemeContext.jsx` 与 `index.html` 在每次主题切换时同步更新 `<meta name="color-scheme">` 与 `document.body.style.colorScheme`，解决 iOS Safari 在系统深色模式下切回浅色时局部不重绘的问题。
+  - `src/components/SiteHeader.css` 移动端将 `.theme-options` 改为 `position: fixed; top: 58px; right: 12px`、增大触摸热区（`34×34px` 触发器 + `40px` 选项行高），并在 `<768px` 隐藏 GitHub Star 计数释放顶栏空间，避免章节名与「概览」被挤扁。
+- **移动端内容可读性与横向溢出治理（`390px` 全章 `overflowX = 0`）**：
+  - `src/components/workbench.css` 统一治理网格子项 `min-width: 0`、长公式 `.katex-display` 与 `<pre>` 代码块内部横向滑动、窄屏 `<table>` 自动可滑动，并为密集架构 SVG 容器开启触控横向滚动 + 清晰可读最小宽度（`500–560px`），同步修复 `pagedkv` / `structuredoutput` / `vlmvision` / `epdserving` / `diffusiondit` / `scheduler` 的移动端排布。
+
 ### 2026-11-23 — Tier-2 与多模态推理三大新章落地（5 新章 + Multimodal Infra 分组，全站 17 → 22 章 / 6 → 7 分组）
 
 - **全站导航与分组扩展（17 → 22 章，6 → 7 分组）**：

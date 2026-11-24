@@ -18,8 +18,10 @@ export const LEARNING_PATHS = {
   mooncake:{before:[topic('radixcache','radix-hicache','前缀复用与分层缓存','Prefix reuse and tiered caches'),kv],next:'cachearch'},
   parallel:{before:[inference],next:'dpattention'},
   dpattention:{before:[topic('parallel','parallelstrategies-1','多卡并行与 GPU 映射','Parallelism and GPU mapping')],next:'commcollective'},
-  commcollective:{before:[topic('parallel','parallelstrategies-1','多卡并行与 GPU 映射','Parallelism and GPU mapping')],next:'pdrouter'},
+  commcollective:{before:[topic('parallel','parallelstrategies-1','多卡并行与 GPU 映射','Parallelism and GPU mapping')],next:'scheduler'},
+  scheduler:{before:[inference,kv],next:'pdrouter'},
   pdrouter:{before:[
+    topic('scheduler','sched-chunk','连续批处理与 Chunked Prefill 预算','Continuous batching and chunked prefill'),
     topic('radixcache','radix-hicache','前缀复用与分层缓存','Prefix reuse and tiered caches'),
     topic('mooncake','mooncake-tiers','共享 L3 KV 池与 RDMA 传输','Shared L3 KV pool and RDMA transport'),
     inference,
