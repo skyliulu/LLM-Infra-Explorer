@@ -14,7 +14,7 @@ export function DitParallelSvg({ model, t }) {
     <svg viewBox="0 0 880 198" className="dit-svg-frame" role="img" aria-label={caption}>
       <defs>
         <marker id="dit-par-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M 0 1 L 10 5 L 0 9 z" fill="light-dark(#059669, #34d399)" />
+          <path d="M 0 1 L 10 5 L 0 9 z" className="dit-svg-marker-em" />
         </marker>
       </defs>
 

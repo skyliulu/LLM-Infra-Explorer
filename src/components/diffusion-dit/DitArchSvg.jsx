@@ -12,10 +12,10 @@ export function DitArchSvg({ activeStage, onSelectStage, t }) {
     >
       <defs>
         <marker id="dit-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M 0 1 L 10 5 L 0 9 z" fill="light-dark(#64748b, #94a3b8)" />
+          <path d="M 0 1 L 10 5 L 0 9 z" className="dit-svg-marker" />
         </marker>
         <marker id="dit-arrow-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M 0 1 L 10 5 L 0 9 z" fill="light-dark(#4f46e5, #818cf8)" />
+          <path d="M 0 1 L 10 5 L 0 9 z" className="dit-svg-marker-acc" />
         </marker>
       </defs>
 

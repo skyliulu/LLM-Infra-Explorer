@@ -193,6 +193,18 @@
   fill: none;
 }
 
+.dit-svg-marker {
+  fill: light-dark(#64748b, #94a3b8);
+}
+
+.dit-svg-marker-acc {
+  fill: light-dark(#4f46e5, #818cf8);
+}
+
+.dit-svg-marker-em {
+  fill: light-dark(#059669, #34d399);
+}
+
 .dit-svg-pin {
   fill: light-dark(#4f46e5, #6366f1);
   stroke: light-dark(#ffffff, #0f172a);
