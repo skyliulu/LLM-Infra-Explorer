@@ -6,7 +6,7 @@ import {SHARE_SCHEMA} from '../src/lib/experiment-sharing.js';
 assert.equal(new Set(READING_ORDER).size,23);
 assert.deepEqual([...READING_ORDER].sort(),Object.keys(SHARE_SCHEMA).sort());
 assert.deepEqual(READING_ORDER,MODULE_GROUPS.flatMap(group=>group.chapters));
-assert.deepEqual(READING_ORDER,['llm','gpucudagraph','flash','flashdecode','sparseattn','linearattn','quantization','pagedkv','radixcache','mooncake','parallel','dpattention','commcollective','scheduler','pdrouter','structuredoutput','vlmvision','epdserving','diffusiondit','speculative','engram','cachearch','deepinfer']);
+assert.deepEqual(READING_ORDER,['gpucudagraph','llm','flash','flashdecode','sparseattn','linearattn','quantization','pagedkv','radixcache','mooncake','parallel','dpattention','commcollective','scheduler','pdrouter','structuredoutput','vlmvision','epdserving','diffusiondit','speculative','engram','cachearch','deepinfer']);
 for(const [id,path] of Object.entries(LEARNING_PATHS)) {
   for(const topic of path.before) {
     assert(READING_ORDER.indexOf(topic.chapter)<READING_ORDER.indexOf(id),'Foundations precede their dependent chapter');

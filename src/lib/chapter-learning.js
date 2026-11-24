@@ -2,12 +2,13 @@ import {MODULE_GROUPS} from './module-groups.js';
 
 export const READING_ORDER = MODULE_GROUPS.flatMap(group=>group.chapters);
 const topic = (chapter,section,zh,en) => ({chapter,section,label:{zh,en}});
+const gpuArch = topic('gpucudagraph','gpucudagraph-overview','GPU 整体架构与 SM 执行模型','GPU architecture and SM execution model');
 const inference = topic('llm','llminference-1','Prefill 与逐 Token 生成','Prefill and token generation');
 const kv = topic('llm','llminference-2','KV Cache 的生命周期','KV cache lifecycle');
 const flash = topic('flash','flashattention-1','注意力的数据搬运','Attention data movement');
 export const LEARNING_PATHS = {
-  llm:{before:[],next:'gpucudagraph'},
-  gpucudagraph:{before:[inference],next:'flash'},
+  gpucudagraph:{before:[],next:'llm'},
+  llm:{before:[gpuArch],next:'flash'},
   flash:{before:[inference,kv],next:'flashdecode'},
   flashdecode:{before:[inference,flash],next:'sparseattn'},
   sparseattn:{before:[kv,flash],next:'quantization'},
