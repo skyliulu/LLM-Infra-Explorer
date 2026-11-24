@@ -71,7 +71,8 @@ Where the claim concerns matrix operations, show compact dimension-labeled input
 - Size matrix and tensor cells from readable values, not from available whitespace.
 - Keep labels close to their objects and dimension annotations on the corresponding edge.
 - Reduce empty containers, large causal grids, and decorative cards that do not carry proportionate information.
-- Let a short panel fill its column vertically when adjacent panels are taller.
+- Balance adjacent columns by matching their natural content heights—do **not** vertically stretch an aspect-ratio-locked SVG or diagram container with empty top/bottom whitespace just to match a taller neighbor panel. Instead, place full-width summaries/mappings in their own horizontal band or pair compact anchor metrics beside the diagram so both columns end cleanly together.
+- When a mode switch splits an execution pipeline into captured vs. dynamic segments, render the operator-level partition structure directly above or coupled to the timeline so every host/device block on the Gantt track maps visibly to its causal reason.
 - On narrow and intermediate screens (including desktop viewports narrowed by an open sidebar or split pane), preserve reading order and avoid both page-level horizontal overflow and flex-wrap title squeezing: give title/summary blocks in wrapping headers a bounded readable minimum width so wide control groups wrap cleanly onto the next row instead of crushing text into narrow vertical ribbons.
 - Test component-level overflow as well as page overflow. Dense cards, labels, tracks, formulas, and code blocks must keep `clientWidth` and `scrollWidth` compatible with the intended scrolling behavior.
 - Check representative sparse and dense states. A layout that works for one item may fail at maximum count or with longer translated labels.

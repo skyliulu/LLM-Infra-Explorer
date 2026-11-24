@@ -9,6 +9,74 @@ export const MEM_VIEWS = ['coalescing', 'tiling'];
 export const ARCH_GENS = ['volta', 'ampere', 'hopper', 'blackwell', 'rubin'];
 export const DIAG_IDS = ['low_tc_high_hbm', 'decode_slow', 'high_occ_slow', 'multi_gpu_slow'];
 
+// §0 Whole-GPU Architecture Blueprint (Macro Chip + Zoomed SM + CUDA SW->HW Mapping + Y=XW Trace)
+export const OVERVIEW_NODES = [
+  { id: 'host_cpu', tier: 'macro', tone: 'amber', anchor: 'gpucudagraph-launch', spec: 'PCIe Gen5 (64 GB/s) / C2C' },
+  { id: 'gigathread', tier: 'macro', tone: 'blue', anchor: 'gpucudagraph-sm', spec: 'Block Dispatcher' },
+  { id: 'sm_array', tier: 'macro', tone: 'indigo', anchor: 'gpucudagraph-sm', spec: 'H100: 132 SMs · B200: 160 SMs' },
+  { id: 'l2_cache', tier: 'macro', tone: 'emerald', anchor: 'gpucudagraph-memory', spec: '50 MB · ~12 TB/s · ~200 cyc' },
+  { id: 'hbm', tier: 'macro', tone: 'amber', anchor: 'gpucudagraph-memory', spec: '80–192 GB · 3.35–8 TB/s · ~400 cyc' },
+  { id: 'nvlink', tier: 'macro', tone: 'blue', anchor: 'gpucudagraph-evolution', spec: '900 GB/s – 3.6 TB/s / GPU' },
+  { id: 'warp_sched', tier: 'sm', tone: 'blue', anchor: 'gpucudagraph-sm', spec: '4 / SM · 64 Warps · 0-cyc switch' },
+  { id: 'reg_file', tier: 'sm', tone: 'emerald', anchor: 'gpucudagraph-sm', spec: '256 KB / SM · ~80+ TB/s · ~1 cyc' },
+  { id: 'cuda_core', tier: 'sm', tone: 'blue', anchor: 'gpucudagraph-fusion', spec: '128 FP32 / SM · Scalar ALU' },
+  { id: 'tensor_core', tier: 'sm', tone: 'indigo', anchor: 'gpucudagraph-memory', spec: '4 / SM · WMMA / WGMMA' },
+  { id: 'smem_l1', tier: 'sm', tone: 'emerald', anchor: 'gpucudagraph-memory', spec: '228 KB / SM · ~33 TB/s · ~25 cyc' },
+];
+
+export const OVERVIEW_NODE_IDS = OVERVIEW_NODES.map((n) => n.id);
+
+export const SW_HW_MAPPING = [
+  { id: 'grid', focusNode: 'sm_array', highlightIds: ['gigathread', 'sm_array'] },
+  { id: 'block', focusNode: 'smem_l1', highlightIds: ['sm_array', 'smem_l1'] },
+  { id: 'warp', focusNode: 'warp_sched', highlightIds: ['warp_sched', 'tensor_core', 'cuda_core'] },
+  { id: 'thread', focusNode: 'reg_file', highlightIds: ['reg_file', 'cuda_core'] },
+];
+
+export const OVERVIEW_TRACE_STEPS = [
+  { step: 0, id: 'free', focusNode: null, highlightIds: [], flow: null },
+  { step: 1, id: 'dispatch', focusNode: 'host_cpu', highlightIds: ['host_cpu', 'gigathread', 'sm_array'], flow: 'dispatch' },
+  { step: 2, id: 'load', focusNode: 'hbm', highlightIds: ['hbm', 'l2_cache', 'smem_l1'], flow: 'load' },
+  { step: 3, id: 'compute', focusNode: 'tensor_core', highlightIds: ['smem_l1', 'warp_sched', 'reg_file', 'tensor_core'], flow: 'compute' },
+  { step: 4, id: 'store', focusNode: 'l2_cache', highlightIds: ['reg_file', 'cuda_core', 'l2_cache', 'hbm'], flow: 'store' },
+];
+
+export const DIE_PHILOSOPHY = {
+  cpu: { controlPct: 30, cachePct: 45, computePct: 25 },
+  gpu: { controlPct: 8, cachePct: 14, computePct: 78 },
+};
+
+export function deriveGpuOverview({ activeNode = 'sm_array', traceStep = 0, activeMapId = null } = {}) {
+  const safeStep = Number.isInteger(traceStep) && traceStep >= 0 && traceStep < OVERVIEW_TRACE_STEPS.length ? traceStep : 0;
+  const trace = OVERVIEW_TRACE_STEPS[safeStep];
+  const mapEntry = SW_HW_MAPPING.find((m) => m.id === activeMapId) || null;
+
+  const resolvedNodeId = trace.step > 0
+    ? trace.focusNode
+    : OVERVIEW_NODE_IDS.includes(activeNode)
+      ? activeNode
+      : 'sm_array';
+  const node = OVERVIEW_NODES.find((n) => n.id === resolvedNodeId) || OVERVIEW_NODES[2];
+
+  const highlightedIds = trace.step > 0
+    ? trace.highlightIds
+    : mapEntry
+      ? mapEntry.highlightIds
+      : [node.id];
+
+  return {
+    node,
+    trace,
+    activeMapId: trace.step > 0 ? null : mapEntry?.id || null,
+    highlightedIds,
+    activeFlow: trace.flow,
+    nodes: OVERVIEW_NODES,
+    mappings: SW_HW_MAPPING,
+    traceSteps: OVERVIEW_TRACE_STEPS,
+    philosophy: DIE_PHILOSOPHY,
+  };
+}
+
 export const GPU_SPECS = {
   a100: {
     id: 'a100',
@@ -125,7 +193,7 @@ export const MEMORY_TIERS = [
 export const LAYER_KERNELS = [
   { id: 'norm1', label: 'RMSNorm', shortLabel: 'N1', kind: 'elementwise', baseGpuUs: { 1: 3.5, 8: 4.5, 64: 9.0 }, piece: 1 },
   { id: 'qkv', label: 'QKV GEMM', shortLabel: 'QKV', kind: 'gemm', baseGpuUs: { 1: 8.5, 8: 11.0, 64: 28.0 }, piece: 1 },
-  { id: 'rope', label: 'RoPE + KV Write', shortLabel: 'RoPE', kind: 'elementwise', baseGpuUs: { 1: 3.2, 8: 4.2, 64: 8.5 }, piece: 1 },
+  { id: 'rope', label: 'RoPE + KV Write', shortLabel: 'RoP', kind: 'elementwise', baseGpuUs: { 1: 3.2, 8: 4.2, 64: 8.5 }, piece: 1 },
   { id: 'attn', label: 'PagedAttn', shortLabel: 'Attn', kind: 'attention', baseGpuUs: { 1: 9.0, 8: 16.0, 64: 44.0 }, piece: 0, dynamic: true },
   { id: 'oproj', label: 'O Proj GEMM', shortLabel: 'OPrj', kind: 'gemm', baseGpuUs: { 1: 6.5, 8: 8.5, 64: 21.0 }, piece: 2 },
   { id: 'norm2', label: 'RMSNorm', shortLabel: 'N2', kind: 'elementwise', baseGpuUs: { 1: 3.5, 8: 4.5, 64: 9.0 }, piece: 2 },
@@ -135,7 +203,8 @@ export const LAYER_KERNELS = [
 
 export const CPU_EAGER_LAUNCH_US = 13.0;
 export const GRAPH_REPLAY_LAUNCH_US = 11.0;
-export const PIECE_REPLAY_LAUNCH_US = 8.5;
+export const PIECE_REPLAY_LAUNCH_US = 11.0;
+export const DYNAMIC_ATTN_EAGER_US = 16.0;
 
 export function normalizeGpuRuntimeConfig(input = {}) {
   const regsPerThread = REG_OPTIONS.includes(Number(input.regsPerThread)) ? Number(input.regsPerThread) : 64;
@@ -201,25 +270,111 @@ export function deriveSmOccupancy({ regsPerThread = 64, smemKB = 48, blockSize =
 
   const registerSpill = regsPerThread >= 255;
 
-  // Build an 8-cycle timeline for 1 Warp Scheduler showing how resident warps hide a 4-cycle HBM load stall
-  const residentSlots = Math.max(1, Math.min(5, Math.floor(activeWarps / schedulersPerSm)));
-  const cycles = Array.from({ length: 8 }, (_, c) => {
-    if (c === 0) return { cycle: c + 1, warp: 'W0', state: 'issue', label: 'W0 LDG' };
-    if (c === 5) return { cycle: c + 1, warp: 'W0', state: 'compute', label: 'W0 FMA' };
-    if (c >= 1 && c <= 4) {
-      if (c <= residentSlots - 1) {
-        return { cycle: c + 1, warp: `W${c}`, state: 'hide', label: `W${c} FMA` };
+  // Build a 10-cycle discrete-event Warp Scheduler simulation for 1 Scheduler (up to 5 visible warp slots W0..W4)
+  // Each resident warp runs a repeating instruction stream: LDG (triggers 4-cycle HBM Long Scoreboard wait) -> compute ops.
+  // Staggered initial program counters model warps in steady-state execution so ready warps hide HBM waits at 0-cycle switch cost.
+  const totalCycles = 10;
+  const visibleSlots = 5;
+  const residentSlots = Math.max(1, Math.min(visibleSlots, Math.floor(activeWarps / schedulersPerSm)));
+  const hbmWaitCycles = registerSpill ? 5 : 4;
+
+  // Per-warp memory-bound instruction stream: 1 LDG -> 1 FMA (or 2-pass divergent BR-A + BR-B)
+  const program = divergent
+    ? ['LDG', 'BR-A', 'BR-B']
+    : ['LDG', 'FMA'];
+
+  // W0 starts at PC=0 (LDG); W1..W4 start at PC=1 (already have loaded operand ready to compute, then loop to LDG)
+  const warps = Array.from({ length: visibleSlots }, (_, idx) => ({
+    id: `W${idx}`,
+    allocated: idx < residentSlots,
+    pc: idx === 0 ? 0 : 1,
+    waitLeft: 0,
+    lastIssuedAt: -1,
+  }));
+
+  let rrCursor = 0;
+  const cycles = [];
+
+  for (let c = 1; c <= totalCycles; c += 1) {
+    // Decrement remaining HBM wait timers at the start of the cycle
+    for (const w of warps) {
+      if (w.allocated && w.waitLeft > 0) {
+        w.waitLeft -= 1;
       }
-      return { cycle: c + 1, warp: null, state: 'stall', label: 'Stall' };
     }
-    // cycles 6..7
-    const idx = (c - 5) % residentSlots;
-    return { cycle: c + 1, warp: `W${idx}`, state: 'compute', label: `W${idx} FMA` };
-  });
+
+    // Round-robin pick the next READY allocated warp (preferring W0 on cycle 1 to trigger the first HBM load cleanly)
+    let chosen = null;
+    if (c === 1) {
+      chosen = warps[0];
+    } else {
+      for (let offset = 0; offset < residentSlots; offset += 1) {
+        const idx = (rrCursor + offset) % residentSlots;
+        if (warps[idx].waitLeft === 0) {
+          chosen = warps[idx];
+          rrCursor = (idx + 1) % residentSlots;
+          break;
+        }
+      }
+    }
+
+    const waitingWarps = warps.filter((w) => w.allocated && w.waitLeft > 0).map((w) => w.id);
+    let cycleState = 'stall';
+    let op = 'STALL';
+    let label = 'Stall';
+    let pass = 'idle';
+    let issuedWarp = null;
+
+    const warpStates = warps.map((w) => {
+      if (!w.allocated) return { id: w.id, allocated: false, state: 'unalloc', label: '—' };
+      if (chosen && w.id === chosen.id) {
+        const instr = program[w.pc % program.length];
+        return {
+          id: w.id,
+          allocated: true,
+          state: instr === 'LDG' ? 'ldg' : 'exec',
+          label: instr,
+        };
+      }
+      if (w.waitLeft > 0) return { id: w.id, allocated: true, state: 'wait', label: 'WAIT' };
+      return { id: w.id, allocated: true, state: 'ready', label: 'RDY' };
+    });
+
+    if (chosen) {
+      const instr = program[chosen.pc % program.length];
+      issuedWarp = chosen.id;
+      op = instr;
+      label = `${chosen.id} ${instr}`;
+      chosen.pc += 1;
+      chosen.lastIssuedAt = c;
+      if (c === 1) rrCursor = 1 % residentSlots;
+
+      if (instr === 'LDG') {
+        chosen.waitLeft = hbmWaitCycles + 1; // +1 because start of next cycle decrements by 1 -> full hbmWaitCycles waiting
+        cycleState = 'issue';
+        pass = 'full';
+      } else {
+        cycleState = waitingWarps.length > 0 ? 'hide' : 'compute';
+        pass = instr === 'BR-A' ? 'passA' : instr === 'BR-B' ? 'passB' : 'full';
+      }
+    }
+
+    cycles.push({
+      cycle: c,
+      warp: issuedWarp,
+      state: cycleState,
+      op,
+      label,
+      pass,
+      waitingWarps,
+      switchedFrom: cycleState === 'hide' ? waitingWarps[0] : null,
+      warpStates,
+    });
+  }
 
   const stallCycles = cycles.filter((x) => x.state === 'stall').length;
   const simtEfficiencyPct = divergent ? 50 : 100;
-  const effectiveThroughputPct = Math.round(((8 - stallCycles) / 8) * simtEfficiencyPct);
+  const effectiveThroughputPct = Math.round(((totalCycles - stallCycles) / totalCycles) * simtEfficiencyPct);
 
   return {
     regsPerThread,
@@ -232,6 +387,8 @@ export function deriveSmOccupancy({ regsPerThread = 64, smemKB = 48, blockSize =
     maxWarpsPerSm,
     occupancyPct,
     warpsPerScheduler,
+    residentSlots,
+    hbmWaitCycles,
     blocksByReg,
     blocksBySmem,
     blocksByWarpCap,
@@ -315,7 +472,7 @@ function simulateLaunchMode(mode, batchSize) {
     LAYER_KERNELS.forEach((k, idx) => {
       if (k.dynamic) {
         const cpuStart = cpuCursor;
-        const cpuEnd = cpuStart + CPU_EAGER_LAUNCH_US;
+        const cpuEnd = cpuStart + DYNAMIC_ATTN_EAGER_US;
         cpuOps.push({ id: `cpu_${k.id}`, kernelId: k.id, label: `Eager ${k.label}`, shortLabel: 'Attn', start: cpuStart, end: cpuEnd, kind: 'launch', stepIndex: idx + 1 });
         cpuCursor = cpuEnd;
         const gpuStart = Math.max(gpuCursor, cpuEnd);

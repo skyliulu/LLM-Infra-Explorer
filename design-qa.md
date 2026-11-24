@@ -1,5 +1,21 @@
 # 全章节交互模块设计与正确性 QA
 
+### 2026-11-24 — `GPU & CUDA Graph`（`#gpucudagraph`）新增首屏整体架构总览（先整卡后 SM，专业精炼排布）
+
+- **问题根因与教学重构**：
+  - 原 `#gpucudagraph` 开篇直接进入 `SM 占用率 / Warp 延迟隐藏 / Register Spill`，缺少自顶向下的整卡架构框架。
+  - 在章节首位新增 **§1 `GPU 整体架构：整卡组织、SM 结构与执行映射`**（`GpuOverviewSection.jsx` + `GpuOverviewSvg.jsx`，锚点 `gpucudagraph-overview`）：
+    1. **CPU vs GPU 硅片面积分配对照**：以紧凑双卡比例条直觉呈现 CPU（延迟优先：控制逻辑 30% + 大容量缓存 45% + ALU 25%）与 GPU（吞吐优先：百余 SM 并行计算阵列 78% + 轻量控制与片上缓存），清晰交代两类架构的负载差异。
+    2. **整卡芯片 + 单个 SM 同步放大交互架构图（双语 SVG + `light-dark()` CSS 降级）**：左侧呈现 Host CPU → PCIe/C2C → GigaThread Engine → `132× SM` 阵列 → Shared L2 → HBM + NVLink；右侧通过虚线放大展示单 SM 内 5 个核心硬件单元（Warp Schedulers ×4、Register File、CUDA Cores、Tensor Cores（明确为 WMMA/WGMMA 执行单元）、Shared Memory/L1 + TMA）。
+    3. **紧凑对称两栏 + 4 层 CUDA 映射**：左栏集成 `架构总览 / ① Dispatch / ② Load / ③ MMA / ④ Store` 执行流切换与架构图；右栏为精炼硬件规格检视卡（硬件职责 + LLM 负载对应 + 下钻跳转）与 H100 4 项锚点指标（132 SMs / 228 KB SMEM / 50 MB L2 / 80 GB·3.35 TB/s HBM3），左右高度齐平无大片空白；底部 4 列紧凑呈现 `Grid / Block / Warp / Thread` 到 GPU 硬件的联动映射，整节一屏完整展示。
+    4. **§2 动态 10 周期 Warp Scheduler 泳道流水线**（`WarpSchedulerSvg.jsx` + `SmOccupancySection.jsx`）：将原静态 8 格升级为带独立 `播放 / 暂停 / 单步 / 重置` 控制的 5 槽位常驻 Warp 池 × 10 周期离散事件模拟图，实时展示 `LDG → WAIT HBM (Long Scoreboard)` 期间的 0 周期就绪 Warp 切换、寄存器/SMEM 受限时的未分配行与红色 `STALL` 管线空泡、以及 50/50 分支发散时 `Pass A / Pass B` 动态 32-Lane SIMT 掩码与逐周期说明。
+    5. **§3 动态访存合并与 Tensor Core 分块数据流**（`MemoryDataflowSvg.jsx` + `MemoryTilingSection.jsx`）：接入独立 4 步 `播放 / 单步 / 重置` 控制并联动右侧 5 级存储金字塔高亮。`访存合并`模式动态展示 32 线程地址经 LSU 合并为 1 条 `128B` 缓存行（100%）vs `Stride=32` 拆分为 32 条各仅 4B 有效的浪费事务（`3.1%` / 32× 读放大）；`分块数据流`模式动态对比 `HBM → SMEM (128× 复用) → Register → Tensor Core`（32 MB）与绕过 SMEM 的朴素实现（4096 MB）。
+    6. **§4 CUDA Graph 因果切分图与 Piecewise 耗时排序修正**（`GpuCudaGraph.jsx` + `model.js`）：在 CPU/GPU 时间线上方新增 8 算子图捕获切分结构图，直观看清为何 Piecewise CUDA Graph 会在 CPU 轨呈现 `P1 (N1/QKV/RoPE 静态入图) → Attn (PagedAttn 变长 KV/块表切出 Eager) → P2 (OProj/N2/Up/Down 静态入图)`；同时修复旧模型中 `PIECE_REPLAY_LAUNCH_US = 8.5 < GRAPH_REPLAY_LAUNCH_US = 11.0` 导致 Piecewise 反向快于 Full Graph 的物理失真（现严格满足 `Full 65.7 µs < Piecewise 68.5 µs << Eager 113.5 µs` 并写入回归断言）。
+    7. **Skill 审查门禁同步进化**（`.agents/skills/develop-interactive-module/references/{reader-review.md, visual-grammar.md, content-and-math.md}`）：沉淀 5 条可迁移规则——自顶向下心智模型前置检查、动态过程禁止用静态卡片替代、时间线切分必须附因果边界图、禁止纵向拉伸等比 SVG 制造留白、以及拒绝幼稚化比喻与怪异元交互按钮文案。
+- **验证证据与迭代修复**：
+  - `node scripts/check-gpu-cuda-graph.mjs`（367 组双语 key 完整一致，新增 `Full < Piecewise < Eager` 与 10 周期多 Warp 断言）、`scripts/check-navigation.mjs`、`npm run check:workbench`、`scripts/check-theme.mjs` 与 `npm run build` 全部通过。
+  - Headless Chrome 实测 **Desktop `1360×900` Light ZH / Dark EN** 及 **Mobile `390×844` Light ZH**：覆盖 §1 CPU/GPU 面积条、§2 健康/255 溢出/分支发散动态调度、§3 Stride=32 读放大与 Tiling 数据流、§4 Piecewise `P1 → Attn → P2` 切分与耗时排序，确认 `data-theme` 真实切换、英文 `enCjk = 0`、移动端 `overflowX = 0`、`exceptions = 0`。
+
 ### 2026-11-24 — 拆分独立 `Serving Scheduler` 章节（22 → 23 章）+ 移动端主题切换与响应式全面修复
 
 - **在线调度独立成章（`LLM Inference` 瘦身 + `Serving Systems` 新增 `#scheduler`）**：

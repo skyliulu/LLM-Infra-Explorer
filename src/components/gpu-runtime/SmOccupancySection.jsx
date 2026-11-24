@@ -1,13 +1,86 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { BLOCK_SIZE_OPTIONS, REG_OPTIONS, SMEM_OPTIONS } from './model';
+import WarpSchedulerSvg from './WarpSchedulerSvg';
 
 export default function SmOccupancySection({ config, sm, update, t }) {
+  const maxCycle = sm.cycles.length;
+  const [currentCycle, setCurrentCycle] = useState(4);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const clampedCycle = Math.max(1, Math.min(maxCycle, currentCycle));
+  const activeCycle = sm.cycles[clampedCycle - 1];
+  const isDone = clampedCycle >= maxCycle;
+
+  useEffect(() => {
+    if (!isPlaying || isDone) return undefined;
+    const timer = setTimeout(() => {
+      setCurrentCycle((c) => {
+        if (c >= maxCycle) {
+          setIsPlaying(false);
+          return maxCycle;
+        }
+        return c + 1;
+      });
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [isPlaying, clampedCycle, isDone, maxCycle]);
+
+  useEffect(() => {
+    if (isPlaying && isDone) setIsPlaying(false);
+  }, [isPlaying, isDone]);
+
+  const handleReset = () => {
+    setIsPlaying(false);
+    setCurrentCycle(1);
+  };
+  const handleTogglePlay = () => {
+    if (isDone) setCurrentCycle(1);
+    setIsPlaying((p) => !p);
+  };
+  const handleStep = () => {
+    setIsPlaying(false);
+    setCurrentCycle((c) => Math.min(maxCycle, c + 1));
+  };
+  const handleSelectCycle = (c) => {
+    setIsPlaying(false);
+    setCurrentCycle(c);
+  };
+
   const alertClass = sm.registerSpill || sm.divergent || sm.stallCycles >= 2 ? 'warn' : '';
   const calloutBody = sm.registerSpill
     ? t('smSpillWarn')
     : sm.divergent
       ? t('smDivWarn')
       : t('smHealthy');
+
+  const cycleNarration = (() => {
+    if (activeCycle.state === 'stall') {
+      return `${t('smNarrStallPrefix')} (${activeCycle.waitingWarps.join(', ')}) ${t('smNarrStallSuffix')}`;
+    }
+    if (activeCycle.state === 'issue') {
+      return `${activeCycle.warp} ${t('smNarrIssuePrefix')} ${sm.hbmWaitCycles} ${t('smNarrCycles')}`;
+    }
+    if (activeCycle.pass === 'passA') {
+      return `${activeCycle.warp} ${t('smNarrPassA')}`;
+    }
+    if (activeCycle.pass === 'passB') {
+      return `${activeCycle.warp} ${t('smNarrPassB')}`;
+    }
+    if (activeCycle.switchedFrom) {
+      return `${activeCycle.switchedFrom} ${t('smNarrHideMid')} ${activeCycle.warp} ${t('smNarrHideEnd')}`;
+    }
+    return `${activeCycle.warp} ${t('smNarrCompute')}`;
+  })();
+
+  const simtMaskMode = activeCycle.pass; // 'full' | 'passA' | 'passB' | 'idle'
+  const simtStatusLabel = simtMaskMode === 'idle'
+    ? t('smSimtIdle')
+    : simtMaskMode === 'passA'
+      ? 'Pass A · Lanes 0–15 Active / 16–31 Masked'
+      : simtMaskMode === 'passB'
+        ? 'Pass B · Lanes 0–15 Masked / 16–31 Active'
+        : '32/32 Lanes Active';
 
   return (
     <section className="gr-section" data-testid="gpu-sm-section">
@@ -114,30 +187,62 @@ export default function SmOccupancySection({ config, sm, update, t }) {
             </div>
           </div>
 
-          <div>
-            <div className="gr-code-title">{t('smTimelineTitle')}</div>
-            <div className="gr-cycle-strip">
-              {sm.cycles.map((c) => (
-                <div key={c.cycle} className={`gr-cycle-cell ${c.state}`}>
-                  <small>C{c.cycle}</small>
-                  <span>{c.label}</span>
-                </div>
-              ))}
+          {/* Dynamic Multi-Warp Scheduler Pipeline Toolbar */}
+          <div className="gr-ws-toolbar">
+            <div className="gr-ws-title-group">
+              <span className="gr-code-title" style={{ marginBottom: 0 }}>{t('smTimelineTitle')}</span>
+              <span className="gr-ws-cycle-pill" data-testid="gpu-ws-cycle-pill">
+                Cycle {clampedCycle} / {maxCycle}
+              </span>
+            </div>
+            <div className="chapter-playback gr-playback">
+              <button type="button" data-testid="gpu-ws-reset" onClick={handleReset} aria-label={t('reset')} title={t('reset')}>
+                <RotateCcw size={15} />
+              </button>
+              <button type="button" data-testid="gpu-ws-play" onClick={handleTogglePlay} aria-label={isPlaying && !isDone ? t('pause') : t('play')} title={isPlaying && !isDone ? t('pause') : t('play')}>
+                {isPlaying && !isDone ? <Pause size={15} /> : <Play size={15} />}
+              </button>
+              <button type="button" data-testid="gpu-ws-step" onClick={handleStep} disabled={isDone} aria-label={t('next')} title={t('next')}>
+                <SkipForward size={15} />
+              </button>
             </div>
           </div>
 
+          {/* Animated Multi-Warp Swimlane + Execution Unit Pipeline SVG */}
+          <div className="gr-svg-wrap gr-ws-canvas">
+            <WarpSchedulerSvg
+              sm={sm}
+              currentCycle={clampedCycle}
+              onSelectCycle={handleSelectCycle}
+              t={t}
+            />
+          </div>
+
+          {/* Live Cycle State Narration */}
+          <div className={`gr-ws-narr ${activeCycle.state === 'stall' ? 'stall' : ''}`} data-testid="gpu-ws-narr">
+            <strong>C{clampedCycle}</strong>
+            <span>{cycleNarration}</span>
+          </div>
+
+          {/* Synchronized 32-Lane SIMT Execution Mask */}
           <div>
             <div className="gr-code-title">
-              SIMT Warp Mask (32 Lanes: {config.divergent ? 'Pass A 16/32 → Pass B 16/32' : '32/32 Active'})
+              SIMT Warp Mask (32 Lanes · {simtStatusLabel})
             </div>
             <div className="gr-simt-bar" aria-hidden="true">
-              {Array.from({ length: 16 }, (_, idx) => (
-                <div key={idx} className={`gr-lane-bit ${config.divergent && idx >= 8 ? 'masked' : ''}`} />
-              ))}
+              {Array.from({ length: 16 }, (_, idx) => {
+                const isMasked = simtMaskMode === 'idle'
+                  || (simtMaskMode === 'passA' && idx >= 8)
+                  || (simtMaskMode === 'passB' && idx < 8);
+                return (
+                  <div
+                    key={idx}
+                    className={`gr-lane-bit ${isMasked ? 'masked' : ''} ${simtMaskMode === 'idle' ? 'stall' : ''}`}
+                  />
+                );
+              })}
             </div>
           </div>
-
-          <p className="gr-lead">{t('smTimelineNote')}</p>
         </div>
 
         <aside className="gr-side">
@@ -169,10 +274,10 @@ export default function SmOccupancySection({ config, sm, update, t }) {
           <div>
             <div className="gr-code-title">{t('smCodeTitle')}</div>
             <pre className="gr-code">
-              <div className="on">int tid = blockIdx.x * blockDim.x + threadIdx.x;</div>
+              <div className={activeCycle.state === 'issue' ? 'on' : ''}>int tid = blockIdx.x * blockDim.x + threadIdx.x; // LDG</div>
               <div>__shared__ half smem_tile[BM][BK];  // {sm.smemKB} KB/block</div>
-              <div className={config.divergent ? 'on' : ''}>if (mask[tid]) fast_path(); else slow_path(); // SIMT</div>
-              <div>__syncthreads();  // intra-block barrier only</div>
+              <div className={activeCycle.pass === 'passA' || activeCycle.pass === 'passB' ? 'on' : ''}>if (mask[tid]) fast_path(); else slow_path(); // SIMT</div>
+              <div className={activeCycle.state === 'hide' || activeCycle.state === 'compute' ? 'on' : ''}>acc = fma(reg_a, reg_b, acc); // 0-cycle warp issue</div>
             </pre>
           </div>
         </aside>

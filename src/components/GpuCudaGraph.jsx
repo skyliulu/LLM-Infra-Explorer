@@ -10,6 +10,7 @@ import {
   GPU_SPECS,
   LAUNCH_BATCHES,
   LAUNCH_MODES,
+  LAYER_KERNELS,
   deriveFusionModel,
   deriveLaunchComparison,
   deriveMemoryDataflow,
@@ -18,6 +19,7 @@ import {
   normalizeGpuRuntimeConfig,
 } from './gpu-runtime/model';
 import { i18n } from './gpu-runtime/content';
+import GpuOverviewSection from './gpu-runtime/GpuOverviewSection';
 import SmOccupancySection from './gpu-runtime/SmOccupancySection';
 import MemoryTilingSection from './gpu-runtime/MemoryTilingSection';
 import ArchEvolutionSection from './gpu-runtime/ArchEvolutionSection';
@@ -121,7 +123,10 @@ export default function GpuCudaGraph() {
       </header>
 
       <div className="chapter-layout chapter-body">
-        {/* §1 SM Anatomy, Warp Latency Hiding & Occupancy */}
+        {/* §0 Whole-GPU Architecture Blueprint: Chip Die, Inside an SM & CUDA Mapping */}
+        <GpuOverviewSection t={t} />
+
+        {/* §1 SM Concurrency, Warp Latency Hiding & Occupancy */}
         <SmOccupancySection config={config} sm={sm} update={update} t={t} />
 
         {/* §2 Memory Hierarchy, Coalescing & Tensor Core Tiling */}
@@ -175,6 +180,109 @@ export default function GpuCudaGraph() {
                   <small>{t('metricHostCalls')}</small>
                   <strong>{launch.active.hostCalls}</strong>
                 </div>
+              </div>
+
+              {/* Causal Layer Capture Partition: makes WHY P1 / Eager Attn / P2 exist visible */}
+              <div className="gr-part-wrap" data-testid="gpu-graph-partition">
+                <div className="gr-part-hdr">
+                  <span>{t('partTitle')}</span>
+                  <small>{t(`partSub_${config.launchMode}`)}</small>
+                </div>
+
+                {config.launchMode === 'eager' && (
+                  <div className="gr-part-eager">
+                    {LAYER_KERNELS.map((k, idx) => (
+                      <button
+                        key={k.id}
+                        type="button"
+                        onClick={() => { setIsPlaying(false); setStep(idx + 1); }}
+                        className={`gr-part-chip ${k.dynamic ? 'dyn' : ''} ${launch.step === idx + 1 ? 'on' : ''}`}
+                      >
+                        <small>L{idx + 1}</small>
+                        <b>{k.shortLabel}</b>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {config.launchMode === 'full_graph' && (
+                  <div className="gr-part-box graph">
+                    <div className="gr-part-box-head">
+                      <strong>Graph Replay (1 Host Call)</strong>
+                      <span>{t('partFullTag')}</span>
+                    </div>
+                    <div className="gr-part-row">
+                      {LAYER_KERNELS.map((k, idx) => (
+                        <button
+                          key={k.id}
+                          type="button"
+                          onClick={() => { setIsPlaying(false); setStep(idx + 1); }}
+                          className={`gr-part-chip ${k.dynamic ? 'dyn-warn' : ''} ${launch.step === idx + 1 ? 'on' : ''}`}
+                        >
+                          <b>{k.shortLabel}</b>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {config.launchMode === 'piecewise_graph' && (
+                  <div className="gr-part-pw">
+                    <div className="gr-part-box graph">
+                      <div className="gr-part-box-head">
+                        <strong>P1 · Graph Replay #1</strong>
+                        <span>{t('partStaticTag')}</span>
+                      </div>
+                      <div className="gr-part-row">
+                        {LAYER_KERNELS.slice(0, 3).map((k, idx) => (
+                          <button
+                            key={k.id}
+                            type="button"
+                            onClick={() => { setIsPlaying(false); setStep(idx + 1); }}
+                            className={`gr-part-chip ${launch.step === idx + 1 ? 'on' : ''}`}
+                          >
+                            <b>{k.shortLabel}</b>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="gr-part-box eager-cut">
+                      <div className="gr-part-box-head">
+                        <strong>Attn · Eager</strong>
+                        <span>{t('partDynamicTag')}</span>
+                      </div>
+                      <div className="gr-part-row">
+                        <button
+                          type="button"
+                          onClick={() => { setIsPlaying(false); setStep(4); }}
+                          className={`gr-part-chip dyn ${launch.step === 4 ? 'on' : ''}`}
+                        >
+                          <b>PagedAttn</b>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="gr-part-box graph">
+                      <div className="gr-part-box-head">
+                        <strong>P2 · Graph Replay #2</strong>
+                        <span>{t('partStaticTag')}</span>
+                      </div>
+                      <div className="gr-part-row">
+                        {LAYER_KERNELS.slice(4).map((k, idx) => (
+                          <button
+                            key={k.id}
+                            type="button"
+                            onClick={() => { setIsPlaying(false); setStep(idx + 5); }}
+                            className={`gr-part-chip ${launch.step === idx + 5 ? 'on' : ''}`}
+                          >
+                            <b>{k.shortLabel}</b>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="gr-tracks">
