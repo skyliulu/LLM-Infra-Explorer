@@ -165,8 +165,8 @@ const descriptions = [
   {
     id: 'gpucudagraph',
     description: {
-      en: 'Start with a whole-chip & single-SM architecture blueprint, then explore warp occupancy, coalescing & Tensor Core tiling, CUDA Graphs, operator fusion, A100–B200 rooflines, and Volta–Rubin evolution.',
-      zh: '先建立整张 GPU 芯片与单个 SM 的整体架构框架，再贯通 Warp 占用率、访存合并与 Tensor Core 分块、CUDA Graph 发射墙、算子融合、Roofline 诊断与 Volta–Rubin 演进。',
+      en: 'Start with a whole-chip & single-SM architecture blueprint, then explore warp occupancy, coalescing & Tensor Core tiling, CUDA Graphs, operator fusion, A100–B200 Dense rooflines, and Volta–Rubin evolution.',
+      zh: '先建立整张 GPU 芯片与单个 SM 的整体架构框架，再贯通 Warp 占用率、访存合并与 Tensor Core 分块、CUDA Graph 发射墙、算子融合、A100–B200 Roofline 模型与 Volta–Rubin 演进。',
     },
     iconClass: 'text-amber-300',
   },

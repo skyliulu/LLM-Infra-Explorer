@@ -3,13 +3,6 @@ import { ArrowDownRight } from 'lucide-react';
 import { deriveGpuOverview } from './model';
 import GpuOverviewSvg from './GpuOverviewSvg';
 
-const H100_ANCHORS = [
-  { k: 'SMs', v: '132' },
-  { k: 'SMEM / SM', v: '228 KB' },
-  { k: 'L2 Cache', v: '50 MB' },
-  { k: 'HBM3', v: '80 GB · 3.35 TB/s' },
-];
-
 export default function GpuOverviewSection({ t }) {
   const [activeNode, setActiveNode] = useState('sm_array');
   const [traceStep, setTraceStep] = useState(0);
@@ -80,7 +73,7 @@ export default function GpuOverviewSection({ t }) {
         </div>
       </div>
 
-      {/* Balanced 2-Column Stage: Left Diagram | Right Spec Inspector + H100 Anchor Specs */}
+      {/* Balanced 2-Column Stage: Left Diagram | Right Reactive Spec Inspector */}
       <div className="gr-ov-main">
         <div className="gr-ov-diagram-card">
           <div className="gr-ov-toolbar">
@@ -135,6 +128,30 @@ export default function GpuOverviewSection({ t }) {
               </div>
             </dl>
 
+            {/* Reactive Hardware Path Context (Upstream -> Current -> Downstream) */}
+            <div className="gr-ov-path-box">
+              <small>{t('ovPathLabel')}</small>
+              <div className="gr-ov-path-chain">
+                {node.prev && (
+                  <>
+                    <button type="button" className="gr-ov-path-btn" onClick={() => handleSelectNode(node.prev)}>
+                      {t(`ovShort_${node.prev}`)}
+                    </button>
+                    <span className="gr-ov-path-sep" aria-hidden="true">→</span>
+                  </>
+                )}
+                <span className="gr-ov-path-cur">{t(`ovShort_${node.id}`)}</span>
+                {node.next && (
+                  <>
+                    <span className="gr-ov-path-sep" aria-hidden="true">→</span>
+                    <button type="button" className="gr-ov-path-btn" onClick={() => handleSelectNode(node.next)}>
+                      {t(`ovShort_${node.next}`)}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
             <button
               type="button"
               className="gr-ov-jump"
@@ -144,15 +161,6 @@ export default function GpuOverviewSection({ t }) {
               <span>{t('ovDeepDivePrefix')} · {t(`ovAnchor_${node.anchor}`)}</span>
               <ArrowDownRight size={14} aria-hidden="true" />
             </button>
-          </div>
-
-          <div className="gr-ov-anchor-grid" aria-label="H100 SXM Reference">
-            {H100_ANCHORS.map((item) => (
-              <div key={item.k} className="gr-ov-anchor-cell">
-                <small>{item.k}</small>
-                <strong>{item.v}</strong>
-              </div>
-            ))}
           </div>
         </aside>
       </div>

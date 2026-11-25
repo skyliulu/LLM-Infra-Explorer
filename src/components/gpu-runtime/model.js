@@ -7,21 +7,21 @@ export const SMEM_OPTIONS = [16, 48, 96, 164];
 export const BLOCK_SIZE_OPTIONS = [128, 256, 512];
 export const MEM_VIEWS = ['coalescing', 'tiling'];
 export const ARCH_GENS = ['volta', 'ampere', 'hopper', 'blackwell', 'rubin'];
-export const DIAG_IDS = ['low_tc_high_hbm', 'decode_slow', 'high_occ_slow', 'multi_gpu_slow'];
+export const ROOF_BATCHES = [1, 16, 64, 256, 512];
 
 // §0 Whole-GPU Architecture Blueprint (Macro Chip + Zoomed SM + CUDA SW->HW Mapping + Y=XW Trace)
 export const OVERVIEW_NODES = [
-  { id: 'host_cpu', tier: 'macro', tone: 'amber', anchor: 'gpucudagraph-launch', spec: 'PCIe Gen5 (64 GB/s) / C2C' },
-  { id: 'gigathread', tier: 'macro', tone: 'blue', anchor: 'gpucudagraph-sm', spec: 'Block Dispatcher' },
-  { id: 'sm_array', tier: 'macro', tone: 'indigo', anchor: 'gpucudagraph-sm', spec: 'H100: 132 SMs · B200: 160 SMs' },
-  { id: 'l2_cache', tier: 'macro', tone: 'emerald', anchor: 'gpucudagraph-memory', spec: '50 MB · ~12 TB/s · ~200 cyc' },
-  { id: 'hbm', tier: 'macro', tone: 'amber', anchor: 'gpucudagraph-memory', spec: '80–192 GB · 3.35–8 TB/s · ~400 cyc' },
-  { id: 'nvlink', tier: 'macro', tone: 'blue', anchor: 'gpucudagraph-evolution', spec: '900 GB/s – 3.6 TB/s / GPU' },
-  { id: 'warp_sched', tier: 'sm', tone: 'blue', anchor: 'gpucudagraph-sm', spec: '4 / SM · 64 Warps · 0-cyc switch' },
-  { id: 'reg_file', tier: 'sm', tone: 'emerald', anchor: 'gpucudagraph-sm', spec: '256 KB / SM · ~80+ TB/s · ~1 cyc' },
-  { id: 'cuda_core', tier: 'sm', tone: 'blue', anchor: 'gpucudagraph-fusion', spec: '128 FP32 / SM · Scalar ALU' },
-  { id: 'tensor_core', tier: 'sm', tone: 'indigo', anchor: 'gpucudagraph-memory', spec: '4 / SM · WMMA / WGMMA' },
-  { id: 'smem_l1', tier: 'sm', tone: 'emerald', anchor: 'gpucudagraph-memory', spec: '228 KB / SM · ~33 TB/s · ~25 cyc' },
+  { id: 'host_cpu', tier: 'macro', tone: 'amber', anchor: 'gpucudagraph-launch', spec: 'PCIe Gen5 (64 GB/s) / C2C', prev: null, next: 'gigathread' },
+  { id: 'gigathread', tier: 'macro', tone: 'blue', anchor: 'gpucudagraph-sm', spec: 'Block Dispatcher', prev: 'host_cpu', next: 'sm_array' },
+  { id: 'sm_array', tier: 'macro', tone: 'indigo', anchor: 'gpucudagraph-sm', spec: 'H100: 132 SMs · B200: 160 SMs', prev: 'gigathread', next: 'l2_cache' },
+  { id: 'l2_cache', tier: 'macro', tone: 'emerald', anchor: 'gpucudagraph-memory', spec: '50 MB · ~12 TB/s · ~200 cyc', prev: 'hbm', next: 'smem_l1' },
+  { id: 'hbm', tier: 'macro', tone: 'amber', anchor: 'gpucudagraph-memory', spec: '80–192 GB · 3.35–8 TB/s · ~400 cyc', prev: 'nvlink', next: 'l2_cache' },
+  { id: 'nvlink', tier: 'macro', tone: 'blue', anchor: 'gpucudagraph-evolution', spec: '900 GB/s – 3.6 TB/s / GPU', prev: 'hbm', next: 'l2_cache' },
+  { id: 'warp_sched', tier: 'sm', tone: 'blue', anchor: 'gpucudagraph-sm', spec: '4 / SM · 64 Warps · 0-cyc switch', prev: 'sm_array', next: 'tensor_core' },
+  { id: 'reg_file', tier: 'sm', tone: 'emerald', anchor: 'gpucudagraph-sm', spec: '256 KB / SM · ~80+ TB/s · ~1 cyc', prev: 'smem_l1', next: 'tensor_core' },
+  { id: 'cuda_core', tier: 'sm', tone: 'blue', anchor: 'gpucudagraph-fusion', spec: '128 FP32 / SM · Scalar ALU', prev: 'reg_file', next: 'l2_cache' },
+  { id: 'tensor_core', tier: 'sm', tone: 'indigo', anchor: 'gpucudagraph-memory', spec: '4 / SM · WMMA / WGMMA', prev: 'reg_file', next: 'cuda_core' },
+  { id: 'smem_l1', tier: 'sm', tone: 'emerald', anchor: 'gpucudagraph-memory', spec: '228 KB / SM · ~33 TB/s · ~25 cyc', prev: 'l2_cache', next: 'reg_file' },
 ];
 
 export const OVERVIEW_NODE_IDS = OVERVIEW_NODES.map((n) => n.id);
@@ -77,14 +77,15 @@ export function deriveGpuOverview({ activeNode = 'sm_array', traceStep = 0, acti
   };
 }
 
+// Official NVIDIA SXM Dense (non-sparse, without 2:4 structured sparsity) Tensor Core & HBM datasheet specs
 export const GPU_SPECS = {
   a100: {
     id: 'a100',
-    name: 'A100 SXM',
+    name: 'A100 80GB SXM',
     bf16Tflops: 312,
     fp8Tflops: null,
     fp4Tflops: null,
-    hbmTBps: 2.0,
+    hbmTBps: 2.04, // 2,039 GB/s official A100 80GB SXM4 HBM2e
     smCount: 108,
     sramMB: 20,
     maxSmemPerSmKB: 164,
@@ -92,10 +93,10 @@ export const GPU_SPECS = {
   h100: {
     id: 'h100',
     name: 'H100 SXM',
-    bf16Tflops: 989,
-    fp8Tflops: 1979,
+    bf16Tflops: 989, // Dense (1,979 with 2:4 sparsity)
+    fp8Tflops: 1979, // Dense (3,958 with 2:4 sparsity)
     fp4Tflops: null,
-    hbmTBps: 3.35,
+    hbmTBps: 3.35, // 3,350 GB/s official H100 SXM5 HBM3
     smCount: 132,
     sramMB: 33,
     maxSmemPerSmKB: 228,
@@ -103,10 +104,10 @@ export const GPU_SPECS = {
   b200: {
     id: 'b200',
     name: 'B200 SXM',
-    bf16Tflops: 2250,
-    fp8Tflops: 4500,
-    fp4Tflops: 9000,
-    hbmTBps: 8.0,
+    bf16Tflops: 2250, // DGX B200 Dense (4,500 with 2:4 sparsity)
+    fp8Tflops: 4500, // DGX B200 Dense (9,000 with 2:4 sparsity)
+    fp4Tflops: 9000, // DGX B200 Dense NVFP4 (18,000 with 2:4 sparsity)
+    hbmTBps: 8.0, // 8 TB/s official B200 HBM3e
     smCount: 160,
     sramMB: 40,
     maxSmemPerSmKB: 228,
@@ -219,7 +220,6 @@ export function normalizeGpuRuntimeConfig(input = {}) {
   const fusionMode = FUSION_MODES.includes(input.fusionMode) ? input.fusionMode : 'unfused';
   const gpu = GPU_SPECS[input.gpu] ? input.gpu : 'h100';
   const dtype = ['bf16', 'fp8', 'fp4'].includes(input.dtype) ? input.dtype : 'bf16';
-  const diagId = DIAG_IDS.includes(input.diagId) ? input.diagId : 'low_tc_high_hbm';
   const archGen = ARCH_GENS.includes(input.archGen) ? input.archGen : 'hopper';
   return {
     regsPerThread,
@@ -234,7 +234,6 @@ export function normalizeGpuRuntimeConfig(input = {}) {
     fusionMode,
     gpu,
     dtype,
-    diagId,
     archGen,
   };
 }
@@ -568,8 +567,16 @@ export function deriveFusionModel({ fusionMode = 'unfused', batchSize = 8 } = {}
   };
 }
 
-// §5 Hardware Roofline & Precision (A100 / H100 / B200 × BF16 / FP8 / FP4)
-export function deriveRooflineModel({ gpu = 'h100', dtype = 'bf16', batchSize = 1 } = {}) {
+// Exact theoretical GEMM arithmetic intensity for Y[M,N] = X[M,K] * W[K,N] at element width b_e bytes:
+// I(M,K,N) = (2 * M * K * N) / ((M*K + K*N + M*N) * b_e)
+export function exactGemmAi(m, k, n, bytesPerElem) {
+  const flops = 2 * m * k * n;
+  const bytes = (m * k + k * n + m * n) * bytesPerElem;
+  return flops / bytes;
+}
+
+// §5 Hardware Roofline & Precision (A100 / H100 / B200 Dense SXM × BF16 / FP8 / FP4)
+export function deriveRooflineModel({ gpu = 'h100', dtype = 'bf16', batchSize = 64 } = {}) {
   const spec = GPU_SPECS[gpu] || GPU_SPECS.h100;
   let effectiveDtype = dtype;
   let fallback = false;
@@ -590,12 +597,18 @@ export function deriveRooflineModel({ gpu = 'h100', dtype = 'bf16', batchSize = 
   const ridgeAi = Math.round(peakTflops / hbmTBps);
   const bytesPerElem = effectiveDtype === 'fp4' ? 0.5 : effectiveDtype === 'fp8' ? 1 : 2;
   const b = Math.max(1, Number(batchSize) || 1);
+  const dim = 4096; // Representative Transformer Linear projection K = N = 4096
+
+  // Critical batch size B* where exact I(B, dim, dim) reaches ridgeAi:
+  // 2*B*dim / ((2*B + dim) * bytesPerElem) = ridgeAi  =>  B* = (ridgeAi * bytesPerElem * dim) / (2*dim - 2*ridgeAi*bytesPerElem)
+  const denom = 2 * dim - 2 * ridgeAi * bytesPerElem;
+  const criticalBatch = denom > 0 ? Math.ceil((ridgeAi * bytesPerElem * dim) / denom) : null;
 
   const kernels = [
-    { id: 'rmsnorm', label: 'RMSNorm / RoPE', ai: 0.5, kind: 'elementwise' },
-    { id: 'decode_gemv', label: 'Decode GEMV (B=1)', ai: Number((2 / bytesPerElem).toFixed(1)), kind: 'memory' },
-    { id: 'active_decode', label: `Decode GEMM (B=${b})`, ai: Number(((2 * b) / bytesPerElem).toFixed(1)), kind: 'active' },
-    { id: 'prefill_gemm', label: 'Prefill GEMM (T=1024)', ai: Math.round((2 * 1024) / bytesPerElem), kind: 'compute' },
+    { id: 'rmsnorm', label: 'RMSNorm / RoPE', short: 'RMS', ai: Number((2 / (2 * bytesPerElem)).toFixed(2)), kind: 'elementwise' },
+    { id: 'decode_gemv', label: 'Decode GEMV (B=1)', short: 'B=1', ai: Number(exactGemmAi(1, dim, dim, bytesPerElem).toFixed(1)), kind: 'memory' },
+    { id: 'active_decode', label: `Decode GEMM (B=${b})`, short: `B=${b}`, ai: Number(exactGemmAi(b, dim, dim, bytesPerElem).toFixed(1)), kind: 'active' },
+    { id: 'prefill_gemm', label: 'Prefill GEMM (T=2048)', short: 'T=2K', ai: Math.round(exactGemmAi(2048, dim, dim, bytesPerElem)), kind: 'compute' },
   ].map((k) => {
     const achievedTflops = Math.min(peakTflops, k.ai * hbmTBps);
     const bound = k.ai >= ridgeAi ? 'compute' : 'memory';
@@ -615,6 +628,10 @@ export function deriveRooflineModel({ gpu = 'h100', dtype = 'bf16', batchSize = 
     peakTflops,
     hbmTBps,
     ridgeAi,
+    bytesPerElem,
+    dim,
+    batchSize: b,
+    criticalBatch,
     kernels,
   };
 }

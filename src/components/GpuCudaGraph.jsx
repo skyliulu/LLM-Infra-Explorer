@@ -5,12 +5,12 @@ import { useLanguage } from '../lib/LanguageContext';
 import { useExperimentState } from '../lib/ExperimentContext';
 import { MathFormula } from './linear-attention/MathFormula';
 import {
-  DIAG_IDS,
   FUSION_MODES,
   GPU_SPECS,
   LAUNCH_BATCHES,
   LAUNCH_MODES,
   LAYER_KERNELS,
+  ROOF_BATCHES,
   deriveFusionModel,
   deriveLaunchComparison,
   deriveMemoryDataflow,
@@ -44,7 +44,6 @@ export default function GpuCudaGraph() {
     fusionMode: 'unfused',
     gpu: 'h100',
     dtype: 'bf16',
-    diagId: 'low_tc_high_hbm',
     archGen: 'hopper',
   });
   const config = useMemo(() => normalizeGpuRuntimeConfig(rawConfig), [rawConfig]);
@@ -52,6 +51,7 @@ export default function GpuCudaGraph() {
 
   const [step, setStep] = useState(8);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [roofBatch, setRoofBatch] = useState(64);
 
   const sm = useMemo(
     () => deriveSmOccupancy({
@@ -72,8 +72,8 @@ export default function GpuCudaGraph() {
     [config.fusionMode, config.batchSize]
   );
   const roof = useMemo(
-    () => deriveRooflineModel({ gpu: config.gpu, dtype: config.dtype, batchSize: config.batchSize }),
-    [config.gpu, config.dtype, config.batchSize]
+    () => deriveRooflineModel({ gpu: config.gpu, dtype: config.dtype, batchSize: roofBatch }),
+    [config.gpu, config.dtype, roofBatch]
   );
 
   const done = launch.phase === 'done';
@@ -105,10 +105,10 @@ export default function GpuCudaGraph() {
           { line: 'cudaGraphLaunch(piece_2_oproj_ffn[bucket], stream) # 4 ops', active: launch.step >= 5 },
         ];
 
-  // Log-log Roofline SVG mapping: AI in [0.25 .. 8192], TFLOP/s in [1 .. 10000]
-  const rBox = { left: 44, right: 342, top: 24, bottom: 132 };
+  // Log-log Roofline SVG mapping: AI in [0.25 .. 8192], TFLOP/s in [1 .. 18000]
+  const rBox = { left: 44, right: 362, top: 24, bottom: 132 };
   const xAi = (ai) => rBox.left + ((Math.log2(Math.max(0.25, ai)) - Math.log2(0.25)) / (Math.log2(8192) - Math.log2(0.25))) * (rBox.right - rBox.left);
-  const yTf = (tf) => rBox.bottom - ((Math.log10(Math.max(1, tf)) - Math.log10(1)) / (Math.log10(10000) - Math.log10(1))) * (rBox.bottom - rBox.top);
+  const yTf = (tf) => rBox.bottom - ((Math.log10(Math.max(1, tf)) - Math.log10(1)) / (Math.log10(18000) - Math.log10(1))) * (rBox.bottom - rBox.top);
   const ridgeX = xAi(roof.ridgeAi);
   const peakY = yTf(roof.peakTflops);
   const roofPath = `M${rBox.left},${yTf(0.25 * roof.hbmTBps).toFixed(1)} L${ridgeX.toFixed(1)},${peakY.toFixed(1)} L${rBox.right},${peakY.toFixed(1)}`;
@@ -403,7 +403,7 @@ export default function GpuCudaGraph() {
           </div>
         </section>
 
-        {/* §5 Multi-Gen Roofline & Nsight Bottleneck Diagnosis */}
+        {/* §5 Multi-Gen Hardware Roofline Model (First-Principles Theoretical Ceiling) */}
         <section className="gr-section" data-testid="gpu-roofline-section">
           <h2 data-section-anchor="gpucudagraph-roofline">{t('s3Title')}</h2>
           <p className="gr-lead">{t('s3Lead')}</p>
@@ -423,9 +423,16 @@ export default function GpuCudaGraph() {
                 </button>
               ))}
             </div>
-            <span className="gr-ridge-formula">
-              <MathFormula>{String.raw`I^*=\frac{${roof.peakTflops}\ \mathrm{TF/s}}{${roof.hbmTBps}\ \mathrm{TB/s}}=${roof.ridgeAi}\ \mathrm{FLOP/B}`}</MathFormula>
-            </span>
+            <div className="gr-ctrl-group">
+              <span className="gr-ctrl-label">{t('roofBatchLabel')}:</span>
+              <div className="gr-toggle" role="group" aria-label={t('roofBatchLabel')}>
+                {ROOF_BATCHES.map((b) => (
+                  <button key={b} type="button" data-testid={`gpu-roof-b-${b}`} aria-pressed={roofBatch === b} onClick={() => setRoofBatch(b)}>
+                    B={b}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {roof.fallback && (
@@ -434,9 +441,29 @@ export default function GpuCudaGraph() {
             </div>
           )}
 
+          <div className="gr-roof-formulas">
+            <span className="gr-ridge-formula">
+              <MathFormula>{String.raw`I^*=\frac{${roof.peakTflops}\ \mathrm{TF/s}}{${roof.hbmTBps}\ \mathrm{TB/s}}=${roof.ridgeAi}\ \mathrm{FLOP/B}`}</MathFormula>
+            </span>
+            <span className="gr-roof-eq">
+              <MathFormula>{String.raw`I(M,K,N)=\frac{2MKN}{(MK+KN+MN)\,b_e}\quad(K=N=4096)`}</MathFormula>
+            </span>
+            {roof.criticalBatch && (
+              <span className="gr-roof-crit">
+                {t('roofCritPrefix')} <b>B* ≈ {roof.criticalBatch}</b>
+              </span>
+            )}
+          </div>
+
           <div className="gr-roof-grid">
             <div className="gr-roof-chart">
-              <svg viewBox="0 0 360 166" role="img" aria-label={t('s3Title')}>
+              <svg viewBox="0 0 380 176" role="img" aria-label={t('s3Title')}>
+                {/* Memory-bound vs Compute-bound subtle regions */}
+                <rect className="gr-roof-zone-mem" x={rBox.left} y={rBox.top} width={Math.max(0, ridgeX - rBox.left)} height={rBox.bottom - rBox.top} />
+                <rect className="gr-roof-zone-cmp" x={ridgeX} y={rBox.top} width={Math.max(0, rBox.right - ridgeX)} height={rBox.bottom - rBox.top} />
+                <text className="gr-roof-zone-lbl mem" x={rBox.left + 6} y={rBox.top + 12}>{t('boundMemory')}</text>
+                <text className="gr-roof-zone-lbl cmp" x={rBox.right - 6} y={rBox.bottom - 7} textAnchor="end">{t('boundCompute')}</text>
+
                 {[10, 100, 1000, 9000].map((tf) => (
                   <g key={tf}>
                     <line className="gr-roof-gridline" x1={rBox.left} x2={rBox.right} y1={yTf(tf)} y2={yTf(tf)} />
@@ -444,21 +471,29 @@ export default function GpuCudaGraph() {
                   </g>
                 ))}
                 {[1, 16, 256, 4096].map((ai) => (
-                  <text className="gr-roof-axis" key={ai} x={xAi(ai)} y={146} textAnchor="middle">{ai}</text>
+                  <text className="gr-roof-axis" key={ai} x={xAi(ai)} y={148} textAnchor="middle">{ai}</text>
                 ))}
-                <text className="gr-roof-axis" x={(rBox.left + rBox.right) / 2} y={160} textAnchor="middle">{t('axisX')}</text>
+                <text className="gr-roof-axis" x={(rBox.left + rBox.right) / 2} y={165} textAnchor="middle">{t('axisX')}</text>
                 <line className="gr-roof-ridge" x1={ridgeX} x2={ridgeX} y1={rBox.top} y2={rBox.bottom} />
-                <text className="gr-roof-axis" x={Math.min(300, Math.max(84, ridgeX))} y={14} textAnchor="middle">{t('ridgeLabel')}: {roof.ridgeAi}</text>
+                <text className="gr-roof-ridge-lbl" x={Math.min(312, Math.max(82, ridgeX))} y={15} textAnchor="middle">{t('ridgeLabel')}: {roof.ridgeAi}</text>
                 <path className="gr-roof-line" d={roofPath} />
-                {roof.kernels.map((k) => (
-                  <g key={k.id}>
-                    <circle cx={xAi(k.ai)} cy={yTf(k.achievedTflops)} r={k.kind === 'active' ? 5 : 3.8} fill={k.bound === 'compute' ? '#10b981' : '#f43f5e'} stroke="#0f172a" strokeWidth="1.2" />
-                  </g>
-                ))}
+                {roof.kernels.map((k, idx) => {
+                  const cx = xAi(k.ai);
+                  const cy = yTf(k.achievedTflops);
+                  const dy = idx === 1 ? 13 : idx === 2 ? (k.bound === 'compute' ? 14 : -9) : idx === 3 ? 14 : -8;
+                  return (
+                    <g key={k.id}>
+                      <circle cx={cx} cy={cy} r={k.kind === 'active' ? 5.2 : 3.8} fill={k.bound === 'compute' ? '#10b981' : '#f43f5e'} stroke="#0f172a" strokeWidth="1.2" />
+                      <text className="gr-roof-dot-lbl" x={Math.min(348, Math.max(52, cx))} y={Math.min(126, Math.max(32, cy + dy))} textAnchor="middle">
+                        {k.short}
+                      </text>
+                    </g>
+                  );
+                })}
               </svg>
             </div>
 
-            <div>
+            <div className="gr-roof-right">
               <table className="gr-roof-table">
                 <thead>
                   <tr>
@@ -479,33 +514,7 @@ export default function GpuCudaGraph() {
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
-
-          <div className="gr-diag-box" data-testid="gpu-diag-box">
-            <h3 className="gr-diag-title">{t('diagTitle')}</h3>
-            <div className="gr-toggle" role="group" aria-label={t('diagTitle')}>
-              {DIAG_IDS.map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  data-testid={`gpu-diag-${id}`}
-                  aria-pressed={config.diagId === id}
-                  onClick={() => update({ diagId: id })}
-                >
-                  {t(`diag_${id}`)}
-                </button>
-              ))}
-            </div>
-            <div className="gr-diag-detail">
-              <div className="gr-diag-card">
-                <small>{t(`diagStall_${config.diagId}`)}</small>
-                <p>{t(`diagRoot_${config.diagId}`)}</p>
-              </div>
-              <div className="gr-diag-card">
-                <small>Nsight Compute / Systems</small>
-                <p>{t(`diagFix_${config.diagId}`)}</p>
-              </div>
+              <p className="gr-roof-scope">{t('roofScopeNote')}</p>
             </div>
           </div>
         </section>

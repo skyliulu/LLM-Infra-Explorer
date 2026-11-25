@@ -10,6 +10,7 @@ import {
   deriveMemoryDataflow,
   deriveRooflineModel,
   deriveSmOccupancy,
+  exactGemmAi,
   normalizeGpuRuntimeConfig,
 } from '../src/components/gpu-runtime/model.js';
 import { i18n } from '../src/components/gpu-runtime/content.js';
@@ -48,7 +49,7 @@ assert.ok(ovMapWarp.highlightedIds.includes('warp_sched'));
 assert.ok(ovMapWarp.highlightedIds.includes('tensor_core'));
 
 for (const n of OVERVIEW_NODES) {
-  for (const prefix of ['ovNodeTitle_', 'ovNodeWhat_', 'ovNodeLlm_']) {
+  for (const prefix of ['ovNodeTitle_', 'ovNodeWhat_', 'ovNodeLlm_', 'ovShort_']) {
     assert.ok(i18n.zh[`${prefix}${n.id}`], `Missing zh ${prefix}${n.id}`);
     assert.ok(i18n.en[`${prefix}${n.id}`], `Missing en ${prefix}${n.id}`);
   }
@@ -109,16 +110,22 @@ assert.equal(unfused.kernelCount, 4);
 assert.equal(fused.kernelCount, 2);
 assert.ok(fused.savedPct >= 30);
 
-// §5 Multi-Gen Roofline (A100 / H100 / B200 × BF16 / FP8 / FP4)
+// §5 Multi-Gen Roofline (A100 / H100 / B200 Dense SXM × BF16 / FP8 / FP4) + Exact GEMM AI oracle
+const aiPrefill1024Bf16 = exactGemmAi(1024, 4096, 4096, 2);
+assert.ok(Math.abs(aiPrefill1024Bf16 - (2 * 1024 * 4096 * 4096) / ((1024 * 4096 + 4096 * 4096 + 1024 * 4096) * 2)) < 1e-6);
+assert.ok(aiPrefill1024Bf16 < 700 && aiPrefill1024Bf16 > 680, 'Exact GEMM AI at T=1024, K=N=4096, BF16 must be ~682.7 (not naive 1024)');
+
 const a100Fp8 = deriveRooflineModel({ gpu: 'a100', dtype: 'fp8', batchSize: 1 });
 assert.equal(a100Fp8.fallback, true);
 assert.equal(a100Fp8.dtype, 'bf16');
+assert.equal(a100Fp8.ridgeAi, Math.round(312 / 2.04));
 
-const h100Fp8 = deriveRooflineModel({ gpu: 'h100', dtype: 'fp8', batchSize: 1 });
-const b200Fp4 = deriveRooflineModel({ gpu: 'b200', dtype: 'fp4', batchSize: 1 });
+const h100Fp8 = deriveRooflineModel({ gpu: 'h100', dtype: 'fp8', batchSize: 512 });
+const b200Fp4 = deriveRooflineModel({ gpu: 'b200', dtype: 'fp4', batchSize: 64 });
 assert.equal(h100Fp8.fallback, false);
 assert.equal(b200Fp4.fallback, false);
 assert.ok(b200Fp4.ridgeAi > h100Fp8.ridgeAi);
+assert.ok(h100Fp8.criticalBatch > 256 && h100Fp8.criticalBatch < 400);
 
 // §6 Generations (Volta -> Rubin) + 4 numbered improvements each
 assert.equal(GPU_GENERATIONS.length, 5);

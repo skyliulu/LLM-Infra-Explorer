@@ -20,7 +20,7 @@ const examples={
  radixcache:{'RadixCache.story':{prefetch:'timeout',write:'write_back',fault:'host_pressure'},'RadixCache.hybrid':{mode:'extra',sched:'lpm'},'RadixCache.layoutPool':'mla','RadixCache.layout':{layout:'page_first_direct',operation:'page',layer:2,backend:'direct',storage:'direct_file',registered:true,copyTime:4,computeTime:6}},
  mooncake:{'Mooncake.mode':'instance','Mooncake.poolPages':48,'Mooncake.cost':{medium:'ssd',hitTokens:4096,prefillRate:12000}},
  deepinfer:lessonSettings,
- gpucudagraph:{'GpuCudaGraph.config':{regsPerThread:128,smemKB:96,blockSize:256,divergent:true,memView:'tiling',stride:32,tiled:true,launchMode:'piecewise_graph',batchSize:8,fusionMode:'fused',gpu:'b200',dtype:'fp4',diagId:'decode_slow',archGen:'blackwell'}},
+ gpucudagraph:{'GpuCudaGraph.config':{regsPerThread:128,smemKB:96,blockSize:256,divergent:true,memView:'tiling',stride:32,tiled:true,launchMode:'piecewise_graph',batchSize:8,fusionMode:'fused',gpu:'b200',dtype:'fp4',archGen:'blackwell'}},
  commcollective:{'CollectiveComm.config':{op:'alltoall',routingSkew:'hot',algo:'nvls',algoP:64,algoMsgMB:1,interconnect:'nvl72',msgMB:64,rdmaMode:'gpudirect_rdma',overlapMode:'ibgda_overlap',diagId:'ep_skew_tail'}},
  scheduler:{'ServingScheduler.config':{batchMode:'continuous',tokenBudget:1024,promptLen:8192,activeDecodes:32,policy:'lpm',kvUtilPct:82,maxNumSeqs:128,opsId:'ttft_avalanche'}},
  pdrouter:{'PdRouter.config':{pdMode:'disaggregated',link:'rdma',chunkSize:1024,kvPipe:'layerwise_pipelined',kvLayout:'asymmetric',routerPolicy:'cache_aware',isl:8192,osl:256,cacheHitPct:40,pNodes:10,failId:'kv_collapse'}},
