@@ -7,10 +7,51 @@ export const PCIE_LINKS = [
   { id: 'pcie5', label: 'PCIe Gen5 ×16 (52 GB/s)', bwGBps: 52 },
 ];
 export const VATTN_MODES = ['pagedattention', 'vattention'];
+
+// Grounded per-model specs with explicit deployment sharding:
+// - Llama-3 8B BF16: 16 GB weights on 1x H100 (TP=1)
+// - Llama-3 70B BF16: 140 GB total weights on 4x H100 (TP=4 -> 35 GB weights/GPU, 8/4 = 2 KV heads/GPU)
+// - DeepSeek-V3 671B FP8: 671 GB total weights on 16x H100 (16-GPU EP/TP -> ~42 GB weights/GPU; joint compressed latent 576d per token, replicated per DP rank)
 export const SIZING_MODELS = {
-  llama8b: { id: 'llama8b', name: 'Llama-3 8B (GQA)', layers: 32, kvHeads: 8, headDim: 128, weightGB: 16, mlaFactor: 1 },
-  llama70b: { id: 'llama70b', name: 'Llama-3 70B (GQA)', layers: 80, kvHeads: 8, headDim: 128, weightGB: 70, mlaFactor: 1 },
-  deepseek_mla: { id: 'deepseek_mla', name: 'DeepSeek-V3 (MLA)', layers: 61, kvHeads: 1, headDim: 576, weightGB: 68, mlaFactor: 0.5 },
+  llama8b: {
+    id: 'llama8b',
+    name: 'Llama-3 8B (GQA · TP1)',
+    layers: 32,
+    kvHeads: 8,
+    headDim: 128,
+    totalWeightGB: 16,
+    tpSize: 1,
+    kvShardDivisor: 1,
+    isMla: false,
+    deployLabel: '1× H100 80GB (TP=1, BF16 权重 16 GB)',
+    deployLabelEn: '1× H100 80GB (TP=1, 16 GB BF16 weights)',
+  },
+  llama70b: {
+    id: 'llama70b',
+    name: 'Llama-3 70B (GQA · TP4)',
+    layers: 80,
+    kvHeads: 8,
+    headDim: 128,
+    totalWeightGB: 140,
+    tpSize: 4,
+    kvShardDivisor: 4,
+    isMla: false,
+    deployLabel: '4× H100 80GB (TP=4, 140 GB 权重与 8 KV 头均按 4 卡分片)',
+    deployLabelEn: '4× H100 80GB (TP=4, 140 GB weights & 8 KV heads sharded /4)',
+  },
+  deepseek_mla: {
+    id: 'deepseek_mla',
+    name: 'DeepSeek-V3 671B (MLA · 16×GPU)',
+    layers: 61,
+    kvHeads: 1,
+    headDim: 576, // d_c (512) + d_R (64) joint compressed latent
+    totalWeightGB: 671, // FP8 weights
+    tpSize: 16,
+    kvShardDivisor: 1, // MLA latent is already 1 joint head per token (not K+V separate)
+    isMla: true,
+    deployLabel: '16× H100 80GB (FP8 671 GB 权重分片 ~42 GB/卡; 单卡存联合潜向量 576d)',
+    deployLabelEn: '16× H100 80GB (~42 GB/GPU FP8 weights; 576d joint latent per tok)',
+  },
 };
 
 export function normalizePagedConfig(input = {}) {
@@ -32,7 +73,6 @@ export function normalizePagedConfig(input = {}) {
 // §1 Fragmentation: Contiguous Pre-Allocation vs PagedAttention
 export function deriveFragmentationModel({ allocMode = 'paged', blockSize = 16 } = {}) {
   const S = BLOCK_SIZES.includes(Number(blockSize)) ? Number(blockSize) : 16;
-  // 3 concrete active requests with actual tokens [37, 22, 51] out of max_seq_len = 128 each
   const reqs = [
     { id: 'Req A', actual: 37, maxRes: 128 },
     { id: 'Req B', actual: 22, maxRes: 128 },
@@ -40,13 +80,11 @@ export function deriveFragmentationModel({ allocMode = 'paged', blockSize = 16 }
   ];
   const totalUseful = reqs.reduce((s, r) => s + r.actual, 0); // 110 tokens
 
-  // Contiguous: reserves 128 per req + 32-slot external gap between finished/active = 416 slots total
-  const contigAllocated = reqs.reduce((s, r) => s + r.maxRes, 0) + 32;
+  const contigAllocated = reqs.reduce((s, r) => s + r.maxRes, 0) + 32; // 416 slots
   const contigInternalWaste = reqs.reduce((s, r) => s + (r.maxRes - r.actual), 0);
   const contigExternalWaste = 32;
   const contigUtilPct = Math.round((totalUseful / contigAllocated) * 100);
 
-  // Paged: each req allocates ceil(actual / S) * S slots; 0 external fragmentation!
   const pagedAllocated = reqs.reduce((s, r) => s + Math.ceil(r.actual / S) * S, 0);
   const pagedInternalWaste = pagedAllocated - totalUseful;
   const pagedUtilPct = Math.round((totalUseful / pagedAllocated) * 100);
@@ -160,28 +198,39 @@ export function deriveCowStep(step = 3) {
         { id: 'P4', label: 'Reclaimed (ref=0)', ref: 0, owner: 'free', state: 'freed' },
       ],
       cowCopies: 1,
-      naiveBlocks: 6,
+      // Once Cand B exits, a non-sharing engine also frees Cand B's 3 blocks -> 3 active blocks remain
+      naiveBlocks: 3,
     },
   ];
   const cur = frames[s];
   const usedBlocks = cur.blocks.filter((b) => b.ref > 0).length;
-  const savedPct = Math.max(0, Math.round(((cur.naiveBlocks - usedBlocks) / cur.naiveBlocks) * 100));
+  const savedPct = Math.max(0, Math.round(((cur.naiveBlocks - usedBlocks) / Math.max(1, cur.naiveBlocks)) * 100));
   return { step: s, maxStep: 3, phase: s === 0 ? 'idle' : s === 3 ? 'done' : 'running', ...cur, usedBlocks, savedPct };
 }
 
-// §4 Preemption: PCIe Swap vs Recompute Crossover
+// §4 Preemption: PCIe Swap vs Recompute Crossover (exact first-principles Llama-3 8B BF16 on 1x H100)
 export function derivePreemptionModel({ preemptMode = 'recompute', victimLen = 1024, pcieId = 'pcie4' } = {}) {
   const L = VICTIM_LENGTHS.includes(Number(victimLen)) ? Number(victimLen) : 1024;
   const pcie = PCIE_LINKS.find((x) => x.id === pcieId) || PCIE_LINKS[0];
-  // 70B GQA BF16 KV = 2 * 80 * 8 * 128 * 2B = 327,680 B/tok (~0.3125 MB/tok)
-  const kvMB = (L * 327680) / (1024 * 1024);
-  // Paged block scatter-gather Swap out + Swap back in (~55% peak PCIe due to non-contiguous blocks + sync)
+
+  // Llama-3 8B GQA BF16 KV = 2 * 32 layers * 8 KV heads * 128 d_h * 2B = 131,072 B/tok (0.125 MiB/tok)
+  const kvMB = (L * 131072) / (1024 * 1024);
+
+  // Non-contiguous block scatter-gather Swap out + Swap in (~55% peak PCIe + 5.0 ms host DMA/sync overhead)
   const effPcieMBps = pcie.bwGBps * 1024 * 0.55;
-  const swapMs = Number((((2 * kvMB) / effPcieMBps) * 1000 + 3.5).toFixed(1));
-  // Recompute prefill on H100 (piggybacks on continuous batch; quadratic attention dominates at 8K-16K)
-  const recomputeMs = Number((2.2 + (L / 1024) * 18 + ((L / 1024) ** 2) * 3.8).toFixed(1));
+  const swapMs = Number((((2 * kvMB) / effPcieMBps) * 1000 + 5.0).toFixed(1));
+
+  // Recompute Prefill on 1x H100 BF16 (~500 eff TFLOP/s):
+  // - Linear projections & FFN: 2 * 8e9 = 16 GFLOP/tok -> linearMs = (16e9 * L) / 500e12 * 1000
+  // - Causal Self-Attention: 0.5 * L^2 * (4 * 32 * 32 * 128) FLOPs -> attnMs = (0.5 * L^2 * 524288) / 500e12 * 1000
+  const linearMs = Number((((16e9 * L) / 500e12) * 1000).toFixed(1));
+  const attnMs = Number((((0.5 * L * L * 524288) / 500e12) * 1000).toFixed(1));
+  const recomputeMs = Number((linearMs + attnMs).toFixed(1));
+
   const winner = recomputeMs <= swapMs ? 'recompute' : 'swap';
   const activeMs = preemptMode === 'swap' ? swapMs : recomputeMs;
+  const altMs = preemptMode === 'swap' ? recomputeMs : swapMs;
+  const deltaMs = Number((activeMs - altMs).toFixed(1));
 
   return {
     preemptMode,
@@ -189,23 +238,36 @@ export function derivePreemptionModel({ preemptMode = 'recompute', victimLen = 1
     pcie,
     kvMB: Number(kvMB.toFixed(1)),
     swapMs,
+    linearMs,
+    attnMs,
     recomputeMs,
     winner,
     activeMs,
+    deltaMs,
   };
 }
 
-// §6 KV Memory Sizing & Prefix Cache Key Integrity
+// §6 KV Memory Sizing & Prefix Cache Key Integrity (exact per-GPU TP/EP sharding)
 export function deriveSizingModel({ modelId = 'llama70b', kvDtype = 'bf16', ctxLen = 8192, concurrency = 16, keyChange = 'same' } = {}) {
   const spec = SIZING_MODELS[modelId] || SIZING_MODELS.llama70b;
   const bytesPerElem = kvDtype === 'fp8' ? 1 : 2;
-  const bytesPerTok = 2 * spec.layers * spec.kvHeads * spec.headDim * bytesPerElem * spec.mlaFactor;
-  const kvPerReqGB = (bytesPerTok * ctxLen) / (1024 ** 3);
+
+  // Full-model KV bytes per token (GQA: 2 * L * H_kv * d_h * b; MLA: L * (d_c + d_R) * b)
+  const fullBytesPerTok = spec.isMla
+    ? spec.layers * spec.headDim * bytesPerElem
+    : 2 * spec.layers * spec.kvHeads * spec.headDim * bytesPerElem;
+
+  // Per-GPU KV bytes per token after TP sharding of KV heads (MLA latent is 1 joint head per DP rank)
+  const perGpuBytesPerTok = fullBytesPerTok / spec.kvShardDivisor;
+  const perGpuWeightGB = spec.totalWeightGB / spec.tpSize;
+
+  const kvPerReqGB = (perGpuBytesPerTok * ctxLen) / (1024 ** 3);
   const totalKvGB = kvPerReqGB * concurrency;
-  const hbmCapGB = 80; // 1x H100 80GB reference (or per-GPU TP shard)
-  const availForKvGB = Math.max(4, hbmCapGB - spec.weightGB * (spec.id === 'llama8b' ? 1 : 0.25) - 6); // assume TP=4 for 70B/MLA
+  const hbmCapGB = 80; // 1x H100 80GB reference per shard
+  const runtimeReserveGB = 6; // activations, CUDA graph pool, NCCL buffers
+  const availForKvGB = Math.max(4, hbmCapGB - perGpuWeightGB - runtimeReserveGB);
   const oomRisk = totalKvGB > availForKvGB;
-  const maxSafeBatch = Math.max(1, Math.floor(availForKvGB / Math.max(0.01, kvPerReqGB)));
+  const maxSafeBatch = Math.max(1, Math.floor(availForKvGB / Math.max(0.001, kvPerReqGB)));
   const cacheReusable = keyChange === 'same';
 
   return {
@@ -213,7 +275,9 @@ export function deriveSizingModel({ modelId = 'llama70b', kvDtype = 'bf16', ctxL
     kvDtype,
     ctxLen,
     concurrency,
-    kbPerTok: Number((bytesPerTok / 1024).toFixed(1)),
+    perGpuWeightGB: Number(perGpuWeightGB.toFixed(1)),
+    fullKbPerTok: Number((fullBytesPerTok / 1024).toFixed(1)),
+    kbPerTok: Number((perGpuBytesPerTok / 1024).toFixed(1)),
     kvPerReqGB: Number(kvPerReqGB.toFixed(2)),
     totalKvGB: Number(totalKvGB.toFixed(1)),
     availForKvGB: Number(availForKvGB.toFixed(1)),

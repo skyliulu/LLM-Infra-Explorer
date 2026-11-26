@@ -21,9 +21,13 @@ for (const N of [16, 64, 1024, 16384]) {
     assert.equal(m.serialSequentialHops, N);
   }
 }
-const c64 = deriveChunkwiseModel({ contextLength: 16384, chunkSize: 64 });
+const c64 = deriveChunkwiseModel({ contextLength: 16384, chunkSize: 64, gateStrength: 0.45 });
 assert.equal(c64.chunkSequentialHops, 256);
 assert.equal(c64.hopReduction, 64);
+const c128 = deriveChunkwiseModel({ contextLength: 16384, chunkSize: 128, gateStrength: 0.45 });
+assert.ok(c128.chunks[0].retention < c64.chunks[0].retention, 'Larger chunk C must accumulate stronger chunk decay');
+const c64StrongGate = deriveChunkwiseModel({ contextLength: 16384, chunkSize: 64, gateStrength: 0.85 });
+assert.ok(c64StrongGate.chunks[0].retention < c64.chunks[0].retention, 'Higher gateStrength must reduce chunk retention');
 
 // 3. Gated DeltaNet exact targeted overwrite oracle vs Additive GLA interference
 const exactBeta = deriveDeltaRecallModel({ alpha: 0.9, beta: 1.0 });

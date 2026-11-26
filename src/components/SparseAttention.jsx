@@ -9,7 +9,7 @@ import { CANVAS_DEFAULTS, deriveCanvasModel } from './sparse-attention/canvas-mo
 import { NodeMicroscope } from './sparse-attention/AttentionCanvas';
 import { ResourceComparison, LocalImpact } from './sparse-attention/ResourceComparison';
 import AttentionComparison from './sparse-attention/AttentionComparison';
-import HardwareSparsePanel from './sparse-attention/HardwareSparsePanel';
+import HardwareSparsePanel, { SparseParadigmOverview } from './sparse-attention/HardwareSparsePanel';
 import { RecordTrace } from './sparse-attention/InformationTradeoff';
 import { explorerI18n } from './sparse-attention/explorer-content';
 import { MatrixSystemGraph } from './sparse-attention/MatrixSystemGraph';
@@ -56,10 +56,11 @@ export default function SparseAttention() {
   };
   return <div className="chapter-page sparse-module sc-module bg-slate-50 text-slate-800" data-testid="sparse-module" data-mode={model.mode} data-focus={model.focus} lang={lang}>
     <header className="sa-card sa-header chapter-header">
-      <div className="sa-heading"><div><h1 data-section-anchor="sparse-overview"><ChapterIcon chapter="sparseattn"/>{t('title')}</h1><p>{t('canvasSubtitle')}</p></div></div>
+      <div className="sa-heading"><div><h1><ChapterIcon chapter="sparseattn"/>{t('title')}</h1><p>{t('canvasSubtitle')}</p></div></div>
       <div className="sa-header-controls"><div className="sa-segment" role="group" aria-label={t('strategy')}>{['dsa','csa','hca'].map(mode => <button key={mode} aria-pressed={model.mode === mode} onClick={() => { update({ mode }); setFocus('overview'); }}>{t(`strategy_${mode}`)}</button>)}</div><div className="sa-actions"><button className="sa-icon" aria-label={t('reset')} title={t('reset')} onClick={() => { setInput(CANVAS_DEFAULTS); setFocus('overview'); setSequence({position:isPlaying?1:null,progress:isPlaying?0:null}); }}><RotateCcw size={18}/></button></div></div>
     </header>
     <section className="sc-canvas" aria-label={t('overview')} data-testid="attention-canvas">
+      <SparseParadigmOverview lang={lang} mode={model.mode} onSelectMode={(mode) => { update({ mode }); setFocus('overview'); }} />
       <div className="sc-experiment"><div><strong>{t('sharedExperiment')}</strong><small>{t('sharedExperimentHint')}</small></div><label className="sc-length"><span>{t('tokens')} <b>{overviewModel.tokens}</b></span><input aria-label={t('tokens')} type="range" min="1" max="64" value={overviewModel.tokens} onChange={e => update({tokens:+e.target.value})}/></label></div>
       <AttentionComparison key={`${overviewModel.mode}-${overviewModel.tokens}-${overviewModel.topK}-${overviewModel.ratio}-${overviewModel.window}`} model={overviewModel} lang={lang} update={update} onFocus={onFocus}/>
       <ResourceComparison model={overviewModel} t={t} update={update} onFocus={onFocus}/>

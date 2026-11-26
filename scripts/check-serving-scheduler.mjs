@@ -33,12 +33,22 @@ assert.ok(sjf.shortAvgTtftMs < fcfs.shortAvgTtftMs, 'SJF must cut short-query TT
 assert.ok(lpm.prefixHitPct > fcfs.prefixHitPct, 'LPM must lift prefix cache hit rate vs FCFS');
 assert.equal(prio.starvationRisk, 'bounded');
 
-// 5. Watermark preemption thresholds
-assert.equal(deriveWatermarkModel({ kvUtilPct: 80 }).state, 'admitting');
-assert.equal(deriveWatermarkModel({ kvUtilPct: 92 }).state, 'paused');
-const pre = deriveWatermarkModel({ kvUtilPct: 97 });
+// 5. Watermark preemption thresholds & monotonic active seq drop
+const wm80 = deriveWatermarkModel({ kvUtilPct: 80, maxNumSeqs: 128 });
+const wm89 = deriveWatermarkModel({ kvUtilPct: 89, maxNumSeqs: 128 });
+const wm92 = deriveWatermarkModel({ kvUtilPct: 92, maxNumSeqs: 128 });
+const pre = deriveWatermarkModel({ kvUtilPct: 97, maxNumSeqs: 128 });
+assert.equal(wm80.state, 'admitting');
+assert.equal(wm92.state, 'paused');
+assert.ok(wm92.admittedSeqs >= wm89.admittedSeqs && wm92.admittedSeqs <= Math.round(128 * 0.9));
 assert.equal(pre.state, 'preempting');
 assert.ok(pre.preemptedCount >= 2);
+assert.ok(pre.admittedSeqs < wm92.admittedSeqs, 'Preempting victims must strictly reduce admitted active sequences');
+// Verify R1 under SJF never gets more cached tokens than the shared 3072-token DocA prefix
+const sjfR1 = sjf.ordered.find((r) => r.id === 'R1');
+assert.ok(sjfR1.hitTokens <= 3072, `SJF R1 hitTokens must not exceed 3072 shared prefix, got ${sjfR1.hitTokens}`);
+// Verify Chunked Prefill pays overhead on total prefill time while cutting TPOT
+assert.ok(c1024.totalChunkedPrefillMs > c1024.unchunkedStallMs - 20, 'Chunked Prefill total compute must not be magically faster than unchunked');
 
 console.log('ServingScheduler checks passed:', {
   keys: zhKeys.length,

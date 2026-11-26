@@ -19,7 +19,8 @@ export function getTeachingPosition(position) {
 }
 export function normalizeSpeculativeInput(input = {}) {
   const algorithm = SPECULATIVE_ALGORITHMS.includes(input.algorithm) ? input.algorithm : 'eagle2';
-  const depth = Math.round(clamp(input.depth, 1, 5, 3));
+  const maxDepth = algorithm === 'mtp' ? 4 : 5;
+  const depth = Math.round(clamp(input.depth, 1, maxDepth, 3));
   const width = Math.round(clamp(input.width, 1, 3, 2));
   return {
     algorithm, depth, width,

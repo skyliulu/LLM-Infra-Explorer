@@ -32,6 +32,13 @@ assert.ok(cfgP.speedup > 1.85, `CFG 2-GPU should achieve near-linear speedup, go
 assert.ok(uspNv.stepSec < cfgP.stepSec, '8-GPU USP on NVLink must beat 2-GPU CFG');
 assert.ok(uspNv.commSharePct < uspPcie.commSharePct, 'NVLink must have lower exposed comm than PCIe');
 
+// Verify Ring Attention is reachable at 16 GPUs (CFG=2) or 8 GPUs (CFG=off)
+const usp16 = deriveDitParallelModel('usp', 16, 'nvlink', 75600);
+assert.equal(usp16.ringRanks, 2, '16-GPU USP (CFG=2 -> 8 SP ranks) must activate Ring Attention (2x)');
+const usp8NoCfg = deriveDitParallelModel('usp', 8, 'nvlink', 75600, null, { cfgEnabled: false });
+assert.equal(usp8NoCfg.cfgRanks, 1);
+assert.equal(usp8NoCfg.ringRanks, 2, '8-GPU USP with CFG off must activate Ring Attention (2x)');
+
 // 4. TeaCache & Distillation
 const baseC = deriveDitCacheModel('baseline', 0.15);
 const teaC = deriveDitCacheModel('teacache', 0.15);
@@ -48,10 +55,12 @@ assert.equal(vaeFull.oomRisk, true, '1080p full 3D VAE must OOM on 48GB GPU');
 assert.equal(vaeTiled.oomRisk, false, '1080p spatio-temporal tiled VAE must fit in 48GB GPU');
 assert.ok(vaeTiled.memReductionX >= 6, 'spatio-temporal tiling should reduce activation memory >= 6x');
 
-// 6. Quantization
-const qBf16 = deriveDitQuantModel('bf16');
-const qSvd = deriveDitQuantModel('svdquant');
-assert.ok(qSvd.weightGB < qBf16.weightGB / 3 && qSvd.stepSpeedup > 2);
+// 6. Quantization & Amdahl's Law bound
+const qBf16 = deriveDitQuantModel('bf16', 10);
+const qSvdImg = deriveDitQuantModel('svdquant', 10);
+const qSvdVid = deriveDitQuantModel('svdquant', 78);
+assert.ok(qSvdImg.weightGB < qBf16.weightGB / 3 && qSvdImg.stepSpeedup > 2, 'Linear-dominated image gen achieves >2x step speedup under SVDQuant');
+assert.ok(qSvdVid.stepSpeedup < 1.3 && qSvdVid.stepSpeedup < qSvdImg.stepSpeedup, `78% attention-bound video must obey Amdahl bound (<1.3x), got ${qSvdVid.stepSpeedup}`);
 
 console.log('DiffusionDit checks passed:', {
   keys: zhKeys.length,

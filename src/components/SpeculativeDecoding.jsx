@@ -99,7 +99,12 @@ const i18n = {
     explainMarkov:'用前一个 Token 修正当前位置分数，再选出该位置 Token。此处与上方贪心轨迹一致，使用 argmax。',
     explainConfidence:'Confidence Head 估计各位置的条件存活率，供调度分配计算量；置信度不是 Target 的接受判定。',
     explainSchedule:'依次尝试加入候选前缀，用置信度与固定成本估算收益；第一次不再改善就停止，不能回看未来候选再反悔。',
-    paperEagle:'EAGLE-2 原论文', paperDspark:'DSpark 原论文', docs:'SGLang 参数说明', dsparkConfig:'DSpark 配置来源', samplingPaper:'严格推测采样论文',
+    paperEagle:'EAGLE-2 原论文', paperDspark:'DSpark 原论文', paperMtp:'DeepSeek-V3 技术报告 (§2.2 MTP)', sourceMtp:'原生多 Token 预测头与链式投机解码', docs:'SGLang 参数说明', dsparkConfig:'DSpark 配置来源', samplingPaper:'严格推测采样论文',
+    introLoopTitle:'核心四步闭环：用小模型猜词换大模型一次并行验证（严格无损）',
+    introStep1:'1. Draft 轻量猜词', introStep1Desc:'旁路小模型或内置 MTP 头低成本连续提出 K 个候选 Token。',
+    introStep2:'2. Target 单次并行验证', introStep2Desc:'大模型的单次前向利用因果/树状 Mask 并行给全部 K+1 位置打分。',
+    introStep3:'3. 拒绝采样无损修正', introStep3Desc:'贪心匹配或按 min(1, p/q) 接受；首拒处由 Target 补发 1 个保底词。',
+    introStep4:'4. KV 压紧与回滚', introStep4Desc:'仅保留接受路径的 KV 槽位，被拒分支的临时 KV 立即回收。',
     tail:'本轮尚未验证；最终接受率与输出在相应阶段出现。',
     reclaiming:'回收中', logitSlice:'当前顺序位置 · 三词分数切片', sliceHint:'教学分数：前一 Token 选择转移偏置，再加到基础 logits。展示词表的三个代表项，省略其余维度。', bias:'转移偏置', combined:'相加后分数', noMarkov:'逐步播放以观察每个位置的转移偏置',
   },
@@ -192,7 +197,12 @@ const i18n = {
     explainMarkov:'Condition each position on the preceding token, then select its proposal. argmax matches the greedy trace above.',
     explainConfidence:'Estimate conditional survival for compute allocation. Confidence is not the Target acceptance decision.',
     explainSchedule:'Admit a prefix while estimated benefit improves, using confidence and fixed costs. Stop at the first non-improvement; do not look ahead and reverse the decision.',
-    paperEagle:'EAGLE-2 paper',paperDspark:'DSpark paper',docs:'SGLang parameters',dsparkConfig:'DSpark configuration source',samplingPaper:'Exact speculative sampling',
+    paperEagle:'EAGLE-2 paper',paperDspark:'DSpark paper',paperMtp:'DeepSeek-V3 Technical Report (§2.2 MTP)',sourceMtp:'Native multi-token prediction heads & chained drafting',docs:'SGLang parameters',dsparkConfig:'DSpark configuration source',samplingPaper:'Exact speculative sampling',
+    introLoopTitle:'Core 4-Step Loop: Cheap Drafting + Single Parallel Target Verification (Strictly Lossless)',
+    introStep1:'1. Cheap Draft Proposal',introStep1Desc:'A lightweight draft model or built-in MTP heads propose K candidate tokens.',
+    introStep2:'2. Parallel Target Verify',introStep2Desc:'One Target forward scores all K+1 positions together using a causal/tree mask.',
+    introStep3:'3. Lossless Rejection Fix',introStep3Desc:'Accept greedily or with min(1, p/q); Target emits 1 guaranteed bonus/fix token.',
+    introStep4:'4. KV Compact & Rollback',introStep4Desc:'Gather accepted-path KV into the prefix and immediately reclaim rejected slots.',
     tail:'Verification has not happened yet. Acceptance and output appear at their corresponding stages.',
     reclaiming:'Reclaiming',logitSlice:'Current sequential position · three-word score slice',sliceHint:'Synthetic scores: the previous token selects a transition bias, added to base logits. Three representative vocabulary entries are shown; others are omitted.',bias:'Transition bias',combined:'Combined logits',noMarkov:'Step through the trace to inspect each position’s transition bias',
   },
@@ -443,7 +453,7 @@ function MtpChain({s,t}) {
   return <div className="rounded-lg border border-emerald-200 bg-emerald-50/30 p-3 space-y-3" data-testid="mtp-chain">
     <div className="flex flex-wrap items-center justify-between gap-2">
       <h4 className="text-sm font-bold">{t('mtpChainTitle')}</h4>
-      <div className="text-xs"><MathFormula>{String.raw`h_{t+k} = \mathrm{MTP}_k\!\bigl(h_{t+k-1},\, E_T(x_{t+k-1})\bigr)`}</MathFormula></div>
+      <div className="text-xs"><MathFormula>{String.raw`h_{t+k} = \mathrm{MTP}_k\!\bigl(h_{t+k-1},\, E_T(x_{t+k})\bigr)`}</MathFormula></div>
     </div>
     <p className="text-xs leading-relaxed text-slate-600">{t('mtpChainHint')}</p>
     <div className="flex flex-wrap items-center gap-2">
@@ -509,6 +519,9 @@ function ExecutionGuide({s,t,playing,onPlay,onNext,onReset,onSeek}) {
 function References({s,t}) {
   const algorithmSources=s.algorithm==='eagle2'?[
     ['paperEagle','sourceEagle','https://arxiv.org/html/2406.16858v1'],
+    ['docs','sourceConfig','https://docs.sglang.io/docs/advanced_features/speculative_decoding'],
+  ]:s.algorithm==='mtp'?[
+    ['paperMtp','sourceMtp','https://arxiv.org/html/2412.19437v1'],
     ['docs','sourceConfig','https://docs.sglang.io/docs/advanced_features/speculative_decoding'],
   ]:[
     ['paperDspark','sourceDspark','https://arxiv.org/html/2607.05147v1'],
@@ -577,7 +590,7 @@ export default function SpeculativeDecoding() {
   const [step,setStep]=useState(0);
   const [roundIndex,setRoundIndex]=useState(0);
   const [isPlaying,setIsPlaying]=useState(false);
-  const [raceStep,setRaceStep]=useState(0);
+  const [raceStep,setRaceStep]=useState(50);
   const [racePlaying,setRacePlaying]=useState(false);
   const [selectedNode,setSelectedNode]=useState(null);
   const [lang] = useLanguage();
@@ -614,6 +627,17 @@ export default function SpeculativeDecoding() {
   return <div className="chapter-page spec-page min-h-full bg-slate-50 text-slate-800">
     <header className="module-header-card chapter-header"><div className="mx-auto flex max-w-[1600px] flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-extrabold"><ChapterIcon chapter="speculative"/>{t('title')}</h1><p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p></div><div className="flex items-center gap-2"><div className="flex rounded-lg bg-slate-100 p-1">{['eagle2','dspark','mtp'].map(algorithm=><button key={algorithm} aria-pressed={config.algorithm===algorithm} className={'rounded-md px-3 py-1.5 text-xs font-semibold '+(config.algorithm===algorithm?'bg-white text-blue-700 shadow-sm':'text-slate-600')} onClick={()=>setConfig({...config,algorithm})}>{t(algorithm)}</button>)}</div></div></div></header>
     <div className="chapter-body mx-auto max-w-[1600px] space-y-3 p-3 lg:p-4">
+      <section className="spec-card" data-testid="speculative-core-loop">
+        <h2 data-section-anchor="speculativedecoding-0" className="text-sm font-bold text-slate-900">{t('introLoopTitle')}</h2>
+        <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 text-xs">
+          {[1, 2, 3, 4].map((n) => (
+            <div key={n} className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
+              <div className="font-bold text-indigo-800">{t(`introStep${n}`)}</div>
+              <p className="mt-1 leading-snug text-slate-600">{t(`introStep${n}Desc`)}</p>
+            </div>
+          ))}
+        </div>
+      </section>
       <Race s={s} t={t} config={config} setConfig={setConfig} load={load} setLoad={setLoad} playing={racePlaying} onPlay={racePlay} onNext={raceNext} onReset={resetRace} onInspect={inspect}/>
       <Principles t={t}/>
       <Workbench s={s} t={t} playing={isPlaying} onPlay={togglePlay} onNext={()=>{setIsPlaying(false);handleNextStep();}} onReset={resetTrace} onRound={inspect} onSeek={seek} selectedNode={selectedNode} setSelectedNode={setSelectedNode}/>

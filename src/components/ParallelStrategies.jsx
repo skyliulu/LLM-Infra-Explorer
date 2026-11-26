@@ -667,7 +667,7 @@ const ExpertConnectionOverlay = ({
         })}
       </svg>
       <span
-        className={`absolute max-w-[210px] -translate-x-1/2 rounded-full border bg-white/95 px-2 py-0.5 text-center text-[7px] font-bold leading-tight shadow-sm ${crossRank ? 'border-rose-300 text-rose-700' : 'border-slate-300 text-slate-600'}`}
+        className={`absolute max-w-[210px] -translate-x-1/2 rounded-full border bg-white/95 px-2 py-0.5 text-center text-[9px] font-bold leading-tight shadow-sm ${crossRank ? 'border-rose-300 text-rose-700' : 'border-slate-300 text-slate-600'}`}
         style={{ left: geometry.source.x, top: labelTop }}
       >
         {label}
@@ -676,8 +676,10 @@ const ExpertConnectionOverlay = ({
   );
 };
 
+const DEFAULT_DEGREES = { dp: 2, tp: 2, pp: 1, cp: 1, ep: 1, etp: 1 };
+
 const App = () => {
-  const [degrees, setDegrees] = useExperimentState('ParallelStrategies.degrees', { dp: 1, tp: 1, pp: 1, cp: 1, ep: 1, etp: 1 });
+  const [degrees, setDegrees] = useExperimentState('ParallelStrategies.degrees', DEFAULT_DEGREES);
   const [hoveredGpu, setHoveredGpu] = useState(null);
   const [pinnedGpu, setPinnedGpu] = useState(null);
   const [lang] = useLanguage();
@@ -934,7 +936,7 @@ const App = () => {
   }, [isPlaying, phase, step, degrees.pp]);
 
   const reset = () => {
-    setDegrees({ dp: 1, tp: 1, pp: 1, cp: 1, ep: 1, etp: 1 });
+    setDegrees(DEFAULT_DEGREES);
     setHoveredGpu(null);
     setPinnedGpu(null);
     setContextMode('prefill');
@@ -984,7 +986,7 @@ const App = () => {
           </div>
         </div>
 
-        <div className={`text-[7px] md:text-[8px] whitespace-nowrap mt-1 text-center min-h-[14px] flex items-end justify-center ${isNotResident ? 'font-semibold text-purple-700' : 'text-slate-500'}`}>
+        <div className={`text-[9px] md:text-[8px] whitespace-nowrap mt-1 text-center min-h-[14px] flex items-end justify-center ${isNotResident ? 'font-semibold text-purple-700' : 'text-slate-500'}`}>
           {isNotResident ? inactiveReason : sliceDir === 'rep' ? t('fullCopy') : splitLabel}
         </div>
       </div>
@@ -1024,7 +1026,7 @@ const App = () => {
           </div>
         </div>
 
-        <div className="text-[7px] md:text-[8px] text-slate-500 whitespace-nowrap mt-1 text-center h-[14px] flex items-end justify-center">
+        <div className="text-[9px] md:text-[8px] text-slate-500 whitespace-nowrap mt-1 text-center h-[14px] flex items-end justify-center">
           {splitLabel}
         </div>
       </div>
@@ -1098,7 +1100,7 @@ const App = () => {
           </div>
         </div>
 
-        <div className="text-[7px] md:text-[8px] text-slate-500 whitespace-nowrap mt-4 text-center h-[14px] flex items-end justify-center">
+        <div className="text-[9px] md:text-[8px] text-slate-500 whitespace-nowrap mt-4 text-center h-[14px] flex items-end justify-center">
           {splitLabel}
         </div>
       </div>
@@ -1144,7 +1146,7 @@ const App = () => {
             const activeShard = shardDegree === 1 ? 0 : activeTp % shardDegree;
             return (
               <div key={band.id} data-testid={`projection-band-${band.id}`} data-shards={shardDegree} className="flex min-w-0 flex-col gap-0.5" style={{ flex: band.flex }}>
-                <span className="truncate text-center text-[7px] text-slate-600"><MathFormula>{band.latex}</MathFormula></span>
+                <span className="truncate text-center text-[9px] text-slate-600"><MathFormula>{band.latex}</MathFormula></span>
                 <div className="flex min-h-7 flex-1 gap-px rounded border border-slate-200 bg-slate-50 p-px">
                   {Array.from({ length: shardDegree }).map((_, shard) => {
                     const isActive = activeGpu === null || shard === activeShard;
@@ -1155,7 +1157,7 @@ const App = () => {
             );
           })}
         </div>
-        <span className="mt-1 text-center text-[7px] leading-tight text-slate-500">{footerText}</span>
+        <span className="mt-1 text-center text-[9px] leading-tight text-slate-500">{footerText}</span>
       </div>
     );
   };
@@ -1239,7 +1241,7 @@ const App = () => {
                 <React.Fragment key={stage.stage}>
                   {stageIndex > 0 && (
                     <div data-testid={`pp-link-${stageIndex - 1}-${stageIndex}`} className="grid h-5 grid-cols-[58px_1fr] items-center gap-1" aria-label={t('p2pActivation')}>
-                      <div className={`flex h-full items-center justify-center gap-0.5 text-[7px] font-bold ${connectorActive ? 'text-cyan-700' : connectorPassed ? 'text-emerald-700' : 'text-purple-500'}`}>
+                      <div className={`flex h-full items-center justify-center gap-0.5 text-[9px] font-bold ${connectorActive ? 'text-cyan-700' : connectorPassed ? 'text-emerald-700' : 'text-purple-500'}`}>
                         <ArrowDown size={9} className={connectorActive ? 'animate-pulse' : ''} />
                         <span>{t('p2pActivation')}</span>
                       </div>
@@ -1441,15 +1443,15 @@ const App = () => {
             <div className="grid grid-cols-[1fr_92px_1fr] items-center gap-1.5">
               <button type="button" aria-pressed={contextMode === 'prefill'} onClick={() => handleContextMode('prefill')} className={`rounded border px-2 py-1.5 text-center transition ${contextMode === 'prefill' ? 'border-cyan-400 bg-white text-cyan-800 shadow-sm ring-1 ring-cyan-200' : 'border-slate-200 bg-white/70 text-slate-500'}`}>
                 <span className="block text-[9px] font-bold">{t('prefillPool')} · {instanceGpus} GPU</span>
-                <span className="block text-[7px]">{t('prefillPoolRole')}</span>
+                <span className="block text-[9px]">{t('prefillPoolRole')}</span>
               </button>
-              <div className="flex flex-col items-center text-[7px] font-bold text-rose-700">
+              <div className="flex flex-col items-center text-[9px] font-bold text-rose-700">
                 <div className="flex w-full items-center"><div className="h-px flex-1 bg-rose-300"/><ArrowRight size={12}/></div>
                 <span className="text-center leading-tight">{t('kvTransfer')}</span>
               </div>
               <button type="button" aria-pressed={contextMode === 'decode'} onClick={() => handleContextMode('decode')} className={`rounded border px-2 py-1.5 text-center transition ${contextMode === 'decode' ? 'border-cyan-400 bg-white text-cyan-800 shadow-sm ring-1 ring-cyan-200' : 'border-slate-200 bg-white/70 text-slate-500'}`}>
                 <span className="block text-[9px] font-bold">{t('decodePool')} · {instanceGpus} GPU</span>
-                <span className="block text-[7px]">{t('decodePoolRole')}</span>
+                <span className="block text-[9px]">{t('decodePoolRole')}</span>
               </button>
             </div>
           </div>
@@ -1533,13 +1535,13 @@ const App = () => {
                   <div className="mb-2.5 flex flex-wrap items-center justify-between gap-1.5 text-xs font-semibold text-slate-700">
                    <span className="flex items-center gap-1.5"><Grid size={14} className="text-amber-500"/> {t('attnBlock')}</span>
                    {componentProfile === 'wideEp' && (
-                     <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[7px] font-bold text-blue-700">{t('wideEpAttentionRole', { workers: attentionRequestDegree })}</span>
+                     <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[9px] font-bold text-blue-700">{t('wideEpAttentionRole', { workers: attentionRequestDegree })}</span>
                    )}
                    {componentProfile !== 'wideEp' && isDpAttention && (
-                     <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[7px] font-bold text-blue-700">{t('dpAttentionRole', { dp: componentParallel.attentionDp, tp: attentionArchitecture.workerCount })}</span>
+                     <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[9px] font-bold text-blue-700">{t('dpAttentionRole', { dp: componentParallel.attentionDp, tp: attentionArchitecture.workerCount })}</span>
                    )}
                    {isHelix && (
-                     <span className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[7px] font-bold text-violet-700">{t(isHelixMla ? 'helixMlaAttentionRole' : 'helixAttentionRole', { kvp: componentParallel.kvParallel, tp: componentParallel.attentionTp })}</span>
+                     <span className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[9px] font-bold text-violet-700">{t(isHelixMla ? 'helixMlaAttentionRole' : 'helixAttentionRole', { kvp: componentParallel.kvParallel, tp: componentParallel.attentionTp })}</span>
                    )}
                  </div>
 
@@ -1571,7 +1573,7 @@ const App = () => {
                          tpDegree={componentParallel.attentionTp}
                          activeTp={coords?.tp_idx || 0}
                        />
-                       <div className="flex flex-col items-center justify-center gap-0.5 text-center text-[7px] font-bold leading-tight text-cyan-700" aria-label={t('tpLocalAttentionEdge')}>
+                       <div className="flex flex-col items-center justify-center gap-0.5 text-center text-[9px] font-bold leading-tight text-cyan-700" aria-label={t('tpLocalAttentionEdge')}>
                          <ArrowRight size={13} />
                          <span>{t('tpLocalAttentionEdge')}</span>
                        </div>
@@ -1587,7 +1589,7 @@ const App = () => {
                       <div data-testid="dp-attention-worker-flow" className="rounded-lg border border-blue-200 bg-blue-50/70 p-2" role="img" aria-label={t('dpAttentionFlow')}>
                         <div className="mb-1.5 flex items-center justify-between gap-2 text-[8px] font-bold text-blue-900">
                           <span>{t('dpAttentionFlow')}</span>
-                          <span className="rounded-full border border-blue-200 bg-white px-2 py-0.5 text-[7px] text-blue-700">{t('dpAttentionKvOwnership')}</span>
+                          <span className="rounded-full border border-blue-200 bg-white px-2 py-0.5 text-[9px] text-blue-700">{t('dpAttentionKvOwnership')}</span>
                         </div>
                         <div className={`grid gap-1.5 ${componentParallel.dpAttentionWorkersPerOuterDp === 1 ? 'grid-cols-1' : componentParallel.dpAttentionWorkersPerOuterDp === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4'}`}>
                           {Array.from({ length: Math.min(8, componentParallel.dpAttentionWorkersPerOuterDp) }).map((_, worker) => {
@@ -1600,13 +1602,13 @@ const App = () => {
                             return (
                               <div key={worker} data-testid={`dp-attention-worker-${worker}`} className={`rounded border px-1.5 py-1 text-center transition ${isCurrentWorker ? 'border-blue-400 bg-white text-blue-900 shadow-sm ring-1 ring-blue-100' : 'border-blue-100 bg-blue-50 text-blue-400 opacity-70'}`}>
                                 <span className="block text-[8px] font-bold">{componentProfile === 'wideEp' ? t('wideEpWorkerLabel', { rank: worker, ep: workerEp, tp: workerTp }) : t('attentionWorker', { rank: worker })}</span>
-                                <span className="block text-[7px] leading-tight">{t(isPrefill ? 'prefillWorkerTask' : 'decodeWorkerTask')}</span>
+                                <span className="block text-[9px] leading-tight">{t(isPrefill ? 'prefillWorkerTask' : 'decodeWorkerTask')}</span>
                               </div>
                             );
                           })}
                         </div>
                         {attentionArchitecture.needsTokenGatherBeforeMoe && (
-                          <div className="mt-1.5 flex items-center gap-1 text-[7px] font-bold text-rose-700">
+                          <div className="mt-1.5 flex items-center gap-1 text-[9px] font-bold text-rose-700">
                             <div className="h-px flex-1 bg-rose-300" />
                             <Network size={10} className="shrink-0" />
                             <span className="text-center leading-tight">{t('dpAttentionGather')}</span>
@@ -1614,7 +1616,7 @@ const App = () => {
                           </div>
                         )}
                         {attentionArchitecture.usesDirectEpDispatch && (
-                          <div className="mt-1.5 flex items-center gap-1 text-[7px] font-bold text-pink-700">
+                          <div className="mt-1.5 flex items-center gap-1 text-[9px] font-bold text-pink-700">
                             <div className="h-px flex-1 bg-pink-300" />
                             <Network size={10} className="shrink-0" />
                             <span className="text-center leading-tight">{t('dpAttentionEpBridge')}</span>
@@ -1635,7 +1637,7 @@ const App = () => {
                       </div>
                     )}
                     {!isDpAttention && componentParallel.attentionTp > 1 && (
-                      <div data-testid="tp-collective-link" className="ml-auto flex w-[48%] items-center gap-1 py-1 text-[7px] font-bold text-rose-700" role="note" aria-label={t('tpCommTitle')}>
+                      <div data-testid="tp-collective-link" className="ml-auto flex w-[48%] items-center gap-1 py-1 text-[9px] font-bold text-rose-700" role="note" aria-label={t('tpCommTitle')}>
                         <div className="h-px flex-1 bg-rose-300" />
                         <Network size={10} className="shrink-0" />
                         <span className="leading-tight">{t('tpCollectiveEdge')}</span>
@@ -1643,13 +1645,13 @@ const App = () => {
                       </div>
                     )}
                     {!isHelix && !isPrefill && degrees.cp > 1 && (
-                      <div data-testid="decode-cp-combine-link" className="flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[7px] font-bold text-emerald-800" role="note">
+                      <div data-testid="decode-cp-combine-link" className="flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-800" role="note">
                         <Network size={10} className="shrink-0" />
                         <span className="min-w-0 flex-1 text-center leading-tight">{t('decodeCpCombine')}</span>
                       </div>
                     )}
                     {isHelix && (
-                      <div data-testid="helix-exact-attention-link" className="flex items-center gap-1 rounded border border-violet-200 bg-violet-50 px-2 py-1 text-[7px] font-bold text-violet-800" role="note">
+                      <div data-testid="helix-exact-attention-link" className="flex items-center gap-1 rounded border border-violet-200 bg-violet-50 px-2 py-1 text-[9px] font-bold text-violet-800" role="note">
                         <span className="rounded bg-white px-1 py-0.5">{t('helixKvShardNode')}</span>
                         <ArrowRight size={10} className="shrink-0" />
                         <span className="min-w-0 flex-1 text-center leading-tight">{t('helixExactCombine')}</span>
@@ -1659,7 +1661,7 @@ const App = () => {
                     )}
 
                     <div data-testid="kv-footprint-scale" data-attention-type={attentionType} data-footprint-units={attentionArchitecture.kvFootprintUnits} className="mx-auto mt-1 w-full max-w-sm rounded border border-slate-200 bg-slate-50 px-2 py-1.5">
-                      <div className="mb-1 flex items-center justify-between gap-2 text-[7px] text-slate-600">
+                      <div className="mb-1 flex items-center justify-between gap-2 text-[9px] text-slate-600">
                         <span>{t('perTokenKvFootprint')}</span>
                         <MathFormula>{kvVisualConfig.latex}</MathFormula>
                       </div>
@@ -1689,7 +1691,7 @@ const App = () => {
                       {t(isHelix ? (isHelixMla ? 'helixMlaKvAssumption' : 'helixKvAssumption') : kvAssumptionKey)}
                     </p>
                     {isDpAttention && (
-                      <p className="rounded border border-blue-100 bg-blue-50 px-2 py-1 text-[7px] leading-relaxed text-blue-700">{t('attentionTypeBoundary')}</p>
+                      <p className="rounded border border-blue-100 bg-blue-50 px-2 py-1 text-[9px] leading-relaxed text-blue-700">{t('attentionTypeBoundary')}</p>
                     )}
                  </div>
                </div>
@@ -1697,7 +1699,7 @@ const App = () => {
                {/* MoE Layer */}
                <div className="bg-white p-2 md:p-3 rounded-lg border border-slate-200 shadow-sm mt-3">
                  {isHelix && (
-                   <div className="mb-2 flex items-center justify-center gap-1 rounded border border-violet-200 bg-violet-50 px-2 py-1 text-[7px] font-bold text-violet-800" role="note" data-testid="helix-rank-reuse-link">
+                   <div className="mb-2 flex items-center justify-center gap-1 rounded border border-violet-200 bg-violet-50 px-2 py-1 text-[9px] font-bold text-violet-800" role="note" data-testid="helix-rank-reuse-link">
                      <Network size={10} />
                      <span>{t('helixRankReuse')}</span>
                      <ArrowDown size={10} />
@@ -1710,12 +1712,12 @@ const App = () => {
                        <span className="rounded-full border border-pink-200 bg-pink-50 px-2 py-0.5 text-[8px] font-bold text-pink-700">{t(moeModeKey)}</span>
                      )}
                      {componentProfile === 'wideEp' && (
-                       <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[7px] font-bold text-blue-700">{t('wideEpMoeRole', { ep: degrees.ep, etp: degrees.etp })}</span>
+                       <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[9px] font-bold text-blue-700">{t('wideEpMoeRole', { ep: degrees.ep, etp: degrees.etp })}</span>
                      )}
                       {isHelix && (
-                        <span className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[7px] font-bold text-violet-700">{t('helixMoeRole', { tp: componentParallel.ffnTp, ep: componentParallel.ffnEp })}</span>
+                        <span className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[9px] font-bold text-violet-700">{t('helixMoeRole', { tp: componentParallel.ffnTp, ep: componentParallel.ffnEp })}</span>
                       )}
-                      <span className={`rounded-full border px-2 py-0.5 text-[7px] font-bold ${isDwdp ? 'border-orange-200 bg-orange-50 text-orange-700' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
+                      <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${isDwdp ? 'border-orange-200 bg-orange-50 text-orange-700' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
                         {t(isDwdp ? 'dwdpTransport' : 'tokenA2aTransport')}
                       </span>
                      </span>
@@ -1747,12 +1749,12 @@ const App = () => {
 
                   {isDwdp ? (
                     <div className="relative z-10 mb-2 rounded-lg border border-orange-200 bg-orange-50/70 p-2" data-testid="dwdp-weight-path" role="img" aria-label={t('dwdpHint')}>
-                      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5 text-center text-[7px] font-bold leading-tight text-orange-900">
+                      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5 text-center text-[9px] font-bold leading-tight text-orange-900">
                         <span className="rounded border border-orange-200 bg-white px-1.5 py-1">{t('dwdpWeightOwner')}</span>
                         <ArrowRight size={12} className="text-orange-500" />
                         <span className="rounded border border-orange-300 bg-orange-100 px-1.5 py-1">{t('dwdpBuffer')}</span>
                       </div>
-                      <div className="mt-1 flex items-center justify-center gap-1 text-[7px] font-semibold text-orange-700">
+                      <div className="mt-1 flex items-center justify-center gap-1 text-[9px] font-semibold text-orange-700">
                         <span>{t('dwdpPeerPull')}</span>
                         <ArrowDown size={10} />
                         <span>{t('dwdpNoTokenA2a')}</span>
@@ -1779,7 +1781,7 @@ const App = () => {
                          >
                            <div className={`text-[9px] font-bold text-center mb-1.5 transition-colors ${isEpActive ? 'text-pink-600' : 'text-slate-400'}`}>{t('expert')} {e}</div>
                            {isDwdp && coords && (
-                             <div className={`mb-1 rounded border px-1 py-0.5 text-center text-[7px] font-bold ${isLocalExpert ? 'border-orange-200 bg-white text-orange-700' : 'border-amber-200 bg-white text-amber-700'}`}>
+                             <div className={`mb-1 rounded border px-1 py-0.5 text-center text-[9px] font-bold ${isLocalExpert ? 'border-orange-200 bg-white text-orange-700' : 'border-amber-200 bg-white text-amber-700'}`}>
                                {t(isLocalExpert ? 'dwdpLocalWeight' : 'dwdpRemoteWeight')}
                              </div>
                            )}
@@ -1800,7 +1802,7 @@ const App = () => {
                             />
                           </div>
                           {expertTp > 1 && (
-                            <div title={t('moeExpertCollectiveTitle')} aria-label={t('moeExpertCollectiveTitle')} className={`mt-1 flex items-center justify-center gap-0.5 rounded border px-1 py-0.5 text-center text-[7px] font-bold leading-tight ${isEpActive ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-slate-200 bg-white text-slate-400'}`}>
+                            <div title={t('moeExpertCollectiveTitle')} aria-label={t('moeExpertCollectiveTitle')} className={`mt-1 flex items-center justify-center gap-0.5 rounded border px-1 py-0.5 text-center text-[9px] font-bold leading-tight ${isEpActive ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-slate-200 bg-white text-slate-400'}`}>
                               <Network size={8} className="shrink-0" />
                               <span>{t('moeExpertCollectiveEdge')}</span>
                             </div>
@@ -1847,7 +1849,7 @@ const App = () => {
               mW={64} mH={16}
             />
             {componentProfile === 'wideEp' && (
-              <p className="mt-1 rounded border border-blue-200 bg-blue-50 px-1 py-0.5 text-center text-[7px] font-bold leading-tight text-blue-700">
+              <p className="mt-1 rounded border border-blue-200 bg-blue-50 px-1 py-0.5 text-center text-[9px] font-bold leading-tight text-blue-700">
                 {t('wideEpLmHeadRole', { dp: componentParallel.lmHeadDp, tp: degrees.tp })}
               </p>
             )}
@@ -1878,7 +1880,7 @@ const App = () => {
 
         {/* Explicit Rank Number */}
         <div className="flex w-4 shrink-0 justify-end">
-           <span className="min-w-4 rounded border border-slate-200 bg-slate-50 px-0.5 py-px text-center font-mono text-[7px] leading-none text-slate-500">
+           <span className="min-w-4 rounded border border-slate-200 bg-slate-50 px-0.5 py-px text-center font-mono text-[9px] leading-none text-slate-500">
              {activeIdx}
            </span>
         </div>
@@ -1949,7 +1951,7 @@ const App = () => {
             <Cpu size={10} className={`shrink-0 ${isActiveCard ? 'text-cyan-500' : 'text-slate-400'}`} />
             GPU {g}
             {servingMode === 'pdDisaggregated' && (
-              <span title={t(coords.pool === 'prefill' ? 'prefillPool' : 'decodePool')} className={`rounded border px-1 py-px text-[7px] ${coords.pool === 'prefill' ? 'border-cyan-200 bg-cyan-50 text-cyan-700' : 'border-purple-200 bg-purple-50 text-purple-700'}`}>
+              <span title={t(coords.pool === 'prefill' ? 'prefillPool' : 'decodePool')} className={`rounded border px-1 py-px text-[9px] ${coords.pool === 'prefill' ? 'border-cyan-200 bg-cyan-50 text-cyan-700' : 'border-purple-200 bg-purple-50 text-purple-700'}`}>
                 {t(coords.pool === 'prefill' ? 'prefillShort' : 'decodeShort')}
               </span>
             )}
@@ -1960,7 +1962,7 @@ const App = () => {
           </div>
         </div>
         {degrees.pp > 1 && (
-          <div className={`mb-1.5 flex items-center gap-1 rounded border px-1 py-0.5 text-[7px] font-semibold leading-tight ${pipelineTone}`}>
+          <div className={`mb-1.5 flex items-center gap-1 rounded border px-1 py-0.5 text-[9px] font-semibold leading-tight ${pipelineTone}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${isExecuting ? 'bg-cyan-500 animate-pulse' : isStageDone ? 'bg-emerald-500' : isBubble ? 'bg-slate-400' : 'bg-purple-400'}`} />
             <span>{pipelineLabel}</span>
           </div>
@@ -1974,17 +1976,17 @@ const App = () => {
           {renderMiniTrack('etp', 'ETP', 'indigo', coords)}
         </div>
         {componentProfile === 'wideEp' && (
-          <div className="mt-1.5 border-t border-slate-100 pt-1.5 text-center text-[7px] font-bold leading-tight">
+          <div className="mt-1.5 border-t border-slate-100 pt-1.5 text-center text-[9px] font-bold leading-tight">
             <span className="block rounded border border-blue-200 bg-blue-50 px-1 py-0.5 text-blue-700">{t('dpAttentionWorkerShort', { worker: (coords.dp_idx * degrees.ep + coords.ep_idx) * degrees.tp + coords.tp_idx })}</span>
           </div>
         )}
         {componentProfile !== 'wideEp' && attentionMode === 'dpAttention' && (
-          <div className="mt-1.5 border-t border-slate-100 pt-1.5 text-center text-[7px] font-bold leading-tight">
+          <div className="mt-1.5 border-t border-slate-100 pt-1.5 text-center text-[9px] font-bold leading-tight">
             <span className="block rounded border border-blue-200 bg-blue-50 px-1 py-0.5 text-blue-700">{t('dpAttentionWorkerShort', { worker: coords.dp_idx * degrees.tp + coords.tp_idx })}</span>
           </div>
         )}
         {componentProfile === 'helix' && (
-          <div className="mt-1.5 border-t border-slate-100 pt-1.5 text-center text-[7px] font-bold leading-tight">
+          <div className="mt-1.5 border-t border-slate-100 pt-1.5 text-center text-[9px] font-bold leading-tight">
             <span className="block rounded border border-violet-200 bg-violet-50 px-1 py-0.5 text-violet-700">
               {attentionType === 'mla'
                 ? t('helixGpuRoleMla', { kvp: coords.ep_idx * degrees.tp + coords.tp_idx, ep: coords.ep_idx, tp: coords.tp_idx })
@@ -1993,7 +1995,7 @@ const App = () => {
           </div>
         )}
         {moeTransport === 'dwdp' && coords.pool === 'prefill' && (
-          <div className="mt-1.5 border-t border-orange-100 pt-1.5 text-center text-[7px] font-bold leading-tight">
+          <div className="mt-1.5 border-t border-orange-100 pt-1.5 text-center text-[9px] font-bold leading-tight">
             <span className="block rounded border border-orange-200 bg-orange-50 px-1 py-0.5 text-orange-700">
               {t('dwdpGpuRole', { group: coords.dp_idx, rank: coords.ep_idx })}
             </span>
@@ -2034,15 +2036,15 @@ const App = () => {
             const active = currentVal > 1;
 
             return (
-              <div key={strat.id} className={`p-3 lg:p-4 rounded-xl border transition-all duration-300 flex flex-col shadow-sm
+              <div key={strat.id} className={`p-2.5 lg:p-3 rounded-xl border transition-all duration-300 flex flex-col shadow-sm
                 ${active ? `${getColorClass(strat.color, 'border')} ${getColorClass(strat.color, 'softBg')}` : 'border-slate-200 bg-white'}`}>
 
-                <div className="flex items-center gap-1.5 lg:gap-2 mb-2">
-                  <Icon size={16} className={`shrink-0 ${active ? getColorClass(strat.color, 'text') : 'text-slate-400'}`} />
-                  <h3 className={`font-bold text-[12px] md:text-[13px] whitespace-nowrap tracking-tight ${active ? 'text-slate-900' : 'text-slate-600'}`}>{t(`${strat.id}Name`)}</h3>
+                <div className="flex items-center gap-1.5 mb-1.5 min-w-0">
+                  <Icon size={15} className={`shrink-0 ${active ? getColorClass(strat.color, 'text') : 'text-slate-400'}`} />
+                  <h3 className={`font-bold text-[11.5px] leading-tight tracking-tight min-w-0 ${active ? 'text-slate-900' : 'text-slate-600'}`}>{t(`${strat.id}Name`)}</h3>
                 </div>
 
-                <div className="flex gap-1 mb-2.5 lg:mb-3">
+                <div className="flex gap-1 mb-1.5">
                   {[1, 2, 4].map(val => {
                     const isSelected = currentVal === val;
                     const tempDegrees = { ...degrees, [strat.id]: val };
@@ -2066,7 +2068,7 @@ const App = () => {
                     )
                   })}
                 </div>
-                <p className={`text-[9px] lg:text-[10px] leading-relaxed mt-auto hidden sm:block ${active ? 'text-slate-700' : 'text-slate-400'}`}>
+                <p className={`text-[10px] leading-snug mt-auto hidden sm:block ${active ? 'text-slate-700' : 'text-slate-400'}`}>
                   {t(`${strat.id}Desc`)}
                 </p>
               </div>
@@ -2172,14 +2174,15 @@ const App = () => {
               {t(moeTransport === 'dwdp' ? 'dwdpHint' : componentProfile === 'wideEp' ? 'wideEpHint' : componentProfile === 'helix' ? 'helixHint' : attentionMode === 'dpAttention' ? 'dpAttentionHint' : servingMode === 'pdDisaggregated' ? 'pdSymmetricHint' : 'clusterHintBold')}
             </span>
           </div>
-          <div className="col-span-2 md:col-span-3 xl:col-span-6 flex items-start gap-1.5 rounded-lg border border-slate-200 bg-white p-2.5 text-[11px] text-slate-500 shadow-sm" data-testid="mapping-assumption-panel">
-            <Info size={14} className="shrink-0 text-blue-500" />
-            <span>
-              <strong>{t(mappingModel === 'dcpReuse' ? 'dcpHintTitle' : 'clusterHintTitle')}</strong>{' '}
+          <details className="col-span-2 md:col-span-3 xl:col-span-6 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] text-slate-500 shadow-sm" data-testid="mapping-assumption-panel">
+            <summary className="flex cursor-pointer items-center gap-1.5 font-semibold text-slate-700 select-none">
+              <Info size={14} className="shrink-0 text-blue-500" />
+              <span>{t(mappingModel === 'dcpReuse' ? 'dcpHintTitle' : 'clusterHintTitle')} {t('clusterHintBold')}</span>
+            </summary>
+            <p className="mt-1.5 pl-5 leading-relaxed text-slate-500">
               {t(mappingModel === 'dcpReuse' ? 'dcpHintDesc' : 'clusterHintDesc')}
-              {' '}<strong>{t('clusterHintBold')}</strong>
-            </span>
-          </div>
+            </p>
+          </details>
         </div>
 
         <div className="grid grid-cols-1 gap-4 pt-2 lg:grid-cols-12 lg:items-stretch xl:gap-5">

@@ -145,6 +145,14 @@ const i18n = {
     phase1: "阶段 1",
     phase2: "阶段 2",
     phase3: "阶段 3",
+    introTitle: "为什么 MoE 还需要 Engram？条件记忆 vs 条件计算",
+    introCard1Title: "1. 痛点：早层浪费算力背词组",
+    introCard1Desc: "纯 MoE 靠动态路由分配算力，但静态实体、固定短语与局部搭配反复消耗浅层注意力与 FFN 算力。",
+    introCard2Title: "2. 解法：O(1) 确定性 N-Gram 查表",
+    introCard2Desc: "Engram 用输入 Token 缀合哈希在 O(1) 内从超大内存表取出静态记忆，再经上下文门控与短卷积注入残差流。",
+    introCard3Title: "3. 系统红利：确定性地址可异步预取",
+    introCard3Desc: "查表索引仅依赖 input_ids，可在前置 Transformer 层计算时异步从 Host DRAM 经 PCIe 预取，突破 HBM 容量上限。",
+    innerConvResidual: "内层残差 + Ṽ",
   },
   en: {
     sampleSummary: "Optional experiment: calculate retrieval and gating",
@@ -271,6 +279,14 @@ const i18n = {
     phase1: "Phase 1",
     phase2: "Phase 2",
     phase3: "Phase 3",
+    introTitle: "Why MoE Still Needs Engram: Conditional Memory vs Conditional Compute",
+    introCard1Title: "1. Bottleneck: Early Layers Memorize Static Phrases",
+    introCard1Desc: "Pure MoE scales conditional compute, yet early attention and FFN layers repeatedly spend FLOPs reconstructing static entities and fixed n-grams.",
+    introCard2Title: "2. Solution: O(1) Deterministic N-Gram Lookup",
+    introCard2Desc: "Engram hashes suffix tokens into O(1) embedding tables, then injects retrieved memory into the residual stream via context-aware gating and short conv.",
+    introCard3Title: "3. System Bonus: Prefetchable Off-Chip Tables",
+    introCard3Desc: "Because lookup indices depend only on input_ids, tables can live in Host DRAM and prefetch over PCIe behind preceding layers without filling HBM.",
+    innerConvResidual: "Inner residual + Ṽ",
   }
 };
 
@@ -447,8 +463,37 @@ const TimelineSegment = ({ status, color, grow, children }) => {
   );
 };
 
+const CHANNEL_STYLES = {
+  indigo: {
+    boxActive: 'bg-indigo-50 border border-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.12)]',
+    boxReached: 'bg-indigo-50 border border-indigo-200 opacity-85',
+    headActive: 'bg-indigo-100 border-indigo-400 text-indigo-500 shadow-sm scale-110',
+    headReached: 'bg-indigo-50 border-indigo-200 text-indigo-500 opacity-75',
+    formulaActive: 'bg-slate-800 text-indigo-200 border-indigo-400 shadow-[0_0_8px_rgba(0,0,0,0.6)] scale-105',
+    formulaReached: 'bg-slate-800 text-indigo-200 border-indigo-300 opacity-75',
+    tabActive: 'bg-slate-800 border-slate-700 text-indigo-200 shadow-[0_0_6px_rgba(0,0,0,0.5)] scale-105',
+    tabReached: 'bg-slate-700 border-slate-600 text-indigo-200 opacity-70',
+    flatActive: 'border-indigo-400 scale-105 shadow-[0_0_10px_currentColor] text-indigo-500',
+    flatReached: 'border-indigo-200 text-indigo-500 opacity-70',
+    stripReached: 'bg-white border-indigo-300',
+  },
+  purple: {
+    boxActive: 'bg-purple-50 border border-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.12)]',
+    boxReached: 'bg-purple-50 border border-purple-200 opacity-85',
+    headActive: 'bg-purple-100 border-purple-400 text-purple-500 shadow-sm scale-110',
+    headReached: 'bg-purple-50 border-purple-200 text-purple-500 opacity-75',
+    formulaActive: 'bg-slate-800 text-purple-200 border-purple-400 shadow-[0_0_8px_rgba(0,0,0,0.6)] scale-105',
+    formulaReached: 'bg-slate-800 text-purple-200 border-purple-300 opacity-75',
+    tabActive: 'bg-slate-800 border-slate-700 text-purple-200 shadow-[0_0_6px_rgba(0,0,0,0.5)] scale-105',
+    tabReached: 'bg-slate-700 border-slate-600 text-purple-200 opacity-70',
+    flatActive: 'border-purple-400 scale-105 shadow-[0_0_10px_currentColor] text-purple-500',
+    flatReached: 'border-purple-200 text-purple-500 opacity-70',
+    stripReached: 'bg-white border-purple-300',
+  },
+};
+
 const App = () => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(2);
   const [isPlaying, setIsPlaying] = useState(false);
   const [slideIdx, setSlideIdx] = useExperimentState('Engram.slideIdx', 2);
   const [systemMode, setSystemMode] = useExperimentState('Engram.systemMode', 'inference');
@@ -555,11 +600,33 @@ const App = () => {
           </div>
         </div>
 
-        {/* 第一行：并排三模块（拓扑 : 张量流 : 伪代码） */}
+        {/* §0 宏观心智模型：为什么需要 Engram */}
+        <section className="bg-white rounded-2xl p-4 md:p-5 border border-slate-200 shadow-sm space-y-3" data-testid="engram-intro-overview">
+          <h2 data-section-anchor="engram-overview" className="text-sm md:text-base font-bold text-slate-900 flex items-center gap-2">
+            <BrainCircuit size={18} className="text-indigo-500 shrink-0" />
+            {t('introTitle')}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-3 space-y-1">
+              <div className="font-bold text-rose-900">{t('introCard1Title')}</div>
+              <p className="text-slate-600 leading-relaxed">{t('introCard1Desc')}</p>
+            </div>
+            <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-3 space-y-1">
+              <div className="font-bold text-indigo-900">{t('introCard2Title')}</div>
+              <p className="text-slate-600 leading-relaxed">{t('introCard2Desc')}</p>
+            </div>
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 space-y-1">
+              <div className="font-bold text-emerald-900">{t('introCard3Title')}</div>
+              <p className="text-slate-600 leading-relaxed">{t('introCard3Desc')}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 第一行：网络拓扑 + 微观张量流（避免 1360px 裁切 3-Gram 与代码） */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
 
           {/* 1. 网络拓扑结构 (自上而下翻转) */}
-          <div className="xl:col-span-2 bg-white rounded-2xl p-4 md:p-5 border border-slate-200 shadow-sm flex flex-col">
+          <div className="xl:col-span-3 bg-white rounded-2xl p-4 md:p-5 border border-slate-200 shadow-sm flex flex-col">
             <div className="flex items-center mb-4 pb-3 border-b border-slate-100">
                <h2 data-section-anchor="engram-1" className="text-base md:text-lg font-bold flex items-center gap-2 text-slate-800 whitespace-nowrap">
                  <Network className="text-indigo-500 shrink-0" size={20}/>
@@ -656,7 +723,7 @@ const App = () => {
 
           {/* 2. Engram微观张量流图 (自上而下翻转) */}
           <div
-            className="xl:col-span-7 bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative overflow-x-auto overflow-y-hidden"
+            className="xl:col-span-9 bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm flex flex-col relative overflow-x-auto overflow-y-hidden"
             data-testid="engram-tensor-flow"
             data-operation={snapshot.operation}
             data-phase={phase}
@@ -793,10 +860,11 @@ const App = () => {
                     const concatReached = isReachedStatus(concatStatus);
                     const tColor = getTensorColors(item.color, vectorStatus);
                     const lColor = getLineColors(item.color, hashReached ? 'passed' : 'pending');
+                    const chStyle = CHANNEL_STYLES[item.color];
 
                     return (
-                      <div key={idx} className={`w-1/2 rounded-xl p-3 mx-3 shadow-sm flex flex-col items-center transition-all duration-500
-                        ${hashStatus === 'active' ? `bg-${item.color}-50 border border-${item.color}-400 shadow-[0_0_10px_rgba(99,102,241,0.12)]` : hashReached ? `bg-${item.color}-50 border border-${item.color}-200 opacity-85` : 'bg-white border border-slate-200 opacity-50'}`}>
+                      <div key={idx} className={`w-1/2 rounded-xl p-3 mx-2 shadow-sm flex flex-col items-center transition-all duration-500
+                        ${hashStatus === 'active' ? chStyle.boxActive : hashReached ? chStyle.boxReached : 'bg-white border border-slate-200 opacity-50'}`}>
                          <div className={`text-xs font-bold mb-3 transition-colors ${hashReached ? lColor.text : 'text-slate-500'}`}>{item.title}</div>
 
                          {/* ====== 顶部：倒置重构的哈希管道层 ====== */}
@@ -804,7 +872,7 @@ const App = () => {
                             {/* 1. H Index 层 (接受上面下来的输入) */}
                             <div className="flex gap-1.5 w-full justify-between z-10">
                               {Array.from({length: 8}).map((_, k) => (
-                                  <div key={`h-${k}`} className={`relative flex-1 py-1 text-center rounded border text-[8px] font-bold transition-all duration-500 ${hashStatus === 'active' ? `bg-${item.color}-100 border-${item.color}-400 ${lColor.text} shadow-sm scale-110` : hashReached ? `bg-${item.color}-50 border-${item.color}-200 ${lColor.text} opacity-75` : 'bg-white border-slate-300 text-slate-400'}`}>
+                                  <div key={`h-${k}`} className={`relative flex-1 py-1 text-center rounded border text-[8.5px] font-bold transition-all duration-500 ${hashStatus === 'active' ? chStyle.headActive : hashReached ? chStyle.headReached : 'bg-white border-slate-300 text-slate-400'}`}>
                                     H{k+1}
                                   </div>
                               ))}
@@ -812,7 +880,7 @@ const App = () => {
 
                             {/* 2. 中间共用的 Hash 公式层 */}
                             <div className="relative w-full flex justify-center my-2 z-20">
-                                <div className={`w-[95%] py-1 rounded flex items-center justify-center text-[9px] font-bold transition-all duration-500 border ${hashStatus === 'active' ? `bg-slate-800 text-${item.color}-200 border-${item.color}-400 shadow-[0_0_8px_rgba(0,0,0,0.6)] scale-105` : hashReached ? `bg-slate-800 text-${item.color}-200 border-${item.color}-300 opacity-75` : 'bg-slate-100 border-slate-300 text-slate-400 opacity-80'}`}>
+                                <div className={`w-[95%] py-1 rounded flex items-center justify-center text-[9px] font-bold transition-all duration-500 border ${hashStatus === 'active' ? chStyle.formulaActive : hashReached ? chStyle.formulaReached : 'bg-slate-100 border-slate-300 text-slate-400 opacity-80'}`}>
                                    <MathFormula>{String.raw`h_{n,k}=\left(\bigoplus_{i=0}^{n-1}x'_{t-i}M_i\right)\bmod P_{n,k}`}</MathFormula>
                                 </div>
                             </div>
@@ -820,7 +888,7 @@ const App = () => {
                             {/* 3. Tabs 层 */}
                             <div className="flex gap-1.5 w-full justify-between z-10">
                               {Array.from({length: 8}).map((_, k) => (
-                                  <div key={`tab-${k}`} className={`relative flex-1 py-1.5 text-center rounded border text-[6px] font-mono transition-all duration-500 ${tableStatus === 'active' ? `bg-slate-800 border-slate-700 text-${item.color}-200 shadow-[0_0_6px_rgba(0,0,0,0.5)] scale-105` : tableReached ? `bg-slate-700 border-slate-600 text-${item.color}-200 opacity-70` : 'bg-slate-200 border-slate-300 text-slate-400'}`}>
+                                  <div key={`tab-${k}`} className={`relative flex-1 py-1.5 text-center rounded border text-[8px] font-mono transition-all duration-500 ${tableStatus === 'active' ? chStyle.tabActive : tableReached ? chStyle.tabReached : 'bg-slate-200 border-slate-300 text-slate-400'}`}>
                                     T{k+1}
                                     {k === 0 && <DimBadge text="[Vocab,D_h]" status={tableStatus} posClasses="-left-[70px] top-1/2 -translate-y-1/2" />}
                                   </div>
@@ -856,7 +924,7 @@ const App = () => {
                          {/* ====== 底部：展平节点 (Flatten -> E_t) ====== */}
                          <div className="w-full flex flex-col items-center relative">
                            <div className={`relative w-[90%] flex items-center justify-center gap-1.5 bg-white border rounded py-1 shadow-sm z-10 transition-all duration-500 mb-0.5
-                             ${concatStatus === 'active' ? `border-${item.color}-400 scale-105 shadow-[0_0_10px_currentColor] ${lColor.text}` : concatReached ? `border-${item.color}-200 ${lColor.text} opacity-70` : 'border-slate-300 text-slate-400'}`}>
+                             ${concatStatus === 'active' ? chStyle.flatActive : concatReached ? chStyle.flatReached : 'border-slate-300 text-slate-400'}`}>
                              <span className="text-[10px] font-bold"><FunctionSquare size={10} className="inline mr-1 -mt-0.5"/>{t('flatten')}</span>
                              <DimBadge text="[B, L, E_D/2]" status={concatStatus} posClasses="-right-16 top-1/2 -translate-y-1/2" />
                            </div>
@@ -865,7 +933,7 @@ const App = () => {
 
                            <div className={`w-[80%] flex flex-col items-center transition-all duration-500 z-10 ${concatStatus === 'active' ? 'scale-110' : concatReached ? 'opacity-75' : 'opacity-45'}`}>
                              <div className={`flex gap-[2px] w-full h-4 shadow-sm p-[2px] border rounded transition-colors duration-500
-                                ${concatReached ? `bg-white border-${item.color}-300` : 'bg-slate-100 border-slate-200'}`}>
+                                ${concatReached ? chStyle.stripReached : 'bg-slate-100 border-slate-200'}`}>
                                {Array.from({length: 8}).map((_, i) => (
                                   <div key={i} className={`flex-1 rounded-[1px] transition-colors duration-500 ${concatReached ? getTensorColors(item.color, concatStatus).main : 'bg-slate-200'}`} />
                                ))}
@@ -962,8 +1030,17 @@ const App = () => {
                     <Arrow left="76%" top="342px" dir="down" status={snapshot.stageStatus.gate} color="emerald" />
                     <HLine left="48%" width="28%" top="372px" status={snapshot.stageStatus.shortConv} color="emerald" />
                     <Arrow left="62%" top="372px" dir="left" status={snapshot.stageStatus.shortConv} color="emerald" />
+                    {/* 内层 ShortConv 旁路残差：Y = Ṽ_t + Conv1D(Ṽ_t) */}
+                    <VLine left="76%" top="372px" height="54px" status={snapshot.stageStatus.shortConv} color="emerald" />
+                    <HLine left="30%" width="46%" top="426px" status={snapshot.stageStatus.shortConv} color="emerald" />
+                    <VLine left="30%" top="372px" height="54px" status={snapshot.stageStatus.shortConv} color="emerald" />
+                    <Arrow left="30%" top="396px" dir="up" status={snapshot.stageStatus.shortConv} color="emerald" />
+                    <div className="absolute left-[54%] top-[426px] -translate-x-1/2 -translate-y-1/2 rounded bg-white px-1.5 py-0.5 text-[8.5px] font-bold text-emerald-700 border border-emerald-200 shadow-sm z-20 whitespace-nowrap">
+                      {t('innerConvResidual')}
+                    </div>
+                    <OpNode dataNode="inner-conv-add" label="+" isCircle sizeClass="w-6 h-6" status={snapshot.stageStatus.shortConv} color="emerald" left="30%" top="372px" textClass="text-xs" />
                     <HLine left="12%" width="36%" top="372px" status={snapshot.stageStatus.integrate} color="indigo" />
-                    <Arrow left="29%" top="372px" dir="left" status={snapshot.stageStatus.integrate} color="indigo" />
+                    <Arrow left="21%" top="372px" dir="left" status={snapshot.stageStatus.integrate} color="indigo" />
                     <VLine left="12%" top="372px" height="70px" status={snapshot.stageStatus.integrate} color="blue" />
                     <Arrow left="12%" top="408px" dir="down" status={snapshot.stageStatus.integrate} color="blue" />
 
@@ -1008,9 +1085,13 @@ const App = () => {
 
            </div>
           </div>
+        </div>
+
+        {/* 第二行：伪代码（宽屏无裁切）+ 具体数值查表与门控实验（默认展开） */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
 
           {/* 3. Engram 伪代码深度展开 */}
-          <div className="xl:col-span-3 bg-[#1E1E1E] rounded-2xl border border-slate-700 shadow-xl flex flex-col overflow-hidden h-full min-h-[700px]" data-testid="engram-code-panel">
+          <div className="xl:col-span-5 bg-[#1E1E1E] rounded-2xl border border-slate-700 shadow-xl flex flex-col overflow-hidden h-full min-h-[540px]" data-testid="engram-code-panel">
            <div className="bg-[#2D2D2D] px-4 py-3 flex items-center justify-between border-b border-slate-700">
              <div className="flex items-center gap-3">
                <div className="flex gap-1.5">
@@ -1163,6 +1244,18 @@ const App = () => {
            </div>
           </div>
 
+          <details open className="xl:col-span-7 group rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col" data-testid="engram-sample-disclosure">
+            <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl p-4 text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 [&::-webkit-details-marker]:hidden">
+              <Calculator size={18} className="shrink-0 text-indigo-500" />
+              <div className="min-w-0 flex-1">
+                <h2 data-section-anchor="engram-sample" data-section-label={t('sampleNav')} className="text-sm font-semibold">{t('sampleSummary')}</h2>
+                <p className="mt-1 text-xs leading-relaxed text-slate-500">{t('sampleHint')}</p>
+              </div>
+              <ChevronDown size={18} className="shrink-0 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="border-t border-slate-200 p-3 md:p-4 flex-1"><LookupSample lang={lang}/></div>
+          </details>
+
         </div>
 
         {/* ======================================================= */}
@@ -1302,18 +1395,6 @@ const App = () => {
               </div>
            </div>
         </div>
-
-        <details className="group mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm" data-testid="engram-sample-disclosure">
-          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl p-4 text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 [&::-webkit-details-marker]:hidden">
-            <Calculator size={18} className="shrink-0 text-indigo-500" />
-            <div className="min-w-0 flex-1">
-              <h2 data-section-anchor="engram-sample" data-section-label={t('sampleNav')} className="text-sm font-semibold">{t('sampleSummary')}</h2>
-              <p className="mt-1 text-xs leading-relaxed text-slate-500">{t('sampleHint')}</p>
-            </div>
-            <ChevronDown size={18} className="shrink-0 transition-transform group-open:rotate-180" />
-          </summary>
-          <div className="border-t border-slate-200 p-3 md:p-4"><LookupSample lang={lang}/></div>
-        </details>
 
       </div>
     </div>

@@ -15,18 +15,19 @@ const copy = {
     ringZigzag: 'ZigZag 对称配对',
     spDesc: '在 TP 组内把 LayerNorm / Residual 激活沿序列维切为 1/TP，仅在进入线性层前 All-Gather、退出后 Reduce-Scatter，不增加额外通信字节。',
     ulyssesDesc: '通过一次 All-to-All 把 [S/P, H] 转为 [S, H/P]，零 Ring 延迟且支持任意 FlashAttention；但并行度受限于 KV 头数（GQA 下 CP > H_kv 须复制 KV 头）。',
-    ringDesc: '每卡持有 S/P 序列分片沿环接力传递 KV；因果下三角下顺序切分会让末卡算力达首卡 5 倍，ZigZag 按 (i, 2P-1-i) 配对令每卡均摊完全相等的因果算量。',
+    ringDesc: '每卡持有 S/P 序列分片沿环接力传递 KV；因果下三角（按半块面积精确积分）下，顺序切分会让末卡因果算量达首卡 7.0×（14 vs 2 因果块），ZigZag 按 (i, 2P-1-i) 配对令每卡均摊完全相等的 8 个因果块。',
     causalUnits: '因果计算块',
-    skewBadgeBad: '负载极度失衡 (5.0×)',
+    skewBadgeBad: '负载极度失衡 (7.0×)',
     skewBadgeGood: '负载均衡 (1.0×)',
     pdRag: '长输入短输出 (RAG · 16K→256)',
     pdCot: '短输入长推理 (CoT · 4K→8K)',
     prefillPool: 'Prefill 池（低 TTFT）',
     decodePool: 'Decode 池（高吞吐）',
     reshardBridge: 'RDMA / NIXL 跨池 KV 重排',
-    interconnectNote: '机内 NVLink (900 GB/s) 承载 TP/SP 高频通信；机间 IB/RoCE (50 GB/s) 承载跨池 KV 重排与受限 Wide-EP。',
+    interconnectNote: '同口径单向带宽对比：机内 NVLink 4.0（450 GB/s/卡）约为机间 400G NDR IB（50 GB/s/卡）的 9×，故高频 TP/SP 留在机内，跨池 KV 重排与受限 Wide-EP 走机间网络。',
     ratioLabel: '推荐集群 P:D 卡数配比',
-    reshardDetail: 'Prefill 侧按 TP4×CP2 生成的分片 KV，在写往 Decode 侧时按请求归属重排为 DP-Attn + MLA 单份布局。',
+    reshardDetailRag: 'RAG 场景：Prefill 侧 3 节点（24 卡 · DP3 × TP4 × CP2）生成的长上下文 KV 分片，经 RDMA 按请求归属重排并汇聚到 Decode 侧 1 节点（8 卡 · DP-Attn + MLA）单份槽位。',
+    reshardDetailCot: 'CoT 场景：Prefill 侧 1 节点（8 卡 · DP2 × TP4）完成短 Prompt 计算后，将 KV 经 RDMA 分发至 Decode 侧 3 节点（24 卡 · DP-Attn + Wide-EP）承载超长生成并发。',
   },
   en: {
     title: 'Long-Context Prefill & Asymmetric P/D Resharding',
@@ -40,18 +41,19 @@ const copy = {
     ringZigzag: 'ZigZag paired',
     spDesc: 'Shards LayerNorm/Residual activations by 1/TP along sequence inside a TP group, using All-Gather before linear layers and Reduce-Scatter after with zero extra communication volume.',
     ulyssesDesc: 'Transposes [S/P, H] into [S, H/P] via one All-to-All with zero ring hops and standard FlashAttention; parallelism is capped by KV head count (CP > H_kv forces KV head duplication).',
-    ringDesc: 'Ranks hold S/P sequence chunks and pass KV around a ring; contiguous causal splits give the last rank 5× more compute, whereas ZigZag (i, 2P-1-i) pairing balances every rank identically.',
-    causalUnits: 'causal work units',
-    skewBadgeBad: 'Severe skew (5.0×)',
+    ringDesc: 'Ranks hold S/P sequence chunks and pass KV around a ring; integrating exact causal lower-triangle area, contiguous splits give the last rank 7.0× more compute (14 vs 2 causal tiles), whereas ZigZag (i, 2P-1-i) pairing balances every rank at 8 tiles.',
+    causalUnits: 'causal tiles',
+    skewBadgeBad: 'Severe skew (7.0×)',
     skewBadgeGood: 'Balanced (1.0×)',
     pdRag: 'Long-in / Short-out (RAG · 16K→256)',
     pdCot: 'Short-in / Long-out (CoT · 4K→8K)',
     prefillPool: 'Prefill Pool (TTFT-opt)',
     decodePool: 'Decode Pool (TPOT/TPS-opt)',
     reshardBridge: 'RDMA / NIXL KV Resharding',
-    interconnectNote: 'Intra-node NVLink (900 GB/s) carries frequent TP/SP collectives; inter-node IB/RoCE (50 GB/s) carries cross-pool KV resharding and bounded Wide-EP.',
+    interconnectNote: 'Same-direction unidirectional comparison: intra-node NVLink 4.0 (450 GB/s/GPU) is 9× faster than inter-node 400G NDR IB (50 GB/s/GPU), keeping frequent TP/SP intra-node and cross-pool KV resharding / bounded Wide-EP inter-node.',
     ratioLabel: 'Recommended P:D GPU ratio',
-    reshardDetail: 'KV shards produced under TP4×CP2 on Prefill are repacked across RDMA into request-owned DP-Attn + MLA single-copy slots on Decode.',
+    reshardDetailRag: 'RAG workload: KV shards produced by 3 Prefill nodes (24 GPUs · DP3 × TP4 × CP2) are repacked across RDMA into request-owned DP-Attn + MLA single-copy slots on 1 Decode node (8 GPUs).',
+    reshardDetailCot: 'CoT workload: 1 Prefill node (8 GPUs · DP2 × TP4) computes short prompts and dispatches KV via RDMA to 3 Decode nodes (24 GPUs · DP-Attn + Wide-EP) for long reasoning concurrency.',
   },
 };
 
@@ -62,23 +64,25 @@ export default function PrefillSequenceAndPdPanel({ lang = 'zh' }) {
   const [zigzag, setZigzag] = useState(true);
   const [workload, setWorkload] = useState('rag');
 
+  // Exact continuous causal lower-triangle area for 8 chunks (total = 32 tiles):
+  // Chunk k has area (k + 0.5) tiles -> contiguous pairs sum to [2, 6, 10, 14] (7.0x skew), ZigZag pairs sum to [8, 8, 8, 8] (1.0x).
   const ringLanes = zigzag
     ? [
-        { gpu: 0, chunks: ['C0', 'C7'], work: 9 },
-        { gpu: 1, chunks: ['C1', 'C6'], work: 9 },
-        { gpu: 2, chunks: ['C2', 'C5'], work: 9 },
-        { gpu: 3, chunks: ['C3', 'C4'], work: 9 },
+        { gpu: 0, chunks: ['C0', 'C7'], work: 8 },
+        { gpu: 1, chunks: ['C1', 'C6'], work: 8 },
+        { gpu: 2, chunks: ['C2', 'C5'], work: 8 },
+        { gpu: 3, chunks: ['C3', 'C4'], work: 8 },
       ]
     : [
-        { gpu: 0, chunks: ['C0', 'C1'], work: 3 },
-        { gpu: 1, chunks: ['C2', 'C3'], work: 7 },
-        { gpu: 2, chunks: ['C4', 'C5'], work: 11 },
-        { gpu: 3, chunks: ['C6', 'C7'], work: 15 },
+        { gpu: 0, chunks: ['C0', 'C1'], work: 2 },
+        { gpu: 1, chunks: ['C2', 'C3'], work: 6 },
+        { gpu: 2, chunks: ['C4', 'C5'], work: 10 },
+        { gpu: 3, chunks: ['C6', 'C7'], work: 14 },
       ];
 
   const pdPreset = workload === 'rag'
-    ? { ratio: '3P : 1D', pNodes: '12 GPUs · TP4 × CP2 + EP', dNodes: '4 GPUs · DP-Attn + MLA' }
-    : { ratio: '1P : 3D', pNodes: '4 GPUs · TP4', dNodes: '12 GPUs · DP-Attn + Wide-EP' };
+    ? { ratio: '3P : 1D', pNodes: '24 GPUs · DP3 × TP4 × CP2', dNodes: '8 GPUs · DP-Attn + MLA', detailKey: 'reshardDetailRag' }
+    : { ratio: '1P : 3D', pNodes: '8 GPUs · DP2 × TP4', dNodes: '24 GPUs · DP-Attn + Wide-EP', detailKey: 'reshardDetailCot' };
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5 shadow-sm space-y-4" data-testid="parallel-modern-panel">
@@ -136,7 +140,7 @@ export default function PrefillSequenceAndPdPanel({ lang = 'zh' }) {
                     <span className="font-mono text-[11px] text-indigo-700">{lane.chunks.join(' + ')}</span>
                   </div>
                   <div className="h-2.5 rounded-full bg-slate-200 overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${lane.work > 11 ? 'bg-rose-500' : 'bg-emerald-500'}`} style={{ width: `${(lane.work / 15) * 100}%` }} />
+                    <div className={`h-full rounded-full transition-all ${lane.work > 10 ? 'bg-rose-500' : 'bg-emerald-500'}`} style={{ width: `${(lane.work / 14) * 100}%` }} />
                   </div>
                   <div className="text-[11px] font-semibold text-slate-600">{lane.work} {t('causalUnits')}</div>
                 </div>
@@ -196,7 +200,7 @@ export default function PrefillSequenceAndPdPanel({ lang = 'zh' }) {
           </div>
 
           <div className="text-xs text-slate-600 space-y-1 border-t border-slate-100 pt-2 leading-relaxed">
-            <p>{t('reshardDetail')}</p>
+            <p>{t(pdPreset.detailKey)}</p>
             <p className="text-[11px] text-slate-500">{t('interconnectNote')}</p>
           </div>
         </div>

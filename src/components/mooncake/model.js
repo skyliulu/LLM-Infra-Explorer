@@ -22,9 +22,10 @@ export const PREFETCH_THRESHOLD_PAGES = 1;
 export const DEFAULT_PREFETCH_TOKENS = 256;
 export const LEASE_SECONDS = 10;
 
-// Analytical readout, not a measured TTFT: no queueing, no batching, serial
-// prefetch then load, one metadata query per request.
-export const READOUT = {prefillRate: 11000, hostGBps: 50, fabricGBps: 190, lookupMs: 0.8};
+// Analytical readout for an 8-GPU 70B node (TP8):
+// 8x PCIe Gen5 effective aggregate host-to-GPU = 250 GB/s (> 190 GB/s 8x400G RDMA fabric),
+// eliminating the 1-GPU PCIe vs 8-NIC RDMA scope mismatch.
+export const READOUT = {prefillRate: 11000, hostGBps: 250, fabricGBps: 190, lookupMs: 0.8};
 
 export const MEDIA = [
   {id: 'rdma', gbps: 190},
@@ -100,14 +101,18 @@ export function simulateTrace(mode = 'cluster', poolPages = POOL_DEFAULT, second
     touch(slots, order, id);
     return true;
   };
-  const findPool = id => {
+  const segmentReadCounts = capacity.map(() => 0);
+  const findPool = (id, preferredSeg = 0) => {
+    const matches = [];
     for (let index = 0; index < segments.length; index += 1) {
-      if (segments[index].includes(id)) {
-        touch(segments[index], segmentOrder[index], id);
-        return index;
-      }
+      if (segments[index].includes(id)) matches.push(index);
     }
-    return -1;
+    if (matches.length === 0) return -1;
+    // Load-balance reads across replicas (prefer least-read replica, tie-break by preferredSeg)
+    matches.sort((a, b) => (segmentReadCounts[a] - segmentReadCounts[b]) || (a === preferredSeg ? -1 : b === preferredSeg ? 1 : a - b));
+    const chosen = matches[0];
+    touch(segments[chosen], segmentOrder[chosen], id);
+    return chosen;
   };
   const putPool = (id, segment, pinned) => {
     const found = findPool(id);
@@ -144,8 +149,15 @@ export function simulateTrace(mode = 'cluster', poolPages = POOL_DEFAULT, second
       let source = 'miss';
       if (!missed) {
         if (l2[request.instance].includes(id)) source = 'l2';
-        else if (mode === 'cluster' && findPool(id) >= 0) source = 'pool';
-        else missed = true;
+        else if (mode === 'cluster') {
+          const hitSeg = findPool(id, request.instance);
+          if (hitSeg >= 0) {
+            source = 'pool';
+            segmentReadCounts[hitSeg] += 1;
+          } else {
+            missed = true;
+          }
+        } else missed = true;
       }
       decisions.push({id, source});
       if (source === 'l2') { localPagesHit += 1; touch(l2[request.instance], l2Order[request.instance], id); }
@@ -239,11 +251,16 @@ export function deriveMooncakeState({mode = 'cluster', poolPages = POOL_DEFAULT,
   const previousRound = snapshot.request ? snapshot.request.round : 0;
   const rounds = snapshot.roundStats.map(row => ({...row, hitRate: row.reused + row.computed ? row.reused / (row.reused + row.computed) : 0}));
   const currentRound = rounds[previousRound - 1] || null;
+  const s0ReplicaCount = snapshot.segments.filter(row => row.includes('S0')).length;
+  const peakHotFanout = safeMode === 'cluster'
+    ? (s0ReplicaCount > 0 ? Number((INSTANCES / s0ReplicaCount).toFixed(1)) : INSTANCES)
+    : 0;
   return {
     mode: safeMode,
     poolPages: active.poolPages,
     hotReplicas: safeReplicas,
-    peakHotFanout: safeMode === 'cluster' ? (safeReplicas === 2 ? 1.5 : 3) : 0,
+    s0ReplicaCount,
+    peakHotFanout,
     step: at,
     limit,
     phase: at === 0 ? 'idle' : at === limit ? 'done' : 'running',
@@ -310,11 +327,16 @@ export function deriveHitScenario(poolPages = POOL_DEFAULT) {
 
 // Architecture-level counterfactuals on the same Round-5 cross-node request
 // (1 local page S0 + 4 remote pages C0R1..C0R4 + 1 new page C0R5).
+// Proxy uses a realistic 100GbE kernel TCP host-bounce (12.5 GB/s) through a single Master relay:
+// 2 network hops (segment -> Master -> Engine) + 2 CPU memory copies (~10 ms host bounce/serialization),
+// isolating the architectural proxy bottleneck without relying on an unrealistic 10GbE strawman.
 export function deriveTopologyComparison(poolPages = POOL_DEFAULT) {
   const hit = deriveHitScenario(poolPages);
   const remoteBytes = hit.bytes.prefetch;
-  const slowGBps = MEDIA.find(item => item.id === 'slow').gbps;
-  const proxyTransferMs = (remoteBytes / 1e9 / slowGBps) * 1000;
+  const tcpGBps = MEDIA.find(item => item.id === 'tcp').gbps; // 12.5 GB/s (100GbE TCP)
+  const twoHopWireMs = 2 * (remoteBytes / 1e9 / tcpGBps) * 1000; // 13.42 ms across 2 hops
+  const cpuBounceMs = 10.5; // 2x kernel TCP socket copy + Master serialization/contention
+  const proxyTransferMs = twoHopWireMs + cpuBounceMs;
   const proxyTotalMs = hit.ms.lookup + proxyTransferMs + hit.ms.load + hit.ms.compute;
   const localLoadMs = (hit.local.length * PAGE_BYTES) / 1e9 / READOUT.hostGBps * 1000;
   const localComputeMs = (hit.request.pages.length - hit.local.length) * PAGE_TOKENS / READOUT.prefillRate * 1000;

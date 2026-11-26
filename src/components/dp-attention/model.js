@@ -103,6 +103,54 @@ export const deriveDpAttentionSnapshot = (input = {}) => {
   const loadProfile = isDp && DP_LOAD_PROFILES.includes(input.loadProfile) ? input.loadProfile : 'balanced';
   const workloadConfig = LOAD_PROFILE_CONFIG[loadProfile];
   const tboEnabled = isDp && moeTopology === 'ep' && input.tbo === 'on';
+  const rankShapes = workloadConfig.rankTokens.map((tok, idx) => {
+    const kind = workloadConfig.rankKinds[idx];
+    if (!isDp) {
+      return {
+        inputLatex: String.raw`[B,1,H]`,
+        kvLatex: String.raw`\left[B,\,T_{\mathrm{KV}},\,d_c+d_h^R\right]`,
+        attnOutLatex: String.raw`[B,1,H]`,
+        finalLatex: String.raw`[B,1,H]`,
+      };
+    }
+    if (loadProfile === 'balanced') {
+      return {
+        inputLatex: String.raw`\left[\frac{B}{4},1,H\right]`,
+        kvLatex: String.raw`\left[\frac{B}{4},\,T_{\mathrm{KV}},\,d_c+d_h^R\right]`,
+        attnOutLatex: String.raw`\left[\frac{B}{4},1,H\right]`,
+        finalLatex: String.raw`\left[\frac{B}{4},1,H\right]`,
+      };
+    }
+    if (kind === 'dummy') {
+      return {
+        inputLatex: String.raw`[1_{\mathrm{dummy}},H]`,
+        kvLatex: String.raw`0\text{ (dummy)}`,
+        attnOutLatex: String.raw`[1_{\mathrm{dummy}},H]`,
+        finalLatex: String.raw`[0,H]`,
+      };
+    }
+    if (kind === 'prefill') {
+      return {
+        inputLatex: String.raw`[1,${tok},H]`,
+        kvLatex: String.raw`\left[1,${tok},d_c+d_h^R\right]`,
+        attnOutLatex: String.raw`[1,${tok},H]`,
+        finalLatex: String.raw`[1,${tok},H]`,
+      };
+    }
+    return {
+      inputLatex: String.raw`[${tok},1,H]`,
+      kvLatex: String.raw`\left[${tok},T_{\mathrm{KV}},d_c+d_h^R\right]`,
+      attnOutLatex: String.raw`[${tok},1,H]`,
+      finalLatex: String.raw`[${tok},1,H]`,
+    };
+  });
+  const totalEffectiveTokens = workloadConfig.rankTokens.reduce(
+    (sum, tok, idx) => sum + (workloadConfig.rankKinds[idx] === 'dummy' ? 1 : tok),
+    0,
+  );
+  const moeGatherLatex = !isDp || loadProfile === 'balanced'
+    ? String.raw`[B,1,H]`
+    : String.raw`[${totalEffectiveTokens},H]`;
 
   return {
     ...normalized,
@@ -119,6 +167,9 @@ export const deriveDpAttentionSnapshot = (input = {}) => {
       profile: loadProfile,
       rankTokens: workloadConfig.rankTokens,
       rankKinds: workloadConfig.rankKinds,
+      rankShapes,
+      totalEffectiveTokens,
+      moeGatherLatex,
       hasDummy: workloadConfig.hasDummy,
       hasBarrierStall: workloadConfig.hasBarrierStall,
       barrierWaitRatio: workloadConfig.barrierWaitRatio,

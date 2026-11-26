@@ -341,6 +341,7 @@ export function estimateForwardResources(configInput) {
   const n = config.sequenceLength;
   const d = config.headDim;
   const elementBytes = config.dtype === 'fp8' ? 1 : 2;
+  const outputElementBytes = 2; // FA3/V4 FP8 writes O back in BF16 (2 B)
   const accumulatorBytes = 4;
   const tensorBytes = n * d * elementBytes;
   const standardTrafficBytes = 4 * (n * d * 2) + 4 * n * n * accumulatorBytes;
@@ -352,23 +353,28 @@ export function estimateForwardResources(configInput) {
   const outputBytes = profile.qTile * d * accumulatorBytes;
   const statsBytes = profile.qTile * 2 * accumulatorBytes;
   const bufferFactor = config.version === 'v3' || config.version === 'v4' ? 2 : 1;
-  const onChipLiveBytes = qBytes + bufferFactor * 2 * kvBytes + scoreBytes + outputBytes + statsBytes;
+  const smemBytes = qBytes + bufferFactor * 2 * kvBytes;
+  const accBytes = scoreBytes + outputBytes + statsBytes;
+  const onChipLiveBytes = smemBytes + accBytes;
 
-  const v1PerPair = qBytes + 2 * profile.qTile * d * elementBytes + 4 * profile.qTile * accumulatorBytes;
+  const v1PerPair = qBytes + 2 * profile.qTile * d * outputElementBytes + 4 * profile.qTile * accumulatorBytes;
   const v1TrafficBytes = 2 * tensorBytes + grid.activePairs * v1PerPair;
-  const streamTrafficBytes = grid.qTiles * (qBytes + profile.qTile * d * elementBytes)
+  const streamTrafficBytes = grid.qTiles * (qBytes + profile.qTile * d * outputElementBytes)
     + grid.activePairs * 2 * kvBytes
     + grid.qTiles * profile.qTile * accumulatorBytes;
   const flashTrafficBytes = config.version === 'v1' ? v1TrafficBytes : streamTrafficBytes;
 
   return {
     elementBytes,
+    outputElementBytes,
     accumulatorBytes,
     tensorBytes,
     standardTrafficBytes,
     standardMaterializedBytes,
     flashTrafficBytes,
     materializedBytes: config.modelType === 'standard' ? standardMaterializedBytes : 0,
+    smemBytes,
+    accBytes,
     onChipLiveBytes,
     qBytes,
     kvBytes,
@@ -544,12 +550,17 @@ export function getStandardForwardHbmState(configInput, lifecycle = {}) {
 
 function getRepresentativeTile(config, operationIndex, operation) {
   const profile = getVersionProfile(config.version);
-  // Keep one Q owner throughout the inspection. V3 explicitly unrolls KV0/1;
-  // other views show a representative tile iteration, not an entire kernel trace.
-  const qIndex = 1;
-  const kvIndex = config.version==='v3'&&config.direction==='forward'&&config.modelType==='flash'
-    ? (operation?.id?.endsWith('0')?0:operation?.id?.endsWith('1')||['rescaleO','commitO'].includes(operation?.id)?1:0)
-    : 0;
+  // Show real loop-order traversal:
+  // - V1 forward (KV outer, Q inner): KV=0 stays resident while Q advances 1 -> 2 on nextQ
+  // - V2 forward (Q outer, KV inner): Q=1 stays resident while KV streams 0 -> 1 on nextKV / writeOLSE
+  // - V3 forward: Q=1 unrolls KV0 -> KV1
+  const isFlashFwd = config.modelType === 'flash' && config.direction === 'forward';
+  const qIndex = isFlashFwd && config.version === 'v1' && operation?.id === 'nextQ' ? 2 : 1;
+  const kvIndex = isFlashFwd && config.version === 'v3'
+    ? (operation?.id?.endsWith('0') ? 0 : operation?.id?.endsWith('1') || ['rescaleO', 'commitO'].includes(operation?.id) ? 1 : 0)
+    : isFlashFwd && config.version === 'v2' && ['nextKV', 'writeOLSE'].includes(operation?.id)
+      ? 1
+      : 0;
   return {
     qIndex,
     kvIndex,

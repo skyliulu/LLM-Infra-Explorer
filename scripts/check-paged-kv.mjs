@@ -44,10 +44,14 @@ const longP = derivePreemptionModel({ victimLen: 16384, pcieId: 'pcie5' });
 assert.equal(shortP.winner, 'recompute', 'Short context recomputes faster than PCIe swap');
 assert.equal(longP.winner, 'swap', 'Very long 16K context swaps faster than quadratic recompute');
 
-// §6 Sizing + Cache Key
+// §6 Sizing + Cache Key (verify TP=4 sharding on 70B & realistic 140GB/671GB weights)
 const mla = deriveSizingModel({ modelId: 'deepseek_mla', kvDtype: 'fp8', ctxLen: 8192, concurrency: 16 });
 const gqa = deriveSizingModel({ modelId: 'llama70b', kvDtype: 'bf16', ctxLen: 8192, concurrency: 16 });
-assert.ok(mla.kbPerTok < gqa.kbPerTok / 4, 'MLA FP8 KV footprint is dramatically smaller than 70B GQA BF16');
+assert.equal(gqa.perGpuWeightGB, 35, 'Llama-70B BF16 (140 GB) on TP=4 must be 35 GB/GPU');
+assert.equal(gqa.fullKbPerTok, 320, 'Llama-70B GQA BF16 full KV = 320 KB/tok');
+assert.equal(gqa.kbPerTok, 80, 'Llama-70B GQA BF16 sharded across TP=4 = 80 KB/tok/GPU');
+assert.ok(mla.fullKbPerTok < gqa.fullKbPerTok / 4, 'MLA FP8 full-model KV footprint is >4x smaller than 70B GQA BF16');
+assert.equal(s3.naiveBlocks, 3, 'Once Cand B exits at step 3, naive non-sharing also frees Cand B blocks');
 assert.equal(deriveSizingModel({ keyChange: 'lora' }).cacheReusable, false);
 assert.equal(deriveSizingModel({ keyChange: 'same' }).cacheReusable, true);
 

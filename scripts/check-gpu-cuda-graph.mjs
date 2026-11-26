@@ -81,14 +81,20 @@ assert.equal(smHighReg.residentSlots, 2);
 assert.equal(smSmemLim.limiter, 'smem');
 assert.equal(smDiv.simtEfficiencyPct, 50);
 assert.ok(smDiv.cycles.some((c) => c.pass === 'passA') && smDiv.cycles.some((c) => c.pass === 'passB'));
+const smOverflow = deriveSmOccupancy({ regsPerThread: 255, smemKB: 16, blockSize: 512, divergent: false });
+assert.equal(smOverflow.activeBlocks, 0, '512 threads * 255 regs > 65536 SM regs cannot launch');
+assert.equal(smOverflow.occupancyPct, 0);
+assert.equal(smOverflow.launchExceedsRegs, true);
 
-// §2 Memory Coalescing & Tensor Core Tiling
+// §2 Memory Coalescing (32B L2/HBM sectors) & Tensor Core Tiling
 const memCoal = deriveMemoryDataflow({ memView: 'coalescing', stride: 1 });
 const memStrided = deriveMemoryDataflow({ memView: 'coalescing', stride: 32 });
-assert.equal(memCoal.transactions, 1);
+assert.equal(memCoal.transactions, 4);
+assert.equal(memCoal.fetchedBytes, 128);
 assert.equal(memCoal.busEfficiencyPct, 100);
 assert.equal(memStrided.transactions, 32);
-assert.ok(memStrided.busEfficiencyPct < 4);
+assert.equal(memStrided.fetchedBytes, 1024);
+assert.equal(memStrided.busEfficiencyPct, 12.5);
 
 const memNaive = deriveMemoryDataflow({ memView: 'tiling', tiled: false });
 const memTiled = deriveMemoryDataflow({ memView: 'tiling', tiled: true });
@@ -126,6 +132,12 @@ assert.equal(h100Fp8.fallback, false);
 assert.equal(b200Fp4.fallback, false);
 assert.ok(b200Fp4.ridgeAi > h100Fp8.ridgeAi);
 assert.ok(h100Fp8.criticalBatch > 256 && h100Fp8.criticalBatch < 400);
+assert.equal(
+  b200Fp4.kernels.find((k) => k.id === 'rmsnorm').ai,
+  a100Fp8.kernels.find((k) => k.id === 'rmsnorm').ai,
+  'RMSNorm / RoPE stays anchored to BF16 activations regardless of GEMM FP4/FP8 precision',
+);
+assert.ok(GPU_GENERATIONS.find((g) => g.id === 'ampere').peakLabel.includes('156 TF (TF32)'), 'A100 dense TF32 is 156 TF, not 312 TF');
 
 // §6 Generations (Volta -> Rubin) + 4 numbered improvements each
 assert.equal(GPU_GENERATIONS.length, 5);

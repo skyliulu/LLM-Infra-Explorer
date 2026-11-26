@@ -2,8 +2,8 @@ export const COLLECTIVE_OPS = ['allreduce', 'reducescatter', 'allgather', 'allto
 export const INTERCONNECTS = [
   { id: 'nvl72', bwGBps: 900, alphaUs: 1.8, scope: 'intra' },
   { id: 'nvlink4', bwGBps: 450, alphaUs: 2.5, scope: 'intra' },
-  { id: 'ib8x', bwGBps: 200, alphaUs: 9.0, scope: 'inter' },
-  { id: 'ib1x', bwGBps: 50, alphaUs: 12.0, scope: 'inter' },
+  { id: 'ib8x', bwGBps: 400, alphaUs: 9.0, scope: 'inter' }, // 8x 400G NDR IB node aggregate (8 x 50 GB/s)
+  { id: 'ib1x', bwGBps: 50, alphaUs: 12.0, scope: 'inter' }, // 1x 400G NDR IB single rail per GPU
 ];
 export const MSG_SIZES_MB = [1, 4, 16, 64, 128];
 export const OVERLAP_MODES = ['proxy_serial', 'ibgda_overlap'];
@@ -13,7 +13,6 @@ export const ALGO_MODES = ['ring', 'tree', 'nvls'];
 export const ALGO_WORLD_SIZES = [4, 8, 16, 64];
 export const ALGO_MSG_SIZES = [1, 8, 64, 256];
 export const RDMA_MODES = ['tcp_host', 'gpudirect_rdma', 'roce_pfc_storm'];
-export const COMM_DIAG_IDS = ['tp_small_batch', 'ep_skew_tail', 'cross_rail_cliff', 'sm_starvation'];
 
 export function normalizeCollectiveConfig(input = {}) {
   const op = COLLECTIVE_OPS.includes(input.op) ? input.op : 'allreduce';
@@ -25,8 +24,7 @@ export function normalizeCollectiveConfig(input = {}) {
   const msgMB = MSG_SIZES_MB.includes(Number(input.msgMB)) ? Number(input.msgMB) : 16;
   const rdmaMode = RDMA_MODES.includes(input.rdmaMode) ? input.rdmaMode : 'gpudirect_rdma';
   const overlapMode = OVERLAP_MODES.includes(input.overlapMode) ? input.overlapMode : 'ibgda_overlap';
-  const diagId = COMM_DIAG_IDS.includes(input.diagId) ? input.diagId : 'tp_small_batch';
-  return { op, routingSkew, algo, algoP, algoMsgMB, interconnect, msgMB, rdmaMode, overlapMode, diagId };
+  return { op, routingSkew, algo, algoP, algoMsgMB, interconnect, msgMB, rdmaMode, overlapMode };
 }
 
 // §1 Step-by-step shard state on P=4 GPUs
@@ -51,14 +49,19 @@ export function deriveCollectiveStep({ op = 'allreduce', routingSkew = 'uniform'
           [4, 4, 4, 4],
         ];
     const recvTotals = [0, 1, 2, 3].map((dst) => matrix.reduce((sum, row) => sum + row[dst], 0));
+    const remoteRecvs = [0, 1, 2, 3].map((dst) => recvTotals[dst] - matrix[dst][dst]);
     const maxRecv = Math.max(...recvTotals);
+    const maxRemoteRecv = Math.max(...remoteRecvs);
+    // Bottleneck receiver remote traffic relative to per-GPU nominal batch M (16 tokens):
+    // Uniform: 12/16 = 0.75x M; Hot GPU 1: 30/16 = 1.875x M
+    const volumeFactor = Number((maxRemoteRecv / 16).toFixed(3));
     return {
       op: safeOp,
       step: s,
       maxStep,
       phase: s === 0 ? 'idle' : s === maxStep ? 'done' : 'running',
       stageName: s === 0 ? 'idle' : s === 1 ? 'a2a_dispatch' : 'a2a_done',
-      volumeFactor: (P - 1) / P,
+      volumeFactor,
       gpus: [0, 1, 2, 3].map((id) => ({
         id,
         shards: [0, 1, 2, 3].map((k) => ({
@@ -82,38 +85,59 @@ export function deriveCollectiveStep({ op = 'allreduce', routingSkew = 'uniform'
         const fresh = s > 0 && dist === s;
         return { idx, label: owned ? `S${idx}` : '·', state: fresh ? 'inflight' : owned ? 'ready' : 'empty' };
       }
+
+      const ownerAtEnd = (idx + P - 1) % P;
+      const distToOwner = (ownerAtEnd - id + P) % P;
+      // Step index (1..P-1) at which rank `id` receives and accumulates shard `idx` during Reduce-Scatter
+      const rsRecvStep = (P - 1) - distToOwner;
+
       if (safeOp === 'reducescatter') {
-        const ownerAtEnd = (idx + P - 1) % P;
-        const distToOwner = (ownerAtEnd - id + P) % P;
-        const contributions = s === 0 ? 1 : distToOwner === (P - 1 - s) ? s + 1 : 1;
         const isFinalOwner = s === P - 1 && id === ownerAtEnd;
-        const activeRecv = s > 0 && distToOwner === (P - 1 - s);
-        return {
-          idx,
-          label: isFinalOwner ? `Σ${idx}` : activeRecv ? `p${contributions}(${idx})` : s === P - 1 ? '·' : `x${id},${idx}`,
-          state: isFinalOwner ? 'ready' : activeRecv ? 'inflight' : s === P - 1 ? 'empty' : 'local',
-        };
+        const activeRecv = s > 0 && s === rsRecvStep;
+        const alreadyAccumulated = rsRecvStep > 0 && s > rsRecvStep;
+        if (isFinalOwner) {
+          return { idx, label: `Σ${idx}`, state: 'ready' };
+        }
+        if (s === P - 1) {
+          return { idx, label: '·', state: 'empty' };
+        }
+        if (activeRecv) {
+          return { idx, label: `p${rsRecvStep + 1}(${idx})`, state: 'inflight' };
+        }
+        if (alreadyAccumulated) {
+          // Keep accumulated partial sum instead of reverting back to x_{id,idx}
+          return { idx, label: `p${rsRecvStep + 1}(${idx})`, state: 'local' };
+        }
+        return { idx, label: `x${id},${idx}`, state: 'local' };
       }
-      const ownerAfterRs = (idx + P - 1) % P;
+
+      // Ring All-Reduce = Reduce-Scatter (steps 1..P-1) + All-Gather (steps P..2(P-1))
       if (s <= P - 1) {
-        const distToOwner = (ownerAfterRs - id + P) % P;
-        const activeRecv = s > 0 && distToOwner === (P - 1 - s);
-        const isRsDone = s === P - 1 && id === ownerAfterRs;
-        return {
-          idx,
-          label: isRsDone ? `Σ${idx}` : activeRecv ? `p${s + 1}(${idx})` : `x${id},${idx}`,
-          state: isRsDone ? 'ready' : activeRecv ? 'inflight' : 'local',
-        };
+        const isRsDone = s === P - 1 && id === ownerAtEnd;
+        const activeRecv = s > 0 && s === rsRecvStep;
+        const alreadyAccumulated = rsRecvStep > 0 && s > rsRecvStep;
+        if (isRsDone) {
+          return { idx, label: `Σ${idx}`, state: 'ready' };
+        }
+        if (activeRecv) {
+          return { idx, label: `p${rsRecvStep + 1}(${idx})`, state: 'inflight' };
+        }
+        if (alreadyAccumulated) {
+          return { idx, label: `p${rsRecvStep + 1}(${idx})`, state: 'local' };
+        }
+        return { idx, label: `x${id},${idx}`, state: 'local' };
       }
+
       const agHop = s - (P - 1);
-      const distFromOwner = (id - ownerAfterRs + P) % P;
+      const distFromOwner = (id - ownerAtEnd + P) % P;
       const hasFull = distFromOwner <= agHop;
       const fresh = distFromOwner === agHop;
-      return {
-        idx,
-        label: hasFull ? `Σ${idx}` : `x${id},${idx}`,
-        state: fresh ? 'inflight' : hasFull ? 'ready' : 'local',
-      };
+      if (hasFull) {
+        return { idx, label: `Σ${idx}`, state: fresh ? 'inflight' : 'ready' };
+      }
+      // Retain post-RS partial sum until overwritten by final Σ{idx}
+      const priorLabel = rsRecvStep > 0 ? `p${rsRecvStep + 1}(${idx})` : `x${id},${idx}`;
+      return { idx, label: priorLabel, state: 'local' };
     });
     return { id, shards, recvTotal: 16, isHot: false };
   });
@@ -140,40 +164,57 @@ export function deriveCollectiveStep({ op = 'allreduce', routingSkew = 'uniform'
   };
 }
 
-// §2 NCCL Algorithm Comparison: Ring vs Double-Binary Tree vs NVLS SHARP (In-Switch)
+// §2 NCCL Algorithm Comparison: Ring vs Double-Binary Tree vs In-Switch SHARP (NVLS / IB SHARP)
+// Apples-to-apples: all three algorithms evaluated on the EXACT SAME physical link (bwGBps, alphaUs) for a given P!
 export function deriveAlgoComparison({ algo = 'ring', algoP = 8, algoMsgMB = 8 } = {}) {
   const safeAlgo = ALGO_MODES.includes(algo) ? algo : 'ring';
   const P = ALGO_WORLD_SIZES.includes(Number(algoP)) ? Number(algoP) : 8;
   const M = ALGO_MSG_SIZES.includes(Number(algoMsgMB)) ? Number(algoMsgMB) : 8;
-  const alphaUs = P <= 8 ? 2.5 : 8.5; // intra-node NVLink vs cross-node IB
-  const bwGBps = P <= 8 ? 450 : 200;
+
+  const isIntra = P <= 8;
+  // Shared fabric for all 3 algorithms:
+  // P <= 8: Intra-node NVLink 4.0 + NVSwitch (450 GB/s per GPU unidirectional, alpha = 2.5 us)
+  // P > 8:  Inter-node 1x 400G NDR IB rail per GPU (50 GB/s per GPU unidirectional, alpha = 8.5 us)
+  const alphaUs = isIntra ? 2.5 : 8.5;
+  const bwGBps = isIntra ? 450 : 50;
 
   // Ring: 2(P-1) hops, 2(P-1)/P * M bandwidth-optimal
   const ringHops = 2 * (P - 1);
   const ringFactor = (2 * (P - 1)) / P;
   const ringUs = ringHops * alphaUs + ((M * ringFactor * 1024 * 1024) / (bwGBps * 1e9)) * 1e6;
 
-  // Double-Binary Tree: 2*log2(P) latency hops, ~2.0*M effective traffic (slightly lower peak utilization on huge msgs)
+  // Double-Binary Tree: 2*log2(P) latency hops, 2.0*M traffic at ~90% peak link utilization
   const treeHops = 2 * Math.round(Math.log2(P));
   const treeFactor = 2.0;
   const treeUs = treeHops * alphaUs + ((M * treeFactor * 1024 * 1024) / (bwGBps * 0.9 * 1e9)) * 1e6;
 
-  // NVLS / SHARP In-Switch Reduction: O(1) switch hops (2), 1.0*M sent + 1.0*M received (switch sums in-flight!)
+  // In-Switch SHARP (NVLS intra-node / IB SHARP inter-node) on the SAME bwGBps & alphaUs:
+  // 2 switch traversal hops (upload + multicast), 1.0*M per GPU wire load (half of Ring/Tree!)
   const nvlsHops = 2;
-  const nvlsFactor = 1.0; // GPU sends M once to NVSwitch SHARP, receives reduced M once (half link load vs Ring!)
-  const nvlsBw = P <= 8 ? 450 : 360; // NVL72 / SHARP switch fabric
-  const nvlsUs = nvlsHops * (P <= 8 ? 2.2 : 4.5) + ((M * nvlsFactor * 1024 * 1024) / (nvlsBw * 1e9)) * 1e6;
+  const nvlsFactor = 1.0;
+  const nvlsUs = nvlsHops * alphaUs + ((M * nvlsFactor * 1024 * 1024) / (bwGBps * 1e9)) * 1e6;
 
   const entries = [
-    { id: 'ring', hops: ringHops, factor: Number(ringFactor.toFixed(2)), totalUs: Number(ringUs.toFixed(1)), smLoad: '8–16 SMs' },
-    { id: 'tree', hops: treeHops, factor: Number(treeFactor.toFixed(2)), totalUs: Number(treeUs.toFixed(1)), smLoad: '8–16 SMs' },
-    { id: 'nvls', hops: nvlsHops, factor: Number(nvlsFactor.toFixed(2)), totalUs: Number(nvlsUs.toFixed(1)), smLoad: '2–4 SMs (Switch)' },
+    { id: 'ring', hops: ringHops, factor: Number(ringFactor.toFixed(2)), totalUs: Number(ringUs.toFixed(1)), smLoadKey: 'smRingTree' },
+    { id: 'tree', hops: treeHops, factor: Number(treeFactor.toFixed(2)), totalUs: Number(treeUs.toFixed(1)), smLoadKey: 'smRingTree' },
+    { id: 'nvls', hops: nvlsHops, factor: Number(nvlsFactor.toFixed(2)), totalUs: Number(nvlsUs.toFixed(1)), smLoadKey: 'smNvls' },
   ];
   const winner = entries.reduce((best, item) => (item.totalUs < best.totalUs ? item : best), entries[0]);
   const selected = entries.find((e) => e.id === safeAlgo) || entries[0];
   const maxUs = Math.max(...entries.map((e) => e.totalUs));
 
-  return { algo: safeAlgo, P, M, entries, selected, winner, maxUs };
+  return {
+    algo: safeAlgo,
+    P,
+    M,
+    isIntra,
+    bwGBps,
+    alphaUs,
+    entries,
+    selected,
+    winner,
+    maxUs,
+  };
 }
 
 // §3 Alpha-Beta interconnect latency model

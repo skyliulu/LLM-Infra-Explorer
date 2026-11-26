@@ -38,6 +38,10 @@ for(const pool of ['mha','mla'])for(const layout of ['layer_first','page_first',
 }
 assert.deepEqual(['layer_first','page_first','page_first_direct'].map(layout=>deriveHiCacheLayoutState({layout}).segments.length),[2,12,6]);
 assert.deepEqual(['layer_first','page_first','page_first_direct'].map(layout=>deriveHiCacheLayoutState({layout,operation:'page'}).segments.length),[6,2,2]);
+const wbEnd=deriveHiCacheEngineState(9999,{write:'write_back'});
+assert.ok(wbEnd.ready.storage.length>0,'write_back must lazily persist evicted prefix chains to L3 storage');
+const wbAfterR0=wbEnd.history.find(s=>s.request===0&&s.kind==='complete');
+assert.equal(wbAfterR0.ready.storage.length,0,'write_back must not write to storage before GPU eviction');
 console.log(`HiCache engine: ${configs} configurations / ${snapshots} snapshots; 576 layout configurations passed.`);
 
 

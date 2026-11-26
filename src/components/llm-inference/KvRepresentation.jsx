@@ -64,7 +64,7 @@ export default function KvRepresentation({ lang }) {
     const next = deriveKvRepresentationModel({ ...prev, ...patch });
     return { mode: next.mode, tokens: next.tokens, groups: next.groups, latent: next.latent, head: next.head, token: next.token };
   });
-  return <details className="kv-microscope" data-testid="kv-microscope">
+  return <details className="kv-microscope" data-testid="kv-microscope" open>
     <summary><Microscope size={20} /><span><strong>{t('title')}</strong><small>{t('teaser')}</small></span><ChevronDown className="kv-chevron" size={18} /></summary>
     <div className="kv-workbench" data-testid="kv-workbench" data-mode={model.mode}>
       <div className="kv-toolbar">

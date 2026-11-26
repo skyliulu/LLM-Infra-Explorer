@@ -38,9 +38,11 @@ const i18n = {
     tboTitle: 'TBO 双微批乒乓掩盖（EP-MoE）',
     tboStreamCompute: 'Compute 流',
     tboStreamComm: 'RDMA / NVLink 流',
-    tboNote: '把本地批次拆成 MB0 / MB1 交替调度：MB0 做 All-to-All Dispatch 时 GPU 同时算 MB1 Attention，把跨机通信隐藏在计算背后。',
+    tboNote: '把本地批次拆成 MB0 / MB1 交替调度：MB0 做 All-to-All Dispatch 时 GPU 同时算 MB1 Attention，把跨机通信隐藏在计算背后（点击下方时隙可高亮当前双流重叠）。',
+    motivationStrip: '核心动机：MLA 仅缓存单一压缩潜向量 c_KV，标准 TP=4 无法按头切分而被迫复制 4 份 KV；DP Attention 改为按请求分卡（Attention TP=1），将集群 KV 压回 1×，再通过 Gather / All-to-All 桥接 MoE。',
     pyDummyGuard: '# 空卡补 1-token Dummy 防止集体通信死锁',
-    pyTboHint: '# TBO: MB0 与 MB1 交替执行，掩盖 All-to-All 延迟',
+    pyTboHint: '# TBO: 拆成双微批，计算流与通信流乒乓掩盖 All-to-All 延迟',
+    pyVariableReduceScatter: '# TP 归约并按 dp_sizes 切分（不等长分片）',
     assumptionTp: '代表性配置：TP=4 · DP=1 · Attention TP=4 · MoE TP=4',
     assumptionDpTp: '代表性配置：TP=4 · DP=4 · Attention TP=1 · MoE TP=4',
     assumptionDpEp: '代表性配置：World=4 · DP=4 · Attention TP=1 · MoE EP=4',
@@ -82,7 +84,7 @@ const i18n = {
     dimH: '隐藏维',
     dimDc: 'KV 压缩维',
     dimDr: '解耦 RoPE 维',
-    dimExtraNote: '其余符号：d_q 为 Q 压缩维，H_q 为 Q 头数，E 为专家数，H_E 为单专家中间维，T_expert 为本卡收到的路由 Token 数；公式中 b 为单元素字节，p=4 为 TP 组大小，d 为 DP 数（单层 KV 估算）。',
+    dimExtraNote: '其余符号：d_q 为 Q 压缩维，H_q 为 Q 头数，E 为专家数，H_E 为单专家中间维，T_expert 为本卡收到的路由 Token 数；公式中 b 为单元素字节，p=4 为并行组大小（TP 或 EP），d 为 DP 数（单层 KV 估算）。',
     rank: 'Rank',
     globalQueue: '全局输入请求队列 (Global Request Queue)',
 
@@ -192,9 +194,11 @@ const i18n = {
     tboTitle: 'Two-Batch Overlap (TBO) Ping-Pong in EP-MoE',
     tboStreamCompute: 'Compute stream',
     tboStreamComm: 'RDMA / NVLink',
-    tboNote: 'Split each local batch into MB0 / MB1: while MB0 runs All-to-All Dispatch, the GPU computes MB1 Attention, hiding network latency behind compute.',
+    tboNote: 'Split each local batch into MB0 / MB1: while MB0 runs All-to-All Dispatch, the GPU computes MB1 Attention, hiding network latency behind compute (click any slot below to inspect overlap).',
+    motivationStrip: 'Core motivation: MLA caches a single compressed KV latent that standard TP=4 cannot head-shard, forcing 4× KV copies. DP Attention splits requests across ranks (Attention TP=1) to cut cluster KV back to 1×, then bridges into MoE via Gather or All-to-All.',
     pyDummyGuard: '# Pad empty rank with 1-token dummy to avoid collective deadlock',
-    pyTboHint: '# TBO: ping-pong MB0 and MB1 to hide All-to-All latency',
+    pyTboHint: '# TBO: ping-pong two microbatches across compute and comm streams',
+    pyVariableReduceScatter: '# TP reduce + split by dp_sizes (uneven shards)',
     assumptionTp: 'Representative: TP=4 · DP=1 · Attention TP=4 · MoE TP=4',
     assumptionDpTp: 'Representative: TP=4 · DP=4 · Attention TP=1 · MoE TP=4',
     assumptionDpEp: 'Representative: World=4 · DP=4 · Attention TP=1 · MoE EP=4',
@@ -235,7 +239,7 @@ const i18n = {
     dimH: 'Hidden',
     dimDc: 'KV latent',
     dimDr: 'RoPE key dim',
-    dimExtraNote: 'Other symbols: d_q query latent, H_q query heads, E experts, H_E per-expert FFN width, T_expert routed tokens received locally; b bytes/element, p=4 TP group size, d DP size (per-layer KV).',
+    dimExtraNote: 'Other symbols: d_q query latent, H_q query heads, E experts, H_E per-expert FFN width, T_expert routed tokens received locally; b bytes/element, p=4 parallel group size (TP or EP), d DP size (per-layer KV).',
     rank: 'Rank',
     globalQueue: 'Global Input Request Queue',
 
@@ -464,7 +468,8 @@ const DpAttentionVisualizer = () => {
   const [moeTopology, setMoeTopology] = useExperimentState('DpAttention.moeTopology', 'tp');
   const [loadProfile, setLoadProfile] = useExperimentState('DpAttention.loadProfile', 'balanced');
   const [tbo, setTbo] = useExperimentState('DpAttention.tbo', 'off');
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(2);
+  const [activeTboSlot, setActiveTboSlot] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [lang] = useLanguage();
   const t = (k) => i18n[lang][k] ?? k;
@@ -506,14 +511,16 @@ const DpAttentionVisualizer = () => {
   const handleModelTypeChange = (type) => {
     if (type !== modelType) {
       setModelType(type);
-      reset();
+      setIsPlaying(false);
+      setStep(2);
     }
   };
 
   const handleMoeTopologyChange = (topology) => {
     if (topology !== moeTopology) {
       setMoeTopology(topology);
-      reset();
+      setIsPlaying(false);
+      setStep(2);
     }
   };
 
@@ -654,6 +661,10 @@ const DpAttentionVisualizer = () => {
               </div>
             </div>
 
+            <div className="mb-3 rounded-lg border border-indigo-200 bg-indigo-50/70 px-3 py-2 text-xs leading-relaxed text-indigo-950" data-testid="dp-motivation-strip">
+              {t('motivationStrip')}
+            </div>
+
             <p className="mb-3 text-xs leading-relaxed text-slate-600" data-testid="decode-length-scope">{t('decodeLengths')} <a className="underline" href="https://github.com/deepseek-ai/DeepSeek-V3/blob/9b4e9788e4a3a731f7567338ed15d3ec549ce03b/inference/model.py#L446-L493" target="_blank" rel="noreferrer">{t('sourceLengths')}</a></p>
 
             {snapshot.isDp && snapshot.workload.hasDummy && (
@@ -672,12 +683,18 @@ const DpAttentionVisualizer = () => {
                   <span>{t('tboTitle')}</span>
                 </div>
                 <div className="grid grid-cols-5 gap-1">
-                  {snapshot.tboTimeline.map((item) => (
-                    <div key={item.slot} className="rounded border border-emerald-200 bg-white p-1.5 text-center">
+                  {snapshot.tboTimeline.map((item, idx) => (
+                    <button
+                      type="button"
+                      key={item.slot}
+                      onClick={() => setActiveTboSlot(idx)}
+                      aria-pressed={activeTboSlot === idx}
+                      className={`rounded border p-1.5 text-center transition ${activeTboSlot === idx ? 'border-emerald-500 bg-white ring-2 ring-emerald-200 shadow-sm' : 'border-emerald-200 bg-white/80 hover:bg-white'}`}
+                    >
                       <div className="text-[9px] font-bold text-slate-400">{item.slot}</div>
                       <div className="mt-1 rounded bg-indigo-100 px-1 py-0.5 text-[9px] font-bold text-indigo-800">{item.compute}</div>
                       <div className={`mt-1 rounded px-1 py-0.5 text-[9px] font-semibold ${item.comm === '—' ? 'bg-slate-100 text-slate-400' : 'bg-amber-100 text-amber-800'}`}>{item.comm}</div>
-                    </div>
+                    </button>
                   ))}
                 </div>
                 <div className="mt-1.5 flex items-center justify-between gap-2 text-[9.5px] text-emerald-800">
@@ -698,7 +715,7 @@ const DpAttentionVisualizer = () => {
                  <div className="grid shrink-0 grid-cols-3 gap-1">
                    {[
                      [String.raw`B`, 'dimB'],
-                     [String.raw`T_q=1`, 'dimQuery'],
+                     [snapshot.workload.hasBarrierStall ? String.raw`T_q=2048/1` : String.raw`T_q=1`, 'dimQuery'],
                      [String.raw`T_{\mathrm{KV}}`, 'dimS'],
                      [String.raw`H`, 'dimH'],
                      [String.raw`d_c`, 'dimDc'],
@@ -749,7 +766,7 @@ const DpAttentionVisualizer = () => {
                       {[0, 1, 2, 3].map(i => (
                         <div key={i} className="flex justify-center transition-all duration-500 h-full">
                            <DataBlock
-                              title={t('tInput')} dims={snapshot.tensors.inputShapeLatex}
+                              title={t('tInput')} dims={snapshot.workload.rankShapes[i].inputLatex}
                               mode={snapshot.isDp ? 'subset' : 'full'}
                               label={snapshot.isDp ? t('lblRowShardB4') : t('lblRepFull')}
                               emptyLabel={t('empty')} isEmpty={!snapshot.views.inputVisible} rankIndex={i}
@@ -788,7 +805,7 @@ const DpAttentionVisualizer = () => {
                           <div className="relative my-1">
                              {modelType === 'tp' && snapshot.cache.visible && <div className="absolute inset-0 bg-rose-500/10 animate-pulse rounded-lg border border-rose-300 z-0"></div>}
                              <DataBlock
-                                title={t('tKV')} dims={snapshot.cache.shapeLatex}
+                                title={t('tKV')} dims={snapshot.workload.rankShapes[i].kvLatex}
                                 mode={modelType === 'tp' ? 'full' : 'subset'}
                                 label={modelType === 'tp' ? t('lblRepDisaster') : t('lblRowShardPerf')}
                                 emptyLabel={t('empty')} isEmpty={!snapshot.cache.visible} isAlert={modelType === 'tp' && snapshot.cache.visible} rankIndex={i}
@@ -796,7 +813,7 @@ const DpAttentionVisualizer = () => {
                           </div>
 
                           <DataBlock
-                             title={t('tAttnOut')} dims={snapshot.tensors.attentionOutputShapeLatex}
+                             title={t('tAttnOut')} dims={snapshot.workload.rankShapes[i].attnOutLatex}
                              mode={modelType === 'dp' ? 'subset' : 'full'}
                              label={modelType === 'dp' ? t('lblRowShardLocal') : t('lblFullReduce')}
                              emptyLabel={t('empty')} isEmpty={!snapshot.views.attentionVisible} rankIndex={i}
@@ -806,13 +823,13 @@ const DpAttentionVisualizer = () => {
                       })}
                    </div>
 
-                   {/* Row 2.5: EP-MoE Local Router / Top-k (runs BEFORE All-to-All Dispatch on local [B/4, 1, H]) */}
+                   {/* Row 2.5: EP-MoE Local Router / Top-k (runs BEFORE All-to-All Dispatch on local tokens) */}
                    {snapshot.isDp && snapshot.moeTopology === 'ep' && (
                      <div data-testid="ep-router-row" className="grid grid-cols-4 gap-2 w-full">
                        {[0, 1, 2, 3].map(i => (
                          <div key={`router-${i}`} className={`rounded-lg border px-2 py-1.5 flex flex-col items-center justify-center transition-all duration-500 ${snapshot.views.bridgeVisible ? 'border-amber-300 bg-amber-50/70 shadow-sm' : 'border-dashed border-slate-200 bg-slate-50/50 opacity-60'}`}>
                            <div className="text-[10px] font-bold text-amber-900">{t('tRouter')}</div>
-                           <div className="text-[9px] text-amber-700"><MathFormula>{snapshot.tensors.attentionOutputShapeLatex}</MathFormula></div>
+                           <div className="text-[9px] text-amber-700"><MathFormula>{snapshot.workload.rankShapes[i].attnOutLatex}</MathFormula></div>
                            <div className="mt-1 flex w-[70%] h-[5px] overflow-hidden rounded-[2px] border border-amber-300">
                              <div className={`flex-1 ${bColors[i]}`} />
                            </div>
@@ -860,7 +877,7 @@ const DpAttentionVisualizer = () => {
                             <div className="text-[10px] font-bold text-amber-800 flex items-center gap-1.5 mb-1 whitespace-nowrap">
                               <Network size={14} className={snapshot.communicationOperation ? "animate-spin-slow" : ""} /> {t(snapshot.moeTopology === 'ep' ? 'tDispatch' : 'tGather')}
                             </div>
-                            <div className="text-[9px] text-amber-700 mb-1"><MathFormula>{snapshot.moeTopology === 'ep' ? String.raw`T_{local}\to T_{expert}` : String.raw`[B,1,H]`}</MathFormula></div>
+                            <div className="text-[9px] text-amber-700 mb-1"><MathFormula>{snapshot.moeTopology === 'ep' ? String.raw`T_{local}\to T_{expert}` : snapshot.workload.moeGatherLatex}</MathFormula></div>
                             <div className="w-[70%] max-w-[80px] h-[24px] flex flex-col rounded-[2px] border border-amber-400 overflow-hidden shadow-inner">
                               {bColors.map((bg, j) => <div key={j} className={`flex-1 w-full ${bg} border-b border-black/10 last:border-0`} />)}
                             </div>
@@ -883,7 +900,7 @@ const DpAttentionVisualizer = () => {
 
                             <DataBlock
                               title={isExpertParallel ? t('tDispatchedIn') : t('tMoEIn')}
-                              dims={snapshot.tensors.moeInputShapeLatex}
+                              dims={isExpertParallel ? snapshot.tensors.moeInputShapeLatex : snapshot.workload.moeGatherLatex}
                               mode={isExpertParallel ? 'routed' : 'full'}
                               label={isExpertParallel ? t('lblTokenShard') : t('lblFullBatchIn')}
                               emptyLabel={t('empty')}
@@ -971,7 +988,7 @@ const DpAttentionVisualizer = () => {
                         return (
                           <div key={i} className={`flex min-w-0 justify-center transition-all duration-700 ${isFinalOutActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
                              <DataBlock
-                                title={t(modelType === 'dp' ? 'tReturnedOutput' : 'tMoEOut')} dims={snapshot.tensors.finalShapeLatex}
+                                title={t(modelType === 'dp' ? 'tReturnedOutput' : 'tMoEOut')} dims={snapshot.workload.rankShapes[i].finalLatex}
                                 mode={modelType === 'dp' ? 'localMatrix' : 'full'}
                                 label={modelType === 'dp' ? t('lblRowShardLoop') : t('lblRepFull')}
                                 emptyLabel={t('empty')} isEmpty={!isFinalOutActive} rankIndex={i}
@@ -994,8 +1011,8 @@ const DpAttentionVisualizer = () => {
                <span className="text-[10px] text-slate-400 font-mono border border-slate-700 px-2 py-0.5 rounded bg-slate-800 shadow-sm">Python</span>
              </div>
 
-             <div className="font-mono text-[11px] md:text-[12px] overflow-x-auto overflow-y-auto bg-[#0a0f18] p-4 rounded-xl border border-slate-800 flex-1 leading-relaxed z-10 shadow-inner custom-scrollbar">
-               <div className="min-w-[430px] whitespace-pre">
+             <div className="font-mono text-[10.5px] overflow-x-auto overflow-y-auto bg-[#0a0f18] p-3.5 rounded-xl border border-slate-800 flex-1 leading-relaxed z-10 shadow-inner custom-scrollbar">
+               <div className="whitespace-pre">
                  <div><span className="text-purple-400">def</span> <span className="text-blue-400">forward_layer</span>(x, request_meta):</div>
                  <br/>
                  <div className={snapshot.operation === 'input' ? "bg-slate-800 text-slate-100 px-2 -mx-2 rounded border-l-2 border-slate-400 transition-all py-1" : "text-slate-500 py-1"}>
@@ -1010,7 +1027,7 @@ const DpAttentionVisualizer = () => {
                    {snapshot.tboEnabled && (
                      <>
                        <div>  <span className="text-emerald-400">{t('pyTboHint')}</span></div>
-                       <div>  mb0, mb1 = split_two_microbatches(x_owned)</div>
+                       <div>  microbatches = split_two_microbatches(x_owned)  <span className="text-slate-500"># [mb0, mb1]</span></div>
                      </>
                    )}
                  </div>
@@ -1022,7 +1039,9 @@ const DpAttentionVisualizer = () => {
                    <div>  <span className="text-emerald-500">{t('pyKvState')}</span></div>
                    <div>  kv_cache.write(request_meta.slots, c_kv, k_rope)</div>
                    <div>  attn_local = mla_decode(q, kv_cache.local_view(request_meta))</div>
-                   {modelType === 'tp' && <div>  attn_global = tp_all_reduce(o_proj(attn_local))</div>}
+                   {modelType === 'tp'
+                     ? <div>  attn_global = tp_all_reduce(o_proj(attn_local))</div>
+                     : <div>  attn_local = o_proj(attn_local)</div>}
                  </div>
                  {modelType === 'dp' && snapshot.moeTopology === 'tp' && (
                    <>
@@ -1039,7 +1058,7 @@ const DpAttentionVisualizer = () => {
                      <div className={snapshot.operation === 'expertDispatch' ? "bg-amber-900/40 text-amber-100 px-2 -mx-2 rounded border-l-2 border-amber-500 transition-all py-1" : "text-slate-500 py-1"}>
                        <div>  <span className="text-amber-500">{t('pyEpDispatch')}</span></div>
                        <div>  route = router.topk(attn_local)</div>
-                       <div>  expert_in = all_to_all_dispatch(attn_local, route)</div>
+                       <div>  expert_in = {snapshot.tboEnabled ? 'async_all_to_all_dispatch(microbatches, route)' : 'all_to_all_dispatch(attn_local, route)'}</div>
                      </div>
                    </>
                  )}
@@ -1052,8 +1071,8 @@ const DpAttentionVisualizer = () => {
                    <>
                      <br/>
                      <div className={['reduceScatter', 'expertCombine'].includes(snapshot.operation) ? "bg-emerald-900/40 text-emerald-100 px-2 -mx-2 rounded border-l-2 border-emerald-400 transition-all py-1" : "text-slate-500 py-1"}>
-                       <div>  <span className="text-emerald-500">{t(snapshot.moeTopology === 'ep' ? 'pyEpCombine' : 'pyReduceScatter')}</span></div>
-                       <div>  x_local = {snapshot.moeTopology === 'ep' ? 'all_to_all_combine(expert_out, route)' : 'dp_reduce_scatter(expert_out)'}</div>
+                       <div>  <span className="text-emerald-500">{t(snapshot.moeTopology === 'ep' ? 'pyEpCombine' : snapshot.loadProfile === 'balanced' ? 'pyReduceScatter' : 'pyVariableReduceScatter')}</span></div>
+                       <div>  x_local = {snapshot.moeTopology === 'ep' ? (snapshot.tboEnabled ? 'async_all_to_all_combine(expert_out, route)' : 'all_to_all_combine(expert_out, route)') : snapshot.loadProfile === 'balanced' ? 'dp_reduce_scatter(expert_out)' : 'tp_reduce_and_split(expert_out, request_meta.dp_sizes)'}</div>
                      </div>
                    </>
                  )}

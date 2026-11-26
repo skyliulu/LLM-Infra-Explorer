@@ -133,7 +133,7 @@ export const GPU_GENERATIONS = [
     year: '2020',
     chip: 'GA100 · A100',
     peakTf: 312,
-    peakLabel: '312 TF (BF16/TF32)',
+    peakLabel: '312 TF (BF16) · 156 TF (TF32)',
     hbmCap: '80 GB HBM2e',
     hbmGBps: 2039,
     nvlinkGBps: 600,
@@ -249,9 +249,10 @@ export function deriveSmOccupancy({ regsPerThread = 64, smemKB = 48, blockSize =
   const warpsPerBlock = Math.max(1, Math.round(blockSize / 32));
   const regsPerBlock = blockSize * regsPerThread;
 
-  const blocksByReg = Math.max(1, Math.floor(regFilePerSm / regsPerBlock));
-  const blocksBySmem = Math.max(1, Math.floor(maxSmemPerSmKB / smemKB));
-  const blocksByWarpCap = Math.max(1, Math.floor(maxWarpsPerSm / warpsPerBlock));
+  const blocksByReg = Math.floor(regFilePerSm / regsPerBlock);
+  const blocksBySmem = Math.floor(maxSmemPerSmKB / smemKB);
+  const blocksByWarpCap = Math.floor(maxWarpsPerSm / warpsPerBlock);
+  const launchExceedsRegs = blocksByReg === 0;
 
   const activeBlocks = Math.min(maxBlocksPerSm, blocksByReg, blocksBySmem, blocksByWarpCap);
   const activeWarps = Math.min(maxWarpsPerSm, activeBlocks * warpsPerBlock);
@@ -259,7 +260,7 @@ export function deriveSmOccupancy({ regsPerThread = 64, smemKB = 48, blockSize =
   const warpsPerScheduler = Number((activeWarps / schedulersPerSm).toFixed(1));
 
   let limiter = 'warp_cap';
-  if (activeBlocks === blocksByReg && blocksByReg < blocksBySmem && blocksByReg < blocksByWarpCap) {
+  if (launchExceedsRegs || (activeBlocks === blocksByReg && blocksByReg < blocksBySmem && blocksByReg < blocksByWarpCap)) {
     limiter = 'registers';
   } else if (activeBlocks === blocksBySmem && blocksBySmem < blocksByReg && blocksBySmem < blocksByWarpCap) {
     limiter = 'smem';
@@ -267,14 +268,16 @@ export function deriveSmOccupancy({ regsPerThread = 64, smemKB = 48, blockSize =
     limiter = 'registers';
   }
 
-  const registerSpill = regsPerThread >= 255;
+  const registerSpill = regsPerThread >= 255 || launchExceedsRegs;
 
   // Build a 10-cycle discrete-event Warp Scheduler simulation for 1 Scheduler (up to 5 visible warp slots W0..W4)
   // Each resident warp runs a repeating instruction stream: LDG (triggers 4-cycle HBM Long Scoreboard wait) -> compute ops.
   // Staggered initial program counters model warps in steady-state execution so ready warps hide HBM waits at 0-cycle switch cost.
   const totalCycles = 10;
   const visibleSlots = 5;
-  const residentSlots = Math.max(1, Math.min(visibleSlots, Math.floor(activeWarps / schedulersPerSm)));
+  const residentSlots = activeWarps === 0
+    ? 0
+    : Math.max(1, Math.min(visibleSlots, Math.floor(activeWarps / schedulersPerSm)));
   const hbmWaitCycles = registerSpill ? 5 : 4;
 
   // Per-warp memory-bound instruction stream: 1 LDG -> 1 FMA (or 2-pass divergent BR-A + BR-B)
@@ -393,6 +396,7 @@ export function deriveSmOccupancy({ regsPerThread = 64, smemKB = 48, blockSize =
     blocksByWarpCap,
     limiter,
     registerSpill,
+    launchExceedsRegs,
     cycles,
     stallCycles,
     simtEfficiencyPct,
@@ -403,10 +407,12 @@ export function deriveSmOccupancy({ regsPerThread = 64, smemKB = 48, blockSize =
 // §2 Memory Hierarchy, Coalescing & Tensor Core Tiling Dataflow
 export function deriveMemoryDataflow({ memView = 'coalescing', stride = 1, tiled = true } = {}) {
   const isCoalesced = stride === 1;
-  // 32 threads in 1 warp each load 1 FP32 (4 bytes) = 128 B useful data
+  // 32 threads in 1 warp each load 1 FP32 (4 bytes) = 128 B useful data.
+  // Volta–Blackwell L2/HBM global transactions use 32B sectors (4 sectors = one 128B L1 cache line).
   const usefulBytes = 128;
-  const transactions = isCoalesced ? 1 : 32; // 1 x 128B cache line vs 32 separate 128B cache lines
-  const fetchedBytes = transactions * 128;
+  const sectorBytes = 32;
+  const transactions = isCoalesced ? 4 : 32; // 4 x 32B sectors (128B) vs 32 separate 32B sectors (1024B)
+  const fetchedBytes = transactions * sectorBytes;
   const busEfficiencyPct = Number(((usefulBytes / fetchedBytes) * 100).toFixed(1));
 
   // Tiled GEMM 1024x1024x1024 (FP16/BF16 = 2B) with tile B_M=B_N=128, B_K=32
@@ -605,7 +611,8 @@ export function deriveRooflineModel({ gpu = 'h100', dtype = 'bf16', batchSize = 
   const criticalBatch = denom > 0 ? Math.ceil((ridgeAi * bytesPerElem * dim) / denom) : null;
 
   const kernels = [
-    { id: 'rmsnorm', label: 'RMSNorm / RoPE', short: 'RMS', ai: Number((2 / (2 * bytesPerElem)).toFixed(2)), kind: 'elementwise' },
+    // RMSNorm / RoPE always operate on BF16/FP32 activations (~5 FLOPs / 4 B = 1.25 FLOP/B), independent of GEMM FP8/FP4 weights.
+    { id: 'rmsnorm', label: 'RMSNorm / RoPE (BF16)', short: 'RMS', ai: 1.25, kind: 'elementwise' },
     { id: 'decode_gemv', label: 'Decode GEMV (B=1)', short: 'B=1', ai: Number(exactGemmAi(1, dim, dim, bytesPerElem).toFixed(1)), kind: 'memory' },
     { id: 'active_decode', label: `Decode GEMM (B=${b})`, short: `B=${b}`, ai: Number(exactGemmAi(b, dim, dim, bytesPerElem).toFixed(1)), kind: 'active' },
     { id: 'prefill_gemm', label: 'Prefill GEMM (T=2048)', short: 'T=2K', ai: Math.round(exactGemmAi(2048, dim, dim, bytesPerElem)), kind: 'compute' },

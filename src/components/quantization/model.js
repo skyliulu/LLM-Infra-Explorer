@@ -166,7 +166,7 @@ export function deriveCapacityModel({mode = 'w4', batch = 1, context = 2048, kv 
   const d = 4096, layers = 32, heads = 8, hd = 128, ffn = 11008;
   const weights = layers * (2 * d * d + 2 * d * heads * hd + 3 * d * ffn);
   const wb = ['fp16','bf16'].includes(mode) ? 16 : (mode === 'w4' || mode === 'fp4') ? 4 : 8;
-  const ab = mode === 'w8' || mode === 'fp8' ? 8 : 16;
+  const ab = mode === 'fp4' ? 4 : (mode === 'w8' || mode === 'fp8') ? 8 : 16;
   const kb = kv === 'fp4' ? 4 : kv === 'fp8' ? 8 : 16;
   const weightPayload = weights * wb / 8, weightScales = wb === 16 ? 0 : mode === 'fp4' ? weights / 16 : Math.ceil(weights / 128) * 4;
   const kvElements = 2 * layers * batch * context * heads * hd;

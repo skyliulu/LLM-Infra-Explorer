@@ -106,7 +106,8 @@ export function deriveOverlapModel(overlap = true, rounds = 3) {
     host = add('cpu', 'schedule', round, host, 1);
     const forwardEnd = add('device', 'forward', round, Math.max(host, device), 4);
     if (overlap && round > 0) host = add('cpu', 'commit', round - 1, Math.max(host, priorSample), 2);
-    device = add('device', 'sample', round, Math.max(forwardEnd, host), 1);
+    // GPU sample(round) only depends on GPU forward(round), never on CPU commit(round - 1).
+    device = add('device', 'sample', round, forwardEnd, 1);
     priorSample = device;
     if (!overlap) host = add('cpu', 'commit', round, device, 2);
   }

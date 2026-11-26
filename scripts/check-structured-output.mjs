@@ -16,10 +16,12 @@ const norm = normalizeStructuredConfig({ maskEngine: 'bad', vocabSize: 999 });
 assert.equal(norm.maskEngine, 'xgrammar');
 assert.equal(norm.vocabSize, 128256);
 
-// §2 XGrammar > 100x faster than naive 128K scan
+// §3 XGrammar > 100x faster than naive 128K scan; Outlines pre-indexed FSM does 0% runtime regex checks
 const xg = deriveMaskCostModel({ maskEngine: 'xgrammar', vocabSize: 128256 });
+const fsmEntry = xg.entries.find((e) => e.id === 'fsm_index');
 assert.ok(xg.speedupVsNaive > 100);
 assert.ok(xg.selected.maskMs < 0.1);
+assert.equal(fsmEntry.runtimeCheckPct, 0, 'Outlines offline FSM index must have 0% runtime regex checks');
 
 // §3 FSM masking sets all invalid tokens to 0% prob and valid sum to ~100%
 for (let s = 0; s < 5; s += 1) {

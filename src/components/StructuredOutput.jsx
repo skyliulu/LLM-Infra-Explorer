@@ -78,7 +78,7 @@ export default function StructuredOutput() {
           <div className="so-grid-2">
             <div style={{ display: 'grid', gap: 10 }}>
               <div className="so-svg-wrap">
-                <StructuredArchSvg activePin={archPin} onSelectPin={setArchPin} />
+                <StructuredArchSvg activePin={archPin} onSelectPin={setArchPin} t={t} />
               </div>
               <div className="so-box">
                 <MathFormula>{MASK_TEX}</MathFormula>
@@ -105,82 +105,7 @@ export default function StructuredOutput() {
           </div>
         </section>
 
-        {/* §2 Vocab Wall & XGrammar Adaptive Bitmask */}
-        <section className="so-section" data-testid="so-xgrammar-section">
-          <h2 data-section-anchor="so-xgrammar">{t('s2Title')}</h2>
-          <p className="so-lead">{t('s2Lead')}</p>
-
-          <div className="so-controls">
-            <div className="so-toggle" role="group" aria-label={t('s2Title')}>
-              {MASK_ENGINES.map((eng) => (
-                <button
-                  key={eng}
-                  type="button"
-                  data-testid={`so-eng-${eng}`}
-                  aria-pressed={config.maskEngine === eng}
-                  onClick={() => update({ maskEngine: eng })}
-                >
-                  {t(`eng_${eng}`)}
-                </button>
-              ))}
-            </div>
-
-            <div className="so-ctrl-group">
-              <span className="so-ctrl-label">{t('vocabLabel')}:</span>
-              <div className="so-toggle" role="group" aria-label={t('vocabLabel')}>
-                {VOCAB_SIZES.map((v) => (
-                  <button key={v} type="button" data-testid={`so-vocab-${v}`} aria-pressed={config.vocabSize === v} onClick={() => update({ vocabSize: v })}>
-                    {Math.round(v / 1024)}K
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="so-grid-2">
-            <div className="so-box">
-              <table className="so-table">
-                <thead>
-                  <tr>
-                    <th>Engine</th>
-                    <th>{t('mMaskMs')}</th>
-                    <th>{t('mRuntimePct')}</th>
-                    <th>{t('mOverhead')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {maskCost.entries.map((row) => (
-                    <tr key={row.id} className={config.maskEngine === row.id ? 'on' : ''} onClick={() => update({ maskEngine: row.id })} style={{ cursor: 'pointer' }}>
-                      <td>{t(`eng_${row.id}`)}</td>
-                      <td>{row.maskMs} ms</td>
-                      <td>{row.runtimeCheckPct}%</td>
-                      <td>{row.overheadPct}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="so-box">
-              <div className="so-svg-wrap">
-                <XGrammarSplitSvg maskEngine={config.maskEngine} vocabSize={config.vocabSize} />
-              </div>
-              <div className="so-kpis-2">
-                <div className={`so-kpi ${maskCost.selected.maskMs < 0.2 ? 'good' : 'warn'}`}>
-                  <small>{t('mMaskMs')}</small>
-                  <strong>{maskCost.selected.maskMs} ms</strong>
-                </div>
-                <div className={`so-kpi ${maskCost.speedupVsNaive >= 10 ? 'good' : ''}`}>
-                  <small>{t('mSpeedup')}</small>
-                  <strong>{maskCost.speedupVsNaive}×</strong>
-                </div>
-              </div>
-              <p>{t(`engNote_${config.maskEngine}`)}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* §3 Live FSM Logits Masking */}
+        {/* §2 Core Mechanism: Live FSM Logits Masking (taught BEFORE XGrammar optimization) */}
         <section className="so-section" data-testid="so-step-section">
           <h2 data-section-anchor="so-step">{t('s3Title')}</h2>
           <p className="so-lead">{t('s3Lead')}</p>
@@ -225,6 +150,81 @@ export default function StructuredOutput() {
           </table>
         </section>
 
+        {/* §3 Vocab Wall & XGrammar Adaptive Bitmask */}
+        <section className="so-section" data-testid="so-xgrammar-section">
+          <h2 data-section-anchor="so-xgrammar">{t('s2Title')}</h2>
+          <p className="so-lead">{t('s2Lead')}</p>
+
+          <div className="so-controls">
+            <div className="so-toggle" role="group" aria-label={t('s2Title')}>
+              {MASK_ENGINES.map((eng) => (
+                <button
+                  key={eng}
+                  type="button"
+                  data-testid={`so-eng-${eng}`}
+                  aria-pressed={config.maskEngine === eng}
+                  onClick={() => update({ maskEngine: eng })}
+                >
+                  {t(`eng_${eng}`)}
+                </button>
+              ))}
+            </div>
+
+            <div className="so-ctrl-group">
+              <span className="so-ctrl-label">{t('vocabLabel')}:</span>
+              <div className="so-toggle" role="group" aria-label={t('vocabLabel')}>
+                {VOCAB_SIZES.map((v) => (
+                  <button key={v} type="button" data-testid={`so-vocab-${v}`} aria-pressed={config.vocabSize === v} onClick={() => update({ vocabSize: v })}>
+                    {Math.round(v / 1024)}K
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="so-grid-2">
+            <div className="so-box">
+              <table className="so-table">
+                <thead>
+                  <tr>
+                    <th>{t('colEngine')}</th>
+                    <th>{t('mMaskMs')}</th>
+                    <th>{t('mRuntimePct')}</th>
+                    <th>{t('mOverhead')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {maskCost.entries.map((row) => (
+                    <tr key={row.id} className={config.maskEngine === row.id ? 'on' : ''} onClick={() => update({ maskEngine: row.id })} style={{ cursor: 'pointer' }}>
+                      <td>{t(`eng_${row.id}`)}</td>
+                      <td>{row.maskMs} ms</td>
+                      <td>{row.runtimeCheckPct}%</td>
+                      <td>{row.overheadPct}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="so-box">
+              <div className="so-svg-wrap">
+                <XGrammarSplitSvg maskEngine={config.maskEngine} vocabSize={config.vocabSize} t={t} />
+              </div>
+              <div className="so-kpis-2">
+                <div className={`so-kpi ${maskCost.selected.maskMs < 0.2 ? 'good' : 'warn'}`}>
+                  <small>{t('mMaskMs')}</small>
+                  <strong>{maskCost.selected.maskMs} ms</strong>
+                </div>
+                <div className={`so-kpi ${maskCost.speedupVsNaive >= 10 ? 'good' : ''}`}>
+                  <small>{t('mSpeedup')}</small>
+                  <strong>{maskCost.speedupVsNaive}×</strong>
+                </div>
+              </div>
+              <p>{t(`engNote_${config.maskEngine}`)}</p>
+            </div>
+          </div>
+        </section>
+
         {/* §4 Jump-Forward Decoding */}
         <section className="so-section" data-testid="so-jump-section">
           <h2 data-section-anchor="so-jump">{t('s4Title')}</h2>
@@ -241,7 +241,7 @@ export default function StructuredOutput() {
           </div>
 
           <div className="so-svg-wrap">
-            <JumpFsmSvg jumpMode={config.jumpMode} />
+            <JumpFsmSvg jumpMode={config.jumpMode} t={t} />
           </div>
 
           <div className="so-grid-2">
@@ -279,7 +279,7 @@ export default function StructuredOutput() {
           </div>
         </section>
 
-        {/* §5 Async CPU Masking Overlap */}
+        {/* §5 Batched Async CPU Masking Overlap */}
         <section className="so-section" data-testid="so-overlap-section">
           <h2 data-section-anchor="so-overlap">{t('s5Title')}</h2>
           <p className="so-lead">{t('s5Lead')}</p>
@@ -301,15 +301,15 @@ export default function StructuredOutput() {
                   <div className="so-lane-row">
                     <span>{t('laneGpu')}</span>
                     <div className="so-lane-bar">
-                      <div className="so-seg gpu" style={{ width: '78%' }}>Layers L0..L79 Forward (15.0 ms)</div>
-                      <div className="so-seg idle" style={{ width: '22%' }}>Wait CPU</div>
+                      <div className="so-seg gpu" style={{ width: `${overlap.gpuPct}%` }}>{t('segGpuSerial')}</div>
+                      <div className="so-seg idle" style={{ width: `${overlap.maskPct}%` }}>{t('segGpuWait')}</div>
                     </div>
                   </div>
                   <div className="so-lane-row">
                     <span>{t('laneCpu')}</span>
                     <div className="so-lane-bar">
-                      <div className="so-seg idle" style={{ width: '78%' }} />
-                      <div className="so-seg cpu" style={{ width: '22%' }}>Mask 2.4ms</div>
+                      <div className="so-seg idle" style={{ width: `${overlap.gpuPct}%` }} />
+                      <div className="so-seg cpu" style={{ width: `${overlap.maskPct}%` }}>{t('segCpuMask')}</div>
                     </div>
                   </div>
                 </>
@@ -318,15 +318,15 @@ export default function StructuredOutput() {
                   <div className="so-lane-row">
                     <span>{t('laneGpu')}</span>
                     <div className="so-lane-bar">
-                      <div className="so-seg gpu" style={{ width: '96%' }}>Layers L0..L79 Forward + Fused Mask Sample (15.1 ms)</div>
-                      <div className="so-seg idle" style={{ width: '4%' }} />
+                      <div className="so-seg gpu" style={{ width: `${overlap.asyncGpuPct}%` }}>{t('segGpuAsync')}</div>
+                      <div className="so-seg idle" style={{ width: `${100 - overlap.asyncGpuPct}%` }} />
                     </div>
                   </div>
                   <div className="so-lane-row">
                     <span>{t('laneCpu')}</span>
                     <div className="so-lane-bar">
-                      <div className="so-seg cpu" style={{ width: '24%' }}>Mask 2.4ms</div>
-                      <div className="so-seg idle" style={{ width: '76%' }}>Hidden behind GPU · Ready in HBM</div>
+                      <div className="so-seg cpu" style={{ width: `${overlap.maskPct}%` }}>{t('segCpuMask')}</div>
+                      <div className="so-seg idle" style={{ width: `${100 - overlap.maskPct}%` }}>{t('segCpuHidden')}</div>
                     </div>
                   </div>
                 </>
@@ -356,26 +356,26 @@ export default function StructuredOutput() {
             <span className="so-ctrl-label">{t('codeTitle')}</span>
             <pre className="so-code">
               {config.overlapMode === 'async_overlap' ? (
-                <code>{`// SGLang / vLLM Async Grammar Overlap Loop (Zero-Bubble Critical Path)
-future_mask = cpu_pool.submit(pda.fill_next_bitmask, prev_tok_id);  // ~40µs–2.4ms on CPU thread
-logits      = model.forward_decode(prev_tok_id, kv_cache);          // 15.0ms GPU forward (overlaps CPU!)
-bitmask_gpu = future_mask.get_async_h2d(pinned_buf, stream);        // 16 KB uint32 H2D already done
-apply_bitmask_kernel<<<ceil(|V|/256), 256>>>(logits, bitmask_gpu);  // bit==0 => logits[v] = -INF
-next_tok    = sample_softmax(logits);                               // 100% schema-valid output`}</code>
+                <code>{`// SGLang / vLLM Batched Async Grammar Overlap (B=60 × 0.04 ms = 2.4 ms CPU hidden)
+future_masks = cpu_pool.submit(batch_fill_bitmasks, prev_tok_ids);   // 2.4ms on CPU thread
+logits       = model.forward_decode(prev_tok_ids, kv_cache);         // 15.0ms GPU forward (overlaps CPU!)
+bitmasks_gpu = future_masks.get_async_h2d(pinned_buf, stream);       // 60 × 16 KB H2D already done
+apply_bitmask_kernel<<<dim3(B, ceil(|V|/256)), 256>>>(logits, bitmasks_gpu);
+next_toks    = sample_softmax(logits);                               // 100% schema-valid output`}</code>
               ) : (
-                <code>{`// Naive Serial Execution (GPU Stalls Waiting on CPU Grammar Thread)
-logits      = model.forward_decode(prev_tok_id, kv_cache);          // 15.0ms GPU forward
-// ⚠ GPU IDLE BUBBLE: host blocks here while CPU walks grammar & copies bitmask!
-bitmask_cpu = pda.fill_next_bitmask(prev_tok_id);                   // +2.4ms exposed stall
-bitmask_gpu = h2d_copy_sync(bitmask_cpu);                           // sync barrier
-apply_bitmask_kernel<<<ceil(|V|/256), 256>>>(logits, bitmask_gpu);
-next_tok    = sample_softmax(logits);`}</code>
+                <code>{`// Naive Serial Execution (GPU Stalls Waiting on B=60 CPU Grammar Batch)
+logits       = model.forward_decode(prev_tok_ids, kv_cache);         // 15.0ms GPU forward
+// ⚠ GPU IDLE BUBBLE: host blocks here while CPU builds 60 bitmasks & copies H2D!
+bitmasks_cpu = batch_fill_bitmasks(prev_tok_ids);                    // +2.4ms exposed stall
+bitmasks_gpu = h2d_copy_sync(bitmasks_cpu);                          // sync barrier
+apply_bitmask_kernel<<<dim3(B, ceil(|V|/256)), 256>>>(logits, bitmasks_gpu);
+next_toks    = sample_softmax(logits);`}</code>
               )}
             </pre>
           </div>
         </section>
 
-        {/* §6 Production Pitfalls */}
+        {/* §6 Engineering Edge Cases & Engine Comparison */}
         <section className="so-section" data-testid="so-pitfalls-section">
           <h2 data-section-anchor="so-pitfalls">{t('s6Title')}</h2>
           <p className="so-lead">{t('s6Lead')}</p>
@@ -394,26 +394,26 @@ next_tok    = sample_softmax(logits);`}</code>
             <div className="so-tok-strip">
               {config.pitfallId === 'bpe_healing' && (
                 <>
-                  <span className="so-tok det">Broken Split: [&quot;:&quot;] + [&quot;ok&quot;] (OOD)</span>
-                  <span className="so-tok free">Token Healing → [&quot;:&quot;ok&quot;] (Exact BPE Merge)</span>
+                  <span className="so-tok det">{t('pitChipBpeBad')}</span>
+                  <span className="so-tok free">{t('pitChipBpeGood')}</span>
                 </>
               )}
               {config.pitfallId === 'recursive_cfg' && (
                 <>
-                  <span className="so-tok det">Regex FSM: O(2^depth) State Blowup</span>
-                  <span className="so-tok free">PDA Stack: Push &#123; → Depth k → Pop &#125; (Bounded)</span>
+                  <span className="so-tok det">{t('pitChipCfgBad')}</span>
+                  <span className="so-tok free">{t('pitChipCfgGood')}</span>
                 </>
               )}
               {config.pitfallId === 'cold_compile' && (
                 <>
-                  <span className="so-tok det">Cold Sync Compile: +380 ms TTFT Spike</span>
-                  <span className="so-tok free">Schema Hash LRU Hit: 0.02 ms</span>
+                  <span className="so-tok det">{t('pitChipColdBad')}</span>
+                  <span className="so-tok free">{t('pitChipColdGood')}</span>
                 </>
               )}
               {config.pitfallId === 'spec_coupling' && (
                 <>
-                  <span className="so-tok free">Draft Branch A: Valid ✓</span>
-                  <span className="so-tok det">Draft Branch B: Masked (-∞) → Rollback Snapshot</span>
+                  <span className="so-tok free">{t('pitChipSpecGood')}</span>
+                  <span className="so-tok det">{t('pitChipSpecBad')}</span>
                 </>
               )}
             </div>
@@ -446,35 +446,35 @@ next_tok    = sample_softmax(logits);`}</code>
               <tbody>
                 <tr>
                   <td><b>Outlines (FSM)</b></td>
-                  <td>Regex / Flat JSON</td>
+                  <td>{t('mRow1Gram')}</td>
                   <td>100–600 ms</td>
                   <td>~0.4 ms</td>
-                  <td>Partial</td>
-                  <td><span className="so-pill no">Limited</span></td>
+                  <td>{t('mRow1Jump')}</td>
+                  <td><span className="so-pill no">{t('mRow1Spec')}</span></td>
                 </tr>
                 <tr className="on">
                   <td><b>XGrammar (MLSys 25)</b></td>
-                  <td>Full CFG (PDA)</td>
+                  <td>{t('mRow2Gram')}</td>
                   <td>10–40 ms</td>
                   <td>~0.04 ms</td>
-                  <td>Optional</td>
-                  <td><span className="so-pill ok">Tree Rollback</span></td>
+                  <td>{t('mRow2Jump')}</td>
+                  <td><span className="so-pill ok">{t('mRow2Spec')}</span></td>
                 </tr>
                 <tr>
                   <td><b>LLGuidance (Rust)</b></td>
-                  <td>CFG + Earley + Regex</td>
+                  <td>{t('mRow3Gram')}</td>
                   <td>&lt; 2 ms</td>
                   <td>~0.05 ms</td>
-                  <td>Fast-Forward</td>
-                  <td><span className="so-pill ok">Multi-Branch</span></td>
+                  <td>{t('mRow3Jump')}</td>
+                  <td><span className="so-pill ok">{t('mRow3Spec')}</span></td>
                 </tr>
                 <tr>
                   <td><b>SGLang Compressed FSM</b></td>
-                  <td>JSON / Regex / XGrammar</td>
+                  <td>{t('mRow4Gram')}</td>
                   <td>5–30 ms</td>
                   <td>~0.04 ms</td>
-                  <td><span className="so-pill ok">Native 3×</span></td>
-                  <td><span className="so-pill ok">EAGLE + Rollback</span></td>
+                  <td><span className="so-pill ok">{t('mRow4Jump')}</span></td>
+                  <td><span className="so-pill ok">{t('mRow4Spec')}</span></td>
                 </tr>
               </tbody>
             </table>

@@ -24,8 +24,10 @@ function LayoutScene({lang,page,pool,setPool,config,setConfig}){
  <details><summary>{t('boundary')}</summary><p>{t('boundaryNote')}</p><p>{t('headNote')}</p><a href="https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/mem_cache/pool_host/mha.py" target="_blank" rel="noreferrer">{t('source')} ↗</a></details>
  </section>;
 }
-export default function HiCacheLayout({lang,page}){
- const [pool,setPool]=useExperimentState('RadixCache.layoutPool','mha');
+export default function HiCacheLayout({lang,page,pool:extPool,setPool:extSetPool}){
+ const [localPool,setLocalPool]=useExperimentState('RadixCache.layoutPool','mha');
+ const pool=extPool??localPool;
+ const setPool=extSetPool??setLocalPool;
  const [config,setConfig]=useExperimentState('RadixCache.layout',{layout:'layer_first',operation:'layer',layer:1,backend:'kernel',storage:'scatter',registered:true,copyTime:3,computeTime:4});
  return <LayoutScene key={JSON.stringify({...config,page,pool})} {...{lang,page,pool,setPool,config,setConfig}}/>;
 }

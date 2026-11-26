@@ -96,6 +96,7 @@ assert.equal(headSnapshots.mqa.kvHeads, 1);
 assert.equal(headSnapshots.mla.kvHeads, 1);
 assert.equal(headSnapshots.mla.qkDim, 576);
 assert.equal(headSnapshots.mla.vDim, 512);
+assert.equal(headSnapshots.mla.scaleDim, 192, 'Absorbed MLA Softmax scale uses d_nope + d_rope = 192, not 576');
 assert.equal(headSnapshots.mla.sharedLatent, true);
 assert.equal(headSnapshots.mha.queryHeadsPerKvHead, 1);
 assert.equal(headSnapshots.gqa.queryHeadsPerKvHead, 4);
@@ -107,6 +108,10 @@ const largeBatchGqa = deriveFlashDecodeSnapshot({ headMode: 'gqa', batchSize: 12
 assert.equal(largeBatchGqa.occupancy.splitOverheadDominates, true, 'B=128 with GQA saturates 132 SMs so Split-K overhead dominates');
 const smallBatchGqa = deriveFlashDecodeSnapshot({ headMode: 'gqa', batchSize: 1, execution: 'split' });
 assert.equal(smallBatchGqa.occupancy.splitOverheadDominates, false, 'B=1 underutilizes SMs so Split-K helps');
+assert.equal(largeBatchGqa.metrics.kvElementsRead, smallBatchGqa.metrics.kvElementsRead * 128, 'kvElementsRead scales linearly with batchSize');
+const split2Pages = deriveFlashDecodeSnapshot({ execution: 'split', splitSetting: '2' }).logicalPages.map((p) => p.splitIndex);
+const split6Pages = deriveFlashDecodeSnapshot({ execution: 'split', splitSetting: '6' }).logicalPages.map((p) => p.splitIndex);
+assert.notDeepEqual(split2Pages, split6Pages, 'logicalPages splitIndex reacts to splitSetting');
 
 const scores = [1.2, -0.4, 0.8, 2.1];
 const values = [[1, 0], [0, 1], [2, 1], [-1, 3]];

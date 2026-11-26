@@ -157,7 +157,12 @@ const i18n = {
     trafficTotal: '全程估算',
     standardBaseline: '标准 Softmax',
     selectedImplementation: '当前实现',
-    trafficAssumption: '模型假设：单个 batch/head，Q/K/V/O 为 2 字节；未融合标准实现的 S/P 以 FP32 物化。数值为算法级估算，不冒充特定 kernel profiler 结果。',
+    trafficAssumption: '模型假设：单个 batch/head，BF16 下 Q/K/V/O 为 2 字节；未融合标准实现的 S/P 以 FP32 物化。数值为算法级估算，不冒充特定 kernel profiler 结果。',
+    trafficAssumptionFp8: '模型假设：单个 batch/head，FP8 下 Q/K/V 为 1 字节、输出 O 仍以 2 字节 BF16 写回 HBM，累加器为 FP32；标准基线为 BF16 + FP32 S/P。',
+    onlineDemoTitle: '2-Tile 数值级 Online Softmax 精确性验证',
+    onlineTile0: 'Tile 0（首块）',
+    onlineTile1: 'Tile 1（发现更大最大值 → 精确重缩放）',
+    onlineDemoNote: '两块分片分别在片上更新后，最终输出 O₁ = 0.623 与一次性全量 Softmax 结果完全一致（误差 0.000），无需在 HBM 中存整张 S/P 矩阵。',
     materializedMetric: 'HBM 中的二次方中间量',
     onChipMetric: '代表性片上 live set',
     tilePairsMetric: '执行 / 跳过 tile 对',
@@ -440,7 +445,12 @@ const i18n = {
     trafficTotal: 'Full-run estimate',
     standardBaseline: 'Standard Softmax',
     selectedImplementation: 'Selected implementation',
-    trafficAssumption: 'Model assumptions: one batch/head; Q/K/V/O use 2-byte elements; the unfused baseline materializes S/P in FP32. These are algorithm-level estimates, not profiler results for a specific kernel.',
+    trafficAssumption: 'Model assumptions: one batch/head; Q/K/V/O use 2-byte BF16 elements; the unfused baseline materializes S/P in FP32. Algorithm-level estimates, not profiler traces.',
+    trafficAssumptionFp8: 'Model assumptions: one batch/head; FP8 reads Q/K/V at 1 byte and writes output O back in 2-byte BF16 with FP32 accumulators; standard baseline uses BF16 + FP32 S/P.',
+    onlineDemoTitle: '2-Tile Numerical Online Softmax Exactness Check',
+    onlineTile0: 'Tile 0 (first block)',
+    onlineTile1: 'Tile 1 (larger max → exact rescale)',
+    onlineDemoNote: 'After streaming Tile 0 and Tile 1 on chip, final O₁ = 0.623 matches full-matrix Softmax to 0.000 error without ever writing S or P to HBM.',
     materializedMetric: 'Quadratic intermediates in HBM',
     onChipMetric: 'Representative on-chip live set',
     tilePairsMetric: 'Executed / skipped tile pairs',
@@ -1238,7 +1248,7 @@ function FlashAttention() {
               ) : (
                 <>
                   <MetricCard label={t('materializedMetric')} value="0 B" detail={t('notMaterialized')} tone="emerald" />
-                  <MetricCard label={t('onChipMetric')} value={formatBytes(snapshot.resources.onChipLiveBytes)} detail={<MathFormula>{String.raw`${snapshot.profile.qTile}\times ${snapshot.profile.kvTile}`}</MathFormula>} tone="indigo" />
+                  <MetricCard label={t('onChipMetric')} value={formatBytes(snapshot.resources.onChipLiveBytes)} detail={`SMEM ${formatBytes(snapshot.resources.smemBytes)} + Reg/TMEM ${formatBytes(snapshot.resources.accBytes)}`} tone="indigo" />
                   <MetricCard label={t('tilePairsMetric')} value={`${snapshot.grid.activePairs} / ${snapshot.grid.skippedPairs}`} detail={config.causal ? t('causal') : t('nonCausal')} tone="amber" />
                   <MetricCard label={t('bottleneckMetric')} value={t(`bottleneck_${selectedVersion}`)} tone="rose" />
                 </>
@@ -1271,7 +1281,24 @@ function FlashAttention() {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[10px] leading-relaxed text-slate-500">{t('trafficAssumption')}</p>
+              <p className="mt-3 text-[10.5px] leading-relaxed text-slate-500">{t(config.dtype === 'fp8' ? 'trafficAssumptionFp8' : 'trafficAssumption')}</p>
+            </div>
+          )}
+
+          {config.modelType === 'flash' && config.direction === 'forward' && (
+            <div className="mt-3 rounded-xl border border-indigo-200 bg-indigo-50/60 p-3 space-y-2" data-testid="flash-online-softmax-demo">
+              <div className="text-xs font-bold text-indigo-900">{t('onlineDemoTitle')}</div>
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2 text-xs">
+                <div className="rounded-lg border border-indigo-200 bg-white p-2.5 space-y-1">
+                  <div className="font-bold text-indigo-800">{t('onlineTile0')}</div>
+                  <div className="overflow-x-auto overflow-y-hidden py-0.5"><MathFormula>{String.raw`S_0=[1,2],\; V_0=[0,1]\Rightarrow m_0=2,\; \ell_0=e^{-1}+1\approx 1.368,\; \tilde O_0=1.000`}</MathFormula></div>
+                </div>
+                <div className="rounded-lg border border-emerald-200 bg-white p-2.5 space-y-1">
+                  <div className="font-bold text-emerald-800">{t('onlineTile1')}</div>
+                  <div className="overflow-x-auto overflow-y-hidden py-0.5"><MathFormula>{String.raw`S_1=[3,0],\; V_1=[0.5,2]\Rightarrow m_1=3,\; \alpha=e^{2-3}\approx 0.368,\; O_1=\frac{\alpha \tilde O_0 + 1\cdot 0.5 + e^{-3}\cdot 2}{\alpha\ell_0 + 1 + e^{-3}} \approx 0.623`}</MathFormula></div>
+                </div>
+              </div>
+              <p className="text-[11px] text-indigo-800/85 leading-snug">{t('onlineDemoNote')}</p>
             </div>
           )}
 
@@ -1405,7 +1432,7 @@ function FlashAttention() {
             </div>
             {snapshot.operation && <p className="mt-3 text-xs leading-relaxed text-slate-600" data-testid="flash-dependencies">{snapshot.operation.waitFor ? `${t('waitingFor')}: ${t(`op_${snapshot.operation.waitFor}`)}` : snapshot.operation.dependsOn.length ? `${t('dependencies')}: ${snapshot.operation.dependsOn.map(id=>t(`op_${id}`)).join(' · ')}` : t(`op_${snapshot.operation.id}`)}</p>}
 
-            {config.modelType === 'flash' && config.causal && (
+            {config.modelType === 'flash' && config.causal && (config.version === 'v3' || config.version === 'v4') && (
               <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2" data-testid="flash-causal-schedule">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-bold text-slate-800">{t('causalSchedTitle')}</span>

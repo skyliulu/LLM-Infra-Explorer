@@ -9,7 +9,6 @@ import {
   ALGO_MSG_SIZES,
   ALGO_WORLD_SIZES,
   COLLECTIVE_OPS,
-  COMM_DIAG_IDS,
   MSG_SIZES_MB,
   OVERLAP_MODES,
   RDMA_MODES,
@@ -42,7 +41,6 @@ export default function CollectiveComm() {
     msgMB: 16,
     rdmaMode: 'gpudirect_rdma',
     overlapMode: 'ibgda_overlap',
-    diagId: 'tp_small_batch',
   });
   const config = useMemo(() => normalizeCollectiveConfig(rawConfig), [rawConfig]);
   const update = (patch) => setConfig((prev) => normalizeCollectiveConfig({ ...(prev || config), ...patch }));
@@ -191,7 +189,7 @@ export default function CollectiveComm() {
           </div>
         </section>
 
-        {/* §2 NCCL Algorithm Topologies: Ring vs Tree vs NVLS SHARP */}
+        {/* §2 NCCL Algorithm Topologies: Ring vs Tree vs SHARP */}
         <section className="cc-section" data-testid="comm-algos-section">
           <h2 data-section-anchor="comm-algos">{t('algoTitle')}</h2>
           <p className="cc-lead">{t('algoLead')}</p>
@@ -236,10 +234,13 @@ export default function CollectiveComm() {
 
           <div className="cc-algo-grid">
             <div className="cc-svg-wrap">
-              <CommAlgoSvg algo={config.algo} />
+              <CommAlgoSvg algo={config.algo} t={t} />
             </div>
 
             <div className="cc-alpha-box">
+              <div className="cc-ctrl-label" style={{ marginBottom: 4 }}>
+                {algoModel.isIntra ? t('algoFabricIntra') : t('algoFabricInter')}
+              </div>
               <table className="cc-table">
                 <thead>
                   <tr>
@@ -259,7 +260,7 @@ export default function CollectiveComm() {
                       </td>
                       <td>{row.hops}</td>
                       <td>{row.factor}×M</td>
-                      <td>{row.smLoad}</td>
+                      <td>{t(row.smLoadKey)}</td>
                       <td>{row.totalUs} µs</td>
                     </tr>
                   ))}
@@ -370,7 +371,7 @@ export default function CollectiveComm() {
 
           <div className="cc-rdma-grid">
             <div className="cc-svg-wrap">
-              <RdmaPathSvg rdmaMode={config.rdmaMode} />
+              <RdmaPathSvg rdmaMode={config.rdmaMode} t={t} />
             </div>
 
             <div className="cc-alpha-box">
@@ -425,24 +426,24 @@ export default function CollectiveComm() {
                   <div className="cc-ov-track">
                     <span>{t('laneCompute')}</span>
                     <div className="cc-ov-bar">
-                      <div className="cc-ov-seg cmp" style={{ width: '48%' }}>Attn + Router (60 µs)</div>
-                      <div className="cc-ov-seg idle" style={{ width: '52%' }}>GPU Stall (64 µs)</div>
+                      <div className="cc-ov-seg cmp" style={{ width: '48%' }}>{t('segSerialCmp')}</div>
+                      <div className="cc-ov-seg idle" style={{ width: '52%' }}>{t('segSerialStall')}</div>
                     </div>
                   </div>
                   <div className="cc-ov-track">
                     <span>{t('laneProxy')}</span>
                     <div className="cc-ov-bar">
                       <div className="cc-ov-seg idle" style={{ width: '48%' }} />
-                      <div className="cc-ov-seg proxy" style={{ width: '10%' }}>Ring (10µs)</div>
+                      <div className="cc-ov-seg proxy" style={{ width: '10%' }}>{t('segSerialRing')}</div>
                       <div className="cc-ov-seg idle" style={{ width: '35%' }} />
-                      <div className="cc-ov-seg proxy" style={{ width: '7%' }}>Wake (8µs)</div>
+                      <div className="cc-ov-seg proxy" style={{ width: '7%' }}>{t('segSerialWake')}</div>
                     </div>
                   </div>
                   <div className="cc-ov-track">
                     <span>{t('laneComm')}</span>
                     <div className="cc-ov-bar">
                       <div className="cc-ov-seg idle" style={{ width: '58%' }} />
-                      <div className="cc-ov-seg comm" style={{ width: '35%' }}>All-to-All RDMA (46 µs)</div>
+                      <div className="cc-ov-seg comm" style={{ width: '35%' }}>{t('segSerialRdma')}</div>
                       <div className="cc-ov-seg idle" style={{ width: '7%' }} />
                     </div>
                   </div>
@@ -452,22 +453,22 @@ export default function CollectiveComm() {
                   <div className="cc-ov-track">
                     <span>{t('laneCompute')}</span>
                     <div className="cc-ov-bar">
-                      <div className="cc-ov-seg cmp" style={{ width: '42%' }}>MB0 Attn (30 µs)</div>
-                      <div className="cc-ov-seg cmp" style={{ width: '42%' }}>MB1 Attn / MoE (30 µs)</div>
-                      <div className="cc-ov-seg idle" style={{ width: '16%' }}>8 µs</div>
+                      <div className="cc-ov-seg cmp" style={{ width: '44%' }}>{t('segIbgdaMb0')}</div>
+                      <div className="cc-ov-seg cmp" style={{ width: '44%' }}>{t('segIbgdaMb1')}</div>
+                      <div className="cc-ov-seg idle" style={{ width: '12%' }}>{t('segIbgdaTail')}</div>
                     </div>
                   </div>
                   <div className="cc-ov-track">
                     <span>{t('laneProxy')}</span>
                     <div className="cc-ov-bar">
-                      <div className="cc-ov-seg idle" style={{ width: '100%' }}>IBGDA · 0 CPU Hops (GPU Warp Direct Doorbell)</div>
+                      <div className="cc-ov-seg idle" style={{ width: '100%' }}>{t('segIbgdaZero')}</div>
                     </div>
                   </div>
                   <div className="cc-ov-track">
                     <span>{t('laneComm')}</span>
                     <div className="cc-ov-bar">
-                      <div className="cc-ov-seg idle" style={{ width: '36%' }} />
-                      <div className="cc-ov-seg comm" style={{ width: '64%' }}>MB0 + MB1 Pipelined RDMA (46 µs overlapped)</div>
+                      <div className="cc-ov-seg idle" style={{ width: '32%' }} />
+                      <div className="cc-ov-seg comm" style={{ width: '68%' }}>{t('segIbgdaRdma')}</div>
                     </div>
                   </div>
                 </>
@@ -494,59 +495,29 @@ export default function CollectiveComm() {
           </div>
         </section>
 
-        {/* §6 Production Communication Troubleshooting & Placement Matrix */}
-        <section className="cc-section" data-testid="comm-troubleshoot-section">
-          <h2 data-section-anchor="comm-troubleshoot">{t('diagTitle')}</h2>
-          <p className="cc-lead">{t('diagLead')}</p>
+        {/* §6 Parallelism Dimension -> Physical Fabric Placement Matrix */}
+        <section className="cc-section" data-testid="comm-placement-section">
+          <h2 data-section-anchor="comm-placement">{t('placeSectionTitle')}</h2>
+          <p className="cc-lead">{t('placeSectionLead')}</p>
 
-          <div className="cc-controls">
-            <div className="cc-toggle" role="group" aria-label={t('diagTitle')}>
-              {COMM_DIAG_IDS.map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  data-testid={`comm-diag-${id}`}
-                  aria-pressed={config.diagId === id}
-                  onClick={() => update({ diagId: id })}
-                >
-                  {t(`diag_${id}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="cc-diag-grid">
-            <div className="cc-diag-card">
-              <small>Root Cause</small>
-              <p>{t(`diagRoot_${config.diagId}`)}</p>
-            </div>
-            <div className="cc-diag-card">
-              <small>NCCL / Topology Fix</small>
-              <p>{t(`diagFix_${config.diagId}`)}</p>
-            </div>
-          </div>
-
-          <div>
-            <div className="cc-ctrl-label" style={{ marginBottom: 6 }}>{t('placeTitle')}</div>
-            <table className="cc-table">
-              <thead>
-                <tr>
-                  <th>{t('placeColDim')}</th>
-                  <th>{t('placeColPrim')}</th>
-                  <th>{t('placeColTopo')}</th>
+          <table className="cc-table">
+            <thead>
+              <tr>
+                <th>{t('placeColDim')}</th>
+                <th>{t('placeColPrim')}</th>
+                <th>{t('placeColTopo')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[1, 2, 3, 4].map((row) => (
+                <tr key={row}>
+                  <td><strong>{t(`placeRow${row}Dim`)}</strong></td>
+                  <td>{t(`placeRow${row}Prim`)}</td>
+                  <td>{t(`placeRow${row}Topo`)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {[1, 2, 3, 4].map((row) => (
-                  <tr key={row}>
-                    <td><strong>{t(`placeRow${row}Dim`)}</strong></td>
-                    <td>{t(`placeRow${row}Prim`)}</td>
-                    <td>{t(`placeRow${row}Topo`)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </section>
 
         <details className="cc-evidence">

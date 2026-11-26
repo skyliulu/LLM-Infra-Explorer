@@ -13,7 +13,7 @@ export function deriveHiCacheEngineState(step=0,options={}){
  const ref=(refs,ids,delta)=>ids.forEach(id=>{refs[id]=Math.max(0,count(refs,id)+delta);});
  const tree=()=>{const root={id:'root',pages:[],children:[]};for(const path of paths){let n=root;for(const id of path){if(!local.has(id))break;let c=n.children.find(c=>c.id===id);if(!c){c={id,pages:[id],children:[]};n.children.push(c);}n=c;}}const out=[];const flatten=(n,parent=null)=>{while(n.id!=='root'&&n.children.length===1&&!ends.has(n.pages.at(-1))){const c=n.children[0];n.pages.push(...c.pages);n.children=c.children;}out.push({id:n.id,pages:n.pages,parent});n.children.forEach(c=>flatten(c,n.id));};flatten(root);return out;};
  const isLeaf=(id,tier)=>!paths.some(p=>{const i=p.indexOf(id);return i>=0&&p.slice(i+1).some(x=>ready[tier].has(x));});
- const candidates=tier=>pools[tier].filter(id=>id&&ready[tier].has(id)&&!count(tier==='gpu'?gpuRefs:hostRefs,id)&&(tier!=='host'||!ready.gpu.has(id))&&isLeaf(id,tier)).sort((a,b)=>(age[a]||0)-(age[b]||0));
+ const candidates=tier=>pools[tier].filter(id=>id&&ready[tier].has(id)&&!count(tier==='gpu'?gpuRefs:hostRefs,id)&&(tier!=='host'||(!ready.gpu.has(id)&&!routes.some(v=>v.id===id&&v.action==='load')))&&isLeaf(id,tier)).sort((a,b)=>(age[a]||0)-(age[b]||0));
  const capture=(kind,ids=[],from=null,to=null)=>history.push({kind,ids:[...ids],from,to,request,pools:structuredClone(pools),ready:Object.fromEntries(Object.entries(ready).map(([k,s])=>[k,[...s]])),tree:tree(),gpuRefs:{...gpuRefs},hostRefs:{...hostRefs},locked:Object.keys(gpuRefs).filter(id=>gpuRefs[id]>0),candidates:{gpu:candidates('gpu'),host:candidates('host')},routes:structuredClone(routes),transfer:transfer?{...transfer}:null,traffic,computed,tail:tail?{...tail}:null,reader,rankResult:rankResult?[...rankResult]:null,received,committed});
  const remove=(tier,id)=>{pools[tier][pools[tier].indexOf(id)]=null;ready[tier].delete(id);capture('evict',[id],tier);if(!ready.gpu.has(id)&&!ready.host.has(id)){local.delete(id);capture('prune',[id]);}};
  const insert=id=>{local.add(id);const path=REQUESTS[request].ids.slice(0,REQUESTS[request].ids.indexOf(id)+1);if(path.length)paths.push(path);};
@@ -33,8 +33,21 @@ export function deriveHiCacheEngineState(step=0,options={}){
   ready[to].add(id);traffic+=pageBytes(opts.pool);if(to==='host'&&from==='storage')insert(id);
   transfer.state='ready';if(from!=='storage')ref(refs,[id],-1);if(to==='gpu')ref(gpuRefs,[id],1);capture(operation,[id],from,to);transfer=null;return true;
  };
+ const ancestorsOf=id=>{const path=paths.find(p=>p.includes(id));return path?path.slice(0,path.indexOf(id)):[];};
  const evict=tier=>{const id=candidates(tier)[0];if(!id)return false;capture('victim',[id],tier);
-  if(tier==='gpu'&&opts.write==='write_back'&&!ready.host.has(id)){if(!copy(id,'gpu','host','backup'))capture('drop_unbacked',[id]);}
+  if(tier==='gpu'&&opts.write==='write_back'){
+   const chain=[...ancestorsOf(id),id];
+   let backed=true;
+   for(const pid of chain){if(!ready.host.has(pid)&&ready.gpu.has(pid)){if(!copy(pid,'gpu','host','backup')){backed=false;break;}}}
+   if(!backed&&!ready.host.has(id))capture('drop_unbacked',[id]);
+   if(backed){for(const pid of chain){if(ready.host.has(pid)&&!ready.storage.has(pid))copy(pid,'host','storage','persist');}}
+  }
+  if(tier==='host'&&opts.write==='write_back'&&!ready.storage.has(id)){
+   const chain=[...ancestorsOf(id),id];
+   if(chain.every(pid=>ready.storage.has(pid)||ready.host.has(pid))){
+    for(const pid of chain){if(!ready.storage.has(pid))copy(pid,'host','storage','persist');}
+   }
+  }
   remove(tier,id);return true;};
  capture('idle');
  REQUESTS.forEach((r,index)=>{request=index;routes=[];tail=null;rankResult=null;received=0;committed=0;capture('arrive',r.ids);

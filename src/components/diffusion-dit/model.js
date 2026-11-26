@@ -1,4 +1,4 @@
-// Canonical domain model for Diffusion & DiT Infra (Chapter 5 of Tier-2 + Multimodal expansion)
+// Canonical domain model for Diffusion & DiT Infra
 
 export const ARCH_STAGE_IDS = ['textenc', 'patchify', 'ditloop', 'vaedec'];
 
@@ -15,7 +15,7 @@ export const TASK_PRESETS = {
     modelHidden: 3072,
     layers: 38,
     heads: 24,
-    cfgFactor: 1, // FLUX guidance-distilled or optional 2
+    cfgFactor: 1,
   },
   img1024: {
     id: 'img1024',
@@ -49,7 +49,7 @@ export const TASK_PRESETS = {
     id: 'vid1080p',
     isVideo: true,
     frames: 81,
-    height: 1088, // padded to multiple of 16
+    height: 1088,
     width: 1920,
     vaeT: 4,
     vaeS: 8,
@@ -69,20 +69,17 @@ export function deriveDitTokenModel(presetId = 'vid720p', patchSize = 2, steps =
   const nSteps = Math.max(4, Math.min(100, Number(steps) || preset.defaultSteps));
   const cfgMul = cfgEnabled ? 2 : 1;
 
-  // 3D VAE latent dimensions (causal temporal stride: (F-1)/vaeT + 1 for video, 1 for image)
   const latentT = preset.isVideo ? Math.floor((preset.frames - 1) / preset.vaeT) + 1 : 1;
   const latentH = Math.ceil(preset.height / preset.vaeS);
   const latentW = Math.ceil(preset.width / preset.vaeS);
 
-  // Patchify (1 x p x p)
   const patchT = latentT;
   const patchH = Math.ceil(latentH / p);
   const patchW = Math.ceil(latentW / p);
   const seqLen = patchT * patchH * patchW;
 
   // FLOPs per single DiT forward pass (Batch=1):
-  // Attention (bidirectional full 3D): 4 * L * N^2 * D
-  // Projections + FFN (approx 4x SwiGLU/GELU): 24 * L * N * D^2
+  // Bidirectional full 3D Attention: 4 * L * N^2 * D; Projections + FFN: 24 * L * N * D^2
   const L = preset.layers;
   const D = preset.modelHidden;
   const attnFlopsOne = 4 * L * seqLen * seqLen * D;
@@ -93,10 +90,9 @@ export function deriveDitTokenModel(presetId = 'vid720p', patchSize = 2, steps =
   const ffnSharePct = 100 - attnSharePct;
 
   const totalTflops = Number(((totalFlopsOne * cfgMul * nSteps) / 1e12).toFixed(1));
-  // H100 BF16 effective ~550 TFLOPS (with FlashAttention-3 / SageAttention)
+  // H100 BF16 FlashAttention-3 baseline ~550 effective TFLOP/s
   const estSingleGpuSec = Number((totalTflops / 550).toFixed(1));
 
-  // Arithmetic intensity (FLOPs / byte of model weights ~ 14B * 2B = 28 GB)
   const weightBytes = (preset.isVideo ? 14e9 : 12e9) * 2;
   const arithIntensity = Math.round((totalFlopsOne * cfgMul) / weightBytes);
   const regime = arithIntensity > 350 ? 'compute_bound' : 'mixed';
@@ -107,6 +103,8 @@ export function deriveDitTokenModel(presetId = 'vid720p', patchSize = 2, steps =
     frames: preset.frames,
     height: preset.height,
     width: preset.width,
+    layers: L,
+    modelHidden: D,
     patchSize: p,
     steps: nSteps,
     cfgEnabled,
@@ -128,21 +126,29 @@ export function deriveDitTokenModel(presetId = 'vid720p', patchSize = 2, steps =
 }
 
 export const PARALLEL_MODES = ['single', 'cfg', 'usp'];
+export const USP_GPU_COUNTS = [2, 4, 8, 16];
 
-export function deriveDitParallelModel(mode = 'usp', gpuCount = 8, interconnect = 'nvlink', seqLen = 75600, singleGpuStepSec = null) {
+// §3 Multi-GPU Parallelism: CFG + Ulysses + Ring (Ring Attention now cleanly reachable at 16 GPUs or 8 GPUs with CFG off!)
+export function deriveDitParallelModel(
+  mode = 'usp',
+  gpuCount = 8,
+  interconnect = 'nvlink',
+  seqLen = 75600,
+  singleGpuStepSec = null,
+  { cfgEnabled = true, layers = 40, modelHidden = 5120, steps = 50 } = {}
+) {
   const normalizedMode = PARALLEL_MODES.includes(mode) ? mode : 'usp';
   const gpus =
     normalizedMode === 'single'
       ? 1
       : normalizedMode === 'cfg'
         ? 2
-        : [2, 4, 8].includes(gpuCount)
+        : USP_GPU_COUNTS.includes(gpuCount)
           ? gpuCount
           : 8;
 
-  // Baseline 1-GPU step time synced with §2 single-GPU model when provided
   const baseStepSec = Number((singleGpuStepSec && singleGpuStepSec > 0 ? singleGpuStepSec : (seqLen / 75600) * 23.9).toFixed(2));
-  const bwGBs = interconnect === 'nvlink' ? 450 : 50; // effective bidirectional per-GPU GB/s
+  const bwGBs = interconnect === 'nvlink' ? 450 : 50;
 
   let cfgRanks = 1;
   let ulyssesRanks = 1;
@@ -154,25 +160,28 @@ export function deriveDitParallelModel(mode = 'usp', gpuCount = 8, interconnect 
     cfgRanks = 1;
   } else if (normalizedMode === 'cfg') {
     cfgRanks = 2;
-    // Exchange 1 latent noise prediction tensor at end of step (~30 MB for 720p latent)
     commVolumeMB = Math.round((seqLen * 16 * 2) / 1e6);
     commOverheadSec = Number(((commVolumeMB / 1000) / bwGBs + 0.008).toFixed(3));
   } else {
-    // USP: 2-way CFG if gpus >= 2, remaining split across Ulysses (intra-node) + Ring (outer)
-    cfgRanks = gpus >= 2 ? 2 : 1;
+    // USP: 2-way CFG only when CFG is enabled and gpus >= 2; remaining split across Ulysses (<=4 intra-node) + Ring (outer)
+    cfgRanks = cfgEnabled && gpus >= 2 ? 2 : 1;
     const spRanks = Math.max(1, gpus / cfgRanks);
     if (spRanks <= 4) {
       ulyssesRanks = spRanks;
       ringRanks = 1;
     } else {
-      ulyssesRanks = 2;
-      ringRanks = spRanks / 2;
+      ulyssesRanks = 4;
+      ringRanks = Math.max(1, Math.round(spRanks / 4));
     }
-    // Ulysses All-to-All Q,K,V,O across 40 layers: 4 * 2 bytes * (N/sp) * D * L
     const spSeq = seqLen / spRanks;
-    const allToAllMB = ulyssesRanks > 1 ? Math.round((40 * 4 * 2 * spSeq * 5120 * ((ulyssesRanks - 1) / ulyssesRanks)) / 1e6) : 0;
-    // Ring Attention overlaps ~80% of P2P KV transfer with FlashAttention compute
-    const ringExposedMB = ringRanks > 1 ? Math.round((40 * 2 * 2 * spSeq * 5120 * 0.22) / 1e6) : 0;
+    const allToAllMB =
+      ulyssesRanks > 1
+        ? Math.round((layers * 4 * 2 * spSeq * modelHidden * ((ulyssesRanks - 1) / ulyssesRanks)) / 1e6)
+        : 0;
+    const ringExposedMB =
+      ringRanks > 1
+        ? Math.round((layers * 2 * 2 * spSeq * modelHidden * 0.22 * (ringRanks - 1)) / 1e6)
+        : 0;
     commVolumeMB = allToAllMB + ringExposedMB;
     commOverheadSec = Number(((commVolumeMB / 1000) / bwGBs + 0.015 * spRanks).toFixed(3));
   }
@@ -182,7 +191,8 @@ export function deriveDitParallelModel(mode = 'usp', gpuCount = 8, interconnect 
   const speedup = Number((baseStepSec / Math.max(0.01, stepSec)).toFixed(2));
   const efficiencyPct = Math.min(99, Math.round((speedup / gpus) * 100));
   const commSharePct = Math.min(80, Math.round((commOverheadSec / Math.max(0.01, stepSec)) * 100));
-  const total50StepsSec = Number((stepSec * 50).toFixed(1));
+  const nSteps = Math.max(4, Number(steps) || 50);
+  const totalStepsSec = Number((stepSec * nSteps).toFixed(1));
 
   return {
     mode: normalizedMode,
@@ -191,6 +201,7 @@ export function deriveDitParallelModel(mode = 'usp', gpuCount = 8, interconnect 
     cfgRanks,
     ulyssesRanks,
     ringRanks,
+    steps: nSteps,
     baseStepSec,
     computeSec,
     commVolumeMB,
@@ -199,13 +210,10 @@ export function deriveDitParallelModel(mode = 'usp', gpuCount = 8, interconnect 
     speedup,
     efficiencyPct,
     commSharePct,
-    total50StepsSec,
+    total50StepsSec: totalStepsSec,
   };
 }
 
-// 20-step normalized trajectory for TeaCache / Step Distillation visualization
-// Characteristic relative embedding/residual L1 delta curve across denoising progress:
-// High change at early composition steps (0..3) and late high-freq detail steps (16..19), flat valley in middle (4..15)
 const BASE_STEP_DELTAS = [
   0.34, 0.26, 0.19, 0.14,
   0.09, 0.07, 0.06, 0.05, 0.05, 0.06, 0.06, 0.07, 0.07, 0.08, 0.09, 0.11,
@@ -224,7 +232,6 @@ export function deriveDitCacheModel(strategy = 'teacache', threshold = 0.15) {
   let reusedSteps = 0;
 
   if (strat === 'distill') {
-    // 4-step LCM / DMD distillation maps 20 logical steps into 4 giant solver jumps
     const activeIndices = new Set([0, 6, 13, 19]);
     for (let i = 0; i < 20; i++) {
       const isCompute = activeIndices.has(i);
@@ -257,12 +264,10 @@ export function deriveDitCacheModel(strategy = 'teacache', threshold = 0.15) {
     }
   }
 
-  // Cost per full step = 1.0, reused step = 0.04 (embedding + residual add only)
   const baselineCost = 20;
   const effectiveCost = fullSteps * 1.0 + reusedSteps * 0.04;
   const speedup = Number((baselineCost / Math.max(1, effectiveCost)).toFixed(2));
 
-  // Quality risk heuristic
   let qualityRisk = 'none';
   if (strat === 'teacache') {
     qualityRisk = thresh >= 0.24 ? 'high' : thresh >= 0.14 ? 'low' : 'minimal';
@@ -298,11 +303,11 @@ export function deriveDitVaeModel(resId = 'v1080p', tilingMode = 'spatiotemporal
   let overlapOverheadPct = 0;
 
   if (mode === 'spatial') {
-    tileFactor = 3.4; // 2x2 spatial tiles with overlap
+    tileFactor = 3.4;
     tilesCount = 4;
     overlapOverheadPct = 14;
   } else if (mode === 'spatiotemporal') {
-    tileFactor = 7.2; // 2x2 spatial x 3 temporal chunks with causal conv cache
+    tileFactor = 7.2;
     tilesCount = 12;
     overlapOverheadPct = 22;
   }
@@ -330,12 +335,23 @@ export function deriveDitVaeModel(resId = 'v1080p', tilingMode = 'spatiotemporal
   };
 }
 
+// §6 Quantization respecting Amdahl's Law:
+// Linear-layer quantization (FP8 / SVDQuant NVFP4) accelerates FFN/projections (1 - attnShare), NOT 3D Full Attention!
 export const QUANT_PRESETS = {
-  bf16: { id: 'bf16', weightGB: 28.0, stepSpeedup: 1.0, fidDelta: 0.0, adalnPrecision: 'BF16' },
-  fp8: { id: 'fp8', weightGB: 14.6, stepSpeedup: 1.55, fidDelta: 0.18, adalnPrecision: 'BF16 (Protected)' },
-  svdquant: { id: 'svdquant', weightGB: 7.9, stepSpeedup: 2.35, fidDelta: 0.32, adalnPrecision: 'BF16 + Rank-32 LoRA Branch' },
+  bf16: { id: 'bf16', weightGB: 28.0, linearSpeedup: 1.0, fidDelta: 0.0, adalnPrecision: 'BF16' },
+  fp8: { id: 'fp8', weightGB: 14.6, linearSpeedup: 1.65, fidDelta: 0.18, adalnPrecision: 'BF16 (Protected)' },
+  svdquant: { id: 'svdquant', weightGB: 7.9, linearSpeedup: 2.6, fidDelta: 0.32, adalnPrecision: 'BF16 + Rank-32 LoRA Branch' },
 };
 
-export function deriveDitQuantModel(quantId = 'fp8') {
-  return QUANT_PRESETS[quantId] || QUANT_PRESETS.fp8;
+export function deriveDitQuantModel(quantId = 'fp8', attnSharePct = 10) {
+  const base = QUANT_PRESETS[quantId] || QUANT_PRESETS.fp8;
+  const attnFrac = Math.max(0, Math.min(0.95, Number(attnSharePct) / 100));
+  const linearFrac = 1 - attnFrac;
+  // Amdahl's Law: end-to-end step speedup = 1 / (attnFrac + linearFrac / linearSpeedup)
+  const stepSpeedup = Number((1 / (attnFrac + linearFrac / base.linearSpeedup)).toFixed(2));
+  return {
+    ...base,
+    attnSharePct: Math.round(attnFrac * 100),
+    stepSpeedup,
+  };
 }

@@ -13,13 +13,21 @@ const RATIO_SPEC = {
 };
 
 // 1. Chunkwise Parallel Prefill Model
-export function deriveChunkwiseModel({ contextLength = 1024, chunkSize = 64, dk = 64, dv = 64, activeChunk = 0 } = {}) {
+export function deriveChunkwiseModel({
+  contextLength = 1024,
+  chunkSize = 64,
+  dk = 64,
+  dv = 64,
+  activeChunk = 0,
+  gateStrength = 0.45,
+} = {}) {
   const N = Math.max(16, Number(contextLength) || 1024);
   const C = CHUNK_SIZES.includes(chunkSize) ? chunkSize : 64;
   const effC = Math.min(C, N);
   const numChunks = Math.ceil(N / effC);
   const demoChunks = 4;
   const clampedChunk = Math.max(0, Math.min(demoChunks - 1, Math.floor(Number(activeChunk) || 0)));
+  const clampedGate = Math.max(0, Math.min(0.9, Number.isFinite(Number(gateStrength)) ? Number(gateStrength) : 0.45));
 
   // Operations per layer (single head, illustrative MACs):
   // Intra-chunk quadratic matmul: O(numChunks * effC^2 * (dk + dv)) = O(N * effC * (dk + dv))
@@ -33,16 +41,20 @@ export function deriveChunkwiseModel({ contextLength = 1024, chunkSize = 64, dk 
   const interChunkOps = numChunks * (2 * effC * dk * dv);
   const totalChunkOps = intraChunkOps + interChunkOps;
   const fullSoftmaxOps = N * N * (dk + dv);
+  const opSpeedup = fullSoftmaxOps / Math.max(1, totalChunkOps);
 
-  // Representative 4-chunk visual trace with log-space cumulative decay gamma_t
+  // Per-token retention alpha_tok in [0.973, 0.998]; exact chunk-boundary decay = exp(C * ln(alpha_tok))
+  const tokenAlpha = Number((0.998 - clampedGate * 0.025).toFixed(4));
+  const chunkRetention = Math.exp(effC * Math.log(tokenAlpha));
+
+  // Representative 4-chunk visual trace with log-space cumulative decay gamma_c = exp(c * C * ln(alpha_tok))
   const chunks = Array.from({ length: demoChunks }, (_, idx) => ({
     index: idx,
     label: `C${idx}`,
     stateIn: `S_{[${idx}]}`,
     stateOut: `S_{[${idx + 1}]}`,
     status: idx < clampedChunk ? 'passed' : idx === clampedChunk ? 'active' : 'pending',
-    // Decay retention factor across chunk: exp(sum log alpha)
-    retention: Number(Math.pow(0.92, idx + 1).toFixed(3)),
+    retention: Number(Math.pow(chunkRetention, idx + 1).toFixed(3)),
   }));
 
   return {
@@ -58,6 +70,9 @@ export function deriveChunkwiseModel({ contextLength = 1024, chunkSize = 64, dk 
     interChunkOps,
     totalChunkOps,
     fullSoftmaxOps,
+    opSpeedup,
+    tokenAlpha,
+    chunkRetention: Number(chunkRetention.toFixed(3)),
     chunks,
   };
 }

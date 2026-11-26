@@ -114,7 +114,7 @@ const i18n = {
     batchWrite: '整段 Prompt 批量写入',
     singleAppend: '当前 Token 逐层追加',
     layerStack: '每层独立 KV 堆栈',
-    representativeSlice: '可复算的小模型',numericNote:'合成权重、6词词表；矩阵、候选分布和输出来自同一次计算，不代表真实模型的语言能力。调节采样参数会重新开始，固定随机数让结果可以复现。数值显示经过四舍五入，计算保留原精度。',selectedExpertRows:'仅显示所选专家接收的行，其余行遮罩。',samplingDraw:'按固定随机数选词',
+    representativeSlice: '可复算的小模型',numericNote:'合成权重、6词词表；矩阵、候选分布和输出来自同一次计算，不代表真实模型的语言能力。拖动采样参数实时重算当前分布（不会清空执行进度）；固定随机数让结果可复现。',selectedExpertRows:'仅显示所选专家接收的行，其余行遮罩。',samplingDraw:'按固定随机数选词',
     embeddingLookupTitle: 'Token ID、Embedding 与 Residual Stream',
     embeddingLookupDesc: '输入 ID 查同一张嵌入表；后续每层的残差来自上一层输出。',
     tokenIds: 'Token ID 行',
@@ -165,12 +165,21 @@ const i18n = {
     status_passed: '已完成',
     status_pending: '待执行',
     layerLabel: '层',
-    rooflineTitle: 'Roofline 算术强度',
+    rooflineTitle: 'Roofline 算术强度（Linear GEMM · 参照 Prompt T=512）',
     rooflineRidge: 'H100 拐点 295 FLOP/B',
     rooflineCompute: '算力受限 (Compute-Bound)',
     rooflineMemory: '显存带宽受限 (Memory-Bound)',
     rooflineBatch: '并发 Batch',
-    rooflineNote: 'BF16 权重每 Token 约 1 FLOP/B；Prefill 并行算完整 Prompt 越过拐点，Decode 仅靠增大 Batch 右移靠近拐点。'
+    rooflineNote: 'BF16 线性层每 Token 约 1 FLOP/B：Prefill 并行算 B×512 Token 远超 295 拐点；增大 Batch 仅让 Decode 线性层右移，而 Decode Attention 逐请求读 KV 的算术强度仍恒约 1 FLOP/B（始终受显存带宽墙限制）。',
+    macroTitle: '两阶段宏观全貌：Prefill 并行建缓存 vs Decode 逐词读缓存',
+    macroPrefillTitle: '阶段 1 · Prefill（首字延迟 TTFT）',
+    macroPrefillDesc: '一次性并行处理整段 Prompt，通过因果掩码矩阵乘饱和 Tensor Core（算力受限），并一次性为 32 层写入初始 KV Cache。',
+    macroDecodeTitle: '阶段 2 · Decode（字间延迟 TPOT）',
+    macroDecodeDesc: '每次仅喂入 1 个新生成 Token，逐层追加 1 个 KV 槽位并读取全部历史 KV 与全量权重（显存带宽受限），循环直至结束。',
+    jumpLabel: '快速跳转：',
+    jumpPrefill: 'Prefill L1',
+    jumpLmHead: 'LM Head 采样',
+    jumpDecode: 'Decode 第 1 词',
   },
   en: {
     title: 'LLM Inference Panorama',
@@ -275,7 +284,7 @@ const i18n = {
     batchWrite: 'Batch-write the full prompt',
     singleAppend: 'Append the current token per layer',
     layerStack: 'Independent KV stack per layer',
-    representativeSlice: 'Reproducible small model',numericNote:'Synthetic weights and a six-token vocabulary. Matrices, candidate probabilities and output share one computation; this is not a trained language model. Sampling changes restart the run; fixed draws make it reproducible. Displayed values are rounded; computation retains full precision.',selectedExpertRows:'Only rows routed to this expert are shown; others are masked.',samplingDraw:'Sample with a fixed draw',
+    representativeSlice: 'Reproducible small model',numericNote:'Synthetic weights and a six-token vocabulary. Matrices, candidate probabilities and output share one computation; not a trained LM. Adjusting sampling sliders updates live without resetting progress; fixed draws keep results reproducible.',selectedExpertRows:'Only rows routed to this expert are shown; others are masked.',samplingDraw:'Sample with a fixed draw',
     embeddingLookupTitle: 'Token IDs, Embedding, and Residual Stream',
     embeddingLookupDesc: 'Input IDs select rows of one embedding table. Later layers receive the previous layer’s residual output.',
     tokenIds: 'Token ID row',
@@ -326,12 +335,21 @@ const i18n = {
     status_passed: 'Passed',
     status_pending: 'Pending',
     layerLabel: 'Layer',
-    rooflineTitle: 'Roofline Arithmetic Intensity',
+    rooflineTitle: 'Roofline Arithmetic Intensity (Linear GEMM · T=512 prompt)',
     rooflineRidge: 'H100 ridge 295 FLOP/B',
     rooflineCompute: 'Compute-Bound',
     rooflineMemory: 'Memory-Bound',
     rooflineBatch: 'Batch',
-    rooflineNote: 'BF16 linear layers yield ~1 FLOP/B per token; Prefill processes full prompts past the ridge, while Decode needs larger batches to move right.'
+    rooflineNote: 'BF16 linear layers yield ~1 FLOP/B per token: Prefill (B×512) clears the 295 ridge, while larger Batch only moves Decode linear GEMMs right—Decode Attention still reads per-request KV at ~1 FLOP/B (always memory-bound).',
+    macroTitle: 'Two-Phase Overview: Parallel Prefill vs Autoregressive Decode',
+    macroPrefillTitle: 'Phase 1 · Prefill (sets TTFT)',
+    macroPrefillDesc: 'Processes the entire prompt in parallel via causal GEMMs to saturate Tensor Cores (compute-bound) and writes initial KV caches across all 32 layers.',
+    macroDecodeTitle: 'Phase 2 · Decode (sets TPOT)',
+    macroDecodeDesc: 'Feeds 1 newly sampled token per step, appending 1 KV slot per layer while reading all weights and historical KV (memory-bandwidth-bound) until done.',
+    jumpLabel: 'Quick jump:',
+    jumpPrefill: 'Prefill L1',
+    jumpLmHead: 'LM Head Sample',
+    jumpDecode: 'Decode Step 1',
   }
 };
 
@@ -442,17 +460,14 @@ const App = () => {
 
   const handleTemperatureChange = (event) => {
     setTemperature(parseFloat(event.target.value));
-    reset();
   };
 
   const handleTopKChange = (event) => {
     setTopK(parseInt(event.target.value, 10));
-    reset();
   };
 
   const handleTopPChange = (event) => {
     setTopP(parseFloat(event.target.value));
-    reset();
   };
 
   const inferenceState = useMemo(() => deriveInferenceTensorSnapshot({
@@ -462,6 +477,50 @@ const App = () => {
   const currentProbs=inferenceState.numeric.vocabularyProbabilities.map((p,id)=>({t:promptTokens[id],p}));
   const samplingState=deriveSamplingDistribution({candidates:currentProbs,temperature,topK,topP});
   const draw=samplingDraw(step),sampledChoice=chooseSamplingCandidate(samplingState,draw);
+
+  // Keep live LM Head / TokenDone selection synchronized when user drags sampling sliders in place
+  useEffect(() => {
+    if (activeModule >= MODULE.lmHead && phase !== 'idle') {
+      setSampledIds((ids) => {
+        if (ids[step] === sampledChoice.sourceIndex) return ids;
+        return [...ids.slice(0, step), sampledChoice.sourceIndex];
+      });
+    }
+  }, [activeModule, phase, step, sampledChoice.sourceIndex]);
+
+  const jumpToStage = (target) => {
+    setIsPlaying(false);
+    if (target === 'prefill') {
+      setSampledIds([]);
+      setPhase('prefill');
+      setStep(0);
+      setCurrentLayer(1);
+      setActiveModule(MODULE.attention);
+      return;
+    }
+    const snap0 = deriveInferenceTensorSnapshot({
+      phase: 'prefill', activeModule: MODULE.lmHead, currentLayer: TOTAL_LAYERS, step: 0,
+      promptLength: promptTokens.length, modelType, tokenIds: [0, 1, 2, 3, 4, 5],
+    });
+    const probs0 = snap0.numeric.vocabularyProbabilities.map((p, id) => ({ t: promptTokens[id], p }));
+    const choice0 = chooseSamplingCandidate(
+      deriveSamplingDistribution({ candidates: probs0, temperature, topK, topP }),
+      samplingDraw(0),
+    );
+    if (target === 'lmHead') {
+      setSampledIds([choice0.sourceIndex]);
+      setPhase('prefill');
+      setStep(0);
+      setCurrentLayer(TOTAL_LAYERS);
+      setActiveModule(MODULE.lmHead);
+    } else if (target === 'decode') {
+      setSampledIds([choice0.sourceIndex]);
+      setPhase('decode');
+      setStep(1);
+      setCurrentLayer(1);
+      setActiveModule(MODULE.attention);
+    }
+  };
   const generatedTokens=sampledIds.map(id=>({token:promptTokens[id]}));
   const { stageStatus, isLayerStage, layerProgress, positionFormula } = inferenceState;
   const roofline = useMemo(() => deriveRooflineState({ phase, batchSize: rooflineBatch }), [phase, rooflineBatch]);
@@ -565,6 +624,31 @@ const App = () => {
         </div>
 
         <div className="space-y-6">
+          {/* §0 宏观两阶段总览 + 快捷跳转 */}
+          <div className="bg-white rounded-2xl p-4 lg:p-5 shadow-sm border border-slate-200 space-y-3" data-testid="llm-macro-overview">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 data-section-anchor="llminference-0" className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <Zap className="text-indigo-500" size={18} /> {t('macroTitle')}
+              </h2>
+              <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={t('jumpLabel')}>
+                <span className="text-xs font-semibold text-slate-500 mr-1">{t('jumpLabel')}</span>
+                <button type="button" data-testid="llm-jump-prefill" onClick={() => jumpToStage('prefill')} className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition ${phase === 'prefill' && activeModule < MODULE.lmHead ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-indigo-300'}`}>{t('jumpPrefill')}</button>
+                <button type="button" data-testid="llm-jump-lmhead" onClick={() => jumpToStage('lmHead')} className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition ${activeModule === MODULE.lmHead ? 'bg-purple-600 text-white border-purple-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-purple-300'}`}>{t('jumpLmHead')}</button>
+                <button type="button" data-testid="llm-jump-decode" onClick={() => jumpToStage('decode')} className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition ${phase === 'decode' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'}`}>{t('jumpDecode')}</button>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className={`rounded-xl border p-3.5 transition ${phase === 'prefill' ? 'border-indigo-400 bg-indigo-50/70' : 'border-slate-200 bg-slate-50/60'}`}>
+                <div className="text-xs font-bold text-indigo-800">{t('macroPrefillTitle')}</div>
+                <p className="text-xs text-slate-600 mt-1 leading-relaxed">{t('macroPrefillDesc')}</p>
+              </div>
+              <div className={`rounded-xl border p-3.5 transition ${phase === 'decode' ? 'border-emerald-400 bg-emerald-50/70' : 'border-slate-200 bg-slate-50/60'}`}>
+                <div className="text-xs font-bold text-emerald-800">{t('macroDecodeTitle')}</div>
+                <p className="text-xs text-slate-600 mt-1 leading-relaxed">{t('macroDecodeDesc')}</p>
+              </div>
+            </div>
+          </div>
+
           {/* 顶层：序列与 KV Cache 并排布局 */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">

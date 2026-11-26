@@ -9,14 +9,14 @@ import { FLASH_DECODE_BATCH_SIZES, FLASH_DECODE_HEAD_MODES, NUM_WORK_UNITS, deri
 const i18n = {
   zh: {
     title: 'Flash Decoding 原理可视化',
-    subtitle: '打破长序列 Decoding 的显存墙：逻辑切分 KV Cache，增加并行工作量，再做精确归约',
+    subtitle: '消除小 Batch 长序列解码的 SM 并行度瓶颈：沿 KV 序列逻辑切分以打满显存带宽，再通过独立归约精确合并',
     reset: '重置',
     play: '播放',
     pause: '暂停',
     replay: '重播',
     next: '下一步',
     langToggle: 'EN',
-    challenge: '核心挑战：打破 Memory Wall (显存墙)',
+    challenge: '核心挑战：消除小 Batch 的 SM 空转，打满 HBM 带宽',
     algSimple: '累加器工作区',
     algOptimized: 'O + LSE 工作区',
     executionLabel: '执行',
@@ -38,7 +38,12 @@ const i18n = {
     tcPackingGemv: '单头 GEMV (低利用率)',
     tcPackingWgmma: '同组 {g} 个 Q 头打包入 MMA',
     mlaLatentRow: '潜向量',
-    mlaLatentNote: 'FlashMLA 吸收式解码：K 读 576 维 [c_KV, k_RoPE]，V 复用前 512 维 c_KV，单份显存同时供 K/V。',
+    mlaLatentNote: 'FlashMLA 吸收式解码：K 读 576 维 [c_KV(512), k_RoPE(64)]，V 复用前 512 维 c_KV；Softmax 缩放仍按 d_nope+d_rope=192（1/√192），局部输出为 512 维潜向量（归约后再乘 W^UV）。',
+    lseDemoTitle: '2-Split 数值级 LSE 归约验证（与在线 Softmax 同源）',
+    lseDemoS0: 'Split 0 局部结果',
+    lseDemoS1: 'Split 1 局部结果',
+    lseDemoMerge: 'Kernel 2 精确合并',
+    lseDemoNote: 'Kernel 2 无需重读 KV，只凭每个 Split 写回的局部 (O_i, L_i) 即可按指数权重 e^(L_i - L) 还原精确结果 O = 0.623。',
     autoHeuristic: 'Auto 为教学启发式：目标约 2K tokens/split，真实后端会按形状与硬件选择。',
     splitControlsDisabled: 'Unsplit 不产生局部工作区，工作区表示与 Split 数暂不生效。',
     splitSolution: '沿 KV 序列建立逻辑 Split，由多个 CTA 并行计算局部 Attention，再通过独立归约 Kernel 精确合并。',
@@ -72,7 +77,7 @@ const i18n = {
     pyDirectStep: '# 单个融合 kernel 扫描完整 KV 并在线归一化',
     painPoint: '痛点',
     solution: '解法',
-    challengeDesc1: 'Decode 阶段 Query 长度仅为 1，却需搬运历史成千上万 Token 的 KV Cache，严重受限于主存带宽。',
+    challengeDesc1: 'Decode 阶段单步 Query 长度仅为 1，天然受限于 HBM 带宽；当 Batch 较小（如 B=1）而上下文很长时，Unsplit 仅启动 B×H_kv 个 CTA，大量 SM 空转，连 HBM 带宽都无法打满。',
     challengeDesc2: '把 KV Cache 建成多个逻辑 Split，由多个 CTA/线程块并行计算局部 Attention，再通过独立归约 Kernel 精确合并。',
     dataFlow: '数据流与计算图',
     dimensions: '维度：',
@@ -135,14 +140,14 @@ const i18n = {
   },
   en: {
     title: 'Flash Decoding Visualization',
-    subtitle: 'Break the decoding memory wall: create logical KV splits, expose parallel work, then reduce exactly',
+    subtitle: 'Eliminate small-batch long-context SM under-utilization: logically split KV to saturate HBM bandwidth, then reduce exactly',
     reset: 'Reset',
     play: 'Play',
     pause: 'Pause',
     replay: 'Replay',
     next: 'Next',
     langToggle: '中文',
-    challenge: 'Core Challenge: Break the Memory Wall',
+    challenge: 'Core Challenge: Eliminate Small-Batch SM Under-Utilization to Saturate HBM Bandwidth',
     algSimple: 'Accumulator Workspace',
     algOptimized: 'O + LSE Workspace',
     executionLabel: 'Execution',
@@ -164,7 +169,12 @@ const i18n = {
     tcPackingGemv: 'Single-head GEMV (low util)',
     tcPackingWgmma: 'Pack {g} Q heads into MMA',
     mlaLatentRow: 'Latent',
-    mlaLatentNote: 'FlashMLA absorbed decode: K reads 576d [c_KV, k_RoPE], V reuses the 512d c_KV from one shared KV tensor.',
+    mlaLatentNote: 'FlashMLA absorbed decode: K reads 576d [c_KV(512), k_RoPE(64)], V reuses the first 512d c_KV; Softmax scaling stays 1/√192 (d_nope+d_rope), and local output is 512d latent (projected by W^UV after reduction).',
+    lseDemoTitle: '2-Split Numerical LSE Reduction Check',
+    lseDemoS0: 'Split 0 partial',
+    lseDemoS1: 'Split 1 partial',
+    lseDemoMerge: 'Kernel 2 exact merge',
+    lseDemoNote: 'Without rereading KV, Kernel 2 combines each split’s (O_i, L_i) using weights e^(L_i - L) to recover the exact full-sequence output O = 0.623.',
     autoHeuristic: 'Auto is a teaching heuristic targeting about 2K tokens per split; real backends dispatch by shape and hardware.',
     splitControlsDisabled: 'Unsplit creates no local workspace, so workspace representation and split count are inactive.',
     splitSolution: 'Create logical splits along the KV sequence, process local Attention with multiple CTAs, then merge exactly in an independent reduction kernel.',
@@ -198,7 +208,7 @@ const i18n = {
     pyDirectStep: '# One fused kernel scans full KV with online normalization',
     painPoint: 'Pain Point',
     solution: 'Solution',
-    challengeDesc1: 'In the Decode phase, Query length is only 1, but it needs to load thousands of historical KV Cache tokens, severely bottlenecked by memory bandwidth.',
+    challengeDesc1: 'In Decode, Query length is 1 so attention is inherently HBM-bandwidth-bound; at small batch sizes (e.g. B=1) with long context, Unsplit launches only B×H_kv CTAs, leaving most SMs idle and failing to saturate HBM bandwidth.',
     challengeDesc2: 'Create logical KV splits, process local Attention with multiple CTAs/threadblocks, then merge exactly in an independent reduction kernel.',
     dataFlow: 'Data Flow & Computation Graph',
     dimensions: 'Dimensions: ',
@@ -344,112 +354,109 @@ const App = () => {
   // 渲染底层代码
   const renderPseudocode = () => {
     const isLocalCompute = snapshot.localActive;
+    const g = snapshot.queryHeadsPerKvHead;
+    const scaleDim = snapshot.scaleDim;
+    const qSlice = g > 1 ? `q[kv_h*${g} : (kv_h+1)*${g}]` : 'q[kv_h : kv_h+1]';
+    const kvLoadLine = snapshot.sharedLatent
+      ? 'k_b = c_kv_rope[i]; v_b = k_b[:, :512]'
+      : 'k_b, v_b = k[i], v[i]';
 
     if (!snapshot.isSplit) {
       return (
-        <div className="font-mono text-[10px] md:text-xs xl:text-sm overflow-x-auto bg-[#0d1117] p-4 rounded-lg border border-slate-800 flex-1 leading-relaxed whitespace-pre text-slate-400 block">
-          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">decode_attention_unsplit</span>(q, kv_cache, q_head, block_table=None):</div>
+        <div className="font-mono text-[11px] overflow-x-auto bg-[#0d1117] p-3.5 rounded-lg border border-slate-800 flex-1 leading-relaxed whitespace-pre text-slate-300 block">
+          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">decode_unsplit</span>(q, kv_cache, kv_h, block_table):</div>
           <div className={`mt-3 ${snapshot.operation === 'resolveKv' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
-            <div>  kv_head = q_head // q_per_kv_head <span className="text-slate-500">{t('pyHeadMap')}</span></div>
+            <div>  q_grp = {qSlice} <span className="text-slate-500"># [{g}, {snapshot.qkDim}]</span></div>
             <div>  kv = resolve_kv(kv_cache, block_table) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
           </div>
           <div className={`mt-3 ${snapshot.operation === 'fusedAttention' ? "bg-amber-900/40 text-amber-200 px-2 py-1 -mx-2 rounded border-l-2 border-amber-400" : ""}`}>
             <div className="text-amber-400 font-bold text-[10px] mb-1">{t('pyDirectStep')}</div>
-            <div>  O, L = fused_online_attention(q[q_head], kv.K[kv_head], kv.V[kv_head])</div>
+            <div>  O, L = fused_online_attn(</div>
+            <div>    q_grp, kv.K[kv_h], {snapshot.sharedLatent ? 'kv.K[kv_h][:, :512]' : 'kv.V[kv_h]'},</div>
+            <div>    scale=1/sqrt({scaleDim}),</div>
+            <div>  )</div>
           </div>
-          <div className={snapshot.outputReady ? "text-emerald-400 font-bold mt-3" : "mt-3"}>  <span className="text-emerald-400">return</span> O <span className="text-slate-500">{t('py1Return')}</span></div>
+          <div className={snapshot.outputReady ? "text-emerald-400 font-bold mt-3" : "mt-3"}>  <span className="text-emerald-400">return</span> {snapshot.sharedLatent ? 'O @ W_UV' : 'O'} <span className="text-slate-500">{t('py1Return')}</span></div>
         </div>
       );
     }
 
     if (algorithm === 'simple') {
       return (
-        <div className="font-mono text-[10px] md:text-xs xl:text-sm overflow-x-auto bg-[#0d1117] p-4 rounded-lg border border-slate-800 flex-1 leading-relaxed whitespace-pre text-slate-400 block">
-          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_decoding_simple</span>(q, k, v, block_size, q_head, q_per_kv_head, block_table):</div>
+        <div className="font-mono text-[11px] overflow-x-auto bg-[#0d1117] p-3.5 rounded-lg border border-slate-800 flex-1 leading-relaxed whitespace-pre text-slate-300 block">
+          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_decode_acc</span>(q, kv_cache, kv_h, splits, tbl):</div>
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
-            <div>  kv_head = q_head // q_per_kv_head <span className="text-slate-500">{t('pyHeadMap')}</span></div>
-            <div>  k, v = resolve_kv(k, v, block_table) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
+            <div>  q_grp = {qSlice} <span className="text-slate-500"># MMA [{g}, {snapshot.qkDim}]</span></div>
+            <div>  kv = resolve_kv(kv_cache, tbl) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
           </div>
 
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
             <div className="text-indigo-400 font-bold text-[10px] mb-1">{t('py1Step1')}</div>
-            <div>  num_blocks = ceil(seq_len_kv / block_size)</div>
-            <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(num_blocks):</div>
+            <div>  <span className="text-emerald-400">parallel for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(splits):</div>
           </div>
 
           <div className={`mt-2 ${isLocalCompute ? "bg-amber-900/40 text-amber-200 px-2 py-1 -mx-2 rounded border-l-2 border-amber-400" : ""}`}>
             <div className="text-amber-400 font-bold text-[10px] mb-1">{t('py1Step2')}</div>
-            <div>      k_b, v_b = k[i], v[i] <span className="text-slate-500">{t('py1DynamicLoad')}</span></div>
-            <div>      scores = (q @ k_b.T) / sqrt(d)</div>
-            <div>      block_max[i] = max(scores)</div>
-            <div>      exp_s = exp(scores - block_max[i])</div>
-            <div>      block_sum_exp[i] = sum(exp_s)</div>
-            <div>      block_out[i] = exp_s @ v_b <span className="text-slate-500">{t('py1WriteWorkspace')}</span></div>
+            <div>    {kvLoadLine} <span className="text-slate-500">{t('py1DynamicLoad')}</span></div>
+            <div>    S = (q_grp @ k_b.T) / sqrt({scaleDim})</div>
+            <div>    m[i] = max(S, axis=-1)</div>
+            <div>    P = exp(S - m[i])</div>
+            <div>    l[i] = sum(P, axis=-1)</div>
+            <div>    O_tilde[i] = P @ v_b <span className="text-slate-500">{t('py1WriteWorkspace')}</span></div>
           </div>
 
           <div className={`mt-2 ${snapshot.operation === 'reduceStats' ? "bg-pink-900/40 text-pink-200 px-2 py-1 -mx-2 rounded border-l-2 border-pink-400" : ""}`}>
             <div className="text-pink-400 font-bold text-[10px] mb-1">{t('py1Step3')}</div>
-            <div>  global_max = max(block_max)</div>
-            <div>  total_sum_exp = 0</div>
-            <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(num_blocks):</div>
-            <div>      total_sum_exp += block_sum_exp[i] * exp(block_max[i] - global_max)</div>
+            <div>  m_g = max(m)</div>
+            <div>  l_g = sum(l[i] * exp(m[i] - m_g))</div>
           </div>
 
           <div className={`mt-2 ${snapshot.operation === 'mergeOutput' ? "bg-purple-900/50 text-purple-200 px-2 py-1 -mx-2 rounded border-l-2 border-purple-400" : ""}`}>
             <div className="text-purple-400 font-bold text-[10px] mb-1">{t('py1Step4')}</div>
-            <div>  final_out = 0</div>
-            <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(num_blocks):</div>
-            <div>      weight = exp(block_max[i] - global_max)</div>
-            <div>      final_out += block_out[i] * weight</div>
-            <div>  final_out = final_out / total_sum_exp</div>
+            <div>  O_g = sum(O_tilde[i] * exp(m[i] - m_g)) / l_g</div>
           </div>
 
-          <div className={snapshot.outputReady ? "text-emerald-400 font-bold mt-2" : "mt-2"}>  <span className="text-emerald-400">return</span> final_out <span className="text-slate-500">{t('py1Return')}</span></div>
+          <div className={snapshot.outputReady ? "text-emerald-400 font-bold mt-2" : "mt-2"}>  <span className="text-emerald-400">return</span> {snapshot.sharedLatent ? 'O_g @ W_UV' : 'O_g'} <span className="text-slate-500">{t('py1Return')}</span></div>
         </div>
       );
     } else {
       return (
-        <div className="font-mono text-[10px] md:text-xs xl:text-sm overflow-x-auto bg-[#0d1117] p-4 rounded-lg border border-slate-800 flex-1 leading-relaxed whitespace-pre text-slate-400 block">
-          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_decoding_lse</span>(q, k, v, num_splits, q_head, q_per_kv_head, block_table):</div>
+        <div className="font-mono text-[11px] overflow-x-auto bg-[#0d1117] p-3.5 rounded-lg border border-slate-800 flex-1 leading-relaxed whitespace-pre text-slate-300 block">
+          <div><span className="text-emerald-400">def</span> <span className="text-blue-400">flash_decode_lse</span>(q, kv_cache, kv_h, splits, tbl):</div>
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
-            <div>  kv_head = q_head // q_per_kv_head <span className="text-slate-500">{t('pyHeadMap')}</span></div>
-            <div>  k, v = resolve_kv(k, v, block_table) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
+            <div>  q_grp = {qSlice} <span className="text-slate-500"># MMA [{g}, {snapshot.qkDim}]</span></div>
+            <div>  kv = resolve_kv(kv_cache, tbl) <span className="text-slate-500">{t(kvLayout === 'paged' ? 'pyResolvePaged' : 'pyResolveContiguous')}</span></div>
           </div>
 
           <div className={`mt-2 ${snapshot.operation === 'splitViews' ? "bg-indigo-900/60 text-indigo-200 px-2 py-1 -mx-2 rounded border-l-2 border-indigo-400" : ""}`}>
             <div className="text-indigo-400 font-bold text-[10px] mb-1">{t('py2Step1')}</div>
-            <div>  partials = []</div>
-            <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(num_splits):</div>
+            <div>  <span className="text-emerald-400">parallel for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(splits):</div>
           </div>
 
           <div className={`mt-2 ${isLocalCompute ? "bg-amber-900/40 text-amber-200 px-2 py-1 -mx-2 rounded border-l-2 border-amber-400" : ""}`}>
             <div className="text-amber-400 font-bold text-[10px] mb-1">{t('py2Step2')}</div>
-            <div>      scores = (q @ k[i].T) / sqrt(d)</div>
-            <div>      m_i = max(scores)</div>
-            <div>      l_i = sum(exp(scores - m_i))</div>
-            <div>      O_i = (exp(scores - m_i) @ v[i]) / l_i </div>
-            <div>      L_i = m_i + log(l_i) <span className="text-slate-500">{t('py2LseKey')}</span></div>
-            <div>      partials.append((O_i, L_i)) <span className="text-slate-500">{t('py2WriteHbm')}</span></div>
+            <div>    {kvLoadLine}</div>
+            <div>    S = (q_grp @ k_b.T) / sqrt({scaleDim})</div>
+            <div>    m_i = max(S); l_i = sum(exp(S - m_i))</div>
+            <div>    O_i = (exp(S - m_i) @ v_b) / l_i</div>
+            <div>    L_i = m_i + log(l_i) <span className="text-slate-500">{t('py2LseKey')}</span></div>
+            <div>    workspace[i] = (O_i, L_i) <span className="text-slate-500">{t('py2WriteHbm')}</span></div>
           </div>
 
           <div className={`mt-2 ${snapshot.operation === 'reduceStats' ? "bg-pink-900/40 text-pink-200 px-2 py-1 -mx-2 rounded border-l-2 border-pink-400" : ""}`}>
             <div className="text-pink-400 font-bold text-[10px] mb-1">{t('py2Step3')}</div>
-            <div>  L_global = partials[0].L</div>
-            <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(1, num_splits):</div>
-            <div>      L_max = max(L_global, partials[i].L)</div>
-            <div>      L_min = min(L_global, partials[i].L)</div>
-            <div>      L_global = L_max + log1p(exp(L_min - L_max))</div>
+            <div>  L_g = workspace[0].L</div>
+            <div>  <span className="text-emerald-400">for</span> i <span className="text-emerald-400">in</span> <span className="text-blue-300">range</span>(1, splits):</div>
+            <div>    hi, lo = max(L_g, L[i]), min(L_g, L[i])</div>
+            <div>    L_g = hi + log1p(exp(lo - hi))</div>
           </div>
 
           <div className={`mt-2 ${snapshot.operation === 'mergeOutput' ? "bg-purple-900/50 text-purple-200 px-2 py-1 -mx-2 rounded border-l-2 border-purple-400" : ""}`}>
             <div className="text-purple-400 font-bold text-[10px] mb-1">{t('py2Step4')}</div>
-            <div>  O_global = 0</div>
-            <div>  <span className="text-emerald-400">for</span> O_i, L_i <span className="text-emerald-400">in</span> partials:</div>
-            <div>      weight = exp(L_i - L_global) <span className="text-slate-500">{t('py2WeightAlign')}</span></div>
-            <div>      O_global += O_i * weight</div>
+            <div>  O_g = sum(O[i] * exp(L[i] - L_g)) <span className="text-slate-500">{t('py2WeightAlign')}</span></div>
           </div>
 
-          <div className={snapshot.outputReady ? "text-emerald-400 font-bold mt-2" : "mt-2"}>  <span className="text-emerald-400">return</span> O_global <span className="text-slate-500">{t('py2Return')}</span></div>
+          <div className={snapshot.outputReady ? "text-emerald-400 font-bold mt-2" : "mt-2"}>  <span className="text-emerald-400">return</span> {snapshot.sharedLatent ? 'O_g @ W_UV' : 'O_g'} <span className="text-slate-500">{t('py2Return')}</span></div>
         </div>
       );
     }
@@ -633,13 +640,13 @@ const App = () => {
                   <div className="flex items-center gap-3 w-full">
                     <span className="text-xs font-bold text-slate-600 w-10 text-right">{t('queryLabel')}</span>
                     <div className="px-3 py-1.5 bg-blue-100 border-2 border-blue-400 text-blue-800 text-[10px] md:text-xs font-bold rounded shadow-sm min-w-28 text-center">
-                      <MathFormula>{String.raw`Q\,[1,H_q,d]`}</MathFormula>
+                      <MathFormula>{snapshot.sharedLatent ? String.raw`Q\,[1,H_q,576]` : String.raw`Q\,[1,H_q,d]`}</MathFormula>
                     </div>
                     <div className="grid flex-1 gap-1" style={{ gridTemplateColumns: `repeat(${snapshot.queryHeads}, minmax(0, 1fr))` }} aria-label={`${t('headModeLabel')}: ${headMode.toUpperCase()}`}>
                       {snapshot.headMapping.map(({ queryHead, kvHead }) => {
                         const tones = ['bg-indigo-100 border-indigo-300 text-indigo-800', 'bg-emerald-100 border-emerald-300 text-emerald-800', 'bg-amber-100 border-amber-300 text-amber-800', 'bg-purple-100 border-purple-300 text-purple-800'];
                         return (
-                          <div key={queryHead} className={`rounded border px-0.5 py-0.5 text-center text-[7px] md:text-[8px] font-bold leading-none ${tones[kvHead % tones.length]}`}>
+                          <div key={queryHead} className={`rounded border px-0.5 py-0.5 text-center text-[9px] font-bold leading-none ${tones[kvHead % tones.length]}`}>
                             <MathFormula>{String.raw`Q_{${queryHead}}`}</MathFormula>
                             <div className="mt-0.5 border-t border-current/20 pt-0.5 opacity-80"><MathFormula>{snapshot.sharedLatent ? String.raw`c_{KV}` : String.raw`KV_{${kvHead}}`}</MathFormula></div>
                           </div>
@@ -661,14 +668,14 @@ const App = () => {
                                 ${isActiveSplit ? 'ring-2 ring-amber-500 scale-105 z-10 shadow-md bg-amber-100 border-amber-400 text-amber-900' : ''}
                               `}>
                                 {snapshot.splitVisible
-                                  ? <MathFormula>{String.raw`c_{KV,${i}}\,[b,576]`}</MathFormula>
+                                  ? <MathFormula>{String.raw`[c,k_R]_{${i}}\,[b,576]`}</MathFormula>
                                   : <MathFormula>{String.raw`[c_{KV},k_{\mathrm{RoPE}}]\,[N,1,576]`}</MathFormula>}
                               </div>
                             );
                           })}
                         </div>
                       </div>
-                      <p className="text-[10px] text-purple-700 pl-12 leading-snug">{t('mlaLatentNote')}</p>
+                      <p className="text-[10.5px] text-purple-700 pl-12 leading-snug">{t('mlaLatentNote')}</p>
                     </div>
                   ) : (
                     [ {l:t('keyLabel'),k:'K'}, {l:t('valueLabel'),k:'V'} ].map(row => (
@@ -699,9 +706,12 @@ const App = () => {
                       <span className={kvLayout === 'paged' ? 'text-indigo-700' : 'text-slate-500'}>{t(kvLayout === 'paged' ? 'pagedAddress' : 'contiguousAddress')}</span>
                     </div>
                     <div className="grid grid-cols-6 gap-1">
-                      {snapshot.logicalPages.map(({ logicalPage, physicalPage }) => (
-                        <div key={logicalPage} className={`rounded border px-1 py-1 text-center text-[8px] font-bold ${kvLayout === 'paged' ? 'border-indigo-300 bg-white text-indigo-800' : 'border-slate-200 bg-slate-100 text-slate-600'}`}>
+                      {snapshot.logicalPages.map(({ logicalPage, physicalPage, splitIndex, isActiveSplit }) => (
+                        <div key={logicalPage} className={`rounded border px-1 py-1 text-center text-[9px] font-bold transition-colors ${isActiveSplit && snapshot.localActive ? 'border-amber-400 bg-amber-100 text-amber-900 ring-1 ring-amber-300' : kvLayout === 'paged' ? 'border-indigo-300 bg-white text-indigo-800' : 'border-slate-200 bg-slate-100 text-slate-600'}`}>
                           <MathFormula>{String.raw`L_{${logicalPage}}\to P_{${physicalPage}}`}</MathFormula>
+                          {snapshot.isSplit && (
+                            <div className="mt-0.5 text-[8.5px] font-mono opacity-80">Split {splitIndex}</div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -733,8 +743,8 @@ const App = () => {
                   {snapshot.outputReady && (
                     <div className="flex items-center gap-3 w-full mt-2 animate-fade-in border-t border-slate-200 pt-3">
                       <span className="text-xs font-bold text-slate-600 w-10 text-right">Output</span>
-                      <div className="px-4 py-1.5 bg-emerald-500 border-2 border-emerald-600 text-white font-mono text-xs font-bold rounded shadow-md w-32 text-center">
-                        <MathFormula>{String.raw`O\,[1,H_q,d]`}</MathFormula>
+                      <div className="px-4 py-1.5 bg-emerald-500 border-2 border-emerald-600 text-white font-mono text-xs font-bold rounded shadow-md min-w-36 text-center">
+                        <MathFormula>{snapshot.sharedLatent ? String.raw`O_{\mathrm{lat}}\,[1,H_q,512]` : String.raw`O\,[1,H_q,d]`}</MathFormula>
                       </div>
                       <span className="text-[10px] text-emerald-600 font-bold ml-2">{t('globalResultWriteback')}</span>
                     </div>
@@ -801,21 +811,21 @@ const App = () => {
                           )}
                         </div>
 
-                        <div className={`p-1.5 md:p-2 rounded w-full text-left space-y-1 text-[8px] md:text-[9px] border transition-colors duration-500 flex flex-col justify-center ${isComputingLocal ? 'bg-amber-50/50 border-amber-100' : 'bg-slate-50 border-slate-100'}`}>
-                          <div className="text-slate-500 border-b border-slate-200 pb-1 mb-1"><MathFormula>{String.raw`A_{${blockId}}=QK_{${blockId}}^{\top}/\sqrt d`}</MathFormula></div>
+                        <div className={`p-1.5 md:p-2 rounded w-full text-left space-y-1 text-[8.5px] md:text-[9px] border transition-colors duration-500 flex flex-col justify-center ${isComputingLocal ? 'bg-amber-50/50 border-amber-100' : 'bg-slate-50 border-slate-100'}`}>
+                          <div className="text-slate-500 border-b border-slate-200 pb-1 mb-1"><MathFormula>{snapshot.sharedLatent ? String.raw`A_{${blockId}}=QK_{${blockId}}^{\top}/\sqrt{192}` : String.raw`A_{${blockId}}=QK_{${blockId}}^{\top}/\sqrt d`}</MathFormula></div>
                           {!snapshot.isSplit ? (
-                            <div className={formulaTone}><MathFormula>{String.raw`O=\operatorname{softmax}(A)V`}</MathFormula></div>
+                            <div className={formulaTone}><MathFormula>{snapshot.sharedLatent ? String.raw`O_{\mathrm{lat}}=\operatorname{softmax}(A)c_{KV}` : String.raw`O=\operatorname{softmax}(A)V`}</MathFormula></div>
                           ) : algorithm === 'simple' ? (
                             <>
                               <div className={formulaTone}><MathFormula>{String.raw`m_{${blockId}}=\max(A_{${blockId}})`}</MathFormula></div>
                               <div className={formulaTone}><MathFormula>{String.raw`\ell_{${blockId}}=\sum_j e^{A_{${blockId},j}-m_{${blockId}}}`}</MathFormula></div>
-                              <div className={formulaTone}><MathFormula>{String.raw`\widetilde O_{${blockId}}=\sum_j e^{A_{${blockId},j}-m_{${blockId}}}V_j`}</MathFormula></div>
+                              <div className={formulaTone}><MathFormula>{snapshot.sharedLatent ? String.raw`\widetilde O_{${blockId}}=\sum_j e^{A_{${blockId},j}-m_{${blockId}}}c_{KV,j}` : String.raw`\widetilde O_{${blockId}}=\sum_j e^{A_{${blockId},j}-m_{${blockId}}}V_j`}</MathFormula></div>
                             </>
                           ) : (
                             <>
                               <div className={formulaTone}><MathFormula>{String.raw`m_{${blockId}}=\max(A),\quad \ell_{${blockId}}=\sum e^{A-m}`}</MathFormula></div>
                               <div className={isComputingLocal ? 'text-amber-700 font-bold bg-amber-100/50 rounded px-1' : 'text-slate-500'}><MathFormula>{String.raw`L_{${blockId}}=m_{${blockId}}+\log\ell_{${blockId}}`}</MathFormula></div>
-                              <div className={isComputingLocal ? 'text-amber-700 font-bold bg-amber-100/50 rounded px-1' : 'text-slate-500'}><MathFormula>{String.raw`O_{${blockId}}=\operatorname{softmax}(A_{${blockId}})V_{${blockId}}`}</MathFormula></div>
+                              <div className={isComputingLocal ? 'text-amber-700 font-bold bg-amber-100/50 rounded px-1' : 'text-slate-500'}><MathFormula>{snapshot.sharedLatent ? String.raw`O_{${blockId}}=\operatorname{softmax}(A_{${blockId}})c_{KV,${blockId}}` : String.raw`O_{${blockId}}=\operatorname{softmax}(A_{${blockId}})V_{${blockId}}`}</MathFormula></div>
                             </>
                           )}
                         </div>
@@ -964,6 +974,27 @@ const App = () => {
                   <h4 className="font-bold text-emerald-300 text-base md:text-lg">{t('doneTitle')}</h4>
                   <p className="opacity-90 mt-1 text-sm">{t(snapshot.isSplit ? 'doneDesc' : 'unsplitDoneDesc')}</p>
                 </div>
+              </div>
+            )}
+
+            {snapshot.isSplit && (
+              <div className="mt-5 rounded-xl border border-indigo-700/60 bg-indigo-950/60 p-4 space-y-2.5" data-testid="flashdecode-lse-demo">
+                <div className="text-xs font-bold text-amber-300">{t('lseDemoTitle')}</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs">
+                  <div className="rounded-lg border border-indigo-700/50 bg-indigo-900/60 p-2.5 space-y-1">
+                    <div className="font-bold text-indigo-200">{t('lseDemoS0')}</div>
+                    <div className="overflow-x-auto text-white"><MathFormula>{String.raw`S_0=[1,2],\,V_0=[0,1]\Rightarrow L_0\approx 2.313,\,O_0\approx 0.731`}</MathFormula></div>
+                  </div>
+                  <div className="rounded-lg border border-indigo-700/50 bg-indigo-900/60 p-2.5 space-y-1">
+                    <div className="font-bold text-indigo-200">{t('lseDemoS1')}</div>
+                    <div className="overflow-x-auto text-white"><MathFormula>{String.raw`S_1=[3,0],\,V_1=[0.5,2]\Rightarrow L_1\approx 3.049,\,O_1\approx 0.571`}</MathFormula></div>
+                  </div>
+                  <div className="rounded-lg border border-emerald-500/40 bg-emerald-950/50 p-2.5 space-y-1">
+                    <div className="font-bold text-emerald-300">{t('lseDemoMerge')}</div>
+                    <div className="overflow-x-auto text-white"><MathFormula>{String.raw`L\approx 3.440\Rightarrow O=0.324\cdot O_0+0.676\cdot O_1\approx 0.623`}</MathFormula></div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-indigo-200/85 leading-snug">{t('lseDemoNote')}</p>
               </div>
             )}
           </div>

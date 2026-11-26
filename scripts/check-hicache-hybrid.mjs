@@ -59,13 +59,16 @@ assert.equal(deriveHybridState('extra', 6).metrics.rollbackRecompute, 0, 'Extra 
 // Asymmetric state eviction: KV K2 still resident, but n6 state evicted -> R3 must roll back to t=4
 const evictStep6 = deriveHybridState('evict_state', 6);
 assert.equal(evictStep6.nodes.find((n) => n.id === 'n6').stateStatus, 'evicted');
+assert.equal(evictStep6.metrics.kvMatched, 0, 'Step 6 background eviction must not carry stale R2 match counters');
 assert.ok(evictStep6.kvPool.some((p) => p?.id === 'K2'), 'KV page K2 remains resident during state-only eviction');
 assert.equal(evictEnd.metrics.hybridHit, 4, 'After state eviction, R3 falls back to t=4');
 assert.equal(evictEnd.metrics.rollbackRecompute, 2);
 
-// 4. Scheduling counterfactual: FCFS thrashes (0 hits) vs LPM reuses 4 pages on same 4-page pool
+// 4. Scheduling counterfactual: FCFS thrashes (0 hits) vs LPM reuses 4 pages on same 4-page pool (leaf-first LRU)
 const fcfs = deriveSchedulingComparison('fcfs');
 const lpm = deriveSchedulingComparison('lpm');
+assert.deepEqual(fcfs.trace[1].evicted, ['qa2', 'qa1', 'A1', 'A0'], 'Radix LRU must evict leaves before ancestors');
+assert.deepEqual(lpm.trace[1].evicted, ['qa2', 'qa1'], 'LPM retains shared prefix and evicts leaf suffix first');
 assert.equal(fcfs.totalHit, 0);
 assert.equal(fcfs.totalCompute, 16);
 assert.equal(lpm.totalHit, 4);

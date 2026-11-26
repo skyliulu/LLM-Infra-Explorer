@@ -24,7 +24,13 @@ assert.equal(arDone.maxStep, 6);
 assert.equal(arDone.volumeFactor, 1.5);
 assert.ok(arDone.gpus.every((g) => g.shards.every((s) => s.label.startsWith('Σ'))));
 
+const arStep2 = deriveCollectiveStep({ op: 'allreduce', step: 2 });
+assert.equal(arStep2.gpus[1].shards[0].label, 'p2(0)', 'Ring Reduce-Scatter step 2 must retain step-1 partial sum instead of reverting to x1,0');
+
+const a2aUniform = deriveCollectiveStep({ op: 'alltoall', routingSkew: 'uniform', step: 2 });
 const a2aHot = deriveCollectiveStep({ op: 'alltoall', routingSkew: 'hot', step: 2 });
+assert.equal(a2aUniform.volumeFactor, 0.75);
+assert.equal(a2aHot.volumeFactor, 1.875, 'Hot All-to-All bottleneck wire factor must scale with ingress skew');
 assert.equal(a2aHot.imbalance, 2.5);
 assert.equal(a2aHot.gpus[1].isHot, true);
 

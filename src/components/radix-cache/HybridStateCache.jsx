@@ -99,7 +99,7 @@ export function HybridStatePanel({ lang }) {
   return (
     <div data-testid="hybrid-state-cache">
       {/* Same .hc-engine-settings control bar as Pure KV mode */}
-      <details className="hc-engine-settings" open>
+      <details className="hc-engine-settings">
         <summary>{t('modeLabel')}</summary>
         <div className="hc-controls">
           <label>

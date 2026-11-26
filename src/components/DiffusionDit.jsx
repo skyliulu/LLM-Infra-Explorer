@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { RotateCcw, Layers, Cpu, Network, FastForward, HardDrive, Wrench } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { RotateCcw, Layers, Cpu, Network, FastForward, HardDrive, Wrench, Play, Pause, SkipForward } from 'lucide-react';
 import ChapterIcon from './ChapterIcon';
 import { useLanguage } from '../lib/LanguageContext';
 import { useExperimentState } from '../lib/ExperimentContext';
@@ -9,6 +9,7 @@ import {
   TASK_PRESETS,
   PATCH_SIZES,
   PARALLEL_MODES,
+  USP_GPU_COUNTS,
   CACHE_STRATEGIES,
   VAE_RES_PRESETS,
   QUANT_PRESETS,
@@ -61,15 +62,27 @@ export default function DiffusionDit() {
   const [config, setConfig] = useExperimentState('DiffusionDit.config', DEFAULT_CONFIG);
   const [activeStage, setActiveStage] = useState('ditloop');
   const [selectedCacheStep, setSelectedCacheStep] = useState(8);
+  const [cachePlaying, setCachePlaying] = useState(false);
   const [ditParadigm, setDitParadigm] = useState('mmdit');
   const [sparse3d, setSparse3d] = useState(true);
   const [sageAttn, setSageAttn] = useState(true);
+
+  useEffect(() => {
+    if (!cachePlaying) return undefined;
+    if (selectedCacheStep >= 20) {
+      setCachePlaying(false);
+      return undefined;
+    }
+    const timer = setTimeout(() => setSelectedCacheStep((s) => Math.min(20, s + 1)), 450);
+    return () => clearTimeout(timer);
+  }, [cachePlaying, selectedCacheStep]);
 
   const updateCfg = (patch) => setConfig((prev) => ({ ...prev, ...patch }));
   const handleReset = () => {
     setConfig(DEFAULT_CONFIG);
     setActiveStage('ditloop');
     setSelectedCacheStep(8);
+    setCachePlaying(false);
   };
 
   const tokenModel = useMemo(
@@ -83,9 +96,25 @@ export default function DiffusionDit() {
       config.gpuCount,
       config.interconnect,
       Math.max(4096, tokenModel.seqLen),
-      tokenModel.estSingleGpuSec / Math.max(1, tokenModel.steps)
+      tokenModel.estSingleGpuSec / Math.max(1, tokenModel.steps),
+      {
+        cfgEnabled: config.cfgEnabled,
+        layers: tokenModel.layers,
+        modelHidden: tokenModel.modelHidden,
+        steps: tokenModel.steps,
+      }
     ),
-    [config.parallelMode, config.gpuCount, config.interconnect, tokenModel.seqLen, tokenModel.estSingleGpuSec, tokenModel.steps]
+    [
+      config.parallelMode,
+      config.gpuCount,
+      config.interconnect,
+      config.cfgEnabled,
+      tokenModel.seqLen,
+      tokenModel.estSingleGpuSec,
+      tokenModel.steps,
+      tokenModel.layers,
+      tokenModel.modelHidden,
+    ]
   );
 
   const cacheModel = useMemo(
@@ -98,7 +127,24 @@ export default function DiffusionDit() {
     [config.vaeResId, config.vaeTiling, config.gpuVramGB]
   );
 
-  const quantModel = useMemo(() => deriveDitQuantModel(config.quantId), [config.quantId]);
+  const quantModel = useMemo(
+    () => deriveDitQuantModel(config.quantId, tokenModel.attnSharePct),
+    [config.quantId, tokenModel.attnSharePct]
+  );
+
+  // Exact 3D local spatio-temporal diagonal band mask: 18/64 = 28.1% active cells (matching reported 28% density!)
+  const sparseMaskCells = useMemo(
+    () =>
+      Array.from({ length: 64 }, (_, idx) => {
+        const r = Math.floor(idx / 8);
+        const c = idx % 8;
+        const active = !sparse3d || Math.abs(r - c) === 0 || (Math.abs(r - c) === 1 && (r + c) % 3 !== 0);
+        return { idx, active };
+      }),
+    [sparse3d]
+  );
+  const sparseActiveCount = sparseMaskCells.filter((x) => x.active).length;
+  const sparseDensityPct = Math.round((sparseActiveCount / 64) * 100);
 
   const activeCacheItem = cacheModel.timeline[Math.max(0, Math.min(19, selectedCacheStep - 1))];
 
@@ -190,7 +236,7 @@ export default function DiffusionDit() {
                 </div>
               </div>
               <div className="dit-svg-wrap">
-                <DitParadigmSvg paradigm={ditParadigm} />
+                <DitParadigmSvg paradigm={ditParadigm} lang={lang} />
               </div>
             </div>
           </section>
@@ -324,32 +370,29 @@ export default function DiffusionDit() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
                 <div className="grid grid-cols-8 gap-1 max-w-[220px]" aria-label="8x8 3D Attention Block Mask">
-                  {Array.from({ length: 64 }, (_, idx) => {
-                    const r = Math.floor(idx / 8);
-                    const c = idx % 8;
-                    const active = !sparse3d || Math.abs(r - c) <= 1 || r === 0 || c === 0;
-                    return (
-                      <div
-                        key={idx}
-                        className={`h-4 rounded-[3px] border ${active ? 'bg-indigo-500 border-indigo-600' : 'bg-slate-200 border-slate-300 opacity-45'}`}
-                      />
-                    );
-                  })}
+                  {sparseMaskCells.map(({ idx, active }) => (
+                    <div
+                      key={idx}
+                      className={`h-4 rounded-[3px] border ${active ? 'bg-indigo-500 border-indigo-600' : 'bg-slate-200 border-slate-300 opacity-45'}`}
+                    />
+                  ))}
                 </div>
 
                 <div className="dit-metric-grid">
                   <div className="dit-metric-card">
-                    <div className="dit-metric-label">Attention Density</div>
-                    <div className="dit-metric-val text-indigo-700">{sparse3d ? '28% (3.6× Cut)' : '100% Dense'}</div>
+                    <div className="dit-metric-label">{t('sparseDensityLbl')}</div>
+                    <div className="dit-metric-val text-indigo-700">
+                      {sparse3d ? `${sparseDensityPct}% (${sparseActiveCount}/64)` : '100% (64/64)'}
+                    </div>
                   </div>
                   <div className="dit-metric-card">
-                    <div className="dit-metric-label">Optimized 1-H100 Latency</div>
+                    <div className="dit-metric-label">{t('sparseLatencyLbl')}</div>
                     <div className="dit-metric-val text-emerald-700">
                       {(() => {
                         const attnFrac = tokenModel.attnSharePct / 100;
-                        const attnScale = (sparse3d ? 0.28 : 1.0) / (sageAttn ? 1.8 : 1.0);
-                        const ffnScale = sageAttn ? 0.85 : 1.0;
-                        const factor = attnFrac * attnScale + (1 - attnFrac) * ffnScale;
+                        // SageAttention quantizes Q/K in Attention ONLY — FFN stays 1.0x!
+                        const attnScale = (sparse3d ? sparseActiveCount / 64 : 1.0) / (sageAttn ? 1.8 : 1.0);
+                        const factor = attnFrac * attnScale + (1 - attnFrac) * 1.0;
                         return `${(tokenModel.estSingleGpuSec * factor).toFixed(1)} s`;
                       })()}
                     </div>
@@ -387,7 +430,7 @@ export default function DiffusionDit() {
                 <div>
                   <div className="text-xs font-semibold text-slate-600 mb-1">{t('s3_gpus_label')}</div>
                   <div className="dit-pill-row">
-                    {[2, 4, 8].map((n) => (
+                    {USP_GPU_COUNTS.map((n) => (
                       <button
                         key={n}
                         type="button"
@@ -421,7 +464,7 @@ export default function DiffusionDit() {
             </div>
 
             <div className="dit-svg-wrap">
-              <DitParallelSvg model={parallelModel} t={t} />
+              <DitParallelSvg model={parallelModel} t={t} lang={lang} />
             </div>
 
             <div className="dit-metric-grid mt-4 mb-3">
@@ -485,6 +528,37 @@ export default function DiffusionDit() {
                   </div>
                 </div>
               )}
+
+              <div className="chapter-playback flex items-center gap-1 ml-auto">
+                <button
+                  type="button"
+                  aria-label={t('reset')}
+                  onClick={() => { setCachePlaying(false); setSelectedCacheStep(1); }}
+                  className="dit-pill inline-flex items-center justify-center"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={t(cachePlaying ? 'pause' : 'play')}
+                  onClick={() => {
+                    if (selectedCacheStep >= 20) setSelectedCacheStep(1);
+                    setCachePlaying((p) => !p);
+                  }}
+                  className={`dit-pill inline-flex items-center justify-center ${cachePlaying ? 'dit-pill-active' : ''}`}
+                >
+                  {cachePlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                </button>
+                <button
+                  type="button"
+                  aria-label={t('next')}
+                  disabled={selectedCacheStep >= 20}
+                  onClick={() => { setCachePlaying(false); setSelectedCacheStep((s) => Math.min(20, s + 1)); }}
+                  className="dit-pill inline-flex items-center justify-center disabled:opacity-40"
+                >
+                  <SkipForward className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
             <div className="mb-3 overflow-x-auto p-2.5 rounded-lg bg-slate-50 border border-slate-200">
@@ -548,16 +622,22 @@ export default function DiffusionDit() {
             <div className="mt-4">
               <div className="text-xs font-bold text-slate-700 mb-1.5">{t('codeTitle')}</div>
               <pre className="bg-[#0d1117] text-slate-200 border border-slate-800 rounded-xl p-3 text-[11.5px] leading-relaxed overflow-x-auto m-0 font-mono">
-                <code>{`# xDiT / SGLang-Diffusion Production Video Generation Loop
+                <code>{`# xDiT / SGLang-Diffusion Production Video Generation Loop (TeaCache Residual Reuse)
 text_emb = text_encoder_svc.encode(prompt)              # remote T5-XXL microservice (saves 9.5 GB VRAM)
 latents  = randn(B=1, C=16, T=21, H=90, W=160)
-for step, t in enumerate(scheduler.timesteps):          # ${cacheModel.strategy === 'distill' ? '4 distilled solver steps' : '20–50 flow-matching steps'}
+accum_drift, cached_residual = 0.0, None
+for step, t in enumerate(scheduler.timesteps):          # ${cacheModel.strategy === 'distill' ? '4 distilled solver steps' : `${tokenModel.steps} flow-matching steps`}
     h_mod = dit.adaln_modulate(latents, t)              # BF16 protected modulation layer
-    if ${cacheModel.strategy === 'teacache' ? `teacache.drift_l1(h_mod) < ${config.cacheThreshold.toFixed(2)}` : 'False'}:                  # TeaCache adaptive middle-step reuse
-        latents = scheduler.step(latents, cached_v, t); continue
-    v_pred   = usp_forward(dit, latents, text_emb, cfg_parallel=True, sage_int8=True)
-    cached_v = v_pred; latents = scheduler.step(latents, v_pred, t)
-dit.offload_to_host_ram()                               # free 28 GB before VAE peak activation spike!
+    rel_l1 = l1_norm(h_mod - prev_h_mod) / l1_norm(prev_h_mod)
+    accum_drift += poly_rescale(rel_l1)                 # TeaCache polynomial drift rescaling f_poly()
+    if ${cacheModel.strategy === 'teacache' ? `cached_residual is not None and accum_drift < ${config.cacheThreshold.toFixed(2)}` : 'False'}:
+        v_pred  = dit.final_proj(h_mod + cached_residual)
+        latents = scheduler.step(latents, v_pred, t); continue
+    accum_drift = 0.0
+    h_out, v_pred   = usp_forward(dit, latents, text_emb, cfg_parallel=${config.cfgEnabled ? 'True' : 'False'}, sage_int8=${sageAttn ? 'True' : 'False'})
+    cached_residual = h_out - h_mod                     # cache block residual Δx, NOT raw v_pred
+    latents = scheduler.step(latents, v_pred, t)
+dit.offload_to_host_ram()                               # free 28 GB weights before 3D VAE activation spike
 video_rgb = vae3d.decode_spatiotemporal_tiled(latents, overlap=0.2, causal_conv_cache=True)`}</code>
               </pre>
             </div>
@@ -651,21 +731,21 @@ video_rgb = vae3d.decode_spatiotemporal_tiled(latents, overlap=0.2, causal_conv_
             {/* VRAM Stacked Ceiling Bar + Tile Overlap Strip */}
             <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 mb-3 space-y-2.5">
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-slate-700">
-                <span>VRAM Peak: {vaeModel.totalPeakGB} GB vs {vaeModel.gpuVramGB} GB GPU Limit</span>
-                <span>{vaeModel.tilesCount} tile(s) · Overlap Blending {vaeModel.overlapOverheadPct}%</span>
+                <span>{t('vramPeakLbl')}: {vaeModel.totalPeakGB} GB / {vaeModel.gpuVramGB} GB</span>
+                <span>{vaeModel.tilesCount} {t('vramTilesSuffix')} {vaeModel.overlapOverheadPct}%</span>
               </div>
               <div className="w-full h-6 rounded-md overflow-hidden flex bg-slate-200 border border-slate-300 text-[11px] font-bold text-white">
                 <div
                   className="bg-slate-600 flex items-center justify-center px-2 whitespace-nowrap"
                   style={{ width: `${Math.min(100, (vaeModel.residentWeightsGB / Math.max(vaeModel.gpuVramGB, vaeModel.totalPeakGB)) * 100)}%` }}
                 >
-                  Weights {vaeModel.residentWeightsGB} GB
+                  {t('vramWeightsLbl')} {vaeModel.residentWeightsGB} GB
                 </div>
                 <div
                   className={`${vaeModel.oomRisk ? 'bg-rose-600' : 'bg-emerald-600'} flex items-center justify-center px-2.5 whitespace-nowrap min-w-fit transition-all duration-300`}
                   style={{ width: `${Math.min(100, (vaeModel.vaePeakActGB / Math.max(vaeModel.gpuVramGB, vaeModel.totalPeakGB)) * 100)}%` }}
                 >
-                  VAE Act {vaeModel.vaePeakActGB} GB {vaeModel.oomRisk ? '(OOM!)' : ''}
+                  {t('vramActLbl')} {vaeModel.vaePeakActGB} GB {vaeModel.oomRisk ? '(OOM!)' : ''}
                 </div>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -674,7 +754,7 @@ video_rgb = vae3d.decode_spatiotemporal_tiled(latents, overlap=0.2, causal_conv_
                     key={idx}
                     className="px-2 py-0.5 rounded text-[10.5px] font-semibold border border-indigo-300 bg-indigo-50 text-indigo-800"
                   >
-                    Tile {idx + 1} {vaeModel.tilingMode !== 'full' ? '+ Overlap' : '(Full Frame)'}
+                    Tile {idx + 1} {vaeModel.tilingMode !== 'full' ? t('vramTileOverlap') : t('vramTileFull')}
                   </span>
                 ))}
               </div>
@@ -689,7 +769,7 @@ video_rgb = vae3d.decode_spatiotemporal_tiled(latents, overlap=0.2, causal_conv_
             <div className="dit-callout">{t('s5_seam_note')}</div>
           </section>
 
-          {/* §6 Quantization & Production Troubleshooting */}
+          {/* §6 Precision Quantization & Amdahl's Law Bound */}
           <section className="dit-section">
             <div className="flex items-center gap-2 mb-1">
               <Wrench className="w-4 h-4 text-indigo-600 shrink-0" />
@@ -716,6 +796,10 @@ video_rgb = vae3d.decode_spatiotemporal_tiled(latents, overlap=0.2, causal_conv_
                 <div className="dit-metric-val">{quantModel.weightGB} GB</div>
               </div>
               <div className="dit-metric-card">
+                <div className="dit-metric-label">{t('s6_q_linear')}</div>
+                <div className="dit-metric-val text-indigo-700">{quantModel.linearSpeedup}×</div>
+              </div>
+              <div className="dit-metric-card">
                 <div className="dit-metric-label">{t('s6_q_speed')}</div>
                 <div className="dit-metric-val text-emerald-700">{quantModel.stepSpeedup}×</div>
               </div>
@@ -726,37 +810,31 @@ video_rgb = vae3d.decode_spatiotemporal_tiled(latents, overlap=0.2, causal_conv_
             </div>
 
             {/* Visual Sensitive-Layer Precision Pipeline */}
-            <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 mb-5">
+            <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 mb-3">
               <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
                 <span className="px-2.5 py-1.5 rounded-md border border-amber-400 bg-amber-50 text-amber-900">
-                  Block 0–1 · BF16 Protected
+                  {t('s6_prot_first')}
                 </span>
                 <span className="text-slate-400">→</span>
                 <span className="px-2.5 py-1.5 rounded-md border border-indigo-400 bg-indigo-50 text-indigo-900">
-                  Block 2–37 · {config.quantId === 'bf16' ? 'BF16 Dense' : config.quantId === 'fp8' ? 'FP8 E4M3 Block-Scaled' : 'NVFP4 W4A4 + Rank-32 LoRA'}
+                  {t(`s6_prot_mid_${config.quantId}`)}
                 </span>
                 <span className="text-slate-400">+</span>
                 <span className="px-2.5 py-1.5 rounded-md border border-emerald-400 bg-emerald-50 text-emerald-900">
-                  AdaLN-Zero &amp; Norm · BF16
+                  {t('s6_prot_adaln')}
                 </span>
                 <span className="text-slate-400">→</span>
                 <span className="px-2.5 py-1.5 rounded-md border border-amber-400 bg-amber-50 text-amber-900">
-                  Block 38–39 · BF16 Protected
+                  {t('s6_prot_last')}
                 </span>
               </div>
             </div>
 
-            <div className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2.5">
-              {t('s6_ops_title')}
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {[1, 2, 3, 4].map((idx) => (
-                <div key={idx} className="dit-op-card">
-                  <div className="text-sm font-bold text-slate-900 mb-1">{t(`op${idx}_title`)}</div>
-                  <p className="text-xs text-slate-600 mb-1.5">{t(`op${idx}_cause`)}</p>
-                  <p className="text-xs font-medium text-indigo-700 m-0">{t(`op${idx}_fix`)}</p>
-                </div>
-              ))}
+            <div className="dit-callout dit-callout-info">
+              {t('s6_amdahl_note', {
+                attn: tokenModel.attnSharePct,
+                lin: tokenModel.ffnSharePct,
+              })}
             </div>
           </section>
 

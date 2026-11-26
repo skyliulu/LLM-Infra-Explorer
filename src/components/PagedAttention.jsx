@@ -26,7 +26,8 @@ import PrefixHashSvg from './paged-kv/PrefixHashSvg';
 import './paged-kv/paged-kv.css';
 
 const ADDR_TEX = String.raw`i = \left\lfloor \frac{j}{S} \right\rfloor,\quad o = j \bmod S,\quad p = B_r[i],\quad k_j^{(l)} = K_{\text{phys}}^{(l)}[p, o]`;
-const KV_SIZE_TEX = String.raw`M_{\text{KV}} = 2 \cdot L \cdot H_{\text{kv}} \cdot d_h \cdot T \cdot b`;
+const KV_SIZE_GQA_TEX = String.raw`M_{\text{KV/GPU}} = \frac{2 \cdot L \cdot H_{\text{kv}} \cdot d_h \cdot T \cdot b}{\text{TP}}`;
+const KV_SIZE_MLA_TEX = String.raw`M_{\text{KV/GPU}}^{\text{MLA}} = L \cdot (d_c + d_R) \cdot T \cdot b \quad (d_c=512,\ d_R=64)`;
 
 export default function PagedAttention() {
   const [lang] = useLanguage();
@@ -140,7 +141,7 @@ export default function PagedAttention() {
 
           <div className="pk-grid-2">
             <div className="pk-svg-wrap">
-              <PagedArchSvg allocMode={config.allocMode} />
+              <PagedArchSvg allocMode={config.allocMode} blockSize={config.blockSize} lang={lang} />
             </div>
 
             <div className="pk-box">
@@ -221,8 +222,8 @@ export default function PagedAttention() {
 int logical_blk = ${addr.tokenIdx} / ${addr.blockSize};              // i = ${addr.logicalBlock}
 int offset      = ${addr.tokenIdx} % ${addr.blockSize};              // o = ${addr.offset}
 int phys_blk    = block_tables[req_id][logical_blk]; // -> P${addr.physicalBlock}
-// Coalesced vectorized 128B load from non-contiguous HBM page:
-float4 k_vec = K_cache[phys_blk][kv_head][offset][lane_vec];
+// Coalesced vectorized 128B load from non-contiguous NHD HBM page:
+float4 k_vec = K_cache[phys_blk][offset][kv_head][lane_vec];
 float  score = warp_dot(q_reg, k_vec) * inv_sqrt_dh; // Online Softmax`}</code>
               </pre>
             </div>
@@ -290,7 +291,7 @@ float  score = warp_dot(q_reg, k_vec) * inv_sqrt_dh; // Online Softmax`}</code>
               </div>
             </div>
             <div className="pk-svg-wrap">
-              <PrefixHashSvg blockSize={config.blockSize} editedBlock1={apcEdited} />
+              <PrefixHashSvg blockSize={config.blockSize} editedBlock1={apcEdited} lang={lang} />
             </div>
           </div>
         </section>
@@ -340,17 +341,19 @@ float  score = warp_dot(q_reg, k_vec) * inv_sqrt_dh; // Online Softmax`}</code>
 
           <div className="pk-grid-2">
             <div className="pk-bar-list">
-              <div className={`pk-bar-row ${pre.winner === 'swap' ? 'win' : ''}`}>
-                <span>{t('pre_swap')}</span>
+              <div className={`pk-bar-row ${pre.winner === 'swap' ? 'win' : ''}`} style={config.preemptMode === 'swap' ? { outline: '2px solid #6366f1', outlineOffset: 3, borderRadius: 6 } : undefined}>
+                <span>{t('pre_swap')}{config.preemptMode === 'swap' ? ' ★' : ''}</span>
                 <div className="pk-bar-track"><i style={{ width: `${Math.max(5, (pre.swapMs / maxPreMs) * 100)}%` }} /></div>
                 <b>{pre.swapMs} ms</b>
               </div>
-              <div className={`pk-bar-row ${pre.winner === 'recompute' ? 'win' : ''}`}>
-                <span>{t('pre_recompute')}</span>
+              <div className={`pk-bar-row ${pre.winner === 'recompute' ? 'win' : ''}`} style={config.preemptMode === 'recompute' ? { outline: '2px solid #6366f1', outlineOffset: 3, borderRadius: 6 } : undefined}>
+                <span>{t('pre_recompute')}{config.preemptMode === 'recompute' ? ' ★' : ''}</span>
                 <div className="pk-bar-track"><i style={{ width: `${Math.max(5, (pre.recomputeMs / maxPreMs) * 100)}%` }} /></div>
                 <b>{pre.recomputeMs} ms</b>
               </div>
-              <p className="pk-lead" style={{ fontSize: 12 }}>{t('preNote')}</p>
+              <p className="pk-lead" style={{ fontSize: 12 }}>
+                {t('mPreBreakdown')}: <b>{pre.linearMs} ms</b> / <b>{pre.attnMs} ms</b>. {t('preNote')}
+              </p>
             </div>
 
             <div className="pk-box">
@@ -359,19 +362,24 @@ float  score = warp_dot(q_reg, k_vec) * inv_sqrt_dh; // Online Softmax`}</code>
                   <small>{t('mKvVol')}</small>
                   <strong>{pre.kvMB} MB</strong>
                 </div>
+                <div className={`pk-kpi ${config.preemptMode === pre.winner ? 'good' : 'warn'}`}>
+                  <small>{t('mPreSelected')}</small>
+                  <strong>{pre.activeMs} ms</strong>
+                </div>
                 <div className="pk-kpi good">
                   <small>{t('mPreWinner')}</small>
                   <strong>{pre.winner === 'swap' ? 'PCIe Swap' : 'Recompute'}</strong>
                 </div>
                 <div className="pk-kpi">
-                  <small>{t('mSwapTime')}</small>
-                  <strong>{pre.swapMs} ms</strong>
-                </div>
-                <div className="pk-kpi">
-                  <small>{t('mRecompTime')}</small>
-                  <strong>{pre.recomputeMs} ms</strong>
+                  <small>{t('mSwapTime')} / {t('mRecompTime')}</small>
+                  <strong>{pre.swapMs} / {pre.recomputeMs} ms</strong>
                 </div>
               </div>
+              <p style={{ fontSize: 12, marginTop: 4 }}>
+                {config.preemptMode === pre.winner
+                  ? `✓ ${t('preActiveMatch')}`
+                  : `⚠ ${t(`pre_${config.preemptMode}`)} ${t('preActiveSlower')} +${Math.abs(pre.deltaMs)} ms`}
+              </p>
             </div>
           </div>
         </section>
@@ -399,7 +407,7 @@ float  score = warp_dot(q_reg, k_vec) * inv_sqrt_dh; // Online Softmax`}</code>
 
           <div className="pk-grid-2">
             <div className="pk-svg-wrap">
-              <VAttnCompareSvg mode={config.vattnMode} />
+              <VAttnCompareSvg mode={config.vattnMode} blockSize={config.blockSize} lang={lang} />
             </div>
 
             <div className="pk-box">
@@ -465,10 +473,13 @@ float  score = warp_dot(q_reg, k_vec) * inv_sqrt_dh; // Online Softmax`}</code>
 
           <div className="pk-grid-even">
             <div className="pk-box">
-              <MathFormula>{KV_SIZE_TEX}</MathFormula>
+              <MathFormula>{sizing.spec.isMla ? KV_SIZE_MLA_TEX : KV_SIZE_GQA_TEX}</MathFormula>
+              <p style={{ fontSize: 11.5, margin: '4px 0 8px' }}>
+                <b>{t('mDeployLabel')}:</b> {lang === 'zh' ? sizing.spec.deployLabel : sizing.spec.deployLabelEn}
+              </p>
               <div className="pk-kpis-2">
                 <div className="pk-kpi">
-                  <small>{t('mPerTok')}</small>
+                  <small>{t('mPerTok')} ({t('mFullTokLabel')} {sizing.fullKbPerTok} KB)</small>
                   <strong>{sizing.kbPerTok} KB/tok</strong>
                 </div>
                 <div className="pk-kpi">
@@ -517,31 +528,31 @@ float  score = warp_dot(q_reg, k_vec) * inv_sqrt_dh; // Online Softmax`}</code>
               <tbody>
                 <tr className="on">
                   <td><b>vLLM PagedAttention (APC)</b></td>
-                  <td>16–32 tok/block</td>
-                  <td><code>[num_blk, S, H_kv, d_h]</code> (NHD)</td>
-                  <td>Chained Block Hash + CoW</td>
-                  <td>Block-table indirection in FA2/FA3/FlashInfer</td>
+                  <td>{t('mgrRow1Gran')}</td>
+                  <td><code>[num_blk, 2, S, H_kv, d_h]</code> (NHD)</td>
+                  <td>{t('mgrRow1Share')}</td>
+                  <td>{t('mgrRow1Kernel')}</td>
                 </tr>
                 <tr>
                   <td><b>SGLang RadixAttention</b></td>
-                  <td>1-tok page (Radix)</td>
-                  <td><code>[num_pages, H_kv, d_h]</code> (Token Pool)</td>
-                  <td>Exact Prefix Tree + LRU Evict</td>
-                  <td>Index-based indirect gather (zero tail waste)</td>
+                  <td>{t('mgrRow2Gran')}</td>
+                  <td><code>[num_pages, H_kv, d_h]</code></td>
+                  <td>{t('mgrRow2Share')}</td>
+                  <td>{t('mgrRow2Kernel')}</td>
                 </tr>
                 <tr>
                   <td><b>FlashMLA (DeepSeek-V3)</b></td>
-                  <td>64 tok/block</td>
-                  <td><code>[num_blk, 64, 576]</code> (Compressed Latent)</td>
-                  <td>Shared Latent Block Hash</td>
-                  <td>Joint K/V absorbed latent paged kernel</td>
+                  <td>{t('mgrRow3Gran')}</td>
+                  <td><code>[num_blk, 64, 576]</code></td>
+                  <td>{t('mgrRow3Share')}</td>
+                  <td>{t('mgrRow3Kernel')}</td>
                 </tr>
                 <tr>
                   <td><b>vAttention (CUDA VMM)</b></td>
-                  <td>2 MB GPU page</td>
-                  <td>Contiguous Virtual Address Space</td>
-                  <td>Driver page-table remap</td>
-                  <td>Zero kernel change (standard FA)</td>
+                  <td>{t('mgrRow4Gran')}</td>
+                  <td>{t('mgrRow4Layout')}</td>
+                  <td>{t('mgrRow4Share')}</td>
+                  <td>{t('mgrRow4Kernel')}</td>
                 </tr>
               </tbody>
             </table>

@@ -150,18 +150,21 @@ const accumulateDeltaNet = (endIndex, gateStrength) => {
   let update = zeroMatrix();
   let predictedValue = Array(4).fill(0);
   let deltaError = Array(4).fill(0);
+  let scaledDeltaError = Array(4).fill(0);
+  let deltaKey = Array(4).fill(0);
   const alpha = round(clamp(1 - gateStrength * 0.45, 0.35, 0.98));
   const beta = 0.9;
   const gateMatrix = Array.from({ length: 4 }, () => Array(4).fill(alpha));
 
   for (let index = 0; index <= endIndex; index += 1) {
-    const key = normalizeVec(vectorFor(index, 2));
+    deltaKey = normalizeVec(vectorFor(index, 2));
     const value = vectorFor(index, 3);
     previousState = state;
     decayedState = previousState.map((row) => row.map((cell) => round(cell * alpha)));
-    predictedValue = matrixRead(key, decayedState);
+    predictedValue = matrixRead(deltaKey, decayedState);
     deltaError = value.map((v, i) => round(v - predictedValue[i]));
-    update = outer(key, deltaError.map((d) => round(d * beta)));
+    scaledDeltaError = deltaError.map((d) => round(d * beta));
+    update = outer(deltaKey, scaledDeltaError);
     state = addMatrix(decayedState, update);
   }
 
@@ -173,8 +176,10 @@ const accumulateDeltaNet = (endIndex, gateStrength) => {
     decayedState,
     decayedNormalizer: null,
     update,
+    deltaKey,
     predictedValue,
     deltaError,
+    scaledDeltaError,
     deltaAlpha: alpha,
     deltaBeta: beta,
     retention: Array(4).fill(alpha),
@@ -199,7 +204,7 @@ export const getAttentionState = ({ mode, step, tokenIndex, n, dk, dv, gateStren
   const isDelta = mode === 'deltanet';
   const isDirectRead = isGla || isDelta;
   const recurrent = isDelta ? accumulateDeltaNet(tokenIndex, gateStrength) : isGla ? accumulateGla(tokenIndex, true, gateStrength) : accumulateKernelLinear(tokenIndex);
-  const plainRecurrent = isDirectRead ? accumulateGla(tokenIndex, false, gateStrength) : accumulateKernelLinear(tokenIndex);
+  const plainRecurrent = isDelta ? accumulateGla(tokenIndex, true, gateStrength) : isGla ? accumulateGla(tokenIndex, false, gateStrength) : accumulateKernelLinear(tokenIndex);
   const readQuery = isDirectRead ? query : phiQuery;
   const numerator = matrixRead(readQuery, recurrent.state);
   const denominator = isDirectRead ? 1 : Math.max(0.001, dot(phiQuery, recurrent.normalizer));
@@ -219,6 +224,7 @@ export const getAttentionState = ({ mode, step, tokenIndex, n, dk, dv, gateStren
     dv,
     query,
     key,
+    deltaKey: isDelta ? recurrent.deltaKey : normalizeVec(key),
     value,
     phiQuery,
     phiKey,
@@ -229,13 +235,15 @@ export const getAttentionState = ({ mode, step, tokenIndex, n, dk, dv, gateStren
     denominator: round(denominator),
     linearOutput,
     plainOutput,
+    glaBaselineOutput: isDelta ? plainOutput : null,
     plainState: plainRecurrent.state,
     plainNormalizer: plainRecurrent.normalizer,
     sampledN,
     currentSampleRow,
     scoreCells: n * n,
     exactScoreBytes: n * n * 2,
-    recurrentBytes: (isDirectRead ? dk * dv : dk * dv + dk) * 2,
+    // Recurrent state S (and z for kernel linear) is stored in FP32 (4 B/elem) for numerical stability
+    recurrentBytes: (isDirectRead ? dk * dv : dk * dv + dk) * 4,
     ...recurrent,
   };
 };

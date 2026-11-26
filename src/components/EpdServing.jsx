@@ -6,7 +6,6 @@ import { useExperimentState } from '../lib/ExperimentContext';
 import { MathFormula } from './linear-attention/MathFormula';
 import {
   EPD_MODES,
-  EPD_OPS_IDS,
   EPD_TOTAL_GPUS,
   EPD_WORKLOADS,
   MM_CACHE_MODES,
@@ -35,7 +34,6 @@ export default function EpdServing() {
     workload: 'mixed_vlm',
     eNodes: 3,
     pNodes: 6,
-    opsId: 'cpu_decode_wall',
   });
   const config = useMemo(() => normalizeEpdConfig(rawConfig), [rawConfig]);
   const update = (patch) => setConfig((prev) => normalizeEpdConfig({ ...(prev || config), ...patch }));
@@ -50,8 +48,8 @@ export default function EpdServing() {
   const pre = useMemo(() => derivePreprocModel(config.preprocMode), [config.preprocMode]);
   const mm = useMemo(() => deriveMmCacheTrace({ cacheMode: config.cacheMode, step: cacheStep }), [config.cacheMode, cacheStep]);
   const ratio = useMemo(
-    () => deriveEpdRatioModel({ workload: config.workload, eNodes: config.eNodes, pNodes: config.pNodes }),
-    [config.workload, config.eNodes, config.pNodes]
+    () => deriveEpdRatioModel({ workload: config.workload, eNodes: config.eNodes, pNodes: config.pNodes, heteroTco }),
+    [config.workload, config.eNodes, config.pNodes, heteroTco]
   );
 
   const done = mm.phase === 'done';
@@ -64,6 +62,11 @@ export default function EpdServing() {
     const timer = setTimeout(() => setCacheStep((v) => Math.min(mm.maxStep, v + 1)), 850);
     return () => clearTimeout(timer);
   }, [isPlaying, cacheStep, done, mm.maxStep]);
+
+  // Unified Embedding Cache economics: 42 ms miss, 2 ms hit => speedup === effective E-pool capacity
+  const avgVitMs = Number((42 * (1 - simHitPct / 100) + 2 * (simHitPct / 100)).toFixed(1));
+  const effCacheCapacity = Number((42 / avgVitMs).toFixed(2));
+  const epBarPct = Math.round((s2.epPayloadMB / s2.pdPayloadMB) * 100); // exact 5% for 16 / 320 MiB
 
   return (
     <div className="chapter-page ep-page">
@@ -83,7 +86,7 @@ export default function EpdServing() {
           <div className="ep-grid-2">
             <div style={{ display: 'grid', gap: 10 }}>
               <div className="ep-svg-wrap">
-                <EpdArchSvg activePin={archPin} onSelectPin={setArchPin} />
+                <EpdArchSvg activePin={archPin} onSelectPin={setArchPin} lang={lang} />
               </div>
               <div className="ep-box">
                 <p>{t('epRatioNote')}</p>
@@ -129,49 +132,49 @@ export default function EpdServing() {
             <div className="ep-lanes">
               {config.epdMode === 'unified' ? (
                 <div className="ep-lane-row">
-                  <span>Shared GPU</span>
+                  <span>{t('laneShared')}</span>
                   <div className="ep-lane-bar">
-                    <div className="ep-seg enc" style={{ width: '28%' }}>ViT Burst</div>
-                    <div className="ep-seg pre" style={{ width: '44%' }}>VLM + Text Prefill</div>
-                    <div className="ep-seg dec" style={{ width: '28%' }}>Stalled Decode</div>
+                    <div className="ep-seg enc" style={{ width: '28%' }}>{t('segVitBurst')}</div>
+                    <div className="ep-seg pre" style={{ width: '44%' }}>{t('segVlmTextPre')}</div>
+                    <div className="ep-seg dec" style={{ width: '28%' }}>{t('segStalledDec')}</div>
                   </div>
                 </div>
               ) : config.epdMode === 'pd_coupled' ? (
                 <>
                   <div className="ep-lane-row">
-                    <span>E+P Pool</span>
+                    <span>{t('laneEpPool')}</span>
                     <div className="ep-lane-bar">
-                      <div className="ep-seg enc" style={{ width: '32%' }}>ViT on 70B GPU!</div>
-                      <div className="ep-seg pre" style={{ width: '68%' }}>Delayed Text + VLM Prefill</div>
+                      <div className="ep-seg enc" style={{ width: '32%' }}>{t('segVitOn70b')}</div>
+                      <div className="ep-seg pre" style={{ width: '68%' }}>{t('segDelayedPre')}</div>
                     </div>
                   </div>
                   <div className="ep-lane-row">
-                    <span>D Pool</span>
+                    <span>{t('laneDPool')}</span>
                     <div className="ep-lane-bar">
-                      <div className="ep-seg dec" style={{ width: '100%' }}>Steady Decode (20 ms TPOT)</div>
+                      <div className="ep-seg dec" style={{ width: '100%' }}>{t('segSteadyDec')}</div>
                     </div>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="ep-lane-row">
-                    <span>Encode Pool (E)</span>
+                    <span>{t('laneEPool')}</span>
                     <div className="ep-lane-bar">
-                      <div className="ep-seg enc" style={{ width: '58%' }}>Stateless ViT → 16 MB Emb</div>
-                      <div className="ep-seg idle" style={{ width: '42%' }}>Next Image</div>
+                      <div className="ep-seg enc" style={{ width: '58%' }}>{t('segStatelessVit')}</div>
+                      <div className="ep-seg idle" style={{ width: '42%' }}>{t('segNextImg')}</div>
                     </div>
                   </div>
                   <div className="ep-lane-row">
-                    <span>Prefill Pool (P)</span>
+                    <span>{t('lanePPool')}</span>
                     <div className="ep-lane-bar">
-                      <div className="ep-seg pre" style={{ width: '42%' }}>Text Fast-Path (115 ms)</div>
-                      <div className="ep-seg pre" style={{ width: '58%' }}>VLM Prefill → RDMA KV</div>
+                      <div className="ep-seg pre" style={{ width: '42%' }}>{t('segTextFast')}</div>
+                      <div className="ep-seg pre" style={{ width: '58%' }}>{t('segVlmPreRdma')}</div>
                     </div>
                   </div>
                   <div className="ep-lane-row">
-                    <span>Decode Pool (D)</span>
+                    <span>{t('laneDPool')}</span>
                     <div className="ep-lane-bar">
-                      <div className="ep-seg dec" style={{ width: '100%' }}>Pure Streaming Decode (19 ms TPOT)</div>
+                      <div className="ep-seg dec" style={{ width: '100%' }}>{t('segPureDec')}</div>
                     </div>
                   </div>
                 </>
@@ -197,18 +200,19 @@ export default function EpdServing() {
                   <strong>{s2.llmGpuWastePct}%</strong>
                 </div>
               </div>
+              {/* Exact proportional payload bars: 16 MiB (5%) vs 320 MiB (100%) */}
               <div className="ep-lanes" style={{ marginTop: 4 }}>
                 <div className="ep-lane-row">
                   <span>E → P Emb</span>
                   <div className="ep-lane-bar">
-                    <div className="ep-seg enc" style={{ width: '18%' }}>16 MB</div>
-                    <div className="ep-seg idle" style={{ width: '82%' }}>80× lighter than KV · Elastic E-pool</div>
+                    <div className="ep-seg enc" style={{ width: `${epBarPct}%`, minWidth: 16 }} title="16 MiB" />
+                    <div className="ep-seg idle" style={{ width: `${100 - epBarPct}%` }}>{t('barEpLighter')}</div>
                   </div>
                 </div>
                 <div className="ep-lane-row">
                   <span>P → D KV</span>
                   <div className="ep-lane-bar">
-                    <div className="ep-seg pre" style={{ width: '100%' }}>1,280 MB (80-layer KV Cache over RDMA)</div>
+                    <div className="ep-seg pre" style={{ width: '100%' }}>{t('barPdKv')}</div>
                   </div>
                 </div>
               </div>
@@ -217,7 +221,7 @@ export default function EpdServing() {
           </div>
         </section>
 
-        {/* §3 CPU Decode Bottleneck */}
+        {/* §3 Media Decode Bottleneck */}
         <section className="ep-section" data-testid="epd-preproc-section">
           <h2 data-section-anchor="epd-preprocess">{t('s3Title')}</h2>
           <p className="ep-lead">{t('s3Lead')}</p>
@@ -239,15 +243,15 @@ export default function EpdServing() {
                   <div className="ep-lane-row">
                     <span>{t('laneCpu')}</span>
                     <div className="ep-lane-bar">
-                      <div className="ep-seg cpu" style={{ width: '44%' }}>PIL Decode + Resize (48 ms)</div>
+                      <div className="ep-seg cpu" style={{ width: '44%' }}>{t('segSyncPil')}</div>
                       <div className="ep-seg idle" style={{ width: '56%' }} />
                     </div>
                   </div>
                   <div className="ep-lane-row">
                     <span>{t('laneGpu')}</span>
                     <div className="ep-lane-bar">
-                      <div className="ep-seg idle" style={{ width: '44%' }}>GPU Starved (44%)</div>
-                      <div className="ep-seg pre" style={{ width: '56%' }}>ViT + Prefill (62 ms)</div>
+                      <div className="ep-seg idle" style={{ width: '44%' }}>{t('segGpuStarve')}</div>
+                      <div className="ep-seg pre" style={{ width: '56%' }}>{t('segVitPre62')}</div>
                     </div>
                   </div>
                 </>
@@ -256,15 +260,15 @@ export default function EpdServing() {
                   <div className="ep-lane-row">
                     <span>{t('laneCpu')}</span>
                     <div className="ep-lane-bar">
-                      <div className="ep-seg cpu" style={{ width: '24%' }}>nvJPEG 12ms</div>
-                      <div className="ep-seg idle" style={{ width: '76%' }}>Batch N+1 prefetched in Pinned RAM</div>
+                      <div className="ep-seg cpu" style={{ width: '24%' }}>{t('segNvjpeg12')}</div>
+                      <div className="ep-seg idle" style={{ width: '76%' }}>{t('segPrefetchRam')}</div>
                     </div>
                   </div>
                   <div className="ep-lane-row">
                     <span>{t('laneGpu')}</span>
                     <div className="ep-lane-bar">
                       <div className="ep-seg idle" style={{ width: '6%' }} />
-                      <div className="ep-seg pre" style={{ width: '94%' }}>Continuous ViT + Prefill (62 ms · 94% busy)</div>
+                      <div className="ep-seg pre" style={{ width: '94%' }}>{t('segContGpu')}</div>
                     </div>
                   </div>
                 </>
@@ -291,7 +295,7 @@ export default function EpdServing() {
           </div>
 
           <div className="ep-svg-wrap">
-            <PreprocPipeSvg preprocMode={config.preprocMode} />
+            <PreprocPipeSvg preprocMode={config.preprocMode} lang={lang} />
           </div>
 
           <div className="ep-box">
@@ -301,8 +305,8 @@ export default function EpdServing() {
 async def encode_worker(req):
     img_hash = sha256(req.raw_bytes)
     if (emb := emb_cache.get(img_hash)) is None:
-        pixels = await media_pool.decode_nvjpeg_pinned(req.raw_bytes)   // off main loop!
-        emb    = vit_encode_varlen(pixels, max_patch_budget=16384)      // ~16 MB BF16
+        pixels = await media_pool.decode_gpu_nvjpeg(req.raw_bytes)      // GPU NVDEC off main loop
+        emb    = vit_encode_varlen(pixels, max_patch_budget=16384)      // ~16 MiB BF16
         emb_cache.put_lru(img_hash, emb)
     await ep_channel.send_with_credit(req.id, emb)                      // blocks if P-pool full`}</code>
             </pre>
@@ -376,22 +380,22 @@ async def encode_worker(req):
             </div>
             <div className="ep-kpis-3">
               <div className="ep-kpi">
-                <small>Avg ViT Encode / Req</small>
-                <strong>{Math.round(42 * (1 - simHitPct / 100) + 2 * (simHitPct / 100))} ms</strong>
+                <small>{t('cacheAvgEncode')}</small>
+                <strong>{avgVitMs} ms</strong>
               </div>
               <div className="ep-kpi good">
-                <small>Effective E-Pool Capacity</small>
-                <strong>{(1 / Math.max(0.15, 1 - simHitPct / 100)).toFixed(2)}×</strong>
+                <small>{t('cacheEffCap')}</small>
+                <strong>{effCacheCapacity}×</strong>
               </div>
               <div className="ep-kpi">
-                <small>RAM for 10K Cached Images</small>
-                <strong>~160 GB Host DRAM</strong>
+                <small>{t('cacheRam10k')}</small>
+                <strong>{t('cacheRamVal')}</strong>
               </div>
             </div>
           </div>
         </section>
 
-        {/* §5 Dynamic E:P:D 3-Pool Ratio */}
+        {/* §5 Dynamic E:P:D 3-Pool Ratio & Honest Heterogeneous TCO */}
         <section className="ep-section" data-testid="epd-ratio-section">
           <h2 data-section-anchor="epd-ratio">{t('s5Title')}</h2>
           <p className="ep-lead">{t('s5Lead')}</p>
@@ -441,97 +445,18 @@ async def encode_worker(req):
             </div>
             <div className="ep-kpis-3">
               <div className="ep-kpi">
-                <small>16-GPU Cluster Hourly Cost</small>
-                <strong>
-                  ${heteroTco
-                    ? (ratio.eNodes * 1.2 + (EPD_TOTAL_GPUS - ratio.eNodes) * 3.5).toFixed(1)
-                    : (EPD_TOTAL_GPUS * 3.5).toFixed(1)}/hr
-                </strong>
-              </div>
-              <div className="ep-kpi good">
-                <small>E-Pool Cost Savings</small>
-                <strong>
-                  {heteroTco
-                    ? `-${Math.round(((ratio.eNodes * (3.5 - 1.2)) / (EPD_TOTAL_GPUS * 3.5)) * 100)}%`
-                    : '0%'}
-                </strong>
+                <small>{t('tcoClusterHr')}</small>
+                <strong>${ratio.hourlyCost.toFixed(1)}/hr</strong>
               </div>
               <div className="ep-kpi">
-                <small>Cost / 100K VLM Requests</small>
-                <strong>
-                  ${((heteroTco
-                    ? ratio.eNodes * 1.2 + (EPD_TOTAL_GPUS - ratio.eNodes) * 3.5
-                    : EPD_TOTAL_GPUS * 3.5) / Math.max(1, ratio.goodput * 36) * 10).toFixed(2)}
-                </strong>
+                <small>{t('tcoCost100k')}</small>
+                <strong>${ratio.costPer100k.toFixed(2)}</strong>
+              </div>
+              <div className={`ep-kpi ${ratio.tcoDeltaPct > 0 ? 'good' : ratio.tcoDeltaPct < 0 ? 'warn' : ''}`}>
+                <small>{t('tcoDeltaLbl')}</small>
+                <strong>{ratio.tcoDeltaPct > 0 ? `-${ratio.tcoDeltaPct}%` : ratio.tcoDeltaPct < 0 ? `+${Math.abs(ratio.tcoDeltaPct)}%` : '0%'}</strong>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* §6 Multimodal Serving Failure Modes */}
-        <section className="ep-section" data-testid="epd-ops-section">
-          <h2 data-section-anchor="epd-ops">{t('s6Title')}</h2>
-          <p className="ep-lead">{t('s6Lead')}</p>
-
-          <div className="ep-controls">
-            <div className="ep-toggle" role="group" aria-label={t('s6Title')}>
-              {EPD_OPS_IDS.map((id) => (
-                <button key={id} type="button" data-testid={`epd-ops-${id}`} aria-pressed={config.opsId === id} onClick={() => update({ opsId: id })}>
-                  {t(`ops_${id}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="ep-grid-even">
-            <div className="ep-box">
-              <span className="ep-ctrl-label">{t('opsRoot')}</span>
-              <p>{t(`opsRoot_${config.opsId}`)}</p>
-            </div>
-            <div className="ep-box">
-              <span className="ep-ctrl-label">{t('opsFix')}</span>
-              <p>{t(`opsFix_${config.opsId}`)}</p>
-            </div>
-          </div>
-
-          <div className="ep-box">
-            <span className="ep-ctrl-label">{t('obsTitle')}</span>
-            <table className="ep-table">
-              <thead>
-                <tr>
-                  <th>{t('colMetric')}</th>
-                  <th>{t('colThreshold')}</th>
-                  <th>{t('colLayer')}</th>
-                  <th>{t('colAction')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>media_decode_wait_ms</code></td>
-                  <td>&gt; 25 ms (P95)</td>
-                  <td>Media / CPU</td>
-                  <td>Scale async nvJPEG workers; cap max upload resolution</td>
-                </tr>
-                <tr className="on">
-                  <td><code>vit_batch_patch_count</code></td>
-                  <td>&gt; 16K patches</td>
-                  <td>Encode (E)</td>
-                  <td>Split into patch-budgeted micro-batches (prevent ViT OOM)</td>
-                </tr>
-                <tr>
-                  <td><code>ep_emb_queue_depth_mb</code></td>
-                  <td>&gt; 4 GB / node</td>
-                  <td>E → P Link</td>
-                  <td>Trigger backpressure credits; add P nodes or 2×2 merge</td>
-                </tr>
-                <tr>
-                  <td><code>text_only_ttft_p99_ms</code></td>
-                  <td>&gt; 180 ms</td>
-                  <td>Router / P</td>
-                  <td>Verify modality-aware fast-path bypassing E-pool &amp; video queues</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </section>
 

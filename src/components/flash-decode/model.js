@@ -16,10 +16,10 @@ export const GPU_SMS = 132;
 const PHYSICAL_PAGE_ORDER = [4, 1, 7, 3, 8, 0];
 
 const HEAD_CONFIG = {
-  mha: { queryHeads: QUERY_HEADS, kvHeads: QUERY_HEADS, qkDim: 128, vDim: 128, sharedLatent: false },
-  gqa: { queryHeads: QUERY_HEADS, kvHeads: 2, qkDim: 128, vDim: 128, sharedLatent: false },
-  mqa: { queryHeads: QUERY_HEADS, kvHeads: 1, qkDim: 128, vDim: 128, sharedLatent: false },
-  mla: { queryHeads: QUERY_HEADS, kvHeads: 1, qkDim: 576, vDim: 512, sharedLatent: true },
+  mha: { queryHeads: QUERY_HEADS, kvHeads: QUERY_HEADS, qkDim: 128, vDim: 128, scaleDim: 128, sharedLatent: false },
+  gqa: { queryHeads: QUERY_HEADS, kvHeads: 2, qkDim: 128, vDim: 128, scaleDim: 128, sharedLatent: false },
+  mqa: { queryHeads: QUERY_HEADS, kvHeads: 1, qkDim: 128, vDim: 128, scaleDim: 128, sharedLatent: false },
+  mla: { queryHeads: QUERY_HEADS, kvHeads: 1, qkDim: 576, vDim: 512, scaleDim: 192, sharedLatent: true },
 };
 
 const SPLIT_OPERATION_BY_STEP = [
@@ -161,6 +161,7 @@ export function deriveFlashDecodeSnapshot(input = {}) {
     headDim: headConfig.qkDim,
     qkDim: headConfig.qkDim,
     vDim: headConfig.vDim,
+    scaleDim: headConfig.scaleDim,
     sharedLatent: headConfig.sharedLatent,
     effectiveSplitCount,
     splitSize,
@@ -177,12 +178,19 @@ export function deriveFlashDecodeSnapshot(input = {}) {
       activePct: Math.round(activeOccupancy * 100),
       splitOverheadDominates,
     },
-    logicalPages: Array.from({ length: NUM_KV_BLOCKS }, (_, logicalPage) => ({
-      logicalPage,
-      physicalPage: kvLayout === 'paged' ? PHYSICAL_PAGE_ORDER[logicalPage] : logicalPage,
-    })),
+    logicalPages: Array.from({ length: NUM_KV_BLOCKS }, (_, logicalPage) => {
+      const splitIndex = isSplit
+        ? Math.min(effectiveSplitCount - 1, Math.floor((logicalPage * effectiveSplitCount) / NUM_KV_BLOCKS))
+        : 0;
+      return {
+        logicalPage,
+        physicalPage: kvLayout === 'paged' ? PHYSICAL_PAGE_ORDER[logicalPage] : logicalPage,
+        splitIndex,
+        isActiveSplit: isSplit ? assignments.includes(splitIndex) : operation === 'fusedAttention',
+      };
+    }),
     metrics: {
-      kvElementsRead: SEQ_LEN * headConfig.kvHeads * kvElementsPerToken,
+      kvElementsRead: batchSize * SEQ_LEN * headConfig.kvHeads * kvElementsPerToken,
       workspaceEntries: isSplit ? effectiveSplitCount : 0,
       reductionPasses: isSplit ? 1 : 0,
     },

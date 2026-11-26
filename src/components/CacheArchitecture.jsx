@@ -14,7 +14,7 @@ import HierarchicalIndexer from './cache-architecture/HierarchicalIndexer';
 import SessionLifecycle from './cache-architecture/SessionLifecycle';
 
 const number=n=>n.toLocaleString('en-US');
-const size=n=>n>=1e6?`${(n/1e6).toFixed(2)} MB`:n>=1024?`${(n/1024).toFixed(2)} KiB`:`${n} B`;
+const size=n=>n>=1e6?`${(n/1e6).toFixed(2)} MB`:n>=1e3?`${(n/1e3).toFixed(2)} KB`:`${n} B`;
 const sourceBase='https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/517ef625df97ec57aadc91b67506a57c20fdc5bb/';
 function ShapeTensor({start,end,dim,symbol,t,tone='encoder'}) {
  const count=end-start+1, rows=count<=4?Array.from({length:count},(_,i)=>start+i):[start,start+1,end-1,end];

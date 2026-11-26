@@ -8,24 +8,28 @@ export const PREFILL_SAMPLE_TOKENS = 512;
 export function deriveRooflineState({ phase = 'prefill', batchSize = 1 } = {}) {
   const safeBatch = ROOFLINE_BATCHES.includes(Number(batchSize)) ? Number(batchSize) : 1;
   // Linear projection weights in BF16 (2 bytes/param) perform 2 FLOPs/param per token:
-  // AI ≈ T_batch (1 FLOP/Byte per token in batch).
-  const prefillAi = Math.min(1024, safeBatch * PREFILL_SAMPLE_TOKENS);
+  // Linear GEMM AI ≈ active_tokens (B * T_prompt for Prefill, B for Decode).
+  // By contrast, Decode Attention reads per-request KV caches so its AI stays ~1 FLOP/B regardless of B!
+  const prefillAi = safeBatch * PREFILL_SAMPLE_TOKENS;
   const decodeAi = safeBatch;
+  const decodeAttnAi = 1;
   const activePhase = phase === 'decode' ? 'decode' : 'prefill';
   const activeAi = activePhase === 'decode' ? decodeAi : prefillAi;
   const bound = activeAi >= H100_RIDGE_AI ? 'compute' : 'memory';
 
-  // Log2 scale mapping [1 .. 1024] -> [8% .. 92%] so pills never clip or collide with edges
-  const toPct = (ai) => Math.max(8, Math.min(92, 8 + (Math.log2(Math.max(1, ai)) / Math.log2(1024)) * 84));
+  // Log2 scale mapping [1 .. 1024] -> [8% .. 92%] so pills stay on-track while displaying exact AI
+  const toPct = (ai) => Math.max(8, Math.min(92, 8 + (Math.log2(Math.max(1, Math.min(1024, ai))) / Math.log2(1024)) * 84));
 
   return {
     phase: activePhase,
     batchSize: safeBatch,
+    prefillSampleTokens: PREFILL_SAMPLE_TOKENS,
     ridgeAi: H100_RIDGE_AI,
     ridgePct: toPct(H100_RIDGE_AI),
     prefillAi,
     prefillPct: toPct(prefillAi),
     decodeAi,
+    decodeAttnAi,
     decodePct: toPct(decodeAi),
     activeAi,
     bound,
@@ -53,6 +57,7 @@ function simulateStatic() {
     R4: ['absent', 'absent', 'absent', 'queued', 'queued', 'queued', 'hol_stall', 'hol_stall', 'prefill', 'decode', 'decode', 'pad', 'done'],
   };
 
+  const r3Slices = { 6: 342, 7: 341, 8: 341 }; // sums to exact 1024 tokens
   const ticks = Array.from({ length: totalTicks }, (_, tick) => {
     let activePrefillTokens = 0;
     let activeDecodeTokens = 0;
@@ -62,7 +67,7 @@ function simulateStatic() {
       const state = grid[req.id][tick];
       let tokens = 0;
       if (state === 'prefill') {
-        tokens = req.id === 'R3' ? 341 : 256;
+        tokens = req.id === 'R3' ? (r3Slices[tick] ?? 341) : req.promptTokens;
         activePrefillTokens += tokens;
       } else if (state === 'decode') {
         tokens = 1;
@@ -85,13 +90,24 @@ function simulateStatic() {
     };
   });
 
+  const padSlotTotal = ticks.reduce((s, tk) => s + tk.padSlots, 0);
+  const activeWorkCells = ticks.reduce(
+    (s, tk) => s + tk.cells.filter((c) => c.state === 'prefill' || c.state === 'decode').length,
+    0
+  );
+  const holStallCells = ticks.reduce(
+    (s, tk) => s + tk.cells.filter((c) => c.state === 'hol_stall').length,
+    0
+  );
+  const utilizationPct = Math.round((activeWorkCells / Math.max(1, activeWorkCells + padSlotTotal + holStallCells)) * 100);
+
   return {
     mode: 'static',
     makespan: 12,
     totalTicks,
-    padSlotTotal: 4,
-    maxDecodeStall: 3,
-    utilizationPct: 67,
+    padSlotTotal,
+    maxDecodeStall: holStallCells,
+    utilizationPct,
     ticks,
   };
 }
@@ -116,7 +132,7 @@ function simulateContinuous() {
       const state = grid[req.id][tick];
       let tokens = 0;
       if (state === 'prefill' || state === 'chunk') {
-        tokens = state === 'chunk' ? CHUNK_SIZE : req.promptTokens;
+        tokens = state === 'chunk' ? Math.min(CHUNK_SIZE, TOKEN_BUDGET) : req.promptTokens;
         activePrefillTokens += tokens;
         if (state === 'chunk') chunkIndex = tick - 1; // t=2..5 -> C1..C4
       } else if (state === 'decode') {
@@ -142,7 +158,7 @@ function simulateContinuous() {
     totalTicks,
     padSlotTotal: 0,
     maxDecodeStall: 0,
-    utilizationPct: 96,
+    utilizationPct: 100,
     ticks,
   };
 }

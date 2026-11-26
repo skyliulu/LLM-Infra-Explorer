@@ -4,7 +4,6 @@ export { SCHEDULER_MODES, TOKEN_BUDGET, REQUEST_CATALOG, deriveSchedulerSnapshot
 export const CHUNK_BUDGETS = [512, 1024, 2048, 4096];
 export const PROMPT_LENS = [2048, 8192, 16384];
 export const QUEUE_POLICIES = ['fcfs', 'sjf', 'lpm', 'priority_aging'];
-export const SCHED_OPS_IDS = ['ttft_avalanche', 'tpot_jitter', 'preempt_thrash', 'prefix_miss'];
 
 export function normalizeSchedulerConfig(input = {}) {
   const batchMode = input.batchMode === 'static' ? 'static' : 'continuous';
@@ -14,11 +13,12 @@ export function normalizeSchedulerConfig(input = {}) {
   const policy = QUEUE_POLICIES.includes(input.policy) ? input.policy : 'lpm';
   const kvUtilPct = Math.max(50, Math.min(99, Math.round(Number(input.kvUtilPct ?? 82))));
   const maxNumSeqs = [32, 128, 256].includes(Number(input.maxNumSeqs)) ? Number(input.maxNumSeqs) : 128;
-  const opsId = SCHED_OPS_IDS.includes(input.opsId) ? input.opsId : 'ttft_avalanche';
-  return { batchMode, tokenBudget, promptLen, activeDecodes, policy, kvUtilPct, maxNumSeqs, opsId };
+  return { batchMode, tokenBudget, promptLen, activeDecodes, policy, kvUtilPct, maxNumSeqs };
 }
 
 // §3 Chunked Prefill Token Budget (Sarathi / vLLM V1)
+// Physically consistent rate: SAME 22 ms/1K base prefill compute for both monolithic and chunked,
+// with a realistic +8% chunking KV re-read / split overhead on Chunked Prefill!
 export function deriveChunkBudgetModel({ tokenBudget = 1024, promptLen = 8192, activeDecodes = 32 } = {}) {
   const budget = CHUNK_BUDGETS.includes(Number(tokenBudget)) ? Number(tokenBudget) : 1024;
   const pLen = PROMPT_LENS.includes(Number(promptLen)) ? Number(promptLen) : 8192;
@@ -27,11 +27,18 @@ export function deriveChunkBudgetModel({ tokenBudget = 1024, promptLen = 8192, a
   const prefillRoom = Math.max(64, budget - decodes);
   const chunks = Math.ceil(pLen / prefillRoom);
 
-  // Without chunking: monolithic prefill blocks decode for ~30ms per 1K tokens on 70B H100
-  const unchunkedStallMs = Math.round((pLen / 1024) * 32 + 16);
-  // With chunking: each iteration runs `decodes` decode tokens + `prefillRoom` prefill tokens
-  // Base decode step (~16 ms) + linear prefill chunk compute (~16 ms per 1K prefill tokens)
-  const chunkedTpotMs = Math.round(14 + (prefillRoom / 1024) * 18 + decodes * 0.08);
+  const msPer1kPrefill = 22; // 70B FP8 TP=4 representative prefill compute rate
+  const chunkOverheadFactor = 1.08; // ~8% extra KV re-read / split-attention overhead
+  const baseDecodeMs = 12 + decodes * 0.08;
+
+  // Monolithic prefill blocks co-batched decodes for the full prompt (linear + quadratic attention)
+  const unchunkedPrefillMs = (pLen / 1024) * msPer1kPrefill + ((pLen / 1024) ** 2) * 0.35;
+  const unchunkedStallMs = Math.round(baseDecodeMs + unchunkedPrefillMs);
+
+  // Chunked iteration runs `decodes` decode tokens + `prefillRoom` prefill tokens at the SAME compute rate * 1.08 overhead
+  const chunkComputeMs = (prefillRoom / 1024) * msPer1kPrefill * chunkOverheadFactor;
+  const chunkedTpotMs = Math.round(baseDecodeMs + chunkComputeMs);
+  const totalChunkedPrefillMs = Math.round(unchunkedPrefillMs * chunkOverheadFactor);
   const tpotSloPass = chunkedTpotMs <= 50;
 
   // Compute utilization rises smoothly with token budget until ridge point (~1024-2048 tokens)
@@ -47,6 +54,7 @@ export function deriveChunkBudgetModel({ tokenBudget = 1024, promptLen = 8192, a
     chunks,
     unchunkedStallMs,
     chunkedTpotMs,
+    totalChunkedPrefillMs,
     tpotSloPass,
     tcUtilPct,
     prefillPct,
@@ -55,51 +63,58 @@ export function deriveChunkBudgetModel({ tokenBudget = 1024, promptLen = 8192, a
 }
 
 // §4 Queue Scheduling Policies: FCFS vs SJF vs LPM vs Priority+Aging
+// Physically grounded shared prefix: R1 (12K), R3 (4K), R5 (4K) share the EXACT SAME 3,072-token DocA prefix
+// (<= min(12K, 4K, 4K) = 4K, so any of them can legally warm the 3,072-token prefix — never exceeding a request's own length!)
+const SHARED_DOCA_PREFIX = 3072;
 const QUEUE_REQUESTS = [
-  { id: 'R1', label: 'Long RAG (12K)', len: 12000, prefix: 'DocA', prio: 'normal', baseMs: 260 },
-  { id: 'R2', label: 'Short Chat (256)', len: 256, prefix: 'Sys', prio: 'high', baseMs: 22 },
-  { id: 'R3', label: 'Agent Turn 2 (4K)', len: 4000, prefix: 'DocA', prio: 'normal', baseMs: 95 },
-  { id: 'R4', label: 'Code Fix (512)', len: 512, prefix: 'Repo', prio: 'high', baseMs: 30 },
-  { id: 'R5', label: 'Agent Turn 3 (4K)', len: 4000, prefix: 'DocA', prio: 'low', baseMs: 95 },
+  { id: 'R1', label: 'Long RAG (12K)', len: 12000, prefix: 'DocA', sharedPrefixLen: SHARED_DOCA_PREFIX, prio: 'normal', baseMs: 260 },
+  { id: 'R2', label: 'Short Chat (256)', len: 256, prefix: 'Sys', sharedPrefixLen: 0, prio: 'high', baseMs: 22 },
+  { id: 'R3', label: 'Agent Turn 2 (4K)', len: 4000, prefix: 'DocA', sharedPrefixLen: SHARED_DOCA_PREFIX, prio: 'normal', baseMs: 95 },
+  { id: 'R4', label: 'Code Fix (512)', len: 512, prefix: 'Repo', sharedPrefixLen: 0, prio: 'high', baseMs: 30 },
+  { id: 'R5', label: 'Agent Turn 3 (4K)', len: 4000, prefix: 'DocA', sharedPrefixLen: SHARED_DOCA_PREFIX, prio: 'low', baseMs: 95 },
 ];
 
 export function derivePolicyModel(policy = 'lpm') {
   const p = QUEUE_POLICIES.includes(policy) ? policy : 'lpm';
   let orderIds;
-  let prefixHitPct;
   let starvationRisk;
 
   if (p === 'fcfs') {
     orderIds = ['R1', 'R2', 'R3', 'R4', 'R5'];
-    prefixHitPct = 28;
     starvationRisk = 'none';
   } else if (p === 'sjf') {
     orderIds = ['R2', 'R4', 'R3', 'R5', 'R1'];
-    prefixHitPct = 34;
-    starvationRisk = 'high'; // long requests starve under continuous short arrivals
+    starvationRisk = 'high';
   } else if (p === 'lpm') {
-    // Groups shared DocA prefix requests (R1, R3, R5) together to maximize Radix/APC cache hits
     orderIds = ['R1', 'R3', 'R5', 'R2', 'R4'];
-    prefixHitPct = 82;
     starvationRisk = 'medium';
   } else {
-    // Priority + Aging: high-priority interactive short jobs run first, aged normal/low jobs guaranteed bounded wait
     orderIds = ['R2', 'R4', 'R1', 'R3', 'R5'];
-    prefixHitPct = 66;
     starvationRisk = 'bounded';
   }
 
+  // Simulate hot-prefix locality under tight LRU capacity (1 hot document slot):
+  // If another prefix intervenes (like FCFS interleaving R2/R4 between DocA turns), DocA is evicted.
   let clock = 0;
-  let lastPrefix = '';
+  let hotPrefix = '';
+  let totalHitTokens = 0;
+  const totalShareableOpportunities = SHARED_DOCA_PREFIX * 2; // At most 2 reuse hits among 3 DocA requests
+
   const ordered = orderIds.map((id, idx) => {
     const req = QUEUE_REQUESTS.find((r) => r.id === id);
-    const hit = p !== 'fcfs' && req.prefix === 'DocA' && lastPrefix === 'DocA';
-    const execMs = hit ? Math.round(req.baseMs * 0.25) : req.baseMs;
+    const hitTokens = req.sharedPrefixLen > 0 && hotPrefix === req.prefix ? req.sharedPrefixLen : 0;
+    const hit = hitTokens > 0;
+    const savedFraction = hitTokens / req.len;
+    const execMs = Math.max(12, Math.round(req.baseMs * (1 - savedFraction * 0.92)));
     const ttftMs = clock + execMs;
     clock += execMs;
-    lastPrefix = req.prefix;
-    return { ...req, rank: idx + 1, hit, execMs, ttftMs };
+    hotPrefix = req.prefix;
+    totalHitTokens += hitTokens;
+    return { ...req, rank: idx + 1, hit, hitTokens, savedPct: Math.round(savedFraction * 100), execMs, ttftMs };
   });
+
+  // Dynamically derived hit rate (% of reuse-eligible DocA prefix tokens actually served from cache)
+  const prefixHitPct = Math.round((totalHitTokens / totalShareableOpportunities) * 100);
 
   const sortedTtfts = [...ordered].map((x) => x.ttftMs).sort((a, b) => a - b);
   const p50TtftMs = sortedTtfts[2];
@@ -115,22 +130,28 @@ export function derivePolicyModel(policy = 'lpm') {
     p99TtftMs,
     shortAvgTtftMs,
     prefixHitPct,
+    totalHitTokens,
     starvationRisk,
   };
 }
 
-// §5 Watermark & KV Preemption Trigger
+// §5 Watermark & KV Preemption Trigger (monotonic active sequences on preemption!)
 export function deriveWatermarkModel({ kvUtilPct = 82, maxNumSeqs = 128 } = {}) {
   const util = Math.max(50, Math.min(99, Math.round(Number(kvUtilPct) || 82)));
   const cap = [32, 128, 256].includes(Number(maxNumSeqs)) ? Number(maxNumSeqs) : 128;
 
-  // Watermark threshold = 90%; above 90% pauses new waiting admissions; above 95% triggers active preemption
   let state = 'admitting';
   if (util >= 95) state = 'preempting';
   else if (util >= 90) state = 'paused';
 
-  const admittedSeqs = state === 'admitting' ? Math.round(cap * (util / 100)) : Math.round(cap * 0.92);
+  const pauseCap = Math.round(cap * 0.9);
   const preemptedCount = state === 'preempting' ? Math.max(2, Math.round((util - 94) * 3)) : 0;
+  const admittedSeqs =
+    state === 'admitting'
+      ? Math.round(cap * (util / 100))
+      : state === 'paused'
+        ? pauseCap
+        : Math.max(1, pauseCap - preemptedCount);
 
   return {
     kvUtilPct: util,

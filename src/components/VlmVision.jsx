@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import ChapterIcon from './ChapterIcon';
 import { useLanguage } from '../lib/LanguageContext';
 import { useExperimentState } from '../lib/ExperimentContext';
@@ -11,7 +12,6 @@ import {
   VIDEO_DURATIONS,
   VIDEO_FPS_OPTS,
   VIDEO_POOL_MODES,
-  VLM_DIAG_IDS,
   deriveProjectorModel,
   deriveTilingModel,
   deriveVideoKvModel,
@@ -37,14 +37,24 @@ export default function VlmVision() {
     durationSec: 60,
     fps: 1,
     poolMode: 'spatial_4x',
-    diagId: 'ocr_oom',
   });
   const config = useMemo(() => normalizeVlmConfig(rawConfig), [rawConfig]);
   const update = (patch) => setConfig((prev) => normalizeVlmConfig({ ...(prev || config), ...patch }));
 
   const [archPin, setArchPin] = useState(1);
+  const [archPlaying, setArchPlaying] = useState(false);
   const [paradigm, setParadigm] = useState('early_fusion');
   const [vitWindowed, setVitWindowed] = useState(true);
+
+  useEffect(() => {
+    if (!archPlaying) return undefined;
+    if (archPin >= 4) {
+      setArchPlaying(false);
+      return undefined;
+    }
+    const timer = setTimeout(() => setArchPin((p) => Math.min(4, p + 1)), 900);
+    return () => clearTimeout(timer);
+  }, [archPlaying, archPin]);
 
   const til = useMemo(
     () => deriveTilingModel({ resId: config.resId, tiling: config.tiling, merge4x: config.merge4x }),
@@ -56,17 +66,24 @@ export default function VlmVision() {
     [config.durationSec, config.fps, config.poolMode]
   );
 
-  // 2x4 patch grid illustrating 1D vs 3D M-RoPE coordinates
+  // 2x4 patch grid illustrating 1D vs 3D M-RoPE coordinates with proper st_idx = 6 offset (after [BOS]=0, Sys=1..4, <|vision_start|>=5)
+  const stIdx = 6;
   const ropeCells = Array.from({ length: 8 }, (_, idx) => {
     const r = Math.floor(idx / 4);
     const c = idx % 4;
     const isPair = c === 1;
     return {
       idx,
-      label: config.ropeMode === 'mrope_3d' ? `(t=5, h=${r}, w=${c})` : `pos=${10 + idx}`,
+      label: config.ropeMode === 'mrope_3d' ? `(t=${stIdx}, h=${stIdx + r}, w=${stIdx + c})` : `pos=${stIdx + idx}`,
       cls: isPair ? (config.ropeMode === 'mrope_3d' ? 'hi' : 'far') : '',
     };
   });
+
+  const vitBarPct = vitWindowed ? Math.max(12, Math.round((til.vitWindowMs / Math.max(1, til.vitFullMs)) * 100)) : 100;
+  const weightPct = (vid.perGpuWeightGB / vid.gpuCapGB) * 100;
+  const reservePct = (vid.perGpuReserveGB / vid.gpuCapGB) * 100;
+  const kvRawPct = (vid.perGpuKvGB / vid.gpuCapGB) * 100;
+  const kvDisplayPct = Math.min(100 - weightPct - reservePct, Math.max(6, kvRawPct));
 
   return (
     <div className="chapter-page vl-page">
@@ -78,15 +95,43 @@ export default function VlmVision() {
       </header>
 
       <div className="chapter-layout chapter-body">
-        {/* §1 VLM Architecture */}
+        {/* §1 VLM Architecture (Playable 4-Stage Pipeline) */}
         <section className="vl-section" data-testid="vlm-arch-section">
-          <h2 data-section-anchor="vlm-arch">{t('archTitle')}</h2>
-          <p className="vl-lead">{t('archLead')}</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+            <div>
+              <h2 data-section-anchor="vlm-arch">{t('archTitle')}</h2>
+              <p className="vl-lead">{t('archLead')}</p>
+            </div>
+            <div className="chapter-playback vl-toggle" role="group" aria-label={t('play')}>
+              <button type="button" aria-label={t('reset')} onClick={() => { setArchPlaying(false); setArchPin(1); }}>
+                <RotateCcw size={15} />
+              </button>
+              <button
+                type="button"
+                aria-label={t(archPlaying ? 'pause' : 'play')}
+                aria-pressed={archPlaying}
+                onClick={() => {
+                  if (archPin >= 4) setArchPin(1);
+                  setArchPlaying((p) => !p);
+                }}
+              >
+                {archPlaying ? <Pause size={15} /> : <Play size={15} />}
+              </button>
+              <button
+                type="button"
+                aria-label={t('next')}
+                disabled={archPin >= 4}
+                onClick={() => { setArchPlaying(false); setArchPin((p) => Math.min(4, p + 1)); }}
+              >
+                <SkipForward size={15} />
+              </button>
+            </div>
+          </div>
 
           <div className="vl-grid-2">
             <div style={{ display: 'grid', gap: 10 }}>
               <div className="vl-svg-wrap">
-                <VlmArchSvg activePin={archPin} onSelectPin={setArchPin} />
+                <VlmArchSvg activePin={archPin} onSelectPin={(p) => { setArchPlaying(false); setArchPin(p); }} lang={lang} />
               </div>
               <div className="vl-box">
                 <MathFormula>{VIS_TOK_TEX}</MathFormula>
@@ -100,7 +145,7 @@ export default function VlmVision() {
                   type="button"
                   data-testid={`vlm-pin-${num}`}
                   className={`vl-pin-card ${archPin === num ? 'on' : ''}`}
-                  onClick={() => setArchPin(num)}
+                  onClick={() => { setArchPlaying(false); setArchPin(num); }}
                 >
                   <div className="vl-pin-head">
                     <span className="vl-pin-num">{num}</span>
@@ -121,7 +166,7 @@ export default function VlmVision() {
               </div>
             </div>
             <div className="vl-svg-wrap">
-              <VlmParadigmSvg paradigm={paradigm} />
+              <VlmParadigmSvg paradigm={paradigm} lang={lang} />
             </div>
           </div>
         </section>
@@ -191,9 +236,11 @@ export default function VlmVision() {
                   tiling={config.tiling}
                   res={til.res}
                   tiles={til.tiles}
+                  cols={til.cols}
                   merge4x={config.merge4x}
                   rawPatches={til.rawPatches}
                   llmTokens={til.llmTokens}
+                  lang={lang}
                 />
               </div>
               <p>{t(`tilingNote_${config.tiling}`)}</p>
@@ -204,18 +251,22 @@ export default function VlmVision() {
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
               <span className="vl-ctrl-label">{t('vitAttnTitle')}</span>
               <div className="vl-toggle" role="group" aria-label={t('vitAttnTitle')}>
-                <button type="button" aria-pressed={vitWindowed} onClick={() => setVitWindowed(true)}>{t('vitWin')}</button>
-                <button type="button" aria-pressed={!vitWindowed} onClick={() => setVitWindowed(false)}>{t('vitFull')}</button>
+                <button type="button" aria-pressed={vitWindowed} onClick={() => setVitWindowed(true)}>
+                  {t('vitWin')} ({til.vitSpeedup}×)
+                </button>
+                <button type="button" aria-pressed={!vitWindowed} onClick={() => setVitWindowed(false)}>
+                  {t('vitFull')}
+                </button>
               </div>
             </div>
             <div className="vl-vram-track" aria-label="ViT Attention Cost">
               <div
                 className={`vl-vram-kv ${vitWindowed ? '' : 'warn'}`}
-                style={{ width: vitWindowed ? '31%' : '100%' }}
+                style={{ width: `${vitBarPct}%` }}
               >
                 {vitWindowed
-                  ? `Windowed ViT: ~${Math.max(4, Math.round((til.rawPatches / 7168) * 14))} ms (8×8 local + 4 global layers)`
-                  : `Full 2D ViT: ~${Math.max(12, Math.round((til.rawPatches / 7168) * 45))} ms (32× O(N²) full layers)`}
+                  ? `${t('vitWinLabel')}: ~${til.vitWindowMs} ms`
+                  : `${t('vitFullLabel')}: ~${til.vitFullMs} ms`}
               </div>
             </div>
           </div>
@@ -264,7 +315,7 @@ export default function VlmVision() {
 
             <div className="vl-box">
               <div className="vl-svg-wrap">
-                <VlmProjectorSvg projector={config.projector} />
+                <VlmProjectorSvg projector={config.projector} lang={lang} />
               </div>
               <p>{t(`projNote_${config.projector}`)}</p>
             </div>
@@ -296,22 +347,20 @@ export default function VlmVision() {
                 ))}
               </div>
               <span className={`vl-pill ${config.ropeMode === 'mrope_3d' ? 'ok' : 'warn'}`}>
-                {config.ropeMode === 'mrope_3d'
-                  ? 'Vertical Neighbor Distance: Δh = 1, Δw = 0, Δt = 0'
-                  : 'Vertical Neighbor Distance: Δpos = +4 (1080p image: Δpos = +68!)'}
+                {t(config.ropeMode === 'mrope_3d' ? 'ropeDist3d' : 'ropeDist1d')}
               </span>
             </div>
             <div className="vl-box">
-              <span className="vl-ctrl-label">RoPE Head Dim Partition (d_h = 128)</span>
+              <span className="vl-ctrl-label">{t('ropeDimLabel')}</span>
               {config.ropeMode === 'mrope_3d' ? (
                 <div className="vl-rope-bar">
-                  <div className="vl-rope-seg t" style={{ width: '25%' }}>Time (32d)</div>
-                  <div className="vl-rope-seg h" style={{ width: '37.5%' }}>Height (48d)</div>
-                  <div className="vl-rope-seg w" style={{ width: '37.5%' }}>Width (48d)</div>
+                  <div className="vl-rope-seg t" style={{ width: '25%' }}>{t('ropeTimeSeg')}</div>
+                  <div className="vl-rope-seg h" style={{ width: '37.5%' }}>{t('ropeHeightSeg')}</div>
+                  <div className="vl-rope-seg w" style={{ width: '37.5%' }}>{t('ropeWidthSeg')}</div>
                 </div>
               ) : (
                 <div className="vl-rope-bar">
-                  <div className="vl-rope-seg d1" style={{ width: '100%' }}>Single Flattened 1D Index pos (128d)</div>
+                  <div className="vl-rope-seg d1" style={{ width: '100%' }}>{t('rope1dSeg')}</div>
                 </div>
               )}
               <p>{t(`ropeNote_${config.ropeMode}`)}</p>
@@ -323,18 +372,18 @@ export default function VlmVision() {
             <div className="vl-seq-strip">
               <span className="vl-seq-tok ctl">[BOS] (0,0,0)</span>
               <span className="vl-seq-tok txt">Sys (1..4, 1..4, 1..4)</span>
-              <span className="vl-seq-tok ctl">&lt;|vision_start|&gt;</span>
-              <span className="vl-seq-tok vis">V_00 (5, 0, 0)</span>
-              <span className="vl-seq-tok vis">V_01 (5, 0, 1)</span>
-              <span className="vl-seq-tok vis">V_10 (5, 1, 0)</span>
-              <span className="vl-seq-tok vis">… V_hw</span>
-              <span className="vl-seq-tok ctl">&lt;|vision_end|&gt;</span>
-              <span className="vl-seq-tok txt">User Q (t=h=w=max+1…)</span>
+              <span className="vl-seq-tok ctl">&lt;|vision_start|&gt; (5,5,5)</span>
+              <span className="vl-seq-tok vis">V_00 (6, 6, 6)</span>
+              <span className="vl-seq-tok vis">V_01 (6, 6, 7)</span>
+              <span className="vl-seq-tok vis">V_10 (6, 7, 6)</span>
+              <span className="vl-seq-tok vis">… V_13 (6, 7, 9)</span>
+              <span className="vl-seq-tok ctl">&lt;|vision_end|&gt; (10,10,10)</span>
+              <span className="vl-seq-tok txt">User Q (11,11,11…)</span>
             </div>
           </div>
         </section>
 
-        {/* §5 Video KV Cache */}
+        {/* §5 Video KV Cache (Explicit TP=4 35GB/GPU weights + honest OOM overflow) */}
         <section className="vl-section" data-testid="vlm-video-section">
           <h2 data-section-anchor="vlm-video-kv">{t('s5Title')}</h2>
           <p className="vl-lead">{t('s5Lead')}</p>
@@ -377,13 +426,14 @@ export default function VlmVision() {
               ))}
               {vid.frames > 10 && <span className="vl-ctrl-label">+ {vid.frames - 10} frames</span>}
             </div>
-            <div className="vl-vram-track" aria-label="80 GB GPU VRAM Budget">
-              <div className="vl-vram-wt" style={{ width: '44%' }}>70B Weights (35 GB)</div>
+            <div className="vl-vram-track" aria-label="80 GB Per-GPU VRAM Budget (TP=4)">
+              <div className="vl-vram-wt" style={{ width: `${weightPct}%` }}>{t('vramWeightLabel')}</div>
+              <div className="vl-vram-wt" style={{ width: `${reservePct}%`, opacity: 0.72 }}>{t('vramReserveLabel')}</div>
               <div
                 className={`vl-vram-kv ${vid.oomWarn ? 'warn' : ''}`}
-                style={{ width: `${Math.min(56, Math.max(8, (vid.kvGB / 80) * 100))}%` }}
+                style={{ width: `${kvDisplayPct}%` }}
               >
-                Video KV {vid.kvGB} GB
+                {t('vramKvLabel')}: {vid.perGpuKvGB} GB {vid.gpuOverflow ? `(${t('vramOomBadge')})` : ''}
               </div>
             </div>
           </div>
@@ -402,12 +452,14 @@ export default function VlmVision() {
               <strong>{vid.vitMs} ms</strong>
             </div>
             <div className={`vl-kpi ${vid.oomWarn ? 'warn' : 'good'}`}>
-              <small>{t('mVideoKv')}</small>
+              <small>{t('mVideoKv')} (TP=4: {vid.perGpuKvGB} GB/GPU)</small>
               <strong>{vid.kvGB} GB</strong>
             </div>
           </div>
           <div>
-            <span className={`vl-pill ${vid.oomWarn ? 'warn' : 'ok'}`}>{t(vid.oomWarn ? 'videoOom' : 'videoOk')}</span>
+            <span className={`vl-pill ${vid.oomWarn ? 'warn' : 'ok'}`}>
+              {vid.gpuOverflow ? `${t('vramOomBadge')} (${vid.perGpuTotalGB} / 80 GB)` : t(vid.oomWarn ? 'videoOom' : 'videoOk')}
+            </span>
           </div>
 
           <div className="vl-box">
@@ -420,36 +472,9 @@ vis_embeds = projector_2x2_merge(vis_hidden);                              // [N
 // Replace <|image_pad|> placeholder slots with visual vectors before LLM Prefill:
 inputs_embeds = embed_tokens(input_ids);
 inputs_embeds[input_ids == IMAGE_PAD_ID] = vis_embeds;                     // scatter in-place
-pos_ids_3d = build_mrope_positions(input_ids, grid_thw);                   // [3, seq_len] (t,h,w)
+pos_ids_3d = build_mrope_positions(input_ids, grid_thw, st_idx=6);         // [3, seq_len] (t,h,w)
 logits = llm_backbone.prefill(inputs_embeds, pos_ids_3d, paged_kv_cache);`}</code>
             </pre>
-          </div>
-        </section>
-
-        {/* §6 VLM Bottleneck Diagnostics */}
-        <section className="vl-section" data-testid="vlm-diag-section">
-          <h2 data-section-anchor="vlm-diag">{t('s6Title')}</h2>
-          <p className="vl-lead">{t('s6Lead')}</p>
-
-          <div className="vl-controls">
-            <div className="vl-toggle" role="group" aria-label={t('s6Title')}>
-              {VLM_DIAG_IDS.map((id) => (
-                <button key={id} type="button" data-testid={`vlm-diag-${id}`} aria-pressed={config.diagId === id} onClick={() => update({ diagId: id })}>
-                  {t(`diag_${id}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="vl-grid-even">
-            <div className="vl-box">
-              <span className="vl-ctrl-label">{t('diagRoot')}</span>
-              <p>{t(`diagRoot_${config.diagId}`)}</p>
-            </div>
-            <div className="vl-box">
-              <span className="vl-ctrl-label">{t('diagFix')}</span>
-              <p>{t(`diagFix_${config.diagId}`)}</p>
-            </div>
           </div>
         </section>
 

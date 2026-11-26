@@ -106,11 +106,11 @@ export function deriveFormatSpec(format = 'block_fp8') {
 }
 
 // Roofline crossover across active tokens per GEMM step (M = Batch * q_len)
-// Normalized hardware: BF16 ridge point M_ridge = 128 tokens (memory-bound for M < 128, compute-bound for M > 128).
-// - BF16:  memTime = 1.0,    compTime = M / 128
-// - W4A16: memTime = 0.28,   compTime = (M / 128) * 1.15 (FP16 TC + unpack ALU overhead!)
-// - FP8:   memTime = 0.52,   compTime = (M / 128) / 1.90 (2x FP8 TC minus block-scale / FP32-accum overhead)
-// - NVFP4: memTime = 0.29,   compTime = (M / 128) / 3.40 (4x FP4 TC minus two-level microscaling overhead)
+// H100 SXM5 BF16 anchor: 989 TFLOPS / 3.35 TB/s = 295 FLOP/B -> M_ridge = 295 tokens (memory-bound for M < 295, compute-bound for M > 295).
+// - BF16:  memTime = 1.0,    compTime = M / 295
+// - W4A16: memTime = 0.28,   compTime = (M / 295) * 1.15 (FP16 TC + unpack ALU overhead!)
+// - FP8:   memTime = 0.52,   compTime = (M / 295) / 1.90 (2x FP8 TC minus block-scale / FP32-accum overhead)
+// - NVFP4: memTime = 0.29,   compTime = (M / 295) / 3.40 (4x FP4 TC minus two-level microscaling overhead)
 const ROOFLINE_PROFILES = [
   { id: 'bf16', mem: 1.0, compDiv: 1.0 },
   { id: 'w4a16', mem: 0.28, compDiv: 1 / 1.15 },
@@ -119,8 +119,9 @@ const ROOFLINE_PROFILES = [
 ];
 
 export function deriveQuantRoofline(tokensPerStep = 32) {
-  const M = ROOFLINE_TOKENS.includes(tokensPerStep) ? tokensPerStep : 32;
-  const ridge = 128;
+  const raw = Number(tokensPerStep);
+  const M = Number.isFinite(raw) && raw > 0 ? Math.max(1, Math.min(4096, Math.round(raw))) : 32;
+  const ridge = 295;
   const bf16Time = Math.max(1.0, M / ridge);
 
   const rows = ROOFLINE_PROFILES.map((p) => {

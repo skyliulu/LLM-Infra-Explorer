@@ -334,6 +334,13 @@ const stageKeys = {
   deltanet: ['deltaRead', 'deltaError', 'deltaUpdate', 'deltaOutput'],
 };
 
+const activeLines = {
+  exact: [2, 2, 1, 0],
+  linear: [1, 0, 0, 2],
+  gla: [2, 0, 0, 0],
+  deltanet: [3, 1, 0, 0],
+};
+
 export const getStageCopy = (mode, step, t) => ({
   title: t(titleKeys[mode][step]),
   lead: t(leadKeys[mode][step]),
@@ -344,5 +351,5 @@ export const getStageCopy = (mode, step, t) => ({
   variables: t(`${stageKeys[mode][step]}Variables`),
   code: t(`${mode === 'exact' ? 'softmax' : mode}Code${step}`),
   boundary: t(`${mode}Boundary`),
-  activeLine: 2,
+  activeLine: activeLines[mode]?.[step] ?? 0,
 });

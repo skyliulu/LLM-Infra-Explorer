@@ -1,19 +1,124 @@
 import ChapterIcon from './ChapterIcon';
-import {useExperimentState} from '../lib/ExperimentContext';
-import {useLanguage} from '../lib/LanguageContext';
+import { useExperimentState } from '../lib/ExperimentContext';
+import { useLanguage } from '../lib/LanguageContext';
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Gauge, Pause, Play, RotateCcw, Sigma, SkipForward, Workflow } from 'lucide-react';
+import { ArrowRight, Compass, Gauge, Pause, Play, RotateCcw, SkipForward, Workflow } from 'lucide-react';
 import { i18n } from './linear-attention/content';
-import { getAttentionState, TRACKS } from './linear-attention/model';
+import { modernCopy } from './linear-attention/modern-content';
+import { FORMULAS, getAttentionState, TRACKS } from './linear-attention/model';
+import { MathFormula } from './linear-attention/MathFormula';
 import { ArchitectureComparison } from './linear-attention/ArchitectureComparison';
 import { Inspector } from './linear-attention/Inspector';
 import { StageCanvas } from './linear-attention/StageCanvas';
-import ChunkDeltaWorkbench, { ChunkwisePrefillSection } from './linear-attention/ChunkDeltaWorkbench';
+import ChunkDeltaWorkbench, { ChunkwisePrefillSection, DeltaOverwriteLab } from './linear-attention/ChunkDeltaWorkbench';
 
 const CONTEXT_OPTIONS = [16, 64, 256, 1024, 4096, 16384];
 const D_OPTIONS = [16, 32, 64, 128];
 const DEMO_N = 8;
+
+function LinearOverviewSection({ lang, contextLength, dk, dv, targetMode, onSelectTargetMode }) {
+  const m = (key) => modernCopy[lang][key] || key;
+  const fullCells = contextLength * contextLength;
+  const stateCells = dk * dv;
+  const ratio = fullCells / Math.max(1, stateCells);
+
+  const gens = [
+    { id: 'softmax', selectable: false, tone: 'rose' },
+    { id: 'linear', selectable: true, tone: 'indigo' },
+    { id: 'gla', selectable: true, tone: 'cyan' },
+    { id: 'deltanet', selectable: true, tone: 'emerald' },
+  ];
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 space-y-4" data-testid="linear-overview-section">
+      <div className="flex items-start gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
+          <Compass size={16} />
+        </div>
+        <div className="min-w-0">
+          <h2
+            data-section-anchor="linear-overview"
+            data-section-label={m('ovNavTitle')}
+            className="text-base font-bold text-slate-950"
+          >
+            {m('ovTitle')}
+          </h2>
+          <p className="mt-1 max-w-4xl text-xs leading-5 text-slate-600">{m('ovLead')}</p>
+        </div>
+      </div>
+
+      {/* Associativity Reordering Visual */}
+      <div className="grid gap-3 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+        <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-3 space-y-1.5">
+          <div className="flex items-center justify-between gap-2 text-[11px] font-bold text-rose-800">
+            <span>{m('ovLeftBadge')}</span>
+            <span className="font-mono">{contextLength.toLocaleString()}×{contextLength.toLocaleString()} = {fullCells.toLocaleString()}</span>
+          </div>
+          <div className="rounded-lg border border-rose-200/80 bg-white px-2 py-2 text-center overflow-x-auto">
+            <MathFormula block>{FORMULAS.associationLeft}</MathFormula>
+          </div>
+          <p className="text-[11px] leading-4 text-slate-600">{m('ovLeftDesc')}</p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center gap-1 text-indigo-600">
+          <ArrowRight size={20} className="rotate-90 lg:rotate-0" />
+          <span className="rounded-full bg-indigo-100 px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-800">
+            {ratio >= 1 ? `${ratio.toFixed(0)}×` : `${ratio.toFixed(2)}×`}
+          </span>
+        </div>
+
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 space-y-1.5">
+          <div className="flex items-center justify-between gap-2 text-[11px] font-bold text-emerald-800">
+            <span>{m('ovRightBadge')}</span>
+            <span className="font-mono">{dk}×{dv} = {stateCells.toLocaleString()}</span>
+          </div>
+          <div className="rounded-lg border border-emerald-200/80 bg-white px-2 py-2 text-center overflow-x-auto">
+            <MathFormula block>{FORMULAS.associationRight}</MathFormula>
+          </div>
+          <p className="text-[11px] leading-4 text-slate-600">{m('ovRightDesc')}</p>
+        </div>
+      </div>
+
+      {/* 4-Generation Evolution Strip */}
+      <div>
+        <div className="mb-2 text-[11px] font-bold text-slate-500">{m('ovEvoLabel')}</div>
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          {gens.map((g) => {
+            const active = g.selectable && targetMode === g.id;
+            const ringCls = active
+              ? g.tone === 'emerald'
+                ? 'border-emerald-500 bg-emerald-50/80 ring-2 ring-emerald-200'
+                : g.tone === 'cyan'
+                  ? 'border-cyan-500 bg-cyan-50/80 ring-2 ring-cyan-200'
+                  : 'border-indigo-500 bg-indigo-50/80 ring-2 ring-indigo-200'
+              : g.tone === 'rose'
+                ? 'border-rose-200 bg-rose-50/35'
+                : 'border-slate-200 bg-slate-50 hover:border-slate-300';
+            const Comp = g.selectable ? 'button' : 'div';
+            return (
+              <Comp
+                key={g.id}
+                type={g.selectable ? 'button' : undefined}
+                aria-pressed={g.selectable ? active : undefined}
+                onClick={g.selectable ? () => onSelectTargetMode(g.id) : undefined}
+                className={`rounded-xl border p-3 text-left transition ${ringCls}`}
+              >
+                <div className="flex items-center justify-between gap-1">
+                  <strong className="text-xs font-bold text-slate-900">{m(`ovGen_${g.id}_name`)}</strong>
+                  <span className="rounded-md bg-white/80 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
+                    {m(`ovGen_${g.id}_tag`)}
+                  </span>
+                </div>
+                <p className="mt-1.5 text-[11px] leading-4 text-slate-600">{m(`ovGen_${g.id}_desc`)}</p>
+              </Comp>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function LinearAttention() {
   const [lang] = useLanguage();
@@ -33,15 +138,19 @@ function LinearAttention() {
   const detailTrack = TRACKS[targetMode];
   const isDone = phase === 'done';
 
-  const comparisonState = useMemo(() => getAttentionState({
-    mode: targetMode,
-    step,
-    tokenIndex: contextMode === 'prefill' ? Math.min(4, DEMO_N - 1) : tokenIndex,
-    n: DEMO_N,
-    dk,
-    dv,
-    gateStrength,
-  }), [targetMode, contextMode, step, tokenIndex, dk, dv, gateStrength]);
+  const comparisonState = useMemo(
+    () =>
+      getAttentionState({
+        mode: targetMode,
+        step,
+        tokenIndex: contextMode === 'prefill' ? Math.min(4, DEMO_N - 1) : tokenIndex,
+        n: DEMO_N,
+        dk,
+        dv,
+        gateStrength,
+      }),
+    [targetMode, contextMode, step, tokenIndex, dk, dv, gateStrength]
+  );
 
   const handleNextStep = () => {
     if (isDone) return;
@@ -62,7 +171,7 @@ function LinearAttention() {
     if (tokenIndex < DEMO_N - 1) {
       setTokenIndex((current) => current + 1);
       setStep(0);
-    setInspectionStep(null);
+      setInspectionStep(null);
       return;
     }
     setPhase('done');
@@ -129,9 +238,11 @@ function LinearAttention() {
         <header className="chapter-header rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex min-w-0 items-center gap-3">
-
               <div className="min-w-0">
-                <h1 className="truncate text-xl font-bold tracking-tight text-slate-950 md:text-2xl"><ChapterIcon chapter="linearattn"/>{t('title')}</h1>
+                <h1 className="truncate text-xl font-bold tracking-tight text-slate-950 md:text-2xl">
+                  <ChapterIcon chapter="linearattn" />
+                  {t('title')}
+                </h1>
                 <p className="mt-1 text-xs leading-5 text-slate-500 md:text-sm">{t('subtitle')}</p>
               </div>
             </div>
@@ -144,22 +255,40 @@ function LinearAttention() {
                     type="button"
                     onClick={() => selectTargetMode(value)}
                     aria-pressed={targetMode === value}
-                    className={`linear-focus rounded-lg px-3.5 py-2 text-[11px] font-bold transition ${targetMode === value ? value === 'deltanet' ? 'bg-emerald-700 text-white shadow-sm' : value === 'gla' ? 'bg-cyan-700 text-white shadow-sm' : 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                    className={`linear-focus rounded-lg px-3.5 py-2 text-[11px] font-bold transition ${
+                      targetMode === value
+                        ? value === 'deltanet'
+                          ? 'bg-emerald-700 text-white shadow-sm'
+                          : value === 'gla'
+                            ? 'bg-cyan-700 text-white shadow-sm'
+                            : 'bg-white text-indigo-700 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
                   >
                     {t('softmaxVs')} {t(value)}
                   </button>
                 ))}
               </div>
-
-
-
-
             </div>
           </div>
         </header>
 
+        {/* §0 Top-Down Mental Model: Associativity Reordering & 4-Generation Evolution */}
+        <LinearOverviewSection
+          lang={lang}
+          contextLength={contextLength}
+          dk={dk}
+          dv={dv}
+          targetMode={targetMode}
+          onSelectTargetMode={selectTargetMode}
+        />
+
+        {/* Shared Dimensions Bar */}
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500"><Gauge size={13} />{t('experiment')}</div>
+          <div className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+            <Gauge size={13} />
+            {t('experiment')}
+          </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
               ['contextLength', t('contextLength'), contextLength, CONTEXT_OPTIONS, setContextLength],
@@ -168,15 +297,23 @@ function LinearAttention() {
             ].map(([id, label, value, options, setter]) => (
               <label key={id} className="block text-[10px] font-semibold text-slate-500">
                 <span className="mb-1.5 block truncate">{label}</span>
-                <select value={value} onChange={(event) => setter(Number(event.target.value))} className="linear-focus w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs font-bold text-slate-800">
-                  {options.map((option) => <option key={option} value={option}>{option.toLocaleString()}</option>)}
+                <select
+                  value={value}
+                  onChange={(event) => setter(Number(event.target.value))}
+                  className="linear-focus w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs font-bold text-slate-800"
+                >
+                  {options.map((option) => (
+                    <option key={option} value={option}>
+                      {option.toLocaleString()}
+                    </option>
+                  ))}
                 </select>
               </label>
             ))}
           </div>
         </section>
 
-
+        {/* §1 Compute & State Comparison */}
         <ArchitectureComparison
           contextMode={contextMode}
           onSelectContext={selectContextMode}
@@ -193,67 +330,181 @@ function LinearAttention() {
           t={t}
         />
 
-        {contextMode === 'prefill' && (
-          <ChunkwisePrefillSection lang={lang} contextLength={contextLength} dk={dk} dv={dv} />
-        )}
+        {/* §2 GLA vs Gated DeltaNet Targeted Key-Overwrite Lab */}
+        <DeltaOverwriteLab lang={lang} />
 
+        {/* §3 Playable Chunkwise Parallel Prefill (always visible!) */}
+        <ChunkwisePrefillSection lang={lang} contextLength={contextLength} dk={dk} dv={dv} gateStrength={gateStrength} />
+
+        {/* §4 Step-by-Step Decode Pipeline & Runtime Pseudocode */}
         {contextMode === 'decode' && (
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
               <div className="flex min-w-0 items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><Workflow size={16} /></div>
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
+                  <Workflow size={16} />
+                </div>
                 <div className="min-w-0">
                   <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-indigo-600">{t('executionLevel')}</div>
-                  <h2 data-section-anchor="linearattention-1" className="mt-1 text-base font-bold text-slate-950">{t('implementationDetailTitle')}</h2>
-                  <p className="mt-1 max-w-3xl text-[11px] leading-5 text-slate-500">{t('implementationDetailLead')}</p>
+                  <h2 data-section-anchor="linearattention-1" className="mt-1 text-base font-bold text-slate-950">
+                    {t('implementationDetailTitle')}
+                  </h2>
+                  <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-500">{t('implementationDetailLead')}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1"><span className="px-2 text-[10px] text-slate-500">{t('detailPlayback')}</span>
-                <div className="chapter-playback"><button type="button" onClick={reset} title={t('reset')} aria-label={t('reset')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><RotateCcw size={18} /></button>
-                <button type="button" onClick={togglePlay} title={isPlaying ? t('pause') : t('play')} aria-label={isPlaying ? t('pause') : t('play')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white transition hover:bg-indigo-700">{isPlaying ? <Pause size={18} /> : <Play size={18} />}</button>
-                <button type="button" onClick={handleNextStep} title={t('next')} aria-label={t('next')} className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><SkipForward size={18} /></button></div>
+              <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1">
+                <span className="px-2 text-[10px] text-slate-500">{t('detailPlayback')}</span>
+                <div className="chapter-playback">
+                  <button
+                    type="button"
+                    onClick={reset}
+                    title={t('reset')}
+                    aria-label={t('reset')}
+                    className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                  >
+                    <RotateCcw size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={togglePlay}
+                    title={isPlaying ? t('pause') : t('play')}
+                    aria-label={isPlaying ? t('pause') : t('play')}
+                    className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white transition hover:bg-indigo-700"
+                  >
+                    {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextStep}
+                    title={t('next')}
+                    aria-label={t('next')}
+                    className="linear-focus inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                  >
+                    <SkipForward size={18} />
+                  </button>
+                </div>
               </div>
             </div>
-            <section className="my-4 rounded-xl border border-slate-200 bg-slate-50 p-3" data-shared-timeline>
-            <div className="grid gap-4 xl:grid-cols-[minmax(300px,1fr)_minmax(340px,1.2fr)] xl:items-end">
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-                    <motion.span key={`${detailMode}-${tokenIndex}`} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className={`h-2.5 w-2.5 rounded-full ${detailMode === 'deltanet' ? 'bg-emerald-700' : detailMode === 'gla' ? 'bg-cyan-700' : detailMode === 'exact' ? 'bg-rose-500' : 'bg-indigo-600'} shadow-[0_0_12px_currentColor]`} />
-                    {t('currentToken')}
-                  </div>
-                  <div className="font-mono text-xs font-bold text-indigo-700">{t('tokenPrefix')}{tokenIndex + 1} / {DEMO_N}</div>
-                </div>
-                <input type="range" min="0" max={DEMO_N - 1} step="1" value={tokenIndex} aria-label={t('currentToken')} onChange={(event) => selectToken(Number(event.target.value))} className="h-2 w-full cursor-pointer accent-indigo-600" />
-              </div>
 
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-bold text-slate-500">
-                  <span>{t('pairedStages')}</span>
-                  <span className="font-mono">{step + 1} / {detailTrack.length}</span>
+            <section className="my-4 rounded-xl border border-slate-200 bg-slate-50 p-3" data-shared-timeline>
+              <div className="grid gap-4 xl:grid-cols-[minmax(300px,1fr)_minmax(340px,1.2fr)] xl:items-end">
+                <div>
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+                      <motion.span
+                        key={`${detailMode}-${tokenIndex}`}
+                        initial={{ scale: 0.4, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          detailMode === 'deltanet'
+                            ? 'bg-emerald-700'
+                            : detailMode === 'gla'
+                              ? 'bg-cyan-700'
+                              : detailMode === 'exact'
+                                ? 'bg-rose-500'
+                                : 'bg-indigo-600'
+                        } shadow-[0_0_12px_currentColor]`}
+                      />
+                      {t('currentToken')}
+                    </div>
+                    <div className="font-mono text-xs font-bold text-indigo-700">
+                      {t('tokenPrefix')}
+                      {tokenIndex + 1} / {DEMO_N}
+                    </div>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max={DEMO_N - 1}
+                    step="1"
+                    value={tokenIndex}
+                    aria-label={t('currentToken')}
+                    onChange={(event) => selectToken(Number(event.target.value))}
+                    className="h-2 w-full cursor-pointer accent-indigo-600"
+                  />
                 </div>
-                <div className="grid grid-cols-8 gap-1">
-                  {Array.from({ length: DEMO_N }, (_, index) => <button key={index} type="button" onClick={() => selectToken(index)} className={`linear-focus rounded-md px-1 py-1.5 font-mono text-[9px] font-bold transition ${tokenIndex === index ? detailMode === 'deltanet' ? 'bg-emerald-700 text-white' : detailMode === 'gla' ? 'bg-cyan-700 text-white' : detailMode === 'exact' ? 'bg-rose-500 text-white' : 'bg-indigo-600 text-white' : index < tokenIndex ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>{t('tokenPrefix')}{index + 1}</button>)}
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-bold text-slate-500">
+                    <span>{t('pairedStages')}</span>
+                    <span className="font-mono">
+                      {step + 1} / {detailTrack.length}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-8 gap-1">
+                    {Array.from({ length: DEMO_N }, (_, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => selectToken(index)}
+                        className={`linear-focus rounded-md px-1 py-1.5 font-mono text-[10px] font-bold transition ${
+                          tokenIndex === index
+                            ? detailMode === 'deltanet'
+                              ? 'bg-emerald-700 text-white'
+                              : detailMode === 'gla'
+                                ? 'bg-cyan-700 text-white'
+                                : detailMode === 'exact'
+                                  ? 'bg-rose-500 text-white'
+                                  : 'bg-indigo-600 text-white'
+                            : index < tokenIndex
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        }`}
+                      >
+                        {t('tokenPrefix')}
+                        {index + 1}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
             <div className="linear-detail-layout mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
               <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-2 space-y-2" data-decode-pair>
                 {[targetMode, 'exact'].map((mode) => {
-                  const state = getAttentionState({mode, step, tokenIndex, n: DEMO_N, dk, dv, gateStrength});
-                  return <div key={mode} className="min-w-0 rounded-xl border border-slate-200 p-2" data-decode-lane={mode}>
-                    <h3 className="mb-2 text-xs font-bold text-slate-800">{t(mode)}</h3>
-                    <StageCanvas compact mode={mode} step={step} state={state} t={t} gateStrength={gateStrength} setGateStrength={setGateStrength} onSelectStep={(index) => {setDetailMode(mode); setInspectionStep(index);}} isPlaying={isPlaying} phase={phase} />
-                  </div>;
+                  const state = getAttentionState({ mode, step, tokenIndex, n: DEMO_N, dk, dv, gateStrength });
+                  return (
+                    <div key={mode} className="min-w-0 rounded-xl border border-slate-200 p-2" data-decode-lane={mode}>
+                      <h3 className="mb-2 text-xs font-bold text-slate-800">{t(mode)}</h3>
+                      <StageCanvas
+                        compact
+                        mode={mode}
+                        step={step}
+                        state={state}
+                        t={t}
+                        gateStrength={gateStrength}
+                        setGateStrength={setGateStrength}
+                        onSelectStep={(index) => {
+                          setDetailMode(mode);
+                          setInspectionStep(index);
+                        }}
+                        isPlaying={isPlaying}
+                        phase={phase}
+                      />
+                    </div>
+                  );
                 })}
               </section>
-              <Inspector mode={detailMode === 'exact' ? 'exact' : targetMode} step={inspectionStep ?? step} state={getAttentionState({mode: detailMode === 'exact' ? 'exact' : targetMode, step: inspectionStep ?? step, tokenIndex, n: DEMO_N, dk, dv, gateStrength})} t={t} />
+              <Inspector
+                mode={detailMode === 'exact' ? 'exact' : targetMode}
+                step={inspectionStep ?? step}
+                state={getAttentionState({
+                  mode: detailMode === 'exact' ? 'exact' : targetMode,
+                  step: inspectionStep ?? step,
+                  tokenIndex,
+                  n: DEMO_N,
+                  dk,
+                  dv,
+                  gateStrength,
+                })}
+                t={t}
+              />
             </div>
           </section>
         )}
 
+        {/* §5 Hybrid Layer Stack & Memory Crossover */}
         <ChunkDeltaWorkbench lang={lang} contextLength={contextLength} dk={dk} dv={dv} />
 
         <div className="flex flex-col gap-2 px-1 pb-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between">

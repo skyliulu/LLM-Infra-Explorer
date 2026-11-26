@@ -80,8 +80,15 @@ for (const mode of ['dp', 'tp']) {
 const skewed = deriveDpAttentionSnapshot({ mode: 'dp', moeTopology: 'ep', loadProfile: 'skewed_empty', tbo: 'on', step: 2 });
 assert.equal(skewed.workload.hasDummy, true, 'skewed_empty activates Dummy Forward on rank 3');
 assert.equal(skewed.workload.rankTokens[3], 0);
+assert.equal(skewed.workload.rankShapes[0].inputLatex, '[8,1,H]');
+assert.ok(skewed.workload.rankShapes[3].inputLatex.includes('dummy'));
+assert.equal(skewed.workload.totalEffectiveTokens, 15, '8+4+2+1 dummy = 15 tokens');
 assert.equal(skewed.tboEnabled, true, 'TBO activates under DP + EP-MoE');
 const pdClash = deriveDpAttentionSnapshot({ mode: 'dp', moeTopology: 'tp', loadProfile: 'pd_collision', step: 2 });
 assert.equal(pdClash.workload.hasBarrierStall, true, 'pd_collision triggers MoE barrier stall');
+assert.equal(pdClash.workload.rankShapes[0].inputLatex, '[1,2048,H]');
+assert.equal(pdClash.workload.totalEffectiveTokens, 2060, '2048+4+4+4 = 2060 tokens');
 assert.equal(pdClash.tboEnabled, false, 'TBO is only active for EP-MoE');
+assert.ok(componentSource.includes('attn_local = o_proj(attn_local)'), 'DP pseudocode includes o_proj');
+assert.ok(componentSource.includes('tp_reduce_and_split(expert_out, request_meta.dp_sizes)'), 'Uneven DP shards use variable-length reduce+split instead of uniform reduce_scatter');
 console.log('DP Attention model, workload skew, TBO and independent Decode query/history checks passed.');

@@ -13,21 +13,21 @@ export function normalizeStructuredConfig(input = {}) {
   return { maskEngine, vocabSize, jumpMode, overlapMode, pitfallId };
 }
 
-// §2 Mask generation latency vs vocab size (ms per decode step)
+// §3 Mask generation latency vs vocab size (ms per decode step, single request)
 export function deriveMaskCostModel({ maskEngine = 'xgrammar', vocabSize = 128256 } = {}) {
   const V = VOCAB_SIZES.includes(Number(vocabSize)) ? Number(vocabSize) : 128256;
   const scale = V / 128256;
   // Naive scans every token regex on CPU (~8.4 ms at 128K)
   const naiveMs = Number((8.4 * scale).toFixed(2));
-  // Outlines pre-indexed FSM table (~0.42 ms at 128K, higher compile mem)
+  // Outlines pre-indexed FSM table: 0% per-token regex check at runtime (~0.42 ms materializing valid ID list -> mask)
   const fsmMs = Number((0.42 * scale).toFixed(2));
-  // XGrammar: ~99% context-independent precomputed bitmask + ~1% runtime stack check (~0.04 ms!)
+  // XGrammar: ~99% context-independent precomputed bitmask + ~1% runtime PDA stack check (~0.04 ms/req!)
   const xgrammarMs = Number((0.04 * (0.5 + 0.5 * scale)).toFixed(2));
   const gpuForwardMs = 15.0; // typical H100 decode step
 
   const entries = [
     { id: 'naive_scan', maskMs: naiveMs, runtimeCheckPct: 100, memMB: 12 },
-    { id: 'fsm_index', maskMs: fsmMs, runtimeCheckPct: 15, memMB: Math.round(180 * scale) },
+    { id: 'fsm_index', maskMs: fsmMs, runtimeCheckPct: 0, memMB: Math.round(180 * scale) },
     { id: 'xgrammar', maskMs: xgrammarMs, runtimeCheckPct: 1, memMB: Math.round(18 * scale) },
   ].map((e) => ({
     ...e,
@@ -39,7 +39,7 @@ export function deriveMaskCostModel({ maskEngine = 'xgrammar', vocabSize = 12825
   return { vocabSize: V, entries, selected, speedupVsNaive, gpuForwardMs };
 }
 
-// §3 Step-by-step FSM/PDA Logits Masking for `{"tool":"search","k":5}`
+// §2 Step-by-step FSM/PDA Logits Masking for `{"tool":"search","k":5}`
 const FSM_STEPS = [
   {
     state: 'S0_OPEN_OBJ',
@@ -106,7 +106,6 @@ const FSM_STEPS = [
 export function deriveFsmStep(step = 0) {
   const s = Math.max(0, Math.min(FSM_STEPS.length - 1, Math.trunc(Number(step) || 0)));
   const frame = FSM_STEPS[s];
-  // Compute masked softmax probabilities
   const validExps = frame.candidates.map((c) => (c.valid ? Math.exp(c.logit) : 0));
   const sumExp = validExps.reduce((a, b) => a + b, 0) || 1;
   const rawExps = frame.candidates.map((c) => Math.exp(c.logit));
@@ -130,7 +129,7 @@ export function deriveFsmStep(step = 0) {
   };
 }
 
-// §4 Jump-Forward Decoding compression
+// §4 Jump-Forward Decoding compression (13 tokens = 3 det + 1 free + 3 det + 1 free + 3 det + 1 free + 1 det)
 export function deriveJumpForwardModel(jumpMode = 'jump_forward') {
   const tokens = [
     { text: '{"', det: true },
@@ -149,7 +148,7 @@ export function deriveJumpForwardModel(jumpMode = 'jump_forward') {
   ];
   const serialSteps = tokens.length; // 13 serial GPU decode steps
   // Jump-forward skips contiguous deterministic syntax spans (batch-appends them via mini-prefill)
-  // Only needs GPU sampling at non-deterministic value positions + final verify = 4 GPU steps!
+  // 3 free value samples + 1 closing verify = 4 GPU steps
   const jumpSteps = 4;
   const isJump = jumpMode === 'jump_forward';
   const activeSteps = isJump ? jumpSteps : serialSteps;
@@ -159,13 +158,35 @@ export function deriveJumpForwardModel(jumpMode = 'jump_forward') {
   return { jumpMode: isJump ? 'jump_forward' : 'token_by_token', tokens, serialSteps, jumpSteps, activeSteps, speedup, savedStepsPct };
 }
 
-// §5 Async CPU Mask Overlap
+// §5 Async CPU Mask Overlap (Batch = 60 active constrained requests × 0.04 ms/req = 2.4 ms CPU batch mask)
+// Reconciles §3 single-request 0.04 ms with batch-level 2.4 ms CPU mask preparation!
 export function deriveOverlapPipeline(overlapMode = 'async_overlap') {
   const isAsync = overlapMode === 'async_overlap';
+  const batchSize = 60;
+  const perReqMaskMs = 0.04;
   const gpuMs = 15.0;
-  const cpuMaskMs = 2.4; // representative complex CFG step
+  const cpuMaskMs = Number((batchSize * perReqMaskMs).toFixed(1)); // 2.4 ms batch CPU mask
   const exposedMs = isAsync ? 0.1 : cpuMaskMs;
   const stepMs = Number((gpuMs + exposedMs).toFixed(1));
   const overheadPct = Number(((exposedMs / gpuMs) * 100).toFixed(1));
-  return { overlapMode: isAsync ? 'async_overlap' : 'serial', gpuMs, cpuMaskMs, exposedMs, stepMs, overheadPct };
+
+  // Strictly proportional Gantt shares against 17.4 ms serial window
+  const windowMs = gpuMs + cpuMaskMs; // 17.4 ms
+  const gpuPct = Math.round((gpuMs / windowMs) * 100); // 86%
+  const maskPct = 100 - gpuPct; // 14%
+  const asyncGpuPct = Math.round((stepMs / windowMs) * 100); // 87%
+
+  return {
+    overlapMode: isAsync ? 'async_overlap' : 'serial',
+    batchSize,
+    perReqMaskMs,
+    gpuMs,
+    cpuMaskMs,
+    exposedMs,
+    stepMs,
+    overheadPct,
+    gpuPct,
+    maskPct,
+    asyncGpuPct,
+  };
 }

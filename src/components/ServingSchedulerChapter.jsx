@@ -8,7 +8,6 @@ import {
   CHUNK_BUDGETS,
   PROMPT_LENS,
   QUEUE_POLICIES,
-  SCHED_OPS_IDS,
   deriveChunkBudgetModel,
   derivePolicyModel,
   deriveWatermarkModel,
@@ -42,7 +41,6 @@ export default function ServingSchedulerChapter() {
     policy: 'lpm',
     kvUtilPct: 82,
     maxNumSeqs: 128,
-    opsId: 'ttft_avalanche',
   });
   const config = useMemo(() => normalizeSchedulerConfig(rawConfig), [rawConfig]);
   const update = (patch) => setConfig((prev) => normalizeSchedulerConfig({ ...(prev || config), ...patch }));
@@ -82,7 +80,7 @@ export default function ServingSchedulerChapter() {
           <div className="sc2-grid-2">
             <div style={{ display: 'grid', gap: 10, minWidth: 0 }}>
               <div className="sc2-svg-wrap">
-                <SchedulerArchSvg activePin={archPin} onSelectPin={setArchPin} />
+                <SchedulerArchSvg activePin={archPin} onSelectPin={setArchPin} lang={lang} />
               </div>
               <div className="sc2-box">
                 <MathFormula block>{BUDGET_TEX}</MathFormula>
@@ -158,7 +156,7 @@ export default function ServingSchedulerChapter() {
           </div>
 
           <div className="sc2-svg-wrap">
-            <ChunkBudgetSvg model={chunk} />
+            <ChunkBudgetSvg model={chunk} lang={lang} />
           </div>
 
           <div className="sc2-kpis-4">
@@ -220,7 +218,7 @@ export default function ServingSchedulerChapter() {
                       <td>#{r.rank} ({r.id})</td>
                       <td>{r.label}</td>
                       <td><code>{r.prefix}</code></td>
-                      <td><span className={`sc2-pill ${r.hit ? 'ok' : 'amber'}`}>{r.hit ? 'HIT (-75%)' : 'COLD'}</span></td>
+                      <td><span className={`sc2-pill ${r.hit ? 'ok' : 'amber'}`}>{r.hit ? `HIT (${(r.hitTokens / 1024).toFixed(0)}K, -${r.savedPct}%)` : 'COLD'}</span></td>
                       <td><b>{r.ttftMs} ms</b></td>
                     </tr>
                   ))}
@@ -313,31 +311,10 @@ def schedule_step(waiting, running, kv_pool, token_budget=${config.tokenBudget},
           </div>
         </section>
 
-        {/* §6 Production Tuning Knobs & Troubleshooting */}
+        {/* §6 Core Scheduler Parameter Reference */}
         <section className="sc2-section" data-testid="sched-ops-section">
           <h2 data-section-anchor="sched-ops">{t('s6Title')}</h2>
           <p className="sc2-lead">{t('s6Lead')}</p>
-
-          <div className="sc2-controls">
-            <div className="sc2-toggle" role="group" aria-label={t('s6Title')}>
-              {SCHED_OPS_IDS.map((id) => (
-                <button key={id} type="button" data-testid={`sched-ops-${id}`} aria-pressed={config.opsId === id} onClick={() => update({ opsId: id })}>
-                  {t(`ops_${id}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="sc2-grid-even">
-            <div className="sc2-box">
-              <span className="sc2-ctrl-label">{t('opsRoot')}</span>
-              <p>{t(`opsRoot_${config.opsId}`)}</p>
-            </div>
-            <div className="sc2-box">
-              <span className="sc2-ctrl-label">{t('opsFix')}</span>
-              <p>{t(`opsFix_${config.opsId}`)}</p>
-            </div>
-          </div>
 
           <div className="sc2-box">
             <span className="sc2-ctrl-label">{t('knobTitle')}</span>
@@ -354,31 +331,31 @@ def schedule_step(waiting, running, kv_pool, token_budget=${config.tokenBudget},
               <tbody>
                 <tr className="on">
                   <td><code>max_num_batched_tokens</code></td>
-                  <td>Per-iteration total tokens</td>
-                  <td>Under-utilizes Tensor Cores</td>
-                  <td>Spikes co-batched Decode TPOT</td>
-                  <td>1024–2048 (chat) / 8192 (batch)</td>
+                  <td>{t('k1Role')}</td>
+                  <td>{t('k1Small')}</td>
+                  <td>{t('k1Large')}</td>
+                  <td>{t('k1Sweet')}</td>
                 </tr>
                 <tr>
                   <td><code>max_num_seqs</code></td>
-                  <td>Max active sequences</td>
-                  <td>Caps decode throughput</td>
-                  <td>Triggers KV preemption thrash</td>
-                  <td>64–256 (sized by KV headroom)</td>
+                  <td>{t('k2Role')}</td>
+                  <td>{t('k2Small')}</td>
+                  <td>{t('k2Large')}</td>
+                  <td>{t('k2Sweet')}</td>
                 </tr>
                 <tr>
                   <td><code>enable_chunked_prefill</code></td>
-                  <td>Split long prompts</td>
-                  <td>Off → 300–500ms TPOT spikes</td>
-                  <td>On → slight +5% TTFT for 16K</td>
-                  <td>Always On (default in vLLM V1)</td>
+                  <td>{t('k3Role')}</td>
+                  <td>{t('k3Small')}</td>
+                  <td>{t('k3Large')}</td>
+                  <td>{t('k3Sweet')}</td>
                 </tr>
                 <tr>
                   <td><code>scheduling_policy</code></td>
-                  <td>Waiting queue ordering</td>
-                  <td>FCFS → HoL &amp; low cache hit</td>
-                  <td>Pure SJF/LPM → tail starvation</td>
-                  <td>LPM + Aging / Priority + Aging</td>
+                  <td>{t('k4Role')}</td>
+                  <td>{t('k4Small')}</td>
+                  <td>{t('k4Large')}</td>
+                  <td>{t('k4Sweet')}</td>
                 </tr>
               </tbody>
             </table>

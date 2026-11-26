@@ -11,6 +11,8 @@ assert.ok(SPECULATIVE_ALGORITHMS.includes('mtp'), 'MTP must be in SPECULATIVE_AL
 const mtpIdle = deriveSpeculativeSnapshot({ algorithm: 'mtp', depth: 3, load: 1, phase: 'idle' });
 assert.equal(mtpIdle.architecture.embedded, true, 'MTP heads are embedded inside Target');
 assert.equal(mtpIdle.round.selected.length, 4, 'MTP depth 3 verifies anchor + 3 chain tokens');
+const mtpClamped = deriveSpeculativeSnapshot({ algorithm: 'mtp', depth: 5, load: 1, phase: 'idle' });
+assert.equal(mtpClamped.depth, 4, 'MTP clamps depth to at most 4 built-in heads');
 
 const mtpDone = deriveSpeculativeSnapshot({ algorithm: 'mtp', depth: 3, load: 1, phase: 'done', raceStep: SPECULATIVE_RACE_MAX_STEP });
 assert.deepEqual(mtpDone.race.speculativeTokens, STREAM.slice(1, mtpDone.race.speculativeCount + 1), 'MTP output matches Target stream exactly');

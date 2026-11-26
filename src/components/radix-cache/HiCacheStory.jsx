@@ -43,7 +43,7 @@ function EngineScene({lang,pool,selected,setSelected,options,settings,archSwitch
  </section>;
 }
 
-export default function HiCacheStory({lang,pool,selected,setSelected}){
+export default function HiCacheStory({lang,pool,setPool,selected,setSelected}){
  const [arch,setArch]=useState('kv');
  const [storyOpts,setStoryOpts]=useExperimentState('RadixCache.story',{prefetch:ENGINE_DEFAULTS.prefetch,write:ENGINE_DEFAULTS.write,fault:ENGINE_DEFAULTS.fault});
  const options={...ENGINE_DEFAULTS,concurrent:false,...storyOpts};
@@ -56,7 +56,7 @@ export default function HiCacheStory({lang,pool,selected,setSelected}){
  if(arch==='hybrid'){
   return <section className="hc-workbench hc-story"><div className="hc-arch-header"><div><h2 data-section-anchor="radix-hicache">{t('title')}</h2><p>{ht('intro')}</p></div>{archSwitch}</div><HybridStatePanel lang={lang}/></section>;
  }
- const settings=<details className="hc-engine-settings" open><summary>{t('settings')}</summary><div className="hc-controls">{[
+ const settings=<details className="hc-engine-settings"><summary>{t('settings')}</summary><div className="hc-controls">{setPool&&<label>{engineCopy[lang].pool}<select value={pool} onChange={e=>setPool(e.target.value)}>{['mha','mla'].map(v=><option key={v} value={v}>{engineCopy[lang][v]}</option>)}</select></label>}{[
   ['prefetch','prefetchSetting',['wait_complete','timeout','best_effort']],
   ['write','writeSetting',['write_through','write_through_selective','write_back']],
   ['fault','faultSetting',['none','host_pressure','gpu_pressure','partial_read','rank_lag']],

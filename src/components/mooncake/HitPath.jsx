@@ -42,7 +42,8 @@ export default function HitPath({t}) {
   const localPages = scenario.local.map(entry => entry.id);
   const newPages = scenario.computed.map(entry => entry.id);
   const relevant = [...localPages, ...(prefetched ? remotePages : []), ...(published ? newPages : [])];
-  const others = Math.max(0, scenario.l2Slots.length - relevant.length);
+  const l2Occupied = scenario.l2Slots.filter(Boolean).length;
+  const others = Math.max(0, l2Occupied - relevant.length);
   const gpu = loaded ? [...localPages, ...remotePages, ...(computed ? newPages : [])] : [];
   const totalMs = scenario.ms.total;
   const segments = [
@@ -125,7 +126,7 @@ export default function HitPath({t}) {
                     <span key={`empty-${index}`} className="mk-cell empty">·</span>
                   ))}
                 </div>
-                <em>{scenario.l2Slots.length}/12 · {relevant.length} {t('l2Relevant')}</em>
+                <em>{l2Occupied}/{scenario.l2Slots.length} · {relevant.length} {t('l2Relevant')}</em>
               </div>
               <div className={`mk-arrow vertical ${active === 'load' ? 'on' : ''}`}>
                 <span>load</span>

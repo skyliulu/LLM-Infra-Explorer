@@ -33,12 +33,14 @@ assert.equal(disRdma.sloPass, true);
 assert.equal(disEth.sloPass, false);
 assert.ok(disEth.ttftMs > 1000);
 
-// §3 Layer-wise Pipelined KV Transfer vs Bulk Blocking
+// §3 Layer-wise Pipelined KV Transfer vs Bulk Blocking (same 400G NDR IB fabric as §2)
 const kvBulk = deriveKvTransferModel({ kvPipe: 'bulk_blocking', kvLayout: 'asymmetric' });
 const kvPipe = deriveKvTransferModel({ kvPipe: 'layerwise_pipelined', kvLayout: 'asymmetric' });
+const kvSymPipe = deriveKvTransferModel({ kvPipe: 'layerwise_pipelined', kvLayout: 'symmetric' });
 assert.equal(kvBulk.overlapPct, 0);
 assert.ok(kvPipe.overlapPct >= 75);
 assert.ok(kvPipe.exposedTransferMs < kvBulk.exposedTransferMs / 4);
+assert.equal(disRdma.transferMs, kvSymPipe.exposedTransferMs, '§2 and §3 must share the same 400G NDR IB exposed transfer time');
 
 // §4 Cluster Router Trilemma
 const rLoad = deriveRouterTrace({ routerPolicy: 'load_only', step: 6 });
@@ -54,6 +56,10 @@ assert.ok(rAware.p99TtftMs < rLoad.p99TtftMs && rAware.p99TtftMs < rCache.p99Ttf
 const rag = derivePdRatioModel(RATIO_PRESETS.rag);
 const cot = derivePdRatioModel(RATIO_PRESETS.cot);
 assert.ok(rag.optimal.pNodes > cot.optimal.pNodes);
+
+const shortIsl = derivePdRatioModel({ isl: 1024, osl: 512, cacheHitPct: 0, pNodes: 8 });
+const longIsl = derivePdRatioModel({ isl: 8192, osl: 512, cacheHitPct: 0, pNodes: 8 });
+assert.ok(longIsl.current.dCap < shortIsl.current.dCap, 'Decode capacity must scale down with longer ISL KV reads');
 
 const lowHit = derivePdRatioModel({ isl: 8192, osl: 512, cacheHitPct: 0, pNodes: 8 });
 const highHit = derivePdRatioModel({ isl: 8192, osl: 512, cacheHitPct: 75, pNodes: 8 });

@@ -273,11 +273,14 @@ export function buildHybridHistory(mode = 'align') {
       });
     } else {
       // 'evict_state': MambaPool pressure reclaims internal checkpoint M2 (S@6) while KV page K2 remains resident!
-      // Step 6: Asymmetric state eviction on n6
+      // Step 6: Asymmetric state eviction on n6 (before R3 matches at step 7 -> reset per-request counters)
       const n6 = nodes.find((n) => n.id === 'n6');
       n6.mambaSlot = null;
       n6.stateStatus = 'evicted';
       mambaPool[2] = null;
+      metrics.kvMatched = 0;
+      metrics.hybridHit = 0;
+      metrics.rollbackRecompute = 0;
       metrics.stateEvictions += 1;
       push({
         requestIndex: 2,
@@ -347,26 +350,39 @@ export function deriveSchedulingComparison(policy = 'fcfs') {
     ? [SCHED_REQUESTS[0], SCHED_REQUESTS[2], SCHED_REQUESTS[1], SCHED_REQUESTS[3]]
     : [...SCHED_REQUESTS];
 
-  let cache = []; // LRU queue of page IDs, oldest at index 0
+  let cache = []; // Resident entries { id, depth, lastUsed }
+  let tick = 0;
   let totalHit = 0;
   let totalCompute = 0;
   let totalEvicted = 0;
 
   const trace = order.map((req) => {
+    tick += 1;
     // Prefix hit must be contiguous from index 0
     let hitPages = 0;
     for (const p of req.pages) {
-      if (cache.includes(p)) hitPages += 1;
+      if (cache.some((entry) => entry.id === p)) hitPages += 1;
       else break;
     }
     const computePages = req.pages.length - hitPages;
     // Touch hit pages to MRU
-    const hitList = req.pages.slice(0, hitPages);
-    cache = [...cache.filter((p) => !hitList.includes(p)), ...hitList];
-    // Evict LRU if needed for new pages
+    const hitSet = new Set(req.pages.slice(0, hitPages));
+    cache = cache.map((entry) => (hitSet.has(entry.id) ? { ...entry, lastUsed: tick } : entry));
+    // Evict coldest LEAF pages first (lowest lastUsed, then deepest depth first -> leaf before parent!)
     const needed = Math.max(0, cache.length + computePages - capacity);
-    const evicted = cache.slice(0, needed);
-    cache = [...cache.slice(needed), ...req.pages.slice(hitPages)];
+    const evicted = [];
+    for (let k = 0; k < needed; k += 1) {
+      const evictOrder = [...cache]
+        .filter((e) => !hitSet.has(e.id))
+        .sort((a, b) => (a.lastUsed - b.lastUsed) || (b.depth - a.depth));
+      const victim = evictOrder[0];
+      if (!victim) break;
+      evicted.push(victim.id);
+      cache = cache.filter((e) => e.id !== victim.id);
+    }
+    for (let idx = hitPages; idx < req.pages.length; idx += 1) {
+      cache.push({ id: req.pages[idx], depth: idx, lastUsed: tick });
+    }
 
     totalHit += hitPages;
     totalCompute += computePages;
@@ -378,7 +394,7 @@ export function deriveSchedulingComparison(policy = 'fcfs') {
       hitPages,
       computePages,
       evicted,
-      residentAfter: [...cache],
+      residentAfter: cache.map((e) => e.id),
       thrashed: hitPages === 0 && (req.id === 'A2' || req.id === 'B2'),
     };
   });

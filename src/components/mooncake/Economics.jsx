@@ -153,7 +153,7 @@ export default function Economics({t, config, setConfig}) {
           {m.bandwidth < floor && <p className="mk-warn">{t('bandwidthFloor')}</p>}
           {m.belowDefaultThreshold && <p className="mk-warn">{t('thresholdNote')}</p>}
           <p className="mk-note">{t('poolSizing')}</p>
-          <p className="mk-note mk-muted">{t('assumptions')}</p>
+          <p className="mk-note mk-muted">{t(`kv_${m.kvProfile}`)} ({m.kvBytes >= 10240 ? `${Math.round(m.kvBytes / 1024)} KiB/tok` : `${(m.kvBytes / 1024).toFixed(2)} KiB/tok`}) · {t('assumptions')}</p>
         </aside>
       </div>
     </section>

@@ -228,10 +228,10 @@ function GlaStages({ state, activeIndex, t }) {
 
 function DeltaStages({ state, activeIndex, t }) {
   return [
-    (active) => <div className="space-y-3"><SmallVector values={state.key} label={<MathFormula>{String.raw`k_t`}</MathFormula>} tone="indigo" active={active} /><SmallVector values={state.predictedValue || [0,0,0,0]} label={<MathFormula>{String.raw`\hat v_t=\alpha_t k_t S_{t-1}`}</MathFormula>} tone="amber" active={active} /></div>,
+    (active) => <div className="space-y-3"><SmallVector values={state.deltaKey || state.key} label={<MathFormula>{String.raw`\hat{k}_t\ (\|\hat{k}_t\|_2=1)`}</MathFormula>} tone="indigo" active={active} /><SmallVector values={state.predictedValue || [0,0,0,0]} label={<MathFormula>{String.raw`\hat v_t=\alpha_t \hat{k}_t S_{t-1}`}</MathFormula>} tone="amber" active={active} /></div>,
     (active) => <div className="space-y-3"><SmallVector values={state.value} label={<MathFormula>{String.raw`v_t`}</MathFormula>} tone="emerald" active={active} /><SmallVector values={state.deltaError || [0,0,0,0]} label={<MathFormula>{String.raw`\delta_t=v_t-\hat v_t`}</MathFormula>} tone="rose" active={active} /></div>,
-    (active) => <div className="space-y-3"><SmallMatrix matrix={state.update} label={<MathFormula>{String.raw`\beta_t k_t^\top\delta_t`}</MathFormula>} tone="amber" active={active} /><SmallMatrix matrix={state.state} label={<MathFormula>{String.raw`S_t`}</MathFormula>} tone="emerald" active={active} /></div>,
-    (active) => <div className="space-y-3"><SmallVector values={state.query} label={<MathFormula>{String.raw`q_t`}</MathFormula>} tone="cyan" active={active} /><SmallVector values={state.plainOutput} label={t('plainOutput')} tone="rose" active={active} /><SmallVector values={state.linearOutput} label={t('deltaOutputLabel')} tone="emerald" active={active} /></div>,
+    (active) => <div className="space-y-3"><SmallMatrix matrix={state.update} label={<MathFormula>{String.raw`\beta_t \hat{k}_t^\top\delta_t`}</MathFormula>} tone="amber" active={active} /><SmallMatrix matrix={state.state} label={<MathFormula>{String.raw`S_t`}</MathFormula>} tone="emerald" active={active} /></div>,
+    (active) => <div className="space-y-3"><SmallVector values={state.query} label={<MathFormula>{String.raw`q_t`}</MathFormula>} tone="cyan" active={active} /><SmallVector values={state.glaBaselineOutput || state.plainOutput} label={t('gatedOutput')} tone="rose" active={active} /><SmallVector values={state.linearOutput} label={t('deltaOutputLabel')} tone="emerald" active={active} /></div>,
   ][activeIndex];
 }
 

@@ -132,7 +132,7 @@ export default function MemoryTilingSection({ config, mem, update, t }) {
             <div className="gr-kpis" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
               <div className={mem.isCoalesced ? 'good' : 'warn'}>
                 <small>{t('memTxCount')}</small>
-                <strong>{mem.transactions} × 128B</strong>
+                <strong>{mem.transactions} × 32B</strong>
               </div>
               <div className={mem.isCoalesced ? 'good' : 'warn'}>
                 <small>{t('memBusEff')}</small>

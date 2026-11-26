@@ -47,12 +47,14 @@ export default function SmOccupancySection({ config, sm, update, t }) {
     setCurrentCycle(c);
   };
 
-  const alertClass = sm.registerSpill || sm.divergent || sm.stallCycles >= 2 ? 'warn' : '';
-  const calloutBody = sm.registerSpill
-    ? t('smSpillWarn')
-    : sm.divergent
-      ? t('smDivWarn')
-      : t('smHealthy');
+  const alertClass = sm.launchExceedsRegs || sm.registerSpill || sm.divergent || sm.stallCycles >= 2 ? 'warn' : '';
+  const calloutBody = sm.launchExceedsRegs
+    ? t('smRegOverflowWarn')
+    : sm.registerSpill
+      ? t('smSpillWarn')
+      : sm.divergent
+        ? t('smDivWarn')
+        : t('smHealthy');
 
   const cycleNarration = (() => {
     if (activeCycle.state === 'stall') {

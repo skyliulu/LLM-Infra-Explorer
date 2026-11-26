@@ -160,7 +160,7 @@ const expectedWithoutL3 = (1 * PAGE_BYTES) / 1e9 / READOUT.hostGBps * 1000
   + (6 - 1) * PAGE_TOKENS / READOUT.prefillRate * 1000;
 assert.ok(Math.abs(hit.ms.withoutL3 - expectedWithoutL3) < 1e-9, 'L3 baseline keeps L2 and recomputes the remote pages');
 assert.ok(Math.abs(hit.ms.l3Saved - (hit.ms.withoutL3 - hit.ms.total)) < 1e-9);
-assert.ok(hit.ratioL3 > 3.1 && hit.ratioL3 < 3.3, 'L3 alone contributes about 3.2x on this request');
+assert.ok(hit.ratioL3 > 3.7 && hit.ratioL3 < 4.1, 'L3 alone contributes about 3.9x on matched 8-GPU PCIe/RDMA');
 assert.ok(hit.ratioL3 < hit.ratio, 'the L3-only ratio is smaller than the full-recompute ratio');
 
 // --- Economics --------------------------------------------------------------
@@ -168,8 +168,8 @@ const rdma = deriveEconomics({medium: 'rdma', hitTokens: 2048, prefillRate: 1100
 const slow = deriveEconomics({medium: 'slow', hitTokens: 2048, prefillRate: 11000});
 const ssdFast = deriveEconomics({medium: 'ssd', hitTokens: 2048, prefillRate: 24000});
 const ssd = deriveEconomics({medium: 'ssd', hitTokens: 2048, prefillRate: 11000});
-const ssdLookupLoss = deriveEconomics({medium: 'ssd', hitTokens: 256, prefillRate: 18000});
-const tcpFast = deriveEconomics({medium: 'tcp', hitTokens: 512, prefillRate: 24000});
+const ssdLookupLoss = deriveEconomics({medium: 'ssd', hitTokens: 256, prefillRate: 20000});
+const ssdMarginal = deriveEconomics({medium: 'ssd', hitTokens: 512, prefillRate: 18000});
 assert.ok(rdma.fetchUs < rdma.computeUs);
 assert.ok(rdma.breakEvenTokens > 0 && rdma.breakEvenTokens < PAGE_TOKENS, 'break-even sits below one page on RDMA');
 assert.ok(rdma.bandwidthFloor > 3 && rdma.bandwidthFloor < 5, 'bandwidth floor near 3.9 GB/s at 11k tokens/s');
@@ -184,7 +184,7 @@ assert.equal(ssdFast.lossCause, 'bandwidth');
 assert.ok(ssdLookupLoss.savingMs < 0);
 assert.equal(ssdLookupLoss.verdict, 'loss');
 assert.equal(ssdLookupLoss.lossCause, 'lookup');
-assert.equal(tcpFast.verdict, 'marginal');
+assert.equal(ssdMarginal.verdict, 'marginal');
 assert.ok(ssdFast.bandwidthFloor > 7 && ssd.bandwidthFloor < 7, 'floor crosses the SSD bandwidth between the two rates');
 assert.ok(slow.fetchMs > rdma.fetchMs && ssd.fetchMs > rdma.fetchMs, 'slower media cost more');
 assert.ok(Math.abs(rdma.computeMs - 2048 / 11000 * 1000) < 1e-9);

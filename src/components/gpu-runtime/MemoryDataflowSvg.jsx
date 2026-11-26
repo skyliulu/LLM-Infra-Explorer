@@ -120,13 +120,13 @@ export default function MemoryDataflowSvg({ mem, step, t }) {
                   />
                   <g className={`gr-m-cl-waste ${hit ? 'bad' : ''} ${isSerialActive ? 'pulse' : ''}`}>
                     <rect x={cx} y="166" width="66" height="46" rx="5" />
-                    {/* Tiny 4B useful slice inside 128B line */}
+                    {/* Tiny 4B useful slice inside 32B sector */}
                     <rect className="gr-m-slice-ok" x={cx + 3} y="170" width="9" height="38" rx="2" />
                     <text className="gr-m-cl-lbl" x={cx + 38} y="186" textAnchor="middle">
-                      {i === 7 ? 'CL31' : `CL${i}`}
+                      {i === 7 ? 'S31' : `S${i}`}
                     </text>
                     <text className="gr-m-cl-sub" x={cx + 38} y="201" textAnchor="middle">
-                      4B / 128B
+                      4B / 32B
                     </text>
                   </g>
                 </g>

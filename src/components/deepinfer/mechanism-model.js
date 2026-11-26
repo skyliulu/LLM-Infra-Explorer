@@ -66,9 +66,13 @@ export function solvePrefillChunkBudget({ prefixK = 16, budget = 40 } = {}) {
     { rank: 1, prefixK: 4, qStarK: solveFor(4) },
     { rank: 2, prefixK: 16, qStarK: solveFor(16) },
     { rank: 3, prefixK: 64, qStarK: solveFor(64) },
-  ];
+  ].map((r) => ({
+    ...r,
+    solvedCost: Number(cost(r.qStarK, r.prefixK).toFixed(1)),
+  }));
   const minAlignedK = Math.min(...dpRanks.map((r) => r.qStarK));
-  return { prefixK: c, budget: B, qStarK: dpRanks[0].qStarK, dpRanks, minAlignedK };
+  const equalTokenRank0UtilPct = Math.round((cost(minAlignedK, dpRanks[0].prefixK) / B) * 100);
+  return { prefixK: c, budget: B, qStarK: dpRanks[0].qStarK, dpRanks, minAlignedK, equalTokenRank0UtilPct };
 }
 
 export function deriveEplbShift({ traffic = 'math', dynamic = true } = {}) {

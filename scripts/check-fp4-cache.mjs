@@ -34,7 +34,7 @@ for (const mode of ['fp16','w4','fp4','w8','fp8']) {
     assert.equal(m.weightBytes,base.weightBytes);
     assert.equal(m.kb,kv==='fp4'?4:kv==='fp8'?8:16);
     if(kv==='fp4') assert.equal(m.kvScales,m.kvElements/16);
-    if(mode==='fp4') {assert.equal(m.wb,4);assert.equal(m.ab,16);assert.equal(m.weightScales,m.weights/16);}
+    if(mode==='fp4') {assert.equal(m.wb,4);assert.equal(m.ab,4);assert.equal(m.weightScales,m.weights/16);}
   }
 }
 assert.equal(deriveFP4Model('main',17,6,true).total,18);
